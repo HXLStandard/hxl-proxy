@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HXL mess kit</title>
+    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
+  </head>
+  <body>
+    <h1>HXL mess kit</h1>
+    <form action="/filter" method="GET">
+      <label>
+        <span>Enter URL of a HXL file</span>
+        <input name="url" type="url" required="required" value="{{ url }}"/>
+      </label>
+      {% for n in range(1, 6) %}
+      <fieldset>
+        <label>
+          <span>Filter</span>
+          <select name="{{ 'filter%02d' % n }}">
+            <option value="">(none)</option>
+            <option value="norm">Normalise</option>
+            <option value="count">Count</option>
+            <option value="sort">Sort</option>
+            <option value="cut">Cut</option>
+            <option value="select">Select</option>
+          </select>
+          <label>
+            <span>Tags</span>
+            <input name="{{ 'tags%02d' % n }}" />
+          </label>
+          <label>
+            <span>Query</span>
+            <input name="{{ 'query%02d' % n }}" />
+          </label>
+          <label>
+            <span>Sort order</span>
+            <select name="{{ 'sort%02d' % n }}">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </label>
+        </label>
+      </fieldset>
+      {% endfor %}
+      <input type="hidden" name="format" value="html" />
+      <button type="submit">Go!</button>
+    </form>
+  </body>
+</html>

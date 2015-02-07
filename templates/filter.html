@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HXL dataset</title>
+    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
+  </head>
+  <body>
+    <h1>HXL dataset</h1>
+    <p>
+      <b>Download links:</b>
+      <a href="?format=csv&amp;{{ request.args | urlencode }}">CSV</a>
+      <a href="?format=json&amp;{{ request.args | urlencode }}">JSON</a>
+    </p>
+    <table>
+      <thead>
+        {% if source.hasHeaders %}
+        <tr class="hxl-headers">
+          {% for header in source.headers %}
+          <th>{{ unicode(header) }}</th>
+          {% endfor %}
+        </tr>
+        {% endif %}
+        <tr class="hxl-tags">
+          {% for tag in source.tags %}
+          <th>{{ unicode(tag) }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in source %}
+        <tr>
+          {% for value in row.values %}
+          <td>{{ unicode(value) }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sansserif;
+}
+
+label {
+    display: block;
+    margin: 2ex 0;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+thead {
+    border-bottom: 2px solid #aaaaff;
+}
+
+thead tr.hxl-headers th {
+    font-weight: bold;
+}
+
+thead tr.hxl-tags th {
+    font-weight: normal;
+    font-family: monospace;
+}
+
+tbody tr {
+    border-bottom: 1px solid #ddddff;
+}
+
+th, td {
+    padding: .5ex 1em;
+}
