@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HXL mess kit</title>
+    <title>HXL proxy</title>
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
-    <h1>HXL mess kit</h1>
-    <form action="/filter" method="GET">
+    <h1>HXL proxy</h1>
+    <form action="/filter" method="GET" id="filter-form">
       <label>
         <span>Enter URL of a HXL file</span>
         <input name="url" type="url" required="required" value="{{ url }}"/>
       </label>
       {% for n in range(1, 6) %}
-      <fieldset>
-        <label>
+      <fieldset id="{{ 'filter-group%02d' % n }}">
+        <label id="{{ 'filter%02d' % n }}" class="field_filter">
           <span>Filter</span>
           <select name="{{ 'filter%02d' % n }}">
             <option value="">(none)</option>
@@ -23,15 +23,15 @@
             <option value="cut">Cut</option>
             <option value="select">Select</option>
           </select>
-          <label>
+          <label id="{{ 'tags%02d' % n }}" class="hideable field_tags">
             <span>Tags</span>
             <input name="{{ 'tags%02d' % n }}" />
           </label>
-          <label>
+          <label id="{{ 'query%02d' % n }}" class="hideable field_query">
             <span>Query</span>
             <input name="{{ 'query%02d' % n }}" />
           </label>
-          <label>
+          <label id="{{ 'sort%02d' % n }}" class="hideable field_sort">
             <span>Sort order</span>
             <select name="{{ 'sort%02d' % n }}">
               <option value="asc">Ascending</option>
@@ -44,5 +44,7 @@
       <input type="hidden" name="format" value="html" />
       <button type="submit">Go!</button>
     </form>
+    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ static('filter-form.js') }}"></script>
   </body>
 </html>
