@@ -55,7 +55,7 @@ def filter():
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return Response(stream_with_context(stream_template('filter.html', name='XXXXX', source=source)))
+        return render_template('filter.html', name=name, source=source)
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
