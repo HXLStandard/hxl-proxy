@@ -13,9 +13,9 @@
       </label>
       {% for n in range(1, 6) %}
       <fieldset id="{{ 'filter-group%02d' % n }}">
-
+        <legend>Filter #{{ n }}</legend>
         <label id="{{ 'filter%02d' % n }}" class="field_filter">
-          <span>Filter</span>
+          <span>Filter type</span>
           <select name="{{ 'filter%02d' % n }}">
             <option value="">(none)</option>
             <option value="count">Count</option>

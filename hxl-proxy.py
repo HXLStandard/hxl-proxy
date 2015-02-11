@@ -2,7 +2,7 @@ from urllib2 import urlopen
 import sys
 from flask import Flask, Response, request, render_template, url_for, stream_with_context
 from hxl.parser import HXLReader, genHXL, genJSON, genHTML
-from hxl.filters import parse_tags
+from hxl.filters import parse_tags, fix_tag
 from hxl.filters.count import HXLCountFilter
 from hxl.filters.norm import HXLNormFilter
 from hxl.filters.sort import HXLSortFilter
@@ -27,13 +27,22 @@ def filter():
         filter = request.args.get('filter%02d' % n)
         if filter == 'count':
             tags = parse_tags(request.args.get('tags%02d' % n, ''))
-            source = HXLCountFilter(source, tags=tags)
+            aggregate_tag = request.args.get('aggregate_tag%02d' % n)
+            if aggregate_tag:
+                aggregate_tag = fix_tag(aggregate_tag)
+            else:
+                aggregate_tag = None
+            source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'sort':
             tags = parse_tags(request.args.get('tags%02d' % n, ''))
             reverse = (request.args.get('sort%02d' % n, 'asc') == 'desc')
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
         elif filter == 'norm':
-            source = HXLNormFilter(source)
+            upper_tags = parse_tags(request.args.get('upper_tags%02d' % n, ''))
+            lower_tags = parse_tags(request.args.get('lower_tags%02d' % n, ''))
+            date_tags = parse_tags(request.args.get('date_tags%02d' % n, ''))
+            number_tags = parse_tags(request.args.get('number_tags%02d' % n, ''))
+            source = HXLNormFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
             tags = parse_tags(request.args.get('tags%02d' % n, ''))
             source = HXLCutFilter(source, include_tags=tags)

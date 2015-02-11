@@ -31,3 +31,17 @@ tbody tr {
 th, td {
     padding: .5ex 1em;
 }
+
+fieldset {
+    background: #ddeeee;
+    margin: 2ex 0;
+}
+
+label>span {
+    display: block;
+    font-size: 69.444%;
+}
+
+input, select {
+    width: 100%;
+}
