@@ -7,11 +7,21 @@
   <body>
     <h1>HXL proxy</h1>
     <form action="/filter" method="GET" id="filter-form">
+
       <label>
-        <span>Enter URL of a HXL file</span>
+        <span><b>* Filter name</b></span>
+        <input name="name" required="required" value="{{ name|default('') }}"/>
+      </label>
+
+      <label>
+        <span><b>* HXL dataset URL</b></span>
         <input name="url" type="url" required="required" value="{{ url }}"/>
       </label>
-      {% for n in range(1, 6) %}
+
+      {% set filter_count = 5 %}
+      <input type="hidden" name="filter_count" value="{{ filter_count }}" />
+
+      {% for n in range(1, filter_count+1) %}
       <fieldset id="{{ 'filter-group%02d' % n }}">
         <legend>Filter #{{ n }}</legend>
         <label id="{{ 'filter%02d' % n }}" class="field_filter">
@@ -77,12 +87,13 @@
         </label>
 
         <label id="{{ 'reverse%02d' % n }}" class="hideable filter_field_select filter_field_sort">
-          <span>Reverse</span>
           <input type="checkbox" name="{{ 'reverse%02d' % n }}" />
+          <span>Reverse</span>
         </label>
 
     </fieldset>
     {% endfor %}
+
     <input type="hidden" name="format" value="html" />
     <button type="submit">Go!</button>
   </form>

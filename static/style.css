@@ -32,16 +32,26 @@ th, td {
     padding: .5ex 1em;
 }
 
+form {
+    max-width: 30em;
+}
+
 fieldset {
     background: #ddeeee;
     margin: 2ex 0;
+    padding: 0 1em;
 }
 
 label>span {
-    display: block;
     font-size: 69.444%;
+    display: block;
 }
 
 input, select {
     width: 100%;
+}
+
+input[type='checkbox'] {
+    width: auto;
+    float: left;
 }

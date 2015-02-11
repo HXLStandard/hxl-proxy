@@ -18,12 +18,13 @@ def home():
 
 @app.route("/filter")
 def filter():
+    name = request.args.get('name', 'Filtered HXL dataset')
     url = request.args['url']
     format = request.args.get('format', 'csv')
-    
     input = urlopen(url)
     source = HXLReader(input)
-    for n in range(1,5):
+    filter_count = int(request.args.get('filter_count', 5))
+    for n in range(1,filter_count+1):
         filter = request.args.get('filter%02d' % n)
         if filter == 'count':
             tags = parse_tags(request.args.get('tags%02d' % n, ''))
@@ -44,8 +45,9 @@ def filter():
             number_tags = parse_tags(request.args.get('number_tags%02d' % n, ''))
             source = HXLNormFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
-            tags = parse_tags(request.args.get('tags%02d' % n, ''))
-            source = HXLCutFilter(source, include_tags=tags)
+            include_tags = parse_tags(request.args.get('include_tags%02d' % n, ''))
+            exclude_tags = parse_tags(request.args.get('exclude_tags%02d' % n, ''))
+            source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'select':
             query = parse_query(request.args['query%02d' % n])
             source = HXLSelectFilter(source, queries=[query])
@@ -53,7 +55,7 @@ def filter():
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return Response(stream_with_context(stream_template('filter.html', source=source)))
+        return Response(stream_with_context(stream_template('filter.html', name=name, source=source)))
     else:
         return Response(genHXL(source), mimetype='text/csv')
 

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HXL dataset</title>
+    <title>{{ name }}</title>
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
-    <h1>HXL dataset</h1>
+    <h1>{{ name }}</h1>
     <p>
       <b>Download links:</b>
       <a href="?format=csv&amp;{{ request.args | urlencode }}">CSV</a>
