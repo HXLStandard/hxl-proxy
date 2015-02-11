@@ -36,7 +36,7 @@ def filter():
             source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'sort':
             tags = parse_tags(request.args.get('tags%02d' % n, ''))
-            reverse = (request.args.get('sort%02d' % n, 'asc') == 'desc')
+            reverse = (request.args.get('reverse%02d' % n) == 'on')
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
         elif filter == 'norm':
             upper_tags = parse_tags(request.args.get('upper_tags%02d' % n, ''))
@@ -50,7 +50,8 @@ def filter():
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'select':
             query = parse_query(request.args['query%02d' % n])
-            source = HXLSelectFilter(source, queries=[query])
+            reverse = (request.args.get('reverse%02d' % n) == 'on')
+            source = HXLSelectFilter(source, queries=[query], reverse=reverse)
 
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
