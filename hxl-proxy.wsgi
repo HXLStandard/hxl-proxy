@@ -1,3 +1,5 @@
 import sys
-sys.path.insert(0, '/srv/www/hxl-proxy')
+import os
+
+sys.path.insert(0, os.path.realpath(__file__))
 from hxl_proxy import app as application
