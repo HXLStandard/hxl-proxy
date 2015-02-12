@@ -1,5 +1,14 @@
-import sys
-import os
+"""
+Apache WSGI file for launching HXL Proxy
 
-sys.path.insert(0, os.path.realpath(__file__))
+David Megginson
+February 2015
+
+License: Public Domain
+Documentation: http://hxlstandard.org
+
+Assumes that hxl_proxy is installed as an app. If running locally, add
+the directory containing the hxl_proxy module to sys.path.
+"""
+
 from hxl_proxy import app as application
