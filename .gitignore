@@ -1,2 +1,4 @@
 *.pyc
 build
+dist
+hxl_proxy.egg-info
