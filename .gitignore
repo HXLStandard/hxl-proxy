@@ -1,4 +1,5 @@
 *.pyc
+hxl-proxy.wsgi
 build
 dist
 hxl_proxy.egg-info
