@@ -10,7 +10,7 @@ http://hxlstandard.org
 Install libhxl-python and flask.
 
 ```
-python hxl-proxy.py
+python run-server.py
 ```
 
 Typically, the proxy will be running on port 5000 for local use.  For web deployment, see the flask documentation.
