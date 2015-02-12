@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title|default('HXL validation') }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
+  </head>
+  <body>
+    <h1>{{ title|default('HXL validation') }}</h1>
+
+    <form action="">
+      <label>
+        <span>* HXL dataset URL</span>
+        <input name="url" type="url" required="required" value="{{ url or '' }}" />
+      </label>
+      <label>
+        <span>Schema URL</span>
+        <input name="schema_url" type="url" value="{{ schema_url or '' }}" />
+      </label>
+      <label>
+        {% if show_all %}
+        <input type="checkbox" name="show_all" checked="checked" />
+        {% else %}
+        <input type="checkbox" name="show_all" />
+        {% endif %}
+        <span>Show all rows</span>
+      </label>
+      <button type="submit">Validate</button>
+    </form>
+
+    {% if source %}
+    <section id="dataset">
+      <h2>Validation</h2>
+
+      <table>
+        <thead>
+          {% if source.hasHeaders %}
+          <tr class="hxl-headers">
+            {% for header in source.headers %}
+            <th>{{ unicode(header) }}</th>
+            {% endfor %}
+          </tr>
+          {% endif %}
+          <tr class="hxl-tags">
+            {% for tag in source.tags %}
+            <th>{{ unicode(tag) }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in source %}
+          <tr class="{{ 'invalid' if row.get('#x_errors') }}" title="{{ row.get('#x_tags') + ' (row ' + row.get('#x_rows') + '): ' + row.get('#x_errors') if row.get('#x_errors') }}">
+            {% for value in row.values %}
+            <td>{{ unicode(value) }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </section>
+    {% endif %}
+
+  </body>
+  
+</html>

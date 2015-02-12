@@ -15,17 +15,42 @@ from flask import Response, request, render_template, url_for, stream_with_conte
 from hxl_proxy import app
 
 from hxl.parser import HXLReader, genHXL, genJSON, genHTML
+from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
 from hxl.filters.count import HXLCountFilter
 from hxl.filters.norm import HXLNormFilter
 from hxl.filters.sort import HXLSortFilter
 from hxl.filters.cut import HXLCutFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
+from hxl.filters.validate import HXLValidateFilter
 
 @app.route("/")
 def home():
     url = request.args.get('url', None)
     return render_template('home.html', url=url)
+
+@app.route("/validate")
+def validate():
+    format = 'html' # fixme
+    url = request.args.get('url', None)
+    schema_url = request.args.get('schema_url', None)
+    show_all = (request.args.get('show_all') == 'on')
+    source = None
+    if url:
+        source = HXLReader(urlopen(url))
+        schema_source = None
+        if schema_url:
+            schema = readHXLSchema(HXLReader(urlopen(schema_url)))
+        else:
+            schema = readHXLSchema()
+        source = HXLValidateFilter(source=source, schema=schema, show_all=show_all)
+        
+    if format == 'json':
+        return Response(genJSON(source), mimetype='application/json')
+    elif format == 'html':
+        return Response(stream_with_context(stream_template('validate.html', url=url, schema_url=schema_url, show_all=show_all, source=source)))
+    else:
+        return Response(genHXL(source), mimetype='text/csv')
 
 @app.route("/filter")
 def filter():

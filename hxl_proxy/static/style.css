@@ -32,6 +32,10 @@ th, td {
     padding: .5ex 1em;
 }
 
+tr.invalid {
+    background: #ffaaaa;
+}
+
 form {
     max-width: 30em;
 }
