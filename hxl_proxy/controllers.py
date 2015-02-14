@@ -14,7 +14,7 @@ from flask import Response, request, render_template, url_for, stream_with_conte
 
 from hxl_proxy import app
 
-from hxl.parser import HXLReader, genHXL, genJSON, genHTML
+from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
 from hxl.filters.count import HXLCountFilter

@@ -1,5 +1,7 @@
 *.pyc
-hxl-proxy.wsgi
+/TAGS
+/make-tags.sh
 build
 dist
+hxl-proxy.wsgi
 hxl_proxy.egg-info
