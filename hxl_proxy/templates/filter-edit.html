@@ -37,13 +37,14 @@
         <legend>Filter #{{ n }}</legend>
         <label id="{{ 'filter%02d' % n }}" class="field_filter">
           <span>Filter type</span>
-          <select name="{{ 'filter%02d' % n }}">
+          {% set name='filter%02d' % n %}
+          <select name="{{ name }}">
             <option value="">(none)</option>
-            <option value="count">Count</option>
-            <option value="norm">Normalise</option>
-            <option value="sort">Sort</option>
-            <option value="cut">Cut</option>
-            <option value="select">Select</option>
+            <option value="count"{% if args[name]=='count' %} selected="selected"{% endif %}>Count</option>
+            <option value="norm"{% if args[name]=='norm' %} selected="selected"{% endif %}>Normalise</option>
+            <option value="sort"{% if args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
+            <option value="cut"{% if args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
+            <option value="select"{% if args[name]=='select' %} selected="selected"{% endif %}>Select</option>
           </select>
         </label>
 

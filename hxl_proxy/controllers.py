@@ -27,7 +27,7 @@ from hxl.filters.validate import HXLValidateFilter
 
 @app.route("/")
 def home():
-    return render_template('home.html', args=args)
+    return render_template('home.html', args=request.args)
     
 @app.route("/filters/new")
 @app.route("/data/<key>/edit")
