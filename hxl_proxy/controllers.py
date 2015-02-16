@@ -10,9 +10,10 @@ Documentation: http://hxlstandard.org
 from urllib2 import urlopen
 import sys
 
-from flask import Response, request, render_template, url_for, stream_with_context
+from flask import Response, request, render_template, url_for, stream_with_context, redirect
 
 from hxl_proxy import app
+from hxl_proxy.profiles import addProfile, getProfile
 
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
@@ -28,6 +29,11 @@ from hxl.filters.validate import HXLValidateFilter
 def home():
     url = request.args.get('url', None)
     return render_template('home.html', url=url)
+
+@app.route("/actions/save-filter", methods=['POST'])
+def save_filter():
+    key = addProfile(request.form)
+    return redirect("/data/" + key, 303)
 
 @app.route("/validate")
 def validate():
@@ -53,46 +59,55 @@ def validate():
         return Response(genHXL(source), mimetype='text/csv')
 
 @app.route("/filter")
-def filter():
-    name = request.args.get('name', 'Filtered HXL dataset')
-    url = request.args['url']
-    format = request.args.get('format', 'csv')
+@app.route("/data/<key>")
+@app.route("/data/<key>.<format>")
+@app.route("/data/<key>/<facet>")
+def filter(key=None, format="html", facet="filter"):
+    if key:
+        # look up a saved filter
+        args = getProfile(str(key))
+    else:
+        # use GET parameters
+        args = request.args
+
+    name = args.get('name', 'Filtered HXL dataset')
+    url = args['url']
     input = urlopen(url)
     source = HXLReader(input)
-    filter_count = int(request.args.get('filter_count', 5))
+    filter_count = int(args.get('filter_count', 5))
     for n in range(1,filter_count+1):
-        filter = request.args.get('filter%02d' % n)
+        filter = args.get('filter%02d' % n)
         if filter == 'count':
-            tags = parse_tags(request.args.get('tags%02d' % n, ''))
-            aggregate_tag = request.args.get('aggregate_tag%02d' % n)
+            tags = parse_tags(args.get('tags%02d' % n, ''))
+            aggregate_tag = args.get('aggregate_tag%02d' % n)
             if aggregate_tag:
                 aggregate_tag = fix_tag(aggregate_tag)
             else:
                 aggregate_tag = None
             source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'sort':
-            tags = parse_tags(request.args.get('tags%02d' % n, ''))
-            reverse = (request.args.get('reverse%02d' % n) == 'on')
+            tags = parse_tags(args.get('tags%02d' % n, ''))
+            reverse = (args.get('reverse%02d' % n) == 'on')
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
         elif filter == 'norm':
-            upper_tags = parse_tags(request.args.get('upper_tags%02d' % n, ''))
-            lower_tags = parse_tags(request.args.get('lower_tags%02d' % n, ''))
-            date_tags = parse_tags(request.args.get('date_tags%02d' % n, ''))
-            number_tags = parse_tags(request.args.get('number_tags%02d' % n, ''))
+            upper_tags = parse_tags(args.get('upper_tags%02d' % n, ''))
+            lower_tags = parse_tags(args.get('lower_tags%02d' % n, ''))
+            date_tags = parse_tags(args.get('date_tags%02d' % n, ''))
+            number_tags = parse_tags(args.get('number_tags%02d' % n, ''))
             source = HXLNormFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
-            include_tags = parse_tags(request.args.get('include_tags%02d' % n, ''))
-            exclude_tags = parse_tags(request.args.get('exclude_tags%02d' % n, ''))
+            include_tags = parse_tags(args.get('include_tags%02d' % n, ''))
+            exclude_tags = parse_tags(args.get('exclude_tags%02d' % n, ''))
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'select':
-            query = parse_query(request.args['query%02d' % n])
-            reverse = (request.args.get('reverse%02d' % n) == 'on')
+            query = parse_query(args['query%02d' % n])
+            reverse = (args.get('reverse%02d' % n) == 'on')
             source = HXLSelectFilter(source, queries=[query], reverse=reverse)
 
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return Response(stream_with_context(stream_template('filter.html', title=name, source=source)))
+        return Response(stream_with_context(stream_template(facet + '.html', title=name, source=source, args=args, key=key)))
     else:
         return Response(genHXL(source), mimetype='text/csv')
 

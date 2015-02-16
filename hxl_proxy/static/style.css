@@ -65,3 +65,21 @@ section#data, section#chart {
     width: 48%;
     min-width: 400px;
 }
+
+ul.breadcrumbs {
+    display: block;
+    font-size: 90%;
+    color: #222222;
+    margin: 0;
+    padding: 0;
+}
+
+ul.breadcrumbs li {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+ul.breadcrumbs li:after {
+    content: " >> ";
+}

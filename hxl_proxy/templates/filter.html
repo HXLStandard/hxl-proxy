@@ -5,17 +5,34 @@
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
+    <ul class="breadcrumbs">
+      <li><a href="/">HXL Proxy</a></li>
+    </ul>
     <h1>{{ title|default('Filtered HXL data') }}</h1>
-    <p>
-      <b>Download links:</b>
-      <a href="?format=csv&amp;{{ request.args | urlencode }}">CSV</a>
-      <a href="?format=json&amp;{{ request.args | urlencode }}">JSON</a>
-    </p>
 
+    {% if key %}
+    <p>
+      <b>Links:</b>
+      <a href="/data/{{ key }}.csv">CSV</a>
+      <a href="/data/{{ key }}.json">JSON</a>
+      <a href="/data/{{ key }}/chart">Chart</a>
+    </p>
+    {% else %}
+    <form method="POST" action="/actions/save-filter">
+      {% for name in args %}
+      {% if args[name] %}
+      <input type="hidden" name="{{ name }}" value="{{ args[name] }}" />
+      {% endif %}
+      {% endfor %}
+      <button type="submit">Save this filter</button>
+    </form>
+    {% endif %}
+
+    {#
     <section id="chart">
       <h2>Chart</h2>
-      <div id="chart_div"></div>
     </section>
+    #}
 
     <section id="data">
       <h2>Data</h2>
@@ -45,13 +62,6 @@
         </tbody>
       </table>
     </section>
-
-    <script type="text/javascript">
-      var csv_url = "?format=csv&{{ request.args | urlencode | safe }}";
-    </script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
-    <script type="text/javascript" src="{{ static('jquery.csv.js') }}"></script>
-    <script type="text/javascript" src="{{ static('show-chart.js') }}"></script>
+    <script type="text/javascript" src="{{ static('bookmarks.js') }}"></script>
   </body>
 </html>
