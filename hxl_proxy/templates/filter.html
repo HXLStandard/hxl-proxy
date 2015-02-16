@@ -11,30 +11,47 @@
       <a href="?format=csv&amp;{{ request.args | urlencode }}">CSV</a>
       <a href="?format=json&amp;{{ request.args | urlencode }}">JSON</a>
     </p>
-    <table>
-      <thead>
-        {% if source.hasHeaders %}
-        <tr class="hxl-headers">
-          {% for header in source.headers %}
-          <th>{{ unicode(header) }}</th>
+
+    <section id="data">
+      <h2>Data</h2>
+      <table>
+        <thead>
+          {% if source.hasHeaders %}
+          <tr class="hxl-headers">
+            {% for header in source.headers %}
+            <th>{{ unicode(header) }}</th>
+            {% endfor %}
+          </tr>
+          {% endif %}
+          <tr class="hxl-tags">
+            {% for tag in source.tags %}
+            <th>{{ unicode(tag) }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in source %}
+          <tr>
+            {% for value in row.values %}
+            <td>{{ unicode(value) }}</td>
+            {% endfor %}
+          </tr>
           {% endfor %}
-        </tr>
-        {% endif %}
-        <tr class="hxl-tags">
-          {% for tag in source.tags %}
-          <th>{{ unicode(tag) }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in source %}
-        <tr>
-          {% for value in row.values %}
-          <td>{{ unicode(value) }}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="chart">
+      <h2>Chart</h2>
+      <div id="chart_div"></div>
+    </section>
+
+    <script type="text/javascript">
+      var csv_url = "?format=csv&{{ request.args | urlencode | safe }}";
+    </script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ static('jquery.csv.js') }}"></script>
+    <script type="text/javascript" src="{{ static('show-chart.js') }}"></script>
   </body>
 </html>

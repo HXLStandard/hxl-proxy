@@ -59,3 +59,9 @@ input[type='checkbox'] {
     width: auto;
     float: left;
 }
+
+section#data, section#chart {
+    float: left;
+    width: 48%;
+    min-width: 400px;
+}
