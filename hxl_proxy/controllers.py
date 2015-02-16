@@ -27,8 +27,16 @@ from hxl.filters.validate import HXLValidateFilter
 
 @app.route("/")
 def home():
-    url = request.args.get('url', None)
-    return render_template('home.html', url=url)
+    return render_template('home.html', args=args)
+    
+@app.route("/filters/new")
+@app.route("/data/<key>/edit")
+def edit_filter(key=None):
+    if key:
+        args = getProfile(str(key))
+    else:
+        args = request.args
+    return render_template('filter-edit.html', key=key, args=args)
 
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():

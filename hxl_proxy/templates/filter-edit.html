@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html>
+  {% if key %}
+  {% set title=args.name + ' (edit)' %}
+  {% else %}
+  {% set title='Create a new filter' %}
+  {% endif %}
   <head>
-    <title>HXL proxy</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
-    <h1>HXL proxy</h1>
+    <ul class="breadcrumbs">
+      <li><a href="/">HXL Proxy</a></li>
+      {% if key %}
+      <li>Data: <a href="/data/{{ key }}">{{ args.name }}</a></li>
+      {% endif %}
+    </ul>
+    <h1>{{ title }}</h1>
     <form action="/filter" method="GET" id="filter-form">
 
       <label>
         <span><b>* Filter name</b></span>
-        <input name="name" required="required" value="{{ name|default('') }}"/>
+        <input name="name" required="required" value="{{ args.name|default('') }}"/>
       </label>
 
       <label>
         <span><b>* HXL dataset URL</b></span>
-        <input name="url" type="url" required="required" value="{{ url }}"/>
+        <input name="url" type="url" required="required" value="{{ args.url }}"/>
       </label>
 
       {% set filter_count = 5 %}
@@ -38,12 +49,14 @@
 
         <label id="{{ 'tags%02d' % n }}" class="hideable filter_field_count filter_field_sort">
           <span>Tags</span>
-          <input name="{{ 'tags%02d' % n }}" />
+          {% set name='tags%02d' % n %}
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         <label id="{{ 'include_tags%02d' % n }}" class="hideable filter_field_cut">
           <span>Include tags</span>
-          <input name="{{ 'include_tags%02d' % n }}" />
+          {% set name='include_tags%02d' % n %}
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         <label id="{{ 'exclude_tags%02d' % n }}" class="hideable filter_field_cut">
