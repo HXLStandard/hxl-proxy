@@ -13,7 +13,7 @@ import sys
 from flask import Response, request, render_template, url_for, stream_with_context, redirect
 
 from hxl_proxy import app
-from hxl_proxy.profiles import addProfile, getProfile
+from hxl_proxy.profiles import addProfile, updateProfile, getProfile
 
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
@@ -40,7 +40,11 @@ def edit_filter(key=None):
 
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
-    key = addProfile(request.form)
+    key = request.form.get('key')
+    if key:
+        updateProfile(str(key), request.form)
+    else:
+        key = addProfile(request.form)
     return redirect("/data/" + key, 303)
 
 @app.route("/validate")
@@ -66,11 +70,11 @@ def validate():
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
-@app.route("/filter")
+@app.route("/filters/preview")
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
 @app.route("/data/<key>/<facet>")
-def filter(key=None, format="html", facet="filter"):
+def filter(key=None, format="html", facet="filter-preview"):
     if key:
         # look up a saved filter
         args = getProfile(str(key))

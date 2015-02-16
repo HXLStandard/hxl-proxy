@@ -17,7 +17,21 @@
       {% endif %}
     </ul>
     <h1>{{ title }}</h1>
-    <form action="/filter" method="GET" id="filter-form">
+    {% if key %}
+    {% set method="POST" %}
+    {% set action="/actions/save-filter" %}
+    {% else %}
+    {% set method="GET" %}
+    {% set action="/filters/preview" %}
+    {% endif %}
+    <form action="{{ action }}" method="{{ method }}" id="filter-form">
+      
+
+      {% set filter_count = 5 %}
+      <input type="hidden" name="filter_count" value="{{ filter_count }}" />
+      {% if key %}
+      <input type="hidden" name="key" value="{{ key }}" />
+      {% endif %}
 
       <label>
         <span><b>* Filter name</b></span>
@@ -28,9 +42,6 @@
         <span><b>* HXL dataset URL</b></span>
         <input name="url" type="url" required="required" value="{{ args.url }}"/>
       </label>
-
-      {% set filter_count = 5 %}
-      <input type="hidden" name="filter_count" value="{{ filter_count }}" />
 
       {% for n in range(1, filter_count+1) %}
       <fieldset id="{{ 'filter-group%02d' % n }}">
@@ -48,60 +59,69 @@
           </select>
         </label>
 
-        <label id="{{ 'tags%02d' % n }}" class="hideable filter_field_count filter_field_sort">
+        {% set name='tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_count filter_field_sort">
           <span>Tags</span>
-          {% set name='tags%02d' % n %}
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'include_tags%02d' % n }}" class="hideable filter_field_cut">
+        {% set name='include_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_cut">
           <span>Include tags</span>
-          {% set name='include_tags%02d' % n %}
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'exclude_tags%02d' % n }}" class="hideable filter_field_cut">
+        {% set name='exclude_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_cut">
           <span>Exclude tags</span>
-          <input name="{{ 'exclude_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'whitespace_tags%02d' % n }}" class="hideable filter_field_norm">
+        {% set name='whitespace_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_norm">
           <span>Normalise whitespace (tags)</span>
-          <input name="{{ 'include_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'toupper_tags%02d' % n }}" class="hideable filter_field_norm">
+        {% set name='toupper_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_norm">
           <span>To uppercase (tags)</span>
-          <input name="{{ 'toupper_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'tolower_tags%02d' % n }}" class="hideable filter_field_norm">
+        {% set name='tolower_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_norm">
           <span>To lowercase (tags)</span>
-          <input name="{{ 'tolower_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'date_tags%02d' % n }}" class="hideable filter_field_norm">
+        {% set name='date_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_norm">
           <span>Fix dates (tags)</span>
-          <input name="{{ 'date_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'num_tags%02d' % n }}" class="hideable filter_field_norm">
+        {% set name='num_tags%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_norm">
           <span>Fix numbers (tags)</span>
-          <input name="{{ 'num_tags%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'aggregate_tag%02d' % n }}" class="hideable filter_field_count">
+        {% set name='aggregate_tag%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_count">
           <span>Tag to aggregate</span>
-          <input name="{{ 'aggregate_tag%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'query%02d' % n }}" class="hideable filter_field_select">
+        {% set name='query%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_select">
           <span>Query</span>
-          <input name="{{ 'query%02d' % n }}" />
+          <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
-        <label id="{{ 'reverse%02d' % n }}" class="hideable filter_field_select filter_field_sort">
-          <input type="checkbox" name="{{ 'reverse%02d' % n }}" />
+        {% set name='reverse%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_select filter_field_sort">
+          <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
           <span>Reverse</span>
         </label>
 

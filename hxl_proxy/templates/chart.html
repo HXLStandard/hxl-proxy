@@ -11,13 +11,12 @@
     </ul>
     <h1>{{ title|default('Filtered HXL data') }} (chart)</h1>
 
-    <p>
-      <b>Download links:</b>
-      <a href="/data/{{ key }}.csv">CSV</a>
-      <a href="/data/{{ key }}.json">JSON</a>
-    </p>
-
     <div id="chart_div"></div>
+
+    <p>
+      <a href="/data/{{ key }}.csv">Download CSV</a> |
+      <a href="/data/{{ key }}.json">Download JSON</a>
+    </p>
 
     <script type="text/javascript">
       var csv_url = "/data/{{ key }}.csv";
