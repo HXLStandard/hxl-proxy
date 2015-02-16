@@ -12,6 +12,11 @@
       <a href="?format=json&amp;{{ request.args | urlencode }}">JSON</a>
     </p>
 
+    <section id="chart">
+      <h2>Chart</h2>
+      <div id="chart_div"></div>
+    </section>
+
     <section id="data">
       <h2>Data</h2>
       <table>
@@ -39,11 +44,6 @@
           {% endfor %}
         </tbody>
       </table>
-    </section>
-
-    <section id="chart">
-      <h2>Chart</h2>
-      <div id="chart_div"></div>
     </section>
 
     <script type="text/javascript">
