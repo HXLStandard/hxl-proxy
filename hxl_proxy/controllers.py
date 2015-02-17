@@ -90,22 +90,23 @@ def filter(key=None, format="html"):
     for n in range(1,filter_count+1):
         filter = args.get('filter%02d' % n)
         if filter == 'clean':
-            upper_tags = parse_tags(args.get('clean-upper_tags%02d' % n, ''))
-            lower_tags = parse_tags(args.get('clean-lower_tags%02d' % n, ''))
-            date_tags = parse_tags(args.get('clean-date_tags%02d' % n, ''))
-            number_tags = parse_tags(args.get('clean-number_tags%02d' % n, ''))
-            source = HXLCleanFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+            whitespace_tags = parse_tags(args.get('clean-whitespace-tags%02d' % n, ''))
+            upper_tags = parse_tags(args.get('clean-upper-tags%02d' % n, ''))
+            lower_tags = parse_tags(args.get('clean-lower-tags%02d' % n, ''))
+            date_tags = parse_tags(args.get('clean-date-tags%02d' % n, ''))
+            number_tags = parse_tags(args.get('clean-number-tags%02d' % n, ''))
+            source = HXLCleanFilter(source, whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'count':
             tags = parse_tags(args.get('count-tags%02d' % n, ''))
-            aggregate_tag = args.get('count-aggregate_tag%02d' % n)
+            aggregate_tag = args.get('count-aggregate-tag%02d' % n)
             if aggregate_tag:
                 aggregate_tag = fix_tag(aggregate_tag)
             else:
                 aggregate_tag = None
             source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'cut':
-            include_tags = parse_tags(args.get('cut-include_tags%02d' % n, []))
-            exclude_tags = parse_tags(args.get('cut-exclude_tags%02d' % n, []))
+            include_tags = parse_tags(args.get('cut-include-tags%02d' % n, []))
+            exclude_tags = parse_tags(args.get('cut-exclude-tags%02d' % n, []))
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'merge':
             tags = parse_tags(args.get('merge-tags%02d' % n, []))
