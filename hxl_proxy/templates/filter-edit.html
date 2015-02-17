@@ -173,8 +173,11 @@
 
           {% set name='select-query%02d' % n %}
           <label id="{{ name }}" class="required">
-            <span>Query (e.g. adm1=Bomo)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" required="required" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
+            <span>Queries (e.g. adm1=Bomo)</span>
+            {% for n in range(1, 6) %}
+            {% set query_name = '%s-%02d' % (name, n) %}
+            <input name="{{ query_name }}" value="{{ args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
+            {% endfor %}
           </label>
 
           {% set name='select-reverse%02d' % n %}

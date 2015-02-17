@@ -116,9 +116,13 @@ def filter(key=None, format="html"):
             merge_source = HXLReader(url=url)
             source = HXLMergeFilter(source, merge_source, keys, tags, before)
         elif filter == 'select':
-            query = parse_query(args['select-query%02d' % n])
+            queries = []
+            for m in range(1, 6):
+                query = args['select-query%02d-%02d' % (n, m)]
+                if query:
+                    queries.append(parse_query(query))
             reverse = (args.get('select-reverse%02d' % n) == 'on')
-            source = HXLSelectFilter(source, queries=[query], reverse=reverse)
+            source = HXLSelectFilter(source, queries=queries, reverse=reverse)
         elif filter == 'sort':
             tags = parse_tags(args.get('sort-tags%02d' % n, ''))
             reverse = (args.get('sort-reverse%02d' % n) == 'on')
