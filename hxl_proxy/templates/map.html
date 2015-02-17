@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title|default('Filtered HXL data') }} (map)</title>
+    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('leaflet/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster/MarkerCluster.css') }}" />
+  </head>
+  <body>
+    <ul class="breadcrumbs">
+      <li><a href="/">HXL Proxy</a></li>
+      <li>Data: <a href="/data/{{ key }}">{{ title|default('Filtered HXL data') }}</a></li>
+    </ul>
+    <h1>{{ title|default('Filtered HXL data') }} (map)</h1>
+
+    <div id="map-div" style="height: 480px"></div>
+
+    <p>
+      <a href="/data/{{ key }}.csv">Download CSV</a> |
+      <a href="/data/{{ key }}.json">Download JSON</a>
+    </p>
+
+    <script type="text/javascript">
+      var csv_url = "/data/{{ key }}.csv";
+    </script>
+    <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
+    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ static('jquery.csv.js') }}"></script>
+    <script type="text/javascript" src="{{ static('show-map.js') }}"></script>
+  </body>
+</html>
