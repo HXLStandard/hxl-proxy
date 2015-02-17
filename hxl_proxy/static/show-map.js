@@ -6,17 +6,35 @@ var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
 map.addLayer(osm);
 
 $.get(csv_url, function(csvString) {
-    alert("Got CSV");
     var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-    
-    // loop
+    lat_index = hxl_get_tag_index(arrayData, '#lat_deg');
+    lon_index = hxl_get_tag_index(arrayData, '#lon_deg');
+
+    if (lat_index == null || lon_index == null) {
+        alert("Dataset must have #lat_deg and #lon_deg tags for mapping.");
+        return;
+    }
+
     var markers = new L.MarkerClusterGroup();
-    var point = [51.5, -0.09];
-    var marker = L.marker(point);
-    marker.bindPopup('Location info');
-    markers.addLayer(marker);
-    // end loop
-    
+    for (i = lat_index[0] + 1; i < arrayData.length; i++) {
+        row = arrayData[i];
+        lat = 0.0 + row[lat_index[1]];
+        lon = 0.0 + row[lon_index[1]];
+        var marker = L.marker([lat, lon]);
+        marker.bindPopup('Location info');
+        markers.addLayer(marker);
+    }
     map.addLayer(markers);
     map.fitBounds(markers.getBounds());
 });
+
+function hxl_get_tag_index(data, tag) {
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < data[i].length; j++) {
+            if (data[i][j] == tag) {
+                return [i, j];
+            }
+        }
+    }
+    return null;
+}
