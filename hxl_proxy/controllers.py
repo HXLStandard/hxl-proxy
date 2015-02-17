@@ -19,7 +19,7 @@ from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
 from hxl.filters.count import HXLCountFilter
-from hxl.filters.norm import HXLNormFilter
+from hxl.filters.clean import HXLCleanFilter
 from hxl.filters.sort import HXLSortFilter
 from hxl.filters.cut import HXLCutFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
@@ -100,12 +100,12 @@ def filter(key=None, format="html"):
             tags = parse_tags(args.get('tags%02d' % n, ''))
             reverse = (args.get('reverse%02d' % n) == 'on')
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
-        elif filter == 'norm':
+        elif filter == 'clean':
             upper_tags = parse_tags(args.get('upper_tags%02d' % n, ''))
             lower_tags = parse_tags(args.get('lower_tags%02d' % n, ''))
             date_tags = parse_tags(args.get('date_tags%02d' % n, ''))
             number_tags = parse_tags(args.get('number_tags%02d' % n, ''))
-            source = HXLNormFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+            source = HXLCleanFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
             include_tags = parse_tags(args.get('include_tags%02d' % n, ''))
             exclude_tags = parse_tags(args.get('exclude_tags%02d' % n, ''))

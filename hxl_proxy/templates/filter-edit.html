@@ -51,16 +51,17 @@
           {% set name='filter%02d' % n %}
           <select name="{{ name }}">
             <option value="">(none)</option>
-            <option value="count"{% if args[name]=='count' %} selected="selected"{% endif %}>Count</option>
-            <option value="norm"{% if args[name]=='norm' %} selected="selected"{% endif %}>Normalise</option>
-            <option value="sort"{% if args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
-            <option value="cut"{% if args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
-            <option value="select"{% if args[name]=='select' %} selected="selected"{% endif %}>Select</option>
+            <option value="count"{% if args[name]=='count' %} selected="selected"{% endif %}>Aggregate data</option>
+            <option value="clean"{% if args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
+            <option value="sort"{% if args[name]=='sort' %} selected="selected"{% endif %}>Sort data</option>
+            <option value="cut"{% if args[name]=='cut' %} selected="selected"{% endif %}>Cut columns</option>
+            <option value="select"{% if args[name]=='select' %} selected="selected"{% endif %}>Select rows</option>
+            <option value="merge"{% if args[name]=='merge' %} selected="selected"{% endif %}>Merge from another dataset</option>
           </select>
         </label>
 
         {% set name='tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_count filter_field_sort">
+        <label id="{{ name }}" class="hideable filter_field_count filter_field_sort filter_field_merge">
           <span>Tags</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
@@ -78,31 +79,31 @@
         </label>
 
         {% set name='whitespace_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_norm">
+        <label id="{{ name }}" class="hideable filter_field_clean">
           <span>Normalise whitespace (tags)</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         {% set name='toupper_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_norm">
+        <label id="{{ name }}" class="hideable filter_field_clean">
           <span>To uppercase (tags)</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         {% set name='tolower_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_norm">
+        <label id="{{ name }}" class="hideable filter_field_clean">
           <span>To lowercase (tags)</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         {% set name='date_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_norm">
+        <label id="{{ name }}" class="hideable filter_field_clean">
           <span>Fix dates (tags)</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
         {% set name='num_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_norm">
+        <label id="{{ name }}" class="hideable filter_field_clean">
           <span>Fix numbers (tags)</span>
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
@@ -119,10 +120,28 @@
           <input name="{{ name }}" value="{{ args[name] }}" />
         </label>
 
+        {% set name='merge%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_merge">
+          <span>URL of dataset to merge</span>
+          <input name="{{ name }}" type="url" value="{{ args[name] }}" />
+        </label>
+
+        {% set name='keys%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_merge">
+          <span>Tags shared with merge dataset</span>
+          <input name="{{ name }}" value="{{ args[name] }}" />
+        </label>
+
         {% set name='reverse%02d' % n %}
         <label id="{{ name }}" class="hideable filter_field_select filter_field_sort">
           <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
           <span>Reverse</span>
+        </label>
+
+        {% set name='before%02d' % n %}
+        <label id="{{ name }}" class="hideable filter_field_select filter_field_merge">
+          <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+          <span>Add new columns before existing</span>
         </label>
 
     </fieldset>
