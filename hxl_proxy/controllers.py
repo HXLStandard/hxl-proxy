@@ -118,7 +118,7 @@ def filter(key=None, format="html"):
         elif filter == 'select':
             queries = []
             for m in range(1, 6):
-                query = args['select-query%02d-%02d' % (n, m)]
+                query = args.get('select-query%02d-%02d' % (n, m))
                 if query:
                     queries.append(parse_query(query))
             reverse = (args.get('select-reverse%02d' % n) == 'on')
@@ -141,6 +141,12 @@ def chart(key=None):
     tag = request.args.get('tag', '#x_count_num')
     type = request.args.get('type', 'pie')
     return render_template('chart.html', key=key, args=profile, tag=tag, type=type)
+
+@app.route('/data/<key>/map')
+def map(key=None):
+    profile = getProfile(key)
+    tags = request.args.get('tags', [])
+    return render_template('map.html', key=key, args=profile, tags=tags, type=type)
 
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)
