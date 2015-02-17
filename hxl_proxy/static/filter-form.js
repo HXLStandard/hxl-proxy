@@ -5,7 +5,7 @@ var field_types = "input,select";
 
 function setup_fieldset(node) {
     filter_name = $(node).find(".field_filter select").val();
-    filter_class = ".filter_field_" + filter_name;
+    filter_class = ".fields-" + filter_name;
     $(node).find(".hideable").hide();
     $(node).find(".hideable").find(field_types).prop("disabled", true);
     $(node).find(filter_class).show();

@@ -17,6 +17,7 @@
       {% endif %}
     </ul>
     <h1>{{ title }}</h1>
+
     {% if key %}
     {% set method="POST" %}
     {% set action="/actions/save-filter" %}
@@ -26,20 +27,19 @@
     {% endif %}
     <form action="{{ action }}" method="{{ method }}" id="filter-form">
       
-
       {% set filter_count = 5 %}
       <input type="hidden" name="filter_count" value="{{ filter_count }}" />
       {% if key %}
       <input type="hidden" name="key" value="{{ key }}" />
       {% endif %}
 
-      <label>
-        <span><b>* Filter name</b></span>
+      <label class="required">
+        <span>Filter name</span>
         <input name="name" required="required" value="{{ args.name|default('') }}"/>
       </label>
 
-      <label>
-        <span><b>* HXL dataset URL</b></span>
+      <label class="required">
+        <span>HXL dataset URL</span>
         <input name="url" type="url" required="required" value="{{ args.url }}"/>
       </label>
 
@@ -60,97 +60,139 @@
           </select>
         </label>
 
-        {% set name='tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_count filter_field_sort filter_field_merge">
-          <span>Tags</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+        <div class="fields-clean hideable">
 
-        {% set name='include_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_cut">
-          <span>Include tags</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='clean-whitespace-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Normalise whitespace (tags)</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='exclude_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_cut">
-          <span>Exclude tags</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='clean-toupper-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>To uppercase (tags)</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='whitespace_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_clean">
-          <span>Normalise whitespace (tags)</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='clean-tolower-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>To lowercase (tags)</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='toupper_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_clean">
-          <span>To uppercase (tags)</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='clean-date-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Fix dates (tags)</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='tolower_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_clean">
-          <span>To lowercase (tags)</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='clean-num-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Fix numbers (tags)</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='date_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_clean">
-          <span>Fix dates (tags)</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+        </div>
 
-        {% set name='num_tags%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_clean">
-          <span>Fix numbers (tags)</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+        <div class="fields-cut hideable">
 
-        {% set name='aggregate_tag%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_count">
-          <span>Tag to aggregate</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='cut-include-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Include tags</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='query%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_select">
-          <span>Query</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+          {% set name='cut-exclude-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Exclude tags</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-        {% set name='merge%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_merge">
-          <span>URL of dataset to merge</span>
-          <input name="{{ name }}" type="url" value="{{ args[name] }}" />
-        </label>
+        </div>
 
-        {% set name='keys%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_merge">
-          <span>Tags shared with merge dataset</span>
-          <input name="{{ name }}" value="{{ args[name] }}" />
-        </label>
+        <div class="fields-count hideable">
 
-        {% set name='reverse%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_select filter_field_sort">
-          <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
-          <span>Reverse</span>
-        </label>
+          {% set name='count-tags%02d' % n %}
+          <label id="{{ name }}" class="required">
+            <span>Tags to count</span>
+            <input name="{{ name }}" value="{{ args[name] }}" required="required" />
+          </label>
 
-        {% set name='before%02d' % n %}
-        <label id="{{ name }}" class="hideable filter_field_select filter_field_merge">
-          <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
-          <span>Add new columns before existing</span>
-        </label>
+          {% set name='count-aggregate_tag%02d' % n %}
+          <label id="{{ name }}">
+            <span>Tag to aggregate</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
 
-    </fieldset>
-    {% endfor %}
+        </div>
 
-    <input type="hidden" name="format" value="html" />
-    <button type="submit">Go!</button>
-  </form>
-  <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
-  <script type="text/javascript" src="{{ static('filter-form.js') }}"></script>
-</body>
+        <div class="fields-merge hideable">
+
+          {% set name='merge-url%02d' % n %}
+          <label id="{{ name }}" class="required">
+            <span>URL of merge dataset</span>
+            <input name="{{ name }}" type="url" value="{{ args[name] }}" required="required" />
+          </label>
+
+          {% set name='merge-tags%02d' % n %}
+          <label id="{{ name }}" class="required">
+            <span>Tags to copy from other dataset</span>
+            <input name="{{ name }}" value="{{ args[name] }}" required="required" />
+          </label>
+
+          {% set name='merge-keys%02d' % n %}
+          <label id="{{ name }}" class="required">
+            <span>Tags shared with merge dataset</span>
+            <input name="{{ name }}" value="{{ args[name] }}" required="required" />
+          </label>
+
+          {% set name='merge-before%02d' % n %}
+          <label id="{{ name }}">
+            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <span>Add merge columns to front</span>
+          </label>
+
+        </div>
+
+        <div class="fields-select hideable">
+
+          {% set name='select-query%02d' % n %}
+          <label id="{{ name }}" class="required">
+            <span>Query</span>
+            <input name="{{ name }}" value="{{ args[name] }}" required="required" />
+          </label>
+
+          {% set name='select-reverse%02d' % n %}
+          <label id="{{ name }}">
+            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <span>Reverse</span>
+          </label>
+
+        </div>
+
+        <div class="fields-sort hideable">
+
+          {% set name='sort-tags%02d' % n %}
+          <label id="{{ name }}">
+            <span>Sort tags</span>
+            <input name="{{ name }}" value="{{ args[name] }}" />
+          </label>
+          
+          {% set name='sort-reverse%02d' % n %}
+          <label id="{{ name }}">
+            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <span>Reverse</span>
+          </label>
+
+        </div>
+
+      </fieldset>
+      {% endfor %}
+
+      <input type="hidden" name="format" value="html" />
+      <button type="submit">Go!</button>
+    </form>
+    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ static('filter-form.js') }}"></script>
+  </body>
 </html>

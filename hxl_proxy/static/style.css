@@ -47,8 +47,17 @@ fieldset {
 }
 
 label>span {
-    font-size: 69.444%;
+    font-size: 83.333333%;
     display: block;
+    margin-bottom: .5ex;
+}
+
+label.required>span {
+    font-weight: bold;
+}
+
+label.required>span:before {
+    content: "*"
 }
 
 input, select {

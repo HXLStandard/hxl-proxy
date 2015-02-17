@@ -89,39 +89,39 @@ def filter(key=None, format="html"):
     filter_count = int(args.get('filter_count', 5))
     for n in range(1,filter_count+1):
         filter = args.get('filter%02d' % n)
-        if filter == 'count':
-            tags = parse_tags(args.get('tags%02d' % n, ''))
-            aggregate_tag = args.get('aggregate_tag%02d' % n)
+        if filter == 'clean':
+            upper_tags = parse_tags(args.get('clean-upper_tags%02d' % n, ''))
+            lower_tags = parse_tags(args.get('clean-lower_tags%02d' % n, ''))
+            date_tags = parse_tags(args.get('clean-date_tags%02d' % n, ''))
+            number_tags = parse_tags(args.get('clean-number_tags%02d' % n, ''))
+            source = HXLCleanFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+        elif filter == 'count':
+            tags = parse_tags(args.get('count-tags%02d' % n, ''))
+            aggregate_tag = args.get('count-aggregate_tag%02d' % n)
             if aggregate_tag:
                 aggregate_tag = fix_tag(aggregate_tag)
             else:
                 aggregate_tag = None
             source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
-        elif filter == 'sort':
-            tags = parse_tags(args.get('tags%02d' % n, ''))
-            reverse = (args.get('reverse%02d' % n) == 'on')
-            source = HXLSortFilter(source, tags=tags, reverse=reverse)
-        elif filter == 'clean':
-            upper_tags = parse_tags(args.get('upper_tags%02d' % n, ''))
-            lower_tags = parse_tags(args.get('lower_tags%02d' % n, ''))
-            date_tags = parse_tags(args.get('date_tags%02d' % n, ''))
-            number_tags = parse_tags(args.get('number_tags%02d' % n, ''))
-            source = HXLCleanFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
-            include_tags = parse_tags(args.get('include_tags%02d' % n, []))
-            exclude_tags = parse_tags(args.get('exclude_tags%02d' % n, []))
+            include_tags = parse_tags(args.get('cut-include_tags%02d' % n, []))
+            exclude_tags = parse_tags(args.get('cut-exclude_tags%02d' % n, []))
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
-        elif filter == 'select':
-            query = parse_query(args['query%02d' % n])
-            reverse = (args.get('reverse%02d' % n) == 'on')
-            source = HXLSelectFilter(source, queries=[query], reverse=reverse)
         elif filter == 'merge':
-            tags = parse_tags(args.get('tags%02d' % n, []))
-            keys = parse_tags(args.get('keys%02d' % n, []))
-            before = (args.get('before%02d' % n) == 'on')
-            merge = args.get('merge%02d' % n)
-            merge_source = HXLReader(url=merge)
+            tags = parse_tags(args.get('merge-tags%02d' % n, []))
+            keys = parse_tags(args.get('merge-keys%02d' % n, []))
+            before = (args.get('merge-before%02d' % n) == 'on')
+            url = args.get('merge-url%02d' % n)
+            merge_source = HXLReader(url=url)
             source = HXLMergeFilter(source, merge_source, keys, tags, before)
+        elif filter == 'select':
+            query = parse_query(args['select-query%02d' % n])
+            reverse = (args.get('select-reverse%02d' % n) == 'on')
+            source = HXLSelectFilter(source, queries=[query], reverse=reverse)
+        elif filter == 'sort':
+            tags = parse_tags(args.get('sort-tags%02d' % n, ''))
+            reverse = (args.get('sort-reverse%02d' % n) == 'on')
+            source = HXLSortFilter(source, tags=tags, reverse=reverse)
 
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
