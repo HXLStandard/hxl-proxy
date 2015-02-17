@@ -18,10 +18,11 @@ from hxl_proxy.profiles import addProfile, updateProfile, getProfile
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
-from hxl.filters.count import HXLCountFilter
 from hxl.filters.clean import HXLCleanFilter
-from hxl.filters.sort import HXLSortFilter
+from hxl.filters.count import HXLCountFilter
 from hxl.filters.cut import HXLCutFilter
+from hxl.filters.merge import HXLMergeFilter
+from hxl.filters.sort import HXLSortFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
 from hxl.filters.validate import HXLValidateFilter
 
@@ -107,13 +108,20 @@ def filter(key=None, format="html"):
             number_tags = parse_tags(args.get('number_tags%02d' % n, ''))
             source = HXLCleanFilter(source, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'cut':
-            include_tags = parse_tags(args.get('include_tags%02d' % n, ''))
-            exclude_tags = parse_tags(args.get('exclude_tags%02d' % n, ''))
+            include_tags = parse_tags(args.get('include_tags%02d' % n, []))
+            exclude_tags = parse_tags(args.get('exclude_tags%02d' % n, []))
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'select':
             query = parse_query(args['query%02d' % n])
             reverse = (args.get('reverse%02d' % n) == 'on')
             source = HXLSelectFilter(source, queries=[query], reverse=reverse)
+        elif filter == 'merge':
+            tags = parse_tags(args.get('tags%02d' % n, []))
+            keys = parse_tags(args.get('keys%02d' % n, []))
+            before = (args.get('before%02d' % n) == 'on')
+            merge = args.get('merge%02d' % n)
+            merge_source = HXLReader(url=merge)
+            source = HXLMergeFilter(source, merge_source, keys, tags, before)
 
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
