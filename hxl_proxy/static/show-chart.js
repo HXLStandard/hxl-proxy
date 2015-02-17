@@ -14,16 +14,35 @@ function drawChart() {
         arrayData.shift();
         var data = new google.visualization.arrayToDataTable(arrayData);
         var view = new google.visualization.DataView(data);
-        view.setColumns([0,1]);
+        //view.setColumns([0,1]);
 
         options = {
-            hAxis: {title: data.getColumnLabel(0), minValue: data.getColumnRange(0).min, maxValue: data.getColumnRange(0).max},
-            vAxis: {title: data.getColumnLabel(1), minValue: data.getColumnRange(1).min, maxValue: data.getColumnRange(1).max},
-            chartArea: { left: 0, top: 0, height: 600, width: 600 }
+            title: "",
+            width: '100%',
+            height: 600,
+            legend: {'position': 'none'},
+            bar: {groupWidth: "95%"},
+            hAxis: {
+                title: data.getColumnLabel(0),
+                type: 'string'
+            },
+            vAxis: {
+                title: data.getColumnLabel(1),
+                minValue: data.getColumnRange(1).min,
+                maxValue: data.getColumnRange(1).max,
+                type: 'number'
+            }
         };
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        node = document.getElementById('chart_div');
+        if (chart_type == 'bar') {
+            var chart = new google.visualization.BarChart(node);
+        } else if (chart_type == 'column') {
+            var chart = new google.visualization.ColumnChart(node);
+        } else {
+            var chart = new google.visualization.PieChart(node);
+        }
         chart.draw(view, options);
     });
 

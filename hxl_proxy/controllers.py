@@ -73,8 +73,7 @@ def validate():
 @app.route("/filters/preview")
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
-@app.route("/data/<key>/<facet>")
-def filter(key=None, format="html", facet="filter-preview"):
+def filter(key=None, format="html"):
     if key:
         # look up a saved filter
         args = getProfile(str(key))
@@ -119,9 +118,16 @@ def filter(key=None, format="html", facet="filter-preview"):
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return Response(stream_with_context(stream_template(facet + '.html', title=name, source=source, args=args, key=key)))
+        return Response(stream_with_context(stream_template('filter-preview.html', title=name, source=source, args=args, key=key)))
     else:
         return Response(genHXL(source), mimetype='text/csv')
+
+@app.route('/data/<key>/chart')
+def chart(key=None):
+    profile = getProfile(key)
+    tag = request.args.get('tag', '#x_count_num')
+    type = request.args.get('type', 'pie')
+    return render_template('chart.html', key=key, args=profile, tag=tag, type=type)
 
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)

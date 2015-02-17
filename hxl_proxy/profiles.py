@@ -18,6 +18,7 @@ def getProfile(key):
     @param key the string key for the profile.  
     @return the profile as an associative array.
     """
+    key = str(key)
     dict = shelve.open(app.config['PROFILE_FILE'])
     try:
         if dict.has_key(key):
@@ -36,7 +37,7 @@ def updateProfile(key, profile):
     """
     dict = shelve.open(app.config['PROFILE_FILE'])
     try:
-        dict[key] = profile
+        dict[str(key)] = profile
         return key
     finally:
         dict.close()
@@ -53,7 +54,7 @@ def addProfile(profile):
         # check for collisions
         while dict.has_key(key):
             key = _gen_key()
-        dict[key] = profile
+        dict[str(key)] = profile
         return key
     finally:
         dict.close()
