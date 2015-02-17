@@ -40,6 +40,11 @@ form {
     max-width: 30em;
 }
 
+fieldset .doc {
+    font-size: 83.333333%;
+    color: #220000;
+}
+
 fieldset {
     background: #ddeeee;
     margin: 2ex 0;
