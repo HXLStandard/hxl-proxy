@@ -12,7 +12,7 @@ import time
 
 from hxl_proxy import app
 
-def getProfile(key):
+def get_profile(key):
     """
     Get an existing profile.
     @param key the string key for the profile.  
@@ -28,7 +28,7 @@ def getProfile(key):
     finally:
         dict.close()
 
-def updateProfile(key, profile):
+def update_profile(key, profile):
     """
     Update an existing profile.
     @param key the string key for the profile
@@ -42,7 +42,7 @@ def updateProfile(key, profile):
     finally:
         dict.close()
 
-def addProfile(profile):
+def add_profile(profile):
     """
     Add a new profile.
     @param profile the profile as an associative array.

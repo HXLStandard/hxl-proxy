@@ -7,8 +7,9 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
+import re
 import os
-from flask import Flask
+from flask import Flask, url_for
 
 # Main application object
 app = Flask(__name__)
@@ -20,7 +21,42 @@ app.config.from_object('hxl_proxy.default_config')
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
 
+#
+# Utilities
+#
+
+def munge_url(url):
+    """If a URL points to a tab in a Google Sheet, grab the CSV export."""
+    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*gid=([0-9]+)', url)
+    if result:
+        url = 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}'.format(result.group(1), result.group(2))
+    return url
+
+def decode_string(s):
+    """Decode a UTF8 string into Unicode."""
+    try:
+        return unicode(s, 'utf-8')
+    except:
+        return s
+
+def stream_template(template_name, **context):
+    """From the flask docs - stream a long template result."""
+    app.update_template_context(context)
+    t = app.jinja_env.get_template(template_name)
+    rv = t.stream(context)
+    rv.enable_buffering(5)
+    return rv
+
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
+
+app.jinja_env.globals['static'] = (
+    lambda filename: url_for('static', filename=filename)
+)
+
+app.jinja_env.globals['unicode'] = (
+    decode_string
+)
+
 
 # end
