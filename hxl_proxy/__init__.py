@@ -47,11 +47,20 @@ def stream_template(template_name, **context):
     rv.enable_buffering(5)
     return rv
 
+def url_escape_tag(tag):
+    if tag[0] == '#':
+        tag = tag[1:]
+    return tag
+
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
 
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)
+)
+
+app.jinja_env.globals['urltag'] = (
+    url_escape_tag
 )
 
 app.jinja_env.globals['unicode'] = (

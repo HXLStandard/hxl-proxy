@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ tag }} in {{ args.name|default('Filtered HXL data') }} (chart)</title>
+    <title>{{ tag }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</title>
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
@@ -9,9 +9,15 @@
       <li><a href="/">HXL Proxy</a></li>
       <li>Data: <a href="/data/{{ key }}">{{ args.name|default('Filtered HXL data') }}</a></li>
     </ul>
-    <h1>{{ tag }} in {{ args.name|default('Filtered HXL data') }} (chart)</h1>
+    <h1>{{ tag }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</h1>
 
-    <div id="chart_div"></div>
+    <p>
+      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=pie">Pie</a> |
+      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=column">Column</a> |
+      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=bar">Bar</a>
+    </p>
+
+    <div id="chart_div" style="height:480px"></div>
 
     <p>
       <a href="/data/{{ key }}.csv">Download CSV</a> |
