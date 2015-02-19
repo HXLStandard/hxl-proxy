@@ -30,7 +30,16 @@ function drawChart() {
             height: '600'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        if (chart_type == 'bar') {
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        } else if (chart_type == 'column') {
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        } else {
+            if (chart_type && chart_type != 'pie') {
+                alert("Unknown chart type: " + chart_type + "\nPlease use 'bar', 'column', or 'pie'");
+            }
+            var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        }
 
         chart.draw(data, options);
     });
