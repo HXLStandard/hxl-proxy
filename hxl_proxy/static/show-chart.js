@@ -27,7 +27,7 @@ function drawChart() {
 
         var options = {
             width: '100%',
-            height: '600'
+            height: '480'
         };
 
         if (chart_type == 'bar') {
