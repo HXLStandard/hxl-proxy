@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ title|default('Filtered HXL data') }} (chart)</title>
+    <title>{{ tag }} in {{ args.name|default('Filtered HXL data') }} (chart)</title>
     <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
   </head>
   <body>
     <ul class="breadcrumbs">
       <li><a href="/">HXL Proxy</a></li>
-      <li>Data: <a href="/data/{{ key }}">{{ title|default('Filtered HXL data') }}</a></li>
+      <li>Data: <a href="/data/{{ key }}">{{ args.name|default('Filtered HXL data') }}</a></li>
     </ul>
-    <h1>{{ title|default('Filtered HXL data') }} (chart)</h1>
+    <h1>{{ tag }} in {{ args.name|default('Filtered HXL data') }} (chart)</h1>
 
     <div id="chart_div"></div>
 
