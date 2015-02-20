@@ -27,7 +27,7 @@ $.get(csv_url, function(csvString) {
         var label = map_label_tags.map(function(tag) { return row.get(tag); }).join(', ');
         var lat = row.get('#lat_deg');
         var lon = row.get('#lon_deg');
-        if (!isNaN(lat) && !isNaN(lon)) {
+        if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
             var marker = L.marker([lat, lon]);
             marker.bindPopup(label);
             layer.addLayer(marker);
