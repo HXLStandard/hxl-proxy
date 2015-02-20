@@ -1,6 +1,7 @@
 *.pyc
 /TAGS
 /make-tags.sh
+/local
 build
 dist
 hxl-proxy.wsgi
