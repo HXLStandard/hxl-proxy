@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   {% if key %}
-  {% set title=args.name + ' (edit)' %}
+  {% set title=profile.args.name + ' (edit)' %}
   {% else %}
   {% set title='Create a new filter' %}
   {% endif %}
@@ -23,7 +23,7 @@
     <ul class="breadcrumbs">
       <li><a href="/">HXL Proxy</a></li>
       {% if key %}
-      <li>Data: <a href="/data/{{ key }}">{{ args.name }}</a></li>
+      <li>Data: <a href="/data/{{ key }}">{{ profile.args.name }}</a></li>
       {% endif %}
     </ul>
     <h1>{{ title }}</h1>
@@ -45,12 +45,12 @@
 
       <label class="required">
         <span>Filter name</span>
-        <input name="name" required="required" value="{{ args.name|default('') }}"/>
+        <input name="name" required="required" value="{{ profile.args.name|default('') }}"/>
       </label>
 
       <label class="required">
         <span>HXL dataset URL</span>
-        <input name="url" type="url" required="required" value="{{ args.url }}"/>
+        <input name="url" type="url" required="required" value="{{ profile.args.url }}"/>
       </label>
 
       {% for n in range(1, filter_count+1) %}
@@ -61,12 +61,12 @@
           {% set name='filter%02d' % n %}
           <select name="{{ name }}">
             <option value="">(none)</option>
-            <option value="clean"{% if args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
-            <option value="count"{% if args[name]=='count' %} selected="selected"{% endif %}>Count</option>
-            <option value="cut"{% if args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
-            <option value="merge"{% if args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
-            <option value="select"{% if args[name]=='select' %} selected="selected"{% endif %}>Select</option>
-            <option value="sort"{% if args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
+            <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
+            <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
+            <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
+            <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
+            <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
+            <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
           </select>
         </label>
 
@@ -76,31 +76,31 @@
           {% set name='clean-whitespace-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Normalise whitespace for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='clean-toupper-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Convert to uppercase for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='clean-tolower-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Convert to lowercase for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='clean-date-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Standardise dates for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='clean-num-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Standardise numbers for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
         </div>
@@ -111,13 +111,13 @@
           {% set name='count-tags%02d' % n %}
           <label id="{{ name }}" class="required">
             <span>Count values for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='count-aggregate-tag%02d' % n %}
           <label id="{{ name }}">
             <span>Aggregate values for this tag (sum, average, min, max)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" />
           </label>
 
         </div>
@@ -128,13 +128,13 @@
           {% set name='cut-include-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Whitelist: include only these tags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='cut-exclude-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Blacklist: include everything <i>but</i> these tags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
         </div>
@@ -145,24 +145,24 @@
           {% set name='merge-url%02d' % n %}
           <label id="{{ name }}" class="required">
             <span>URL of merge dataset (pull extra data from here)</span>
-            <input name="{{ name }}" type="url" value="{{ args[name] }}" required="required" />
+            <input name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
           </label>
 
           {% set name='merge-tags%02d' % n %}
           <label id="{{ name }}" class="required">
             <span>Tags to copy from other dataset</span>
-            <input name="{{ name }}" value="{{ args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='merge-keys%02d' % n %}
           <label id="{{ name }}" class="required">
             <span>Shared keys (values that are the same in both datasets)</span>
-            <input name="{{ name }}" value="{{ args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
 
           {% set name='merge-before%02d' % n %}
           <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
             <span>Add merge columns to front</span>
           </label>
 
@@ -176,13 +176,13 @@
             <span>Queries (e.g. adm1=Bomo)</span>
             {% for n in range(1, 6) %}
             {% set query_name = '%s-%02d' % (name, n) %}
-            <input name="{{ query_name }}" value="{{ args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
+            <input name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
             {% endfor %}
           </label>
 
           {% set name='select-reverse%02d' % n %}
           <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
             <span>Invert query (all rows that <i>don't</i> match it)</span>
           </label>
 
@@ -194,12 +194,12 @@
           {% set name='sort-tags%02d' % n %}
           <label id="{{ name }}">
             <span>Use these tags for sorting.</span>
-            <input name="{{ name }}" value="{{ args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
           </label>
           
           {% set name='sort-reverse%02d' % n %}
           <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if args[name] %} checked="checked"{% endif %} />
+            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
             <span>Reverse order</span>
           </label>
 

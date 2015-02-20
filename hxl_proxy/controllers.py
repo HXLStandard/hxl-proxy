@@ -13,7 +13,7 @@ import sys
 from flask import Response, request, render_template, stream_with_context, redirect
 
 from hxl_proxy import app, stream_template, munge_url
-from hxl_proxy.profiles import add_profile, update_profile, get_profile
+from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
 
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
@@ -26,30 +26,31 @@ from hxl.filters.sort import HXLSortFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
 from hxl.filters.validate import HXLValidateFilter
 
-@app.errorhandler(Exception)
-def error(e):
-    return render_template('error.html', message=str(e))
+#@app.errorhandler(Exception)
+#def error(e):
+#    return render_template('error.html', message=str(e))
 
 @app.route("/")
 def home():
-    return render_template('home.html', args=request.args)
+    return render_template('home.html')
     
 @app.route("/filters/new")
 @app.route("/data/<key>/edit")
 def edit_filter(key=None):
     if key:
-        args = get_profile(str(key))
+        profile = get_profile(str(key))
     else:
-        args = request.args
-    return render_template('filter-edit.html', key=key, args=args)
+        profile = make_profile(request.args)
+    return render_template('filter-edit.html', key=key, profile=profile)
 
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
     key = request.form.get('key')
+    profile = make_profile(request.form)
     if key:
-        update_profile(str(key), request.form)
+        update_profile(str(key), profile)
     else:
-        key = add_profile(request.form)
+        key = add_profile(profile)
     return redirect("/data/" + key, 303)
 
 @app.route("/validate")
@@ -81,61 +82,61 @@ def validate():
 def filter(key=None, format="html"):
     if key:
         # look up a saved filter
-        args = get_profile(str(key))
+        profile = get_profile(str(key))
     else:
         # use GET parameters
-        args = request.args
+        profile = make_profile(request.args)
 
-    name = args.get('name', 'Filtered HXL dataset')
-    url = args['url']
+    name = profile.args.get('name', 'Filtered HXL dataset')
+    url = profile.args.get('url')
     input = urlopen(munge_url(url))
     source = HXLReader(input)
-    filter_count = int(args.get('filter_count', 5))
+    filter_count = int(profile.args.get('filter_count', 5))
     for n in range(1,filter_count+1):
-        filter = args.get('filter%02d' % n)
+        filter = profile.args.get('filter%02d' % n)
         if filter == 'clean':
-            whitespace_tags = parse_tags(args.get('clean-whitespace-tags%02d' % n, ''))
-            upper_tags = parse_tags(args.get('clean-upper-tags%02d' % n, ''))
-            lower_tags = parse_tags(args.get('clean-lower-tags%02d' % n, ''))
-            date_tags = parse_tags(args.get('clean-date-tags%02d' % n, ''))
-            number_tags = parse_tags(args.get('clean-number-tags%02d' % n, ''))
+            whitespace_tags = parse_tags(profile.args.get('clean-whitespace-tags%02d' % n, ''))
+            upper_tags = parse_tags(profile.args.get('clean-upper-tags%02d' % n, ''))
+            lower_tags = parse_tags(profile.args.get('clean-lower-tags%02d' % n, ''))
+            date_tags = parse_tags(profile.args.get('clean-date-tags%02d' % n, ''))
+            number_tags = parse_tags(profile.args.get('clean-number-tags%02d' % n, ''))
             source = HXLCleanFilter(source, whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'count':
-            tags = parse_tags(args.get('count-tags%02d' % n, ''))
-            aggregate_tag = args.get('count-aggregate-tag%02d' % n)
+            tags = parse_tags(profile.args.get('count-tags%02d' % n, ''))
+            aggregate_tag = profile.args.get('count-aggregate-tag%02d' % n)
             if aggregate_tag:
                 aggregate_tag = fix_tag(aggregate_tag)
             else:
                 aggregate_tag = None
             source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'cut':
-            include_tags = parse_tags(args.get('cut-include-tags%02d' % n, []))
-            exclude_tags = parse_tags(args.get('cut-exclude-tags%02d' % n, []))
+            include_tags = parse_tags(profile.args.get('cut-include-tags%02d' % n, []))
+            exclude_tags = parse_tags(profile.args.get('cut-exclude-tags%02d' % n, []))
             source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'merge':
-            tags = parse_tags(args.get('merge-tags%02d' % n, []))
-            keys = parse_tags(args.get('merge-keys%02d' % n, []))
-            before = (args.get('merge-before%02d' % n) == 'on')
-            url = args.get('merge-url%02d' % n)
+            tags = parse_tags(profile.args.get('merge-tags%02d' % n, []))
+            keys = parse_tags(profile.args.get('merge-keys%02d' % n, []))
+            before = (profile.args.get('merge-before%02d' % n) == 'on')
+            url = profile.args.get('merge-url%02d' % n)
             merge_source = HXLReader(urlopen(munge_url(url)))
             source = HXLMergeFilter(source, merge_source, keys, tags, before)
         elif filter == 'select':
             queries = []
             for m in range(1, 6):
-                query = args.get('select-query%02d-%02d' % (n, m))
+                query = profile.args.get('select-query%02d-%02d' % (n, m))
                 if query:
                     queries.append(parse_query(query))
-            reverse = (args.get('select-reverse%02d' % n) == 'on')
+            reverse = (profile.args.get('select-reverse%02d' % n) == 'on')
             source = HXLSelectFilter(source, queries=queries, reverse=reverse)
         elif filter == 'sort':
-            tags = parse_tags(args.get('sort-tags%02d' % n, ''))
-            reverse = (args.get('sort-reverse%02d' % n) == 'on')
+            tags = parse_tags(profile.args.get('sort-tags%02d' % n, ''))
+            reverse = (profile.args.get('sort-reverse%02d' % n) == 'on')
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
 
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return render_template('filter-preview.html', title=name, source=source, args=args, key=key)
+        return render_template('filter-preview.html', title=name, source=source, profile=profile, key=key)
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
@@ -146,11 +147,11 @@ def chart(key):
     label = fix_tag(request.args.get('label', '#adm1'))
     filter = fix_tag(request.args.get('filter', '#sector'))
     type = request.args.get('type', 'pie')
-    return render_template('chart.html', key=key, args=profile, tag=tag, label=label, filter=filter, type=type)
+    return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
 def map(key):
     profile = get_profile(key)
     layer_tag = fix_tag(request.args.get('layer', 'adm1'))
     label_tags = parse_tags(request.args.get('label', 'loc,adm1,country'));
-    return render_template('map.html', key=key, args=profile, layer_tag=layer_tag, label_tags=','.join(label_tags))
+    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag, label_tags=','.join(label_tags))
