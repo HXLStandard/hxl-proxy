@@ -140,7 +140,7 @@ def filter(key=None, format="html"):
         return Response(genHXL(source), mimetype='text/csv')
 
 @app.route('/data/<key>/chart')
-def chart(key=None):
+def chart(key):
     profile = get_profile(key)
     tag = fix_tag(request.args.get('tag', '#x_count_num'))
     label = fix_tag(request.args.get('label', '#adm1'))
@@ -149,7 +149,7 @@ def chart(key=None):
     return render_template('chart.html', key=key, args=profile, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
-def map(key=None):
+def map(key):
     profile = get_profile(key)
-    tags = request.args.get('tags', [])
-    return render_template('map.html', key=key, args=profile, tags=tags, type=type)
+    layer = fix_tag(request.args.get('layer', 'adm1'))
+    return render_template('map.html', key=key, args=profile, layer=layer)

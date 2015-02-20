@@ -9,18 +9,18 @@ $.get(csv_url, function(csvString) {
     var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
     var hxl = new HXLDataset(arrayData);
 
-    var markers = new L.MarkerClusterGroup();
     var iterator = hxl.iterator();
     var seen_latlon = false;
+    var markers =  new L.MarkerClusterGroup();
+
     while (row = iterator.next()) {
         var lat = row.get('#lat_deg');
         var lon = row.get('#lon_deg');
         if (!isNaN(lat) && !isNaN(lon)) {
-            seen_latlon = true;
             var marker = L.marker([lat, lon]);
-            console.log(marker);
             marker.bindPopup('Location info');
             markers.addLayer(marker);
+            seen_latlon = true;
         }
     }
     if (seen_latlon) {
