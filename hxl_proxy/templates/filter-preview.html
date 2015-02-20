@@ -18,6 +18,14 @@
       <a href="/data/{{ key }}.json">Download JSON</a>
    </p>
     {% else %}
+    <form method="GET" action="/filters/new">
+      {% for name in args %}
+      {% if args[name] %}
+      <input type="hidden" name="{{ name }}" value="{{ args[name] }}" />
+      {% endif %}
+      {% endfor %}
+      <button type="submit">Refine filter</button>
+    </form>
     <form method="POST" action="/actions/save-filter">
       {% for name in args %}
       {% if args[name] %}
