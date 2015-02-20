@@ -24,11 +24,13 @@ $.get(csv_url, function(csvString) {
 
     while (row = iterator.next()) {
         var layer = get_map_layer(row.get(map_layer_tag));
+        var label = map_label_tags.map(function(tag) { return row.get(tag); }).join(', ');
+        console.log(label);
         var lat = row.get('#lat_deg');
         var lon = row.get('#lon_deg');
         if (!isNaN(lat) && !isNaN(lon)) {
             var marker = L.marker([lat, lon]);
-            marker.bindPopup('Location info');
+            marker.bindPopup(label);
             layer.addLayer(marker);
             seen_latlon = true;
         }
