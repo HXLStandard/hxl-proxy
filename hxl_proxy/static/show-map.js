@@ -25,7 +25,6 @@ $.get(csv_url, function(csvString) {
     while (row = iterator.next()) {
         var layer = get_map_layer(row.get(map_layer_tag));
         var label = map_label_tags.map(function(tag) { return row.get(tag); }).join(', ');
-        console.log(label);
         var lat = row.get('#lat_deg');
         var lon = row.get('#lon_deg');
         if (!isNaN(lat) && !isNaN(lon)) {
@@ -36,11 +35,23 @@ $.get(csv_url, function(csvString) {
         }
     }
     if (seen_latlon) {
+        var overlays = {}
         for (name in map_layers) {
             map_markers.addLayer(map_layers[name]);
+            overlays[name] = new L.layerGroup();
+            map.addLayer(overlays[name]);
         }
+        L.control.layers(null, overlays).addTo(map);
+
+        map.on('overlayadd', function (event) {
+            map_markers.addLayer(map_layers[event.name]);
+        });
+
+        map.on('overlayremove', function (event) {
+            map_markers.removeLayer(map_layers[event.name]);
+        });
+
         map.addLayer(map_markers);
-        //L.control.layers(null, map_layers).addTo(map);
         map.fitBounds(map_markers.getBounds());
     } else {
         alert("No #lat_deg and #lon_deg values to map.");

@@ -151,6 +151,6 @@ def chart(key):
 @app.route('/data/<key>/map')
 def map(key):
     profile = get_profile(key)
-    layer = fix_tag(request.args.get('layer', 'adm1'))
-    labels = parse_tags(request.args.get('labels', 'loc,adm1,country'));
-    return render_template('map.html', key=key, args=profile, layer=layer, labels=','.join(labels))
+    layer_tag = fix_tag(request.args.get('layer', 'adm1'))
+    label_tags = parse_tags(request.args.get('label', 'loc,adm1,country'));
+    return render_template('map.html', key=key, args=profile, layer_tag=layer_tag, label_tags=','.join(label_tags))

@@ -23,9 +23,8 @@
 
     <script type="text/javascript">
       var csv_url = "/data/{{ key }}.csv";
-      var map_layer_tag = "{{ layer }}";
-      var map_label_tags = "{{ labels }}".split(',');
-      console.log(map_label_tags);
+      var map_layer_tag = "{{ layer_tag }}";
+      var map_label_tags = "{{ label_tags }}".split(',');
     </script>
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
