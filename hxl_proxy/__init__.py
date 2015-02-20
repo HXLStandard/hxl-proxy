@@ -27,7 +27,7 @@ if os.environ.get('HXL_PROXY_CONFIG'):
 
 def munge_url(url):
     """If a URL points to a tab in a Google Sheet, grab the CSV export."""
-    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*gid=([0-9]+)', url)
+    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*gid=([0-9]+)', str(url))
     if result:
         url = 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}'.format(result.group(1), result.group(2))
     return url
