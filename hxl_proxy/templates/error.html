@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Error</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
-  </head>
-  <body>
+{% extends "page.basic.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block main %}
     <h1>Error</h1>
     <p>{{ message }}</p>
-  </body>
-</html>
+{% endblock %}

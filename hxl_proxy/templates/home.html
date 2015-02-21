@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HXL Proxy</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
-  </head>
-  <body>
+{% extends "page.basic.html" %}
+
+{% set nav_home='active' %}
+{% block title %}HXL Proxy{% endblock %}
+{% block main %}
     <h1>HXL Proxy</h1>
     <p>Create filtered views of online datasets that follow the <a
     href="http://hxlstandard.org">Humanitarian Exchange Language</a>
@@ -14,5 +12,4 @@
       <li><a href="/filters/new">Create a new filtered view</a></li>
       <li><a href="/validate">Validate a HXL dataset</a></li>
     </ul>
-  </body>
-</html>
+{% endblock %}

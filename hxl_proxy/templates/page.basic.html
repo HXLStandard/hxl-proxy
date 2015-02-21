@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <title>{% block title %}HXL Proxy{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="{{ static('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('bootstrap/css/bootstrap-theme.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('style.css') }}" rel="stylesheet" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    {% endblock %}
+  </head>
+  <body class="theme">
+
+    <nav class="navbar navbar-inverse">
+      {% block nav %}
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">HXL Proxy</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+{% block menu %}
+            <li class="{{ nav_home }}"><a href="/">Home</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Manage <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li class="{{ nav_filter }}"><a href="/filters/new">Create a live filter</a></li>
+                <li class="{{ nav_validate }}"><a href="/validate">Validate HXL data</a></li>
+              </ul>
+            </li>
+{% endblock %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+      {% endblock %}
+    </nav>
+
+    <main>
+      {% block main %}
+      <h1>HXL Proxy</h1>
+      <p>No content yet.</p>
+      {% endblock %}
+    </main>
+
+    {% block scripts %}
+    <script src="{{ static('jquery.js') }}"></script>
+    <script src="{{ static('bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ static('ie10-viewport-bug-workaround.js') }}"></script>
+    {% endblock %}
+  </body>
+</html>

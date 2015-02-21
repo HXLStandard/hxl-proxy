@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ args.name|default('Filtered HXL data') }} (map)</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
+{% extends "page.basic.html" %}
+
+{% block title %}{{ args.name|default('Filtered HXL data') }} (map){% endblock %}
+
+{% block head %}
+{{ super() }}
     <link rel="stylesheet" type="text/css" href="{{ static('leaflet/leaflet.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster/MarkerCluster.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster//MarkerCluster.Default.css') }}" />
-  </head>
-  <body>
-    <ul class="breadcrumbs">
-      <li><a href="/">HXL Proxy</a></li>
-      <li>Data: <a href="/data/{{ key }}">{{ title|default('Filtered HXL data') }}</a></li>
-    </ul>
+{% endblock %}
+
+{% block main %}
     <h1>{{ args.name|default('Filtered HXL data') }} (map)</h1>
 
     <div id="map-div" style="height: 480px"></div>
@@ -20,7 +18,9 @@
       <a href="/data/{{ key }}.csv">Download CSV</a> |
       <a href="/data/{{ key }}.json">Download JSON</a>
     </p>
+{% endblock %}
 
+{% block scripts %}
     <script type="text/javascript">
       var csv_url = "/data/{{ key }}.csv";
       var map_layer_tag = "{{ layer_tag }}";
@@ -28,9 +28,8 @@
     </script>
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
-    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
+{{ super() }}
     <script type="text/javascript" src="{{ static('jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('hxl.js') }}"></script>
     <script type="text/javascript" src="{{ static('show-map.js') }}"></script>
-  </body>
-</html>
+{% endblock %}

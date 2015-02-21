@@ -1,22 +1,32 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ title|default('Filtered HXL data') }}</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
-  </head>
-  <body>
-    <ul class="breadcrumbs">
-      <li><a href="/">HXL Proxy</a></li>
-    </ul>
-    <h1>{{ title|default('Filtered HXL data') }}</h1>
+{% extends "page.basic.html" %}
 
+{% block title %}{{ title|default('Filtered HXL data') }}{% endblock %}
+
+{% block menu %}
+{{ super() }}
+{% if key %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Visualise <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/data/{{ key }}/chart?type=pie">Pie chart</a></li>
+                <li><a href="/data/{{ key }}/chart?type=bar">Bar graph</a></li>
+                <li><a href="/data/{{ key }}/chart?type=column">Column graph</a></li>
+                <li class="divider"></li>
+                <li><a href="/data/{{ key }}/map">Map</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Download <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/data/{{ key }}.csv">Download as CSV</a></li>
+                <li><a href="/data/{{ key }}.json">Download as JSON</a></li>
+              </ul>
+            </li>
+{% endif %}
+{% endblock %}
+
+{% block main %}
     {% if key %}
-    <p>
-      <a href="/data/{{ key }}/chart">Chart</a> |
-      <a href="/data/{{ key }}/map">Map</a> |
-      <a href="/data/{{ key }}.csv">Download CSV</a> |
-      <a href="/data/{{ key }}.json">Download JSON</a>
-   </p>
     {% else %}
     <form method="GET" action="/filters/new">
       {% for name in profile.args %}
@@ -61,5 +71,4 @@
         {% endfor %}
       </tbody>
     </table>
-  </body>
-</html>
+{% endblock %}

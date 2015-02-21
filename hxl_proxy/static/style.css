@@ -1,59 +1,19 @@
-body {
-    font-family: Arial, sansserif;
+main {
+    padding: 2ex;
+}
+
+fieldset {
+    margin: 3em 0;
 }
 
 label {
     display: block;
-    margin: 2ex 0;
-}
-
-table {
-    border-collapse: collapse;
-}
-
-thead {
-    border-bottom: 2px solid #aaaaff;
-}
-
-thead tr.hxl-headers th {
-    font-weight: bold;
-}
-
-thead tr.hxl-tags th {
     font-weight: normal;
-    font-family: monospace;
-}
-
-tbody tr {
-    border-bottom: 1px solid #ddddff;
-}
-
-th, td {
-    padding: .5ex 1em;
-}
-
-tr.invalid {
-    background: #ffaaaa;
-}
-
-form {
-    max-width: 30em;
-}
-
-fieldset .doc {
-    color: #220000;
-}
-
-fieldset {
-    background: #ddeeee;
-    margin: 2ex 0;
-    padding: 0 1em;
 }
 
 label>span {
-    font-size: 83.333333%;
     display: block;
-    margin-bottom: .5ex;
+    font-size: 83.333333%;
 }
 
 label.required>span {
@@ -61,38 +21,23 @@ label.required>span {
 }
 
 label.required>span:before {
-    content: "*"
+    content: "*";
 }
 
-input, select {
+label>input {
     width: 100%;
 }
 
-input[type='checkbox'] {
-    width: auto;
-    float: left;
-}
-
-section#data, section#chart {
-    float: left;
-    width: 48%;
-    min-width: 400px;
-}
-
-ul.breadcrumbs {
+.breadcrumbs {
     display: block;
-    font-size: 90%;
-    color: #222222;
-    margin: 0;
     padding: 0;
 }
 
-ul.breadcrumbs li {
-    margin: 0;
-    padding: 0;
+.breadcrumbs li {
     display: inline;
+    font-size: 83.333333%;
 }
 
-ul.breadcrumbs li:after {
-    content: " >> ";
+.breadcrumbs li:after {
+    content: " » ";
 }

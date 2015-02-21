@@ -1,31 +1,24 @@
-<!DOCTYPE html>
-<html>
-  {% if key %}
-  {% set title=profile.args.name + ' (edit)' %}
-  {% else %}
-  {% set title='Create a new filter' %}
-  {% endif %}
+{% extends "page.basic.html" %}
 
-  {% set tag_pattern = '#?[A-Za-z][_0-9A-Za-z]*' %}
-  {% set tag_pattern_help = 'Example: adm1' %}
+{% set nav_filter='active' %}
 
-  {% set tags_pattern = '(' + tag_pattern + ')(,' + tag_pattern + ')*' %}
-  {% set tags_pattern_help = 'Example: country,adm1,org,sector' %}
+{% if key %}
+{% set title=profile.args.name + ' (edit)' %}
+{% else %}
+{% set title='New HXL view' %}
+{% endif %}
 
-  {% set query_pattern = tag_pattern + '([=~<>]|<=|>=|!=|!~).*' %}
-  {% set query_pattern_help = 'Example: adm1=Bomi' %}
+{% block title %}{{ title }}{% endblock %}
+{% set tag_pattern = '#?[A-Za-z][_0-9A-Za-z]*' %}
+{% set tag_pattern_help = 'Example: adm1' %}
 
-  <head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
-  </head>
-  <body>
-    <ul class="breadcrumbs">
-      <li><a href="/">HXL Proxy</a></li>
-      {% if key %}
-      <li>Data: <a href="/data/{{ key }}">{{ profile.args.name }}</a></li>
-      {% endif %}
-    </ul>
+{% set tags_pattern = '(' + tag_pattern + ')(,' + tag_pattern + ')*' %}
+{% set tags_pattern_help = 'Example: country,adm1,org,sector' %}
+
+{% set query_pattern = tag_pattern + '([=~<>]|<=|>=|!=|!~).*' %}
+{% set query_pattern_help = 'Example: adm1=Bomi' %}
+
+{% block main %}
     <h1>{{ title }}</h1>
 
     {% if key %}
@@ -211,7 +204,9 @@
       <input type="hidden" name="format" value="html" />
       <button type="submit">Go!</button>
     </form>
-    <script type="text/javascript" src="{{ static('jquery.js') }}"></script>
-    <script type="text/javascript" src="{{ static('filter-form.js') }}"></script>
-  </body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script src="{{ static('filter-form.js') }}"></script>
+{% endblock %}

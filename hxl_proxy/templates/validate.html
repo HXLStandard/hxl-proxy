@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ title|default('HXL validation') }}</title>
-    <link rel="stylesheet" type="text/css" href="{{ static('style.css') }}" />
-  </head>
-  <body>
-    <ul class="breadcrumbs">
-      <li><a href="/">HXL Proxy</a></li>
-    </ul>
+{% extends "page.basic.html" %}
+
+{% set nav_validate='active' %}
+
+{% block title %}{{ title|default('HXL validation') }}{% endblock %}
+
+{% block main %}
     <h1>{{ title|default('HXL validation') }}</h1>
 
     <form action="">
@@ -63,6 +60,4 @@
     </section>
     {% endif %}
 
-  </body>
-  
-</html>
+{% endblock %}
