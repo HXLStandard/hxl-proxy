@@ -1,4 +1,5 @@
 {% extends "page.basic.html" %}
+{% from 'snippits.html' import managemenu, datamenu %}
 
 {% set nav_filter='active' %}
 
@@ -7,6 +8,13 @@
 {% else %}
 {% set title='New HXL view' %}
 {% endif %}
+
+{% block menu %}
+{{ managemenu(key, active_manage='active', active_filter='active') }}
+{% if key %}
+{{ datamenu(key) }}
+{% endif %}
+{% endblock %}
 
 {% block title %}{{ title }}{% endblock %}
 {% set tag_pattern = '#?[A-Za-z][_0-9A-Za-z]*' %}
@@ -28,7 +36,7 @@
     {% set method="GET" %}
     {% set action="/filters/preview" %}
     {% endif %}
-    <form action="{{ action }}" method="{{ method }}" id="filter-form">
+    <form class="theme-form" action="{{ action }}" method="{{ method }}" id="filter-form">
       
       {% set filter_count = 5 %}
       <input type="hidden" name="filter_count" value="{{ filter_count }}" />

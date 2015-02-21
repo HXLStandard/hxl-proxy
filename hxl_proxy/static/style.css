@@ -6,38 +6,25 @@ fieldset {
     margin: 3em 0;
 }
 
-label {
+.theme-form label {
     display: block;
     font-weight: normal;
 }
 
-label>span {
+.theme-form label>span {
     display: block;
     font-size: 83.333333%;
 }
 
-label.required>span {
+.theme-form label.required>span {
     font-weight: bold;
 }
 
-label.required>span:before {
+.theme-form label.required>span:before {
     content: "*";
 }
 
-label>input {
+.theme-form label>input {
     width: 100%;
 }
 
-.breadcrumbs {
-    display: block;
-    padding: 0;
-}
-
-.breadcrumbs li {
-    display: inline;
-    font-size: 83.333333%;
-}
-
-.breadcrumbs li:after {
-    content: " » ";
-}

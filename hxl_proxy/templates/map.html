@@ -1,4 +1,12 @@
 {% extends "page.basic.html" %}
+{% from 'snippits.html' import datamenu %}
+
+{% block menu %}
+{{ super() }}
+{% if key %}
+{{ datamenu(key, active_visualise='active', active_map='active') }}
+{% endif %}
+{% endblock %}
 
 {% block title %}{{ args.name|default('Filtered HXL data') }} (map){% endblock %}
 
@@ -13,11 +21,6 @@
     <h1>{{ args.name|default('Filtered HXL data') }} (map)</h1>
 
     <div id="map-div" style="height: 480px"></div>
-
-    <p>
-      <a href="/data/{{ key }}.csv">Download CSV</a> |
-      <a href="/data/{{ key }}.json">Download JSON</a>
-    </p>
 {% endblock %}
 
 {% block scripts %}

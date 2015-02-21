@@ -1,0 +1,31 @@
+{% macro managemenu(key) %}
+            <li class="dropdown {{ kwargs.active_manage }}">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Manage <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li class="{{ kwargs.active_filter }}"><a href="/filters/new">Create a live filter</a></li>
+                <li class="{{ kwargs.active_validate }}"><a href="/validate">Validate HXL data</a></li>
+              </ul>
+            </li>
+{% endmacro %}
+
+{% macro datamenu(key) %}
+            <li class="dropdown {{ kwargs.active_visualise }}">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Visualise <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li class="{{ kwargs.active_pie }}"><a href="/data/{{ key }}/chart?type=pie">Pie chart</a></li>
+                <li class="{{ kwargs.active_bar }}"><a href="/data/{{ key }}/chart?type=bar">Bar graph</a></li>
+                <li class="{{ kwargs.active_column }}"><a href="/data/{{ key }}/chart?type=column">Column graph</a></li>
+                <li class="divider"></li>
+                <li class="{{ kwargs.active_map }}"><a href="/data/{{ key }}/map">Map</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Download <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/data/{{ key }}.csv">Download as CSV</a></li>
+                <li><a href="/data/{{ key }}.json">Download as JSON</a></li>
+              </ul>
+            </li>
+
+{% endmacro %}

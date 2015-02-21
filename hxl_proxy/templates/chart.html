@@ -1,22 +1,19 @@
 {% extends "page.basic.html" %}
+{% from 'snippits.html' import datamenu %}
+
+{% block menu %}
+{{ super() }}
+{% if key %}
+{{ datamenu(key, active_visualise='active') }}
+{% endif %}
+{% endblock %}
 
 {% block title %}{{ label }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
     <h1>{{ label }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</h1>
 
-    <p>
-      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=pie">Pie</a> |
-      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=column">Column</a> |
-      <a href="?tag={{ urltag(tag) }}&amp;label={{ urltag(label) }}&amp;type=bar">Bar</a>
-    </p>
-
     <div id="chart_div" style="height:480px"></div>
-
-    <p>
-      <a href="/data/{{ key }}.csv">Download CSV</a> |
-      <a href="/data/{{ key }}.json">Download JSON</a>
-    </p>
 {% endblock %}
 
 {% block scripts %}

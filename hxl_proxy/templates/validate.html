@@ -1,13 +1,21 @@
 {% extends "page.basic.html" %}
+{% from 'snippits.html' import managemenu, datamenu %}
 
 {% set nav_validate='active' %}
+
+{% block menu %}
+{{ managemenu(key, active_manage='active', active_validate='active') }}
+{% if key %}
+{{ datamenu(key) }}
+{% endif %}
+{% endblock %}
 
 {% block title %}{{ title|default('HXL validation') }}{% endblock %}
 
 {% block main %}
     <h1>{{ title|default('HXL validation') }}</h1>
 
-    <form action="">
+    <form class="theme-form" action="">
       <label>
         <span>* HXL dataset URL</span>
         <input name="url" type="url" required="required" value="{{ url or '' }}" />
