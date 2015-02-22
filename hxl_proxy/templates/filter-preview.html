@@ -3,6 +3,12 @@
 
 {% block title %}{{ title|default('Filtered HXL data') }}{% endblock %}
 
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('dataTables/extensions/Responsive/css/dataTables.responsive.css') }}" rel="stylesheet" />
+{% endblock %}
+
 {% block menu %}
 {{ managemenu(key, active_manage='active') }}
 {% if key %}
@@ -31,7 +37,7 @@
     </form>
     {% endif %}
 
-    <table>
+    <table class="datatable dt-responsive no-wrap display">
       <thead>
         {% if source.hasHeaders %}
         <tr class="hxl-headers">
@@ -56,4 +62,12 @@
         {% endfor %}
       </tbody>
     </table>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script src="{{ static('dataTables/media/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ static('dataTables/media/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ static('dataTables/extensions/Responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ static('hxl-theme/show-table.js') }}"></script>
 {% endblock %}
