@@ -81,7 +81,7 @@ def add_profile(profile):
         # check for collisions
         while dict.has_key(key):
             key = _gen_key()
-        dict[str(key)] = _check_profile(profile)
+        dict[str(key)] = profile
         return key
     finally:
         dict.close()
