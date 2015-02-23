@@ -14,7 +14,7 @@ import copy
 from flask import Response, request, render_template, stream_with_context, redirect
 
 from hxl_proxy import app, stream_template, munge_url
-from hxl_proxy.profiles import add_profile, update_profile, get_profile
+from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
 
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
