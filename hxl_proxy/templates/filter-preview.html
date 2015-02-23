@@ -6,7 +6,6 @@
 {% block head %}
 {{ super() }}
     <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
-    <link href="{{ static('dataTables/extensions/Responsive/css/dataTables.responsive.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block menu %}
@@ -37,7 +36,7 @@
     </form>
     {% endif %}
 
-    <table class="datatable dt-responsive no-wrap display">
+    <table class="datatable">
       <thead>
         {% if source.hasHeaders %}
         <tr class="hxl-headers">
@@ -67,7 +66,5 @@
 {% block scripts %}
 {{ super() }}
     <script src="{{ static('dataTables/media/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ static('dataTables/media/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ static('dataTables/extensions/Responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ static('hxl-theme/show-table.js') }}"></script>
 {% endblock %}
