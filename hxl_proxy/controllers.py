@@ -14,7 +14,7 @@ import copy
 from flask import Response, request, render_template, stream_with_context, redirect
 
 from hxl_proxy import app, stream_template, munge_url
-from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
+from hxl_proxy.profiles import add_profile, update_profile, get_profile
 
 from hxl.io import HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
@@ -27,9 +27,9 @@ from hxl.filters.sort import HXLSortFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
 from hxl.filters.validate import HXLValidateFilter
 
-#@app.errorhandler(Exception)
-#def error(e):
-#    return render_template('error.html', message=str(e))
+@app.errorhandler(Exception)
+def error(e):
+    return render_template('error.html', message=str(e))
 
 @app.route("/")
 def home():
@@ -39,12 +39,12 @@ def home():
 @app.route("/data/<key>/edit", methods=['POST'])
 def edit_filter(key=None):
     if key:
-        password = request.form.get('password')
         profile = get_profile(str(key))
+        password = request.form.get('password')
         if not profile.check_password(password):
             raise Exception("Wrong password")
     else:
-        profile = make_profile(request.args)
+        profile = make_profile(args)
     return render_template('filter-edit.html', key=key, profile=profile)
 
 @app.route("/actions/save-filter", methods=['POST'])
@@ -57,7 +57,11 @@ def save_filter():
     password_repeat = request.form.get('password-repeat')
     cloneable = (request.form.get('cloneable') == 'on')
 
-    profile = make_profile(request.form)
+    if key:
+        profile = get_profile(key)
+        profile.args = request.form
+    else:
+        profile = make_profile(request.form)
     profile.name = name
     profile.description = description
     profile.cloneable = cloneable
