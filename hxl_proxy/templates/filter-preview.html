@@ -9,33 +9,16 @@
 {% endblock %}
 
 {% block menu %}
-{{ managemenu(key, active_manage='active') }}
 {% if key %}
 {{ datamenu(key) }}
+{% else %}
+            <li><a data-toggle="modal" data-target="#saveDialog" href="">Save</a></li>
+            <li><a href="/filters/new?{{ profile.args|urlencode }}">Change</a></li>
 {% endif %}
 {% endblock %}
 
 {% block main %}
-    {% if key %}
-    {% else %}
-    <form method="GET" action="/filters/new">
-      {% for name in profile.args %}
-      {% if profile.args[name] %}
-      <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
-      {% endif %}
-      {% endfor %}
-      <button type="submit">Refine filter</button>
-    </form>
-    <form method="POST" action="/actions/save-filter">
-      {% for name in profile.args %}
-      {% if profile.args[name] %}
-      <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
-      {% endif %}
-      {% endfor %}
-      <button type="submit">Save this filter</button>
-    </form>
-    {% endif %}
-
+    <h1>Filter preview</h2>
     <table class="datatable">
       <thead>
         {% if source.hasHeaders %}
@@ -61,6 +44,52 @@
         {% endfor %}
       </tbody>
     </table>
+    {% if key %}
+    {% else %}
+    <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Save this filter</h2>
+          </div>
+          <div class="modal-body">
+            <p>Save this filter and generate a short permalink. You
+            can edit the filter in the future using the password that
+            you enter below.</p>
+            <form class="theme-form" method="POST" action="/actions/save-filter">
+              {% for name in profile.args %}
+              {% if profile.args[name] %}
+              <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
+              {% endif %}
+              {% endfor %}
+              <label class="required">
+                <span>Filter name</span>
+                <input name="name" required="required" />
+              </label>
+              <label>
+                <span>Short description</span>
+                <textarea name="description">
+                </textarea>
+              </label>
+              <label class="required">
+                <span>Editing password</span>
+                <input name="password" type="password" required="required" />
+              </label>
+              <label class="required">
+                <span>Editing password (repeat)</span>
+                <input name="password-repeat" type="password" required="required" />
+              </label>
+              <label>
+                <input name="cloneable" type="checkbox" />
+                <span>Users may clone (will expose original URL)</span>
+              </label>
+              <button type="submit">Save this filter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

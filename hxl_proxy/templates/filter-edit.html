@@ -42,12 +42,12 @@
       <input type="hidden" name="filter_count" value="{{ filter_count }}" />
       {% if key %}
       <input type="hidden" name="key" value="{{ key }}" />
-      {% endif %}
 
       <label class="required">
         <span>Filter name</span>
         <input name="name" required="required" value="{{ profile.args.name|default('') }}"/>
       </label>
+      {% endif %}
 
       <label class="required">
         <span>HXL dataset URL</span>

@@ -9,6 +9,7 @@ fieldset {
 .theme-form label {
     display: block;
     font-weight: normal;
+    margin: 2ex 0;
 }
 
 .theme-form label>span {
@@ -21,10 +22,20 @@ fieldset {
 }
 
 .theme-form label.required>span:before {
-    content: "*";
+    content: "* ";
 }
 
 .theme-form label>input {
+    width: 100%;
+}
+
+.theme-form label>input[type="checkbox"] {
+    float: left;
+    width: auto;
+    margin-right: .5em;
+}
+
+.theme-form label>textarea {
     width: 100%;
 }
 
