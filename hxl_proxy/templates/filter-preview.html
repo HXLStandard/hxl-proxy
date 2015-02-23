@@ -10,15 +10,26 @@
 
 {% block menu %}
 {% if key %}
+            {% if profile.cloneable %}
+            <li><a href="/filters/new?{{ profile.args|urlencode }}">Clone</a></li>
+            {% endif %}
+            <li><a data-toggle="modal" data-target="#editDialog" href="#editDialog">Edit</a></li>
 {{ datamenu(key) }}
 {% else %}
-            <li><a data-toggle="modal" data-target="#saveDialog" href="">Save</a></li>
+            <li><a data-toggle="modal" data-target="#saveDialog" href="#saveDialog">Save</a></li>
             <li><a href="/filters/new?{{ profile.args|urlencode }}">Change</a></li>
 {% endif %}
 {% endblock %}
 
 {% block main %}
-    <h1>Filter preview</h2>
+    {% if key %}
+    <h1>{{ profile.name|default("Filtered data") }}</h1>
+    {% if profile.description %}
+    <p>{{ profile.description }}</p>
+    {% endif %}
+    {% else %}
+    <h1>New filter preview</h2>
+    {% endif %}
     <table class="datatable">
       <thead>
         {% if source.hasHeaders %}
@@ -45,6 +56,25 @@
       </tbody>
     </table>
     {% if key %}
+    <div class="modal fade" id="editDialog" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Edit filter</h2>
+          </div>
+          <div class="modal-body">
+            <p>You need a password to edit this filter.{% if profile.cloneable %} You can also use the "Clone" option to create your own copy.{% endif %}</p>
+            <form class="theme-form" method="POST" action="/data/{{ key }}/edit">
+              <label class="required">
+                <span>Password</span>
+                <input name="password" type="password" required="required" />
+              </label>
+              <button type="submit">Edit this filter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     {% else %}
     <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">

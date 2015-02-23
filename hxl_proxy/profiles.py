@@ -19,6 +19,21 @@ class Profile(object):
     def __init__(self, args):
         self.args = args
         self.version = 1.0
+        self.passhash = None
+
+    def set_password(self, password):
+        """Assign a new password to this profile (None to clear)."""
+        if password:
+            self.passhash = hashlib.md5(password).digest()
+        else:
+            self.passhash = None
+
+    def check_password(self, password):
+        """Check the password for this profile."""
+        # if none is set, also succeeds
+        return (not hasattr(self, 'passhash') or self.passhash is None or self.passhash == hashlib.md5(password).digest())
+
+        
 
 def make_profile(args):
     return Profile(args)

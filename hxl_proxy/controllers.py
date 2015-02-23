@@ -9,6 +9,7 @@ Documentation: http://hxlstandard.org
 
 from urllib2 import urlopen
 import sys
+import copy
 
 from flask import Response, request, render_template, stream_with_context, redirect
 
@@ -35,10 +36,13 @@ def home():
     return render_template('home.html')
     
 @app.route("/filters/new")
-@app.route("/data/<key>/edit")
+@app.route("/data/<key>/edit", methods=['POST'])
 def edit_filter(key=None):
     if key:
+        password = request.form.get('password')
         profile = get_profile(str(key))
+        if not profile.check_password(password):
+            raise Exception("Wrong password")
     else:
         profile = make_profile(request.args)
     return render_template('filter-edit.html', key=key, profile=profile)
@@ -46,11 +50,34 @@ def edit_filter(key=None):
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
     key = request.form.get('key')
+    name = request.form.get('name')
+    description = request.form.get('description')
+    password = request.form.get('password')
+    new_password = request.form.get('new-password')
+    password_repeat = request.form.get('password-repeat')
+    cloneable = (request.form.get('cloneable') == 'on')
+
     profile = make_profile(request.form)
+    profile.name = name
+    profile.description = description
+    profile.cloneable = cloneable
+
     if key:
+        if not profile.check_password(password):
+            raise Exception("Wrong password")
+        if new_password:
+            if new_password == password_repeat:
+                profile.set_password(new_password)
+            else:
+                raise Exception("Passwords don't match")
         update_profile(str(key), profile)
     else:
+        if password == password_repeat:
+            profile.set_password(password)
+        else:
+            raise Exception("Passwords don't match")
         key = add_profile(profile)
+
     return redirect("/data/" + key, 303)
 
 @app.route("/validate")
