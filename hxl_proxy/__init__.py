@@ -7,6 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
+import six
 import re
 import os
 from flask import Flask, url_for
@@ -34,7 +35,7 @@ def munge_url(url):
 
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
-    if s is not None:
+    if six.isinstance(s, six.string_types):
         try:
             return s.decode('utf8')
         except:
