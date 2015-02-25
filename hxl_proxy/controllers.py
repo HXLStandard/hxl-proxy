@@ -29,7 +29,10 @@ from hxl.filters.validate import HXLValidateFilter
 
 @app.errorhandler(Exception)
 def error(e):
-    return render_template('error.html', message=str(e))
+    if app.config.get('DEBUG'):
+        raise e
+    else:
+        return render_template('error.html', message=str(e))
 
 @app.route("/")
 def home():
@@ -45,7 +48,7 @@ def edit_filter(key=None):
             raise Exception("Wrong password")
     else:
         profile = make_profile(request.args)
-    return render_template('filter-edit.html', key=key, profile=profile)
+    return render_template('view-edit.html', key=key, profile=profile)
 
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
@@ -167,7 +170,7 @@ def filter(key=None, format="html"):
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return render_template('filter-preview.html', title=name, source=source, profile=profile, key=key)
+        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key)
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
