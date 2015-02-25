@@ -41,7 +41,7 @@ def decode_string(s):
         except:
             return s.decode('latin1')
     else:
-        return ''
+        return s
 
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
