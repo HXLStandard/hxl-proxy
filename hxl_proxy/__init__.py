@@ -34,10 +34,13 @@ def munge_url(url):
 
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
-    try:
-        return s.decode('utf8')
-    except:
-        return s.decode('latin1')
+    if s is None:
+        try:
+            return s.decode('utf8')
+        except:
+            return s.decode('latin1')
+    else:
+        return s
 
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
