@@ -35,7 +35,7 @@ def munge_url(url):
 
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
-    if six.isinstance(s, six.string_types):
+    if isinstance(s, six.string_types):
         try:
             return s.decode('utf8')
         except:
