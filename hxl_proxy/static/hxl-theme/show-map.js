@@ -15,45 +15,99 @@ function get_map_layer(name) {
     return map_layers[name];
 }
 
-$.get(csv_url, function(csvString) {
-    var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-    var hxl = new HXLDataset(arrayData);
-
-    var iterator = hxl.iterator();
-    var seen_latlon = false;
-
-    while (row = iterator.next()) {
-        var layer = get_map_layer(row.get(map_layer_tag));
-        var label = map_label_tags.map(function(tag) { return row.get(tag); }).join(', ');
-        var lat = row.get('#lat_deg');
-        var lon = row.get('#lon_deg');
-        if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
-            var marker = L.marker([lat, lon]);
-            marker.bindPopup(label);
-            layer.addLayer(marker);
-            seen_latlon = true;
-        }
+function make_hex(n) {
+    var s = n.toString(16);
+    if (s.length < 2) {
+        s = '0' + s;
     }
-    if (seen_latlon) {
-        var overlays = {}
-        for (name in map_layers) {
-            map_markers.addLayer(map_layers[name]);
-            overlays[name] = new L.layerGroup();
-            map.addLayer(overlays[name]);
+    return s;
+}
+
+var map_type = 'choropleth';
+var map_count_tag = '#x_count_num';
+
+function make_color(value, min, max) {
+    var range = max - min;
+    var magnitude = value - min;
+    var percentage = magnitude / range;
+    var red = Math.floor(255 * percentage);
+    var green = Math.floor(255 * (1 - percentage));
+    return '#' + make_hex(red) + make_hex(green) + '00';
+}
+
+function make_popup(row) {
+    return row.get('#adm2') + ": " + row.get(map_count_tag);
+}
+
+if (map_type == 'choropleth') {
+    $.get(csv_url, function(csvString) {
+        var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+        var hxl = new HXLDataset(arrayData);
+        var features = L.featureGroup([]);
+
+        var min_value = hxl.getMin('#x_count_num');
+        var max_value = hxl.getMax('#x_count_num');
+
+        var iterator = hxl.iterator();
+        while (row = iterator.next()) {
+            bounds_str = row.get('#x_bounds_js');
+            if (bounds_str) {
+                var geometry = jQuery.parseJSON(bounds_str);
+                var layer = L.geoJson(geometry, {
+                    style: {
+                        color: make_color(row.get('#x_count_num'), min_value, max_value),
+                        opacity: 0.5,
+                        weight: 2
+                    }
+                });
+                layer.bindPopup(make_popup(row));
+                features.addLayer(layer);
+            }
+            map.addLayer(features);
+            map.fitBounds(features.getBounds());
         }
-        L.control.layers(null, overlays).addTo(map);
+    });
+} else {
+    $.get(csv_url, function(csvString) {
+        var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+        var hxl = new HXLDataset(arrayData);
 
-        map.on('overlayadd', function (event) {
-            map_markers.addLayer(map_layers[event.name]);
-        });
+        var iterator = hxl.iterator();
+        var seen_latlon = false;
 
-        map.on('overlayremove', function (event) {
-            map_markers.removeLayer(map_layers[event.name]);
-        });
+        while (row = iterator.next()) {
+            var layer = get_map_layer(row.get(map_layer_tag));
+            var label = map_label_tags.map(function(tag) { return row.get(tag); }).join(', ');
+            var lat = row.get('#lat_deg');
+            var lon = row.get('#lon_deg');
+            if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
+                var marker = L.marker([lat, lon]);
+                marker.bindPopup(label);
+                layer.addLayer(marker);
+                seen_latlon = true;
+            }
+        }
+        if (seen_latlon) {
+            var overlays = {}
+            for (name in map_layers) {
+                map_markers.addLayer(map_layers[name]);
+                overlays[name] = new L.layerGroup();
+                map.addLayer(overlays[name]);
+            }
+            L.control.layers(null, overlays).addTo(map);
 
-        map.addLayer(map_markers);
-        map.fitBounds(map_markers.getBounds());
-    } else {
-        alert("No #lat_deg and #lon_deg values to map.");
-    }
-});
+            map.on('overlayadd', function (event) {
+                map_markers.addLayer(map_layers[event.name]);
+            });
+
+            map.on('overlayremove', function (event) {
+                map_markers.removeLayer(map_layers[event.name]);
+            });
+
+            map.addLayer(map_markers);
+            map.fitBounds(map_markers.getBounds());
+        } else {
+            alert("No #lat_deg and #lon_deg values to map.");
+        }
+    });
+}

@@ -27,7 +27,7 @@ from hxl.filters.sort import HXLSortFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
 from hxl.filters.validate import HXLValidateFilter
 
-@app.errorhandler(Exception)
+#@app.errorhandler(Exception)
 def error(e):
     if app.config.get('DEBUG'):
         raise e

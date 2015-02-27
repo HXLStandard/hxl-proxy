@@ -73,6 +73,38 @@ HXLDataset.prototype.getColumns = function() {
 }
 
 /**
+ * Get the minimum value for a column
+ */
+HXLDataset.prototype.getMin = function(tag) {
+    var iterator = this.iterator();
+    var min = null;
+    var row;
+    while (row = iterator.next()) {
+        var value = row.get(tag);
+        if (min === null || (value !== null && value < min)) {
+            min = value;
+        }
+    }
+    return min;
+}
+
+/**
+ * Get the minimum value for a column
+ */
+HXLDataset.prototype.getMax = function(tag) {
+    var iterator = this.iterator();
+    var max = null;
+    var row;
+    while (row = iterator.next()) {
+        var value = row.get(tag);
+        if (max === null || (value !== null && value > max)) {
+            max = value;
+        }
+    }
+    return max;
+}
+
+/**
  * Get an iterator through all the rows in the dataset.
  */
 HXLDataset.prototype.iterator = function() {
