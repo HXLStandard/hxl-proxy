@@ -90,7 +90,8 @@
       {% endif %}
 
       {% for n in range(1, filter_count+1) %}
-      <p><a id="#filter-button-{{ n }}" class="btn btn-default" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a></p>
+      <div class="filter">
+      <p><a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a></p>
       <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -255,6 +256,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
       {% endfor %}
 
