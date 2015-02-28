@@ -73,6 +73,25 @@ HXLDataset.prototype.getColumns = function() {
 }
 
 /**
+ * Test if a column exists.
+ */
+HXLDataset.prototype.hasColumn = function(tag) {
+    return this.findColumn(tag) !== null;
+}
+
+/**
+ * Find the first index of a column by tag.
+ */
+HXLDataset.prototype.findColumn = function(tag) {
+    for (i in this.columns) {
+        if (this.columns[i].tag == tag) {
+            return i;
+        }
+    }
+    return null;
+}
+
+/**
  * Get the minimum value for a column
  */
 HXLDataset.prototype.getMin = function(tag) {

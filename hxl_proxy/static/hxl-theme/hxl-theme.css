@@ -39,9 +39,13 @@ fieldset {
     width: 100%;
 }
 
+.map-popup th, .map-popup td {
+    padding: .5em;
+    vertical-align: text-top;
+}
+
 .map-popup th:after {
     content: ":";
-    padding-right: 1ex;
 }
 
 

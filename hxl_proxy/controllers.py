@@ -187,5 +187,4 @@ def chart(key):
 def map(key):
     profile = get_profile(key)
     layer_tag = fix_tag(request.args.get('layer', 'adm1'))
-    label_tags = parse_tags(request.args.get('label', 'loc,adm1,country'));
-    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag, label_tags=','.join(label_tags))
+    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
