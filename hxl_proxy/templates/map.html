@@ -2,8 +2,8 @@
 {% from 'snippits.html' import datamenu %}
 
 {% block menu %}
-{{ super() }}
 {% if key %}
+    <li><a href="/data/{{ key }}">Data</a></li>
 {{ datamenu(key, active_visualise='active', active_map='active') }}
 {% endif %}
 {% endblock %}
