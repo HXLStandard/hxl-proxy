@@ -177,9 +177,12 @@ def filter(key=None, format="html"):
 @app.route('/data/<key>/chart')
 def chart(key):
     profile = get_profile(key)
-    tag = fix_tag(request.args.get('tag', '#x_count_num'))
-    label = fix_tag(request.args.get('label', '#adm1'))
-    filter = fix_tag(request.args.get('filter', '#sector'))
+    tag = request.args.get('tag')
+    if tag:
+            tag = fix_tag(tag);
+    label = request.args.get('label')
+    if label:
+            label = fix_tag(label);
     type = request.args.get('type', 'pie')
     return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
 

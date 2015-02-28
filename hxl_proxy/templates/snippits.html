@@ -1,25 +1,4 @@
-{% macro managemenu(key) %}
-            <li class="dropdown active">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Data <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li class="active"><a href="/data/{{ key }}">Browse</a></li>
-                {% if profile.cloneable %}
-                <li><a href="/filters/new?{{ profile.args|urlencode }}">Clone</a></li>
-                {% endif %}
-                <li><a data-toggle="modal" data-target="#editDialog" href="#editDialog">Edit</a></li>
-              </ul>
-            </li>
-{% endmacro %}
-
 {% macro datamenu(key) %}
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Download <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/data/{{ key }}.csv">Download as CSV</a></li>
-                <li><a href="/data/{{ key }}.json">Download as JSON</a></li>
-              </ul>
-            </li>
-
             <li class="dropdown {{ kwargs.active_visualise }}">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Visualise <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
@@ -28,6 +7,14 @@
                 <li class="{{ kwargs.active_column }}"><a href="/data/{{ key }}/chart?type=column">Column graph</a></li>
                 <li class="divider"></li>
                 <li class="{{ kwargs.active_map }}"><a href="/data/{{ key }}/map">Map</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Download <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/data/{{ key }}.csv">Download as CSV</a></li>
+                <li><a href="/data/{{ key }}.json">Download as JSON</a></li>
               </ul>
             </li>
 {% endmacro %}

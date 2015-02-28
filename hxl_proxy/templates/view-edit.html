@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'snippits.html' import managemenu, datamenu %}
+{% from 'snippits.html' import datamenu %}
 
 {% set nav_filter='active' %}
 
@@ -10,9 +10,17 @@
 {% endif %}
 
 {% block menu %}
-{{ managemenu(key, active_manage='active', active_filter='active') }}
 {% if key %}
-{{ datamenu(key) }}
+            <li class="dropdown active">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Data <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/data/{{ key }}">Browse</a></li>
+                <li class="active"><a data-toggle="modal" data-target="#editDialog" href="#editDialog">Edit</a></li>
+                {% if profile.cloneable %}
+                <li><a href="/filters/new?{{ profile.args|urlencode }}">Clone</a></li>
+                {% endif %}
+              </ul>
+            </li>
 {% endif %}
 {% endblock %}
 

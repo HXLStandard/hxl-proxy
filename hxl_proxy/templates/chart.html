@@ -8,10 +8,10 @@
 {% endif %}
 {% endblock %}
 
-{% block title %}{{ label }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
+{% block title %}{% if label %}{{ label }} in {% endif %}{{ args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
-    <h1>{{ label }} in {{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</h1>
+    <h1>{% if label %}{{ label }} in {% endif %}{{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</h1>
 
     <div id="chart_div" style="min-height:480px"></div>
 {% endblock %}
@@ -22,7 +22,6 @@
       var chart_type = "{{ type }}";
       var chart_value_tag = "{{ tag }}";
       var chart_label_tag = "{{ label }}";
-      var chart_filter_tag = "{{ filter }}";
     </script>
 {{ super() }}
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-  {% from 'snippits.html' import managemenu %}
   <head>
     {% block head %}
     <title>{% block title %}HXL Proxy{% endblock %}</title>
@@ -51,7 +50,6 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% block menu %}
-            {{ managemenu(key) }}
             {% endblock %}
           </ul>
         </div><!--/.nav-collapse -->
