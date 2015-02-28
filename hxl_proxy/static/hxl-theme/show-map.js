@@ -36,7 +36,23 @@ function make_color(value, min, max) {
 }
 
 function make_popup(row) {
-    return row.get('#adm2') + ": " + row.get(map_count_tag);
+    var label = "<table class='map-popup'>\n";
+    for (i in row.values) {
+        column = row.columns[i];
+        value = row.values[i];
+        if (column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
+            label += "  <tr>\n";
+            if (column.header) {
+                label += "    <th>" + column.header + "</th>\n";
+            } else {
+                label += "    <th>" + column.tag + "</th>\n";
+            }
+            label += "    <td>" + value + "</td>\n";
+            label += "  </tr>\n";
+        }
+    }
+    label += "</table>";
+    return label;
 }
 
 if (map_type == 'choropleth') {

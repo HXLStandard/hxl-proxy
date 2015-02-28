@@ -39,3 +39,9 @@ fieldset {
     width: 100%;
 }
 
+.map-popup th:after {
+    content: ":";
+    padding-right: 1ex;
+}
+
+
