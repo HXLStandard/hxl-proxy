@@ -168,11 +168,15 @@ def filter(key=None, format="html"):
             source = HXLSortFilter(source, tags=tags, reverse=reverse)
 
     if format == 'json':
-        return Response(genJSON(source), mimetype='application/json')
+        response = Response(genJSON(source), mimetype='application/json')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     elif format == 'html':
         return render_template('view-preview.html', title=name, source=source, profile=profile, key=key)
     else:
-        return Response(genHXL(source), mimetype='text/csv')
+        response = Response(genHXL(source), mimetype='text/csv')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 @app.route('/data/<key>/chart')
 def chart(key):
