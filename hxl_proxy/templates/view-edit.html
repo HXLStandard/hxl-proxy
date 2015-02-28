@@ -90,158 +90,172 @@
       {% endif %}
 
       {% for n in range(1, filter_count+1) %}
-      <fieldset id="{{ 'filter-group%02d' % n }}">
-        <legend>Filter #{{ n }}</legend>
-        <label id="{{ 'filter%02d' % n }}" class="field_filter">
-          <span>Filter type</span>
-          {% set name='filter%02d' % n %}
-          <select name="{{ name }}">
-            <option value="">(none)</option>
-            <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
-            <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
-            <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
-            <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
-            <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
-            <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
-          </select>
-        </label>
+      <p><a id="#filter-button-{{ n }}" class="btn btn-default" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a></p>
+      <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h2 class="modal-title">Filter #{{ n }}</h2>
+            </div>
+            <div class="modal-body">
+              <fieldset id="{{ 'filter-group%02d' % n }}">
+                <label id="{{ 'filter%02d' % n }}" class="field_filter">
+                  <span>Filter type</span>
+                  {% set name='filter%02d' % n %}
+                  <select name="{{ name }}">
+                    <option value="">(none)</option>
+                    <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
+                    <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
+                    <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
+                    <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
+                    <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
+                    <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
+                  </select>
+                </label>
 
-        <div class="fields-clean hideable">
-          <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
+                <div class="fields-clean hideable">
+                  <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
 
-          {% set name='clean-whitespace-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Normalise whitespace for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
+                  {% set name='clean-whitespace-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Normalise whitespace for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
 
-          {% set name='clean-toupper-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Convert to uppercase for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
+                  {% set name='clean-toupper-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Convert to uppercase for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
 
-          {% set name='clean-tolower-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Convert to lowercase for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
+                  {% set name='clean-tolower-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Convert to lowercase for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
 
-          {% set name='clean-date-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Standardise dates for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
+                  {% set name='clean-date-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Standardise dates for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
 
-          {% set name='clean-num-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Standardise numbers for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
+                  {% set name='clean-num-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Standardise numbers for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
 
+                </div>
+
+                <div class="fields-count hideable">
+                  <p class="doc">Count and aggregate HXL data to generate reports or hide personally-identifiable data.</p>
+
+                  {% set name='count-tags%02d' % n %}
+                  <label id="{{ name }}" class="required">
+                    <span>Count values for these hashtags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+
+                  {% set name='count-aggregate-tag%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Aggregate values for this tag (sum, average, min, max)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" />
+                  </label>
+
+                </div>
+
+                <div class="fields-cut hideable">
+                  <p class="doc">Remove columns from your dataset (e.g. for privacy).</p>
+
+                  {% set name='cut-include-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Whitelist: include only these tags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+
+                  {% set name='cut-exclude-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Blacklist: include everything <i>but</i> these tags (comma-separated)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+
+                </div>
+
+                <div class="fields-merge hideable">
+                  <p class="doc">Merge fields from one HXL dataset into another one. You can use this to look up information like latitude/longitude or population from a reference dataset and add it to your main one.</p>
+
+                  {% set name='merge-url%02d' % n %}
+                  <label id="{{ name }}" class="required">
+                    <span>URL of merge dataset (pull extra data from here)</span>
+                    <input name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
+                  </label>
+
+                  {% set name='merge-tags%02d' % n %}
+                  <label id="{{ name }}" class="required">
+                    <span>Tags to copy from other dataset</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+
+                  {% set name='merge-keys%02d' % n %}
+                  <label id="{{ name }}" class="required">
+                    <span>Shared keys (values that are the same in both datasets)</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+
+                  {% set name='merge-before%02d' % n %}
+                  <label id="{{ name }}">
+                    <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                    <span>Add merge columns to front</span>
+                  </label>
+
+                </div>
+
+                <div class="fields-select hideable">
+                  <p class="doc">Remove all rows from the dataset unless they match a query condition (e.g. a specific sector or ADM1).</p>
+
+                  {% set name='select-query%02d' % n %}
+                  <label id="{{ name }}" class="required">
+                    <span>Queries (e.g. adm1=Bomo)</span>
+                    {% for n in range(1, 6) %}
+                    {% set query_name = '%s-%02d' % (name, n) %}
+                    <input name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
+                    {% endfor %}
+                  </label>
+
+                  {% set name='select-reverse%02d' % n %}
+                  <label id="{{ name }}">
+                    <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                    <span>Invert query (all rows that <i>don't</i> match it)</span>
+                  </label>
+
+                </div>
+
+                <div class="fields-sort hideable">
+                  <p class="doc">Sort the records in a HXL dataset.</p>
+
+                  {% set name='sort-tags%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Use these tags for sorting.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
+                  </label>
+                  
+                  {% set name='sort-reverse%02d' % n %}
+                  <label id="{{ name }}">
+                    <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                    <span>Reverse order</span>
+                  </label>
+
+                </div>
+
+              </fieldset>
+
+              <button class="btn btn-success" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">Done</span></button>
+            </div>
+          </div>
         </div>
-
-        <div class="fields-count hideable">
-          <p class="doc">Count and aggregate HXL data to generate reports or hide personally-identifiable data.</p>
-
-          {% set name='count-tags%02d' % n %}
-          <label id="{{ name }}" class="required">
-            <span>Count values for these hashtags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-
-          {% set name='count-aggregate-tag%02d' % n %}
-          <label id="{{ name }}">
-            <span>Aggregate values for this tag (sum, average, min, max)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" />
-          </label>
-
-        </div>
-
-        <div class="fields-cut hideable">
-          <p class="doc">Remove columns from your dataset (e.g. for privacy).</p>
-
-          {% set name='cut-include-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Whitelist: include only these tags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-
-          {% set name='cut-exclude-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Blacklist: include everything <i>but</i> these tags (comma-separated)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-
-        </div>
-
-        <div class="fields-merge hideable">
-          <p class="doc">Merge fields from one HXL dataset into another one. You can use this to look up information like latitude/longitude or population from a reference dataset and add it to your main one.</p>
-
-          {% set name='merge-url%02d' % n %}
-          <label id="{{ name }}" class="required">
-            <span>URL of merge dataset (pull extra data from here)</span>
-            <input name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
-          </label>
-
-          {% set name='merge-tags%02d' % n %}
-          <label id="{{ name }}" class="required">
-            <span>Tags to copy from other dataset</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-
-          {% set name='merge-keys%02d' % n %}
-          <label id="{{ name }}" class="required">
-            <span>Shared keys (values that are the same in both datasets)</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-
-          {% set name='merge-before%02d' % n %}
-          <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-            <span>Add merge columns to front</span>
-          </label>
-
-        </div>
-
-        <div class="fields-select hideable">
-          <p class="doc">Remove all rows from the dataset unless they match a query condition (e.g. a specific sector or ADM1).</p>
-
-          {% set name='select-query%02d' % n %}
-          <label id="{{ name }}" class="required">
-            <span>Queries (e.g. adm1=Bomo)</span>
-            {% for n in range(1, 6) %}
-            {% set query_name = '%s-%02d' % (name, n) %}
-            <input name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
-            {% endfor %}
-          </label>
-
-          {% set name='select-reverse%02d' % n %}
-          <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-            <span>Invert query (all rows that <i>don't</i> match it)</span>
-          </label>
-
-        </div>
-
-        <div class="fields-sort hideable">
-          <p class="doc">Sort the records in a HXL dataset.</p>
-
-          {% set name='sort-tags%02d' % n %}
-          <label id="{{ name }}">
-            <span>Use these tags for sorting.</span>
-            <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tags_pattern }}$" title="{{ tags_pattern_help }}" />
-          </label>
-          
-          {% set name='sort-reverse%02d' % n %}
-          <label id="{{ name }}">
-            <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-            <span>Reverse order</span>
-          </label>
-
-        </div>
-
-      </fieldset>
+      </div>
       {% endfor %}
 
       <input type="hidden" name="format" value="html" />

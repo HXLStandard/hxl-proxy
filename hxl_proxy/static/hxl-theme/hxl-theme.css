@@ -2,14 +2,14 @@ main {
     padding: 2ex;
 }
 
-fieldset {
-    margin: 3em 0;
-}
-
 .theme-form label {
     display: block;
     font-weight: normal;
-    margin: 2ex 0;
+    margin-bottom: 2ex;
+}
+
+.theme-form button {
+    margin-top: 2ex;
 }
 
 .theme-form label>span {
