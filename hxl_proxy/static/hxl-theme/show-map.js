@@ -46,7 +46,7 @@ function make_label(row) {
     for (i in row.values) {
         column = row.columns[i];
         value = row.values[i];
-        if (column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
+        if (value && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
             label += "  <tr>\n";
             if (column.header) {
                 label += "    <th>" + escapeHTML(column.header) + "</th>\n";
