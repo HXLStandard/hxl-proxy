@@ -44,7 +44,7 @@
     {% set method="GET" %}
     {% set action="/filters/preview" %}
     {% endif %}
-    <form class="theme-form" action="{{ action }}" method="{{ method }}" id="filter-form">
+    <form novalidate="novalidate" class="theme-form" action="{{ action }}" method="{{ method }}" id="filter-form">
       
       {% set filter_count = 5 %}
       <input type="hidden" name="filter_count" value="{{ filter_count }}" />
@@ -261,7 +261,7 @@
       {% endfor %}
 
       <input type="hidden" name="format" value="html" />
-      <button type="submit">Go!</button>
+      <button class="btn btn-success" type="submit">Go!</button>
     </form>
 {% endblock %}
 
