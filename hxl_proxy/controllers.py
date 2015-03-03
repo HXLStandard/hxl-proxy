@@ -19,6 +19,7 @@ from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_pr
 from hxl.io import URLInput, HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
+from hxl.filters.add import HXLAddFilter
 from hxl.filters.clean import HXLCleanFilter
 from hxl.filters.count import HXLCountFilter
 from hxl.filters.cut import HXLCutFilter
@@ -127,7 +128,13 @@ def filter(key=None, format="html"):
     filter_count = int(profile.args.get('filter_count', 5))
     for n in range(1,filter_count+1):
         filter = profile.args.get('filter%02d' % n)
-        if filter == 'clean':
+        if filter == 'add':
+            tag = fix_tag(profile.args.get('add-tag%02d' % n))
+            value = profile.args.get('add-value%02d' % n)
+            header = profile.args.get('add-header%02d' % n)
+            before = (profile.args.get('add-before%02d' % n) == 'on')
+            source = HXLAddFilter(source, {tag: [value, header]}, before)
+        elif filter == 'clean':
             whitespace_tags = parse_tags(profile.args.get('clean-whitespace-tags%02d' % n, ''))
             upper_tags = parse_tags(profile.args.get('clean-upper-tags%02d' % n, ''))
             lower_tags = parse_tags(profile.args.get('clean-lower-tags%02d' % n, ''))

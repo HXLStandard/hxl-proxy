@@ -106,6 +106,7 @@
                   {% set name='filter%02d' % n %}
                   <select name="{{ name }}">
                     <option value="">(none)</option>
+                    <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add</option>
                     <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
                     <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
                     <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
@@ -114,6 +115,35 @@
                     <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
                   </select>
                 </label>
+
+                <div class="fields-add hideable">
+                  <p class="doc">Add new columns (with a constant value) to the data.</p>
+
+                  {% set name='add-tag%02d' % n %}
+                  <label class="required" id="{{ name }}">
+                    <span>Tag for new column.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
+                  </label>
+
+                  {% set name='add-value%02d' % n %}
+                  <label class="required" id="{{ name }}">
+                    <span>Fixed value for new column.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" />
+                  </label>
+
+                  {% set name='add-header%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>Display header for new column.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" />
+                  </label>
+
+                  {% set name='add-before%02d' % n %}
+                  <label id="{{ name }}">
+                    <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                    <span>Add new column to front</span>
+                  </label>
+
+                </div>
 
                 <div class="fields-clean hideable">
                   <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
