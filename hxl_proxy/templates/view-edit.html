@@ -46,7 +46,7 @@
     {% endif %}
     <form novalidate="novalidate" class="theme-form" action="{{ action }}" method="{{ method }}" id="filter-form">
       
-      {% set filter_count = 5 %}
+      {% set filter_count = 7 %}
       <input type="hidden" name="filter_count" value="{{ filter_count }}" />
 
       <label class="required">
@@ -111,13 +111,14 @@
                     <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
                     <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
                     <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
+                    <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename</option>
                     <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
                     <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
                   </select>
                 </label>
 
                 <div class="fields-add hideable">
-                  <p class="doc">Add new columns (with a constant value) to the data.</p>
+                  <p class="doc">Add a new column (with a constant value) to the data.</p>
 
                   {% set name='add-tag%02d' % n %}
                   <label class="required" id="{{ name }}">
@@ -239,6 +240,29 @@
                   <label id="{{ name }}">
                     <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
                     <span>Add merge columns to front</span>
+                  </label>
+
+                </div>
+
+                <div class="fields-rename hideable">
+                  <p class="doc">Add a new column (with a constant value) to the data.</p>
+
+                  {% set name='rename-oldtag%02d' % n %}
+                  <label class="required" id="{{ name }}">
+                    <span>Original tag.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
+                  </label>
+
+                  {% set name='rename-newtag%02d' % n %}
+                  <label class="required" id="{{ name }}">
+                    <span>New tag.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
+                  </label>
+
+                  {% set name='rename-header%02d' % n %}
+                  <label id="{{ name }}">
+                    <span>New display header.</span>
+                    <input name="{{ name }}" value="{{ profile.args[name] }}" />
                   </label>
 
                 </div>

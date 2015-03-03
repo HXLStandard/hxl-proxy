@@ -24,8 +24,9 @@ from hxl.filters.clean import HXLCleanFilter
 from hxl.filters.count import HXLCountFilter
 from hxl.filters.cut import HXLCutFilter
 from hxl.filters.merge import HXLMergeFilter
-from hxl.filters.sort import HXLSortFilter
+from hxl.filters.rename import HXLRenameFilter
 from hxl.filters.select import HXLSelectFilter, parse_query
+from hxl.filters.sort import HXLSortFilter
 from hxl.filters.validate import HXLValidateFilter
 
 #@app.errorhandler(Exception)
@@ -160,6 +161,11 @@ def filter(key=None, format="html"):
             url = profile.args.get('merge-url%02d' % n)
             merge_source = HXLReader(URLInput(munge_url(url)))
             source = HXLMergeFilter(source, merge_source, keys, tags, before)
+        elif filter == 'rename':
+            oldtag = fix_tag(profile.args.get('rename-oldtag%02d' % n))
+            newtag = fix_tag(profile.args.get('rename-newtag%02d' % n))
+            header = profile.args.get('rename-header%02d' % n)
+            source = HXLRenameFilter(source, {oldtag: [newtag, header]})
         elif filter == 'select':
             queries = []
             for m in range(1, 6):
