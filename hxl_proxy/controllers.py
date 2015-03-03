@@ -16,7 +16,7 @@ from flask import Response, request, render_template, stream_with_context, redir
 from hxl_proxy import app, stream_template, munge_url
 from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
 
-from hxl.io import HXLReader, genHXL, genJSON
+from hxl.io import URLInput, HXLReader, genHXL, genJSON
 from hxl.schema import readHXLSchema
 from hxl.filters import parse_tags, fix_tag
 from hxl.filters.clean import HXLCleanFilter
@@ -95,10 +95,10 @@ def validate():
     show_all = (request.args.get('show_all') == 'on')
     source = None
     if url:
-        source = HXLReader(urlopen(munge_url(url)))
+        source = HXLReader(URLInput(munge_url(url)))
         schema_source = None
         if schema_url:
-            schema = readHXLSchema(HXLReader(urlopen(munge_url(schema_url))))
+            schema = readHXLSchema(HXLReader(URLInput(munge_url(schema_url))))
         else:
             schema = readHXLSchema()
         source = HXLValidateFilter(source=source, schema=schema, show_all=show_all)
@@ -123,8 +123,7 @@ def filter(key=None, format="html"):
 
     name = profile.args.get('name', 'Filtered HXL dataset')
     url = profile.args.get('url')
-    input = urlopen(munge_url(url))
-    source = HXLReader(input)
+    source = HXLReader(URLInput(munge_url(url)))
     filter_count = int(profile.args.get('filter_count', 5))
     for n in range(1,filter_count+1):
         filter = profile.args.get('filter%02d' % n)
@@ -152,7 +151,7 @@ def filter(key=None, format="html"):
             keys = parse_tags(profile.args.get('merge-keys%02d' % n, []))
             before = (profile.args.get('merge-before%02d' % n) == 'on')
             url = profile.args.get('merge-url%02d' % n)
-            merge_source = HXLReader(urlopen(munge_url(url)))
+            merge_source = HXLReader(URLInput(munge_url(url)))
             source = HXLMergeFilter(source, merge_source, keys, tags, before)
         elif filter == 'select':
             queries = []
