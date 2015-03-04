@@ -25,7 +25,7 @@ from hxl.filters.count import HXLCountFilter
 from hxl.filters.cut import HXLCutFilter
 from hxl.filters.merge import HXLMergeFilter
 from hxl.filters.rename import HXLRenameFilter
-from hxl.filters.select import HXLSelectFilter, parse_query
+from hxl.filters.select import HXLSelectFilter, Query
 from hxl.filters.sort import HXLSortFilter
 from hxl.filters.validate import HXLValidateFilter
 
@@ -171,7 +171,7 @@ def filter(key=None, format="html"):
             for m in range(1, 6):
                 query = profile.args.get('select-query%02d-%02d' % (n, m))
                 if query:
-                    queries.append(parse_query(query))
+                    queries.append(Query.parse(query))
             reverse = (profile.args.get('select-reverse%02d' % n) == 'on')
             source = HXLSelectFilter(source, queries=queries, reverse=reverse)
         elif filter == 'sort':
