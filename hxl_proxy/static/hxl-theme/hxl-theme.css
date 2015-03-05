@@ -39,6 +39,14 @@ main {
     width: 100%;
 }
 
+.theme-form table {
+    width: 100%;
+}
+
+.theme-form td {
+    padding: .5ex;
+}
+
 .map-popup th, .map-popup td {
     padding: .5em;
     vertical-align: text-top;

@@ -27,6 +27,7 @@ from hxl.filters.merge import MergeFilter
 from hxl.filters.rename import RenameFilter
 from hxl.filters.select import SelectFilter, Query
 from hxl.filters.sort import SortFilter
+from hxl.filters.tag import Tagger
 from hxl.filters.validate import ValidateFilter
 
 #@app.errorhandler(Exception)
@@ -125,7 +126,20 @@ def filter(key=None, format="html"):
 
     name = profile.args.get('name', 'Filtered HXL dataset')
     url = profile.args.get('url')
-    source = HXLReader(URLInput(munge_url(url)))
+    input = URLInput(munge_url(url))
+
+    # Intercept tagging as a special data input
+    if profile.args.get('filter01') == 'tag':
+        specs = []
+        for n in range(1, 11):
+            header = profile.args.get('tag-%02d-header' % n)
+            tag = profile.args.get('tag-%02d-tag' % n)
+            if header and tag:
+                specs.append((header, tag))
+        if len(specs) > 0:
+            input = Tagger(input, specs)
+
+    source = HXLReader(input)
     filter_count = int(profile.args.get('filter_count', 5))
     for n in range(1,filter_count+1):
         filter = profile.args.get('filter%02d' % n)
@@ -179,6 +193,7 @@ def filter(key=None, format="html"):
             reverse = (profile.args.get('sort-reverse%02d' % n) == 'on')
             source = SortFilter(source, tags=tags, reverse=reverse)
 
+    print(source.tags)
     if format == 'json':
         response = Response(genJSON(source), mimetype='application/json')
         response.headers['Access-Control-Allow-Origin'] = '*'
