@@ -16,18 +16,18 @@ from flask import Response, request, render_template, stream_with_context, redir
 from hxl_proxy import app, stream_template, munge_url
 from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
 
+from hxl.model import TagPattern
 from hxl.io import URLInput, HXLReader, genHXL, genJSON
-from hxl.schema import readHXLSchema
-from hxl.filters import parse_tags, fix_tag
-from hxl.filters.add import HXLAddFilter
-from hxl.filters.clean import HXLCleanFilter
-from hxl.filters.count import HXLCountFilter
-from hxl.filters.cut import HXLCutFilter
-from hxl.filters.merge import HXLMergeFilter
-from hxl.filters.rename import HXLRenameFilter
-from hxl.filters.select import HXLSelectFilter, Query
-from hxl.filters.sort import HXLSortFilter
-from hxl.filters.validate import HXLValidateFilter
+from hxl.schema import readSchema
+from hxl.filters.add import AddFilter
+from hxl.filters.clean import CleanFilter
+from hxl.filters.count import CountFilter
+from hxl.filters.cut import CutFilter
+from hxl.filters.merge import MergeFilter
+from hxl.filters.rename import RenameFilter
+from hxl.filters.select import SelectFilter, Query
+from hxl.filters.sort import SortFilter
+from hxl.filters.validate import ValidateFilter
 
 #@app.errorhandler(Exception)
 def error(e):
@@ -100,10 +100,10 @@ def validate():
         source = HXLReader(URLInput(munge_url(url)))
         schema_source = None
         if schema_url:
-            schema = readHXLSchema(HXLReader(URLInput(munge_url(schema_url))))
+            schema = readSchema(HXLReader(URLInput(munge_url(schema_url))))
         else:
-            schema = readHXLSchema()
-        source = HXLValidateFilter(source=source, schema=schema, show_all=show_all)
+            schema = readSchema()
+        source = ValidateFilter(source=source, schema=schema, show_all=show_all)
         
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
@@ -130,42 +130,42 @@ def filter(key=None, format="html"):
     for n in range(1,filter_count+1):
         filter = profile.args.get('filter%02d' % n)
         if filter == 'add':
-            tag = fix_tag(profile.args.get('add-tag%02d' % n))
+            tag = TagPattern.parse(profile.args.get('add-tag%02d' % n))
             value = profile.args.get('add-value%02d' % n)
             header = profile.args.get('add-header%02d' % n)
             before = (profile.args.get('add-before%02d' % n) == 'on')
-            source = HXLAddFilter(source, {tag: [value, header]}, before)
+            source = AddFilter(source, {tag: [value, header]}, before)
         elif filter == 'clean':
-            whitespace_tags = parse_tags(profile.args.get('clean-whitespace-tags%02d' % n, ''))
-            upper_tags = parse_tags(profile.args.get('clean-upper-tags%02d' % n, ''))
-            lower_tags = parse_tags(profile.args.get('clean-lower-tags%02d' % n, ''))
-            date_tags = parse_tags(profile.args.get('clean-date-tags%02d' % n, ''))
-            number_tags = parse_tags(profile.args.get('clean-number-tags%02d' % n, ''))
-            source = HXLCleanFilter(source, whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+            whitespace_tags = TagPattern.parse_list(profile.args.get('clean-whitespace-tags%02d' % n, ''))
+            upper_tags = TagPattern.parse_list(profile.args.get('clean-upper-tags%02d' % n, ''))
+            lower_tags = TagPattern.parse_list(profile.args.get('clean-lower-tags%02d' % n, ''))
+            date_tags = TagPattern.parse_list(profile.args.get('clean-date-tags%02d' % n, ''))
+            number_tags = TagPattern.parse_list(profile.args.get('clean-number-tags%02d' % n, ''))
+            source = CleanFilter(source, whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
         elif filter == 'count':
-            tags = parse_tags(profile.args.get('count-tags%02d' % n, ''))
+            tags = TagPattern.parse_list(profile.args.get('count-tags%02d' % n, ''))
             aggregate_tag = profile.args.get('count-aggregate-tag%02d' % n)
             if aggregate_tag:
-                aggregate_tag = fix_tag(aggregate_tag)
+                aggregate_tag = TagPattern.parse(aggregate_tag)
             else:
                 aggregate_tag = None
-            source = HXLCountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
+            source = CountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
         elif filter == 'cut':
-            include_tags = parse_tags(profile.args.get('cut-include-tags%02d' % n, []))
-            exclude_tags = parse_tags(profile.args.get('cut-exclude-tags%02d' % n, []))
-            source = HXLCutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
+            include_tags = TagPattern.parse_list(profile.args.get('cut-include-tags%02d' % n, []))
+            exclude_tags = TagPattern.parse_list(profile.args.get('cut-exclude-tags%02d' % n, []))
+            source = CutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
         elif filter == 'merge':
-            tags = parse_tags(profile.args.get('merge-tags%02d' % n, []))
-            keys = parse_tags(profile.args.get('merge-keys%02d' % n, []))
+            tags = TagPattern.parse_list(profile.args.get('merge-tags%02d' % n, []))
+            keys = TagPattern.parse_list(profile.args.get('merge-keys%02d' % n, []))
             before = (profile.args.get('merge-before%02d' % n) == 'on')
             url = profile.args.get('merge-url%02d' % n)
             merge_source = HXLReader(URLInput(munge_url(url)))
-            source = HXLMergeFilter(source, merge_source, keys, tags, before)
+            source = MergeFilter(source, merge_source, keys, tags, before)
         elif filter == 'rename':
-            oldtag = fix_tag(profile.args.get('rename-oldtag%02d' % n))
-            newtag = fix_tag(profile.args.get('rename-newtag%02d' % n))
+            oldtag = TagPattern.parse(profile.args.get('rename-oldtag%02d' % n))
+            newtag = TagPattern.parse(profile.args.get('rename-newtag%02d' % n))
             header = profile.args.get('rename-header%02d' % n)
-            source = HXLRenameFilter(source, {oldtag: [newtag, header]})
+            source = RenameFilter(source, {oldtag: [newtag, header]})
         elif filter == 'select':
             queries = []
             for m in range(1, 6):
@@ -173,11 +173,11 @@ def filter(key=None, format="html"):
                 if query:
                     queries.append(Query.parse(query))
             reverse = (profile.args.get('select-reverse%02d' % n) == 'on')
-            source = HXLSelectFilter(source, queries=queries, reverse=reverse)
+            source = SelectFilter(source, queries=queries, reverse=reverse)
         elif filter == 'sort':
-            tags = parse_tags(profile.args.get('sort-tags%02d' % n, ''))
+            tags = TagPattern.parse_list(profile.args.get('sort-tags%02d' % n, ''))
             reverse = (profile.args.get('sort-reverse%02d' % n) == 'on')
-            source = HXLSortFilter(source, tags=tags, reverse=reverse)
+            source = SortFilter(source, tags=tags, reverse=reverse)
 
     if format == 'json':
         response = Response(genJSON(source), mimetype='application/json')
@@ -195,15 +195,15 @@ def chart(key):
     profile = get_profile(key)
     tag = request.args.get('tag')
     if tag:
-            tag = fix_tag(tag);
+            tag = TagPattern.parse(tag);
     label = request.args.get('label')
     if label:
-            label = fix_tag(label);
+            label = TagPattern.parse(label);
     type = request.args.get('type', 'pie')
     return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
 def map(key):
     profile = get_profile(key)
-    layer_tag = fix_tag(request.args.get('layer', 'adm1'))
+    layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
