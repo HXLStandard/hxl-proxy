@@ -107,7 +107,7 @@
                   <select name="{{ name }}">
                     <option value="">(none)</option>
                     {% if n == 1 %}
-                    <option value="tag"{% if profile.args[name]=='tag' %} selected="selected"{% endif %}>Tag non-HXL</option>
+                    <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
                     {% endif %}
                     <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add</option>
                     <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
@@ -120,7 +120,7 @@
                   </select>
                 </label>
 
-                <div class="fields-tag hideable">
+                <div class="fields-tagger hideable">
                   <p class="doc">If your source data does not already include HXL hashtags, you can use this filter to add up to 10 tags. It's not necessary to include the whole header string.</p>
                   <table>
                     <thead>
@@ -137,7 +137,7 @@
                     </thead>
                     <tbody>
                       {% for i in range(1,11) %}
-                      {% set name='tag-%02d' % i %}
+                      {% set name='tagger-%02d' % i %}
                       <tr>
                         <td>{{ i }}</td>
                         <td><input name="{{ name + '-header' }}" value="{{ profile.args[name + '-header'] }}" /></td>

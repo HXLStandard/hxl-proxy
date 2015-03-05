@@ -129,11 +129,11 @@ def filter(key=None, format="html"):
     input = URLInput(munge_url(url))
 
     # Intercept tagging as a special data input
-    if profile.args.get('filter01') == 'tag':
+    if profile.args.get('filter01') == 'tagger':
         specs = []
         for n in range(1, 11):
-            header = profile.args.get('tag-%02d-header' % n)
-            tag = profile.args.get('tag-%02d-tag' % n)
+            header = profile.args.get('tagger-%02d-header' % n)
+            tag = profile.args.get('tagger-%02d-tag' % n)
             if header and tag:
                 specs.append((header, tag))
         if len(specs) > 0:
@@ -193,7 +193,6 @@ def filter(key=None, format="html"):
             reverse = (profile.args.get('sort-reverse%02d' % n) == 'on')
             source = SortFilter(source, tags=tags, reverse=reverse)
 
-    print(source.tags)
     if format == 'json':
         response = Response(genJSON(source), mimetype='application/json')
         response.headers['Access-Control-Allow-Origin'] = '*'
