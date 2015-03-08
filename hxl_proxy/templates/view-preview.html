@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'snippits.html' import datamenu %}
+{% from 'snippits.html' import datamenu, hxltable %}
 
 {% block title %}{{ title|default('Filtered HXL data') }}{% endblock %}
 
@@ -36,31 +36,7 @@
     {% else %}
     <h1>New filter preview</h2>
     {% endif %}
-    <table class="datatable">
-      <thead>
-        {% if source.hasHeaders %}
-        <tr class="hxl-headers">
-          {% for header in source.headers %}
-          <th>{{ unicode(header) }}</th>
-          {% endfor %}
-        </tr>
-        {% endif %}
-        <tr class="hxl-tags">
-          {% for tag in source.displayTags %}
-          <th>{{ unicode(tag) }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in source %}
-        <tr>
-          {% for value in row.values %}
-          <td>{{ unicode(value) }}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    {{ hxltable(source) }}
     {% if key %}
     <div class="modal fade" id="editDialog" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
