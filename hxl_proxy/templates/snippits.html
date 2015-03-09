@@ -23,7 +23,7 @@
     {% if source %}
     <table class="table">
       <thead>
-        {% if source.hasHeaders %}
+        {% if show_headers and source.hasHeaders %}
         <tr class="hxl-headers">
           {% for header in source.headers %}
           <th>{{ unicode(header) }}</th>

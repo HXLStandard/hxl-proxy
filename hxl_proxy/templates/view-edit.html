@@ -70,6 +70,13 @@
             </div>
           </div>
 
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+              Strip text headers before hashtags.
+            </label>
+          </div>
+
           {% if key %}
           <input type="hidden" name="key" value="{{ key }}" />
 
@@ -88,9 +95,11 @@
             <textarea name="description">{{ profile.description|default('') }}</textarea>
           </div>
 
-          <div class="form-group">
-            <input class="form-control" name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
-            <label for="cloneable">Cloning allowed (will expose original URL)</label>
+          <div class="checkbox">
+            <label>
+              <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
+              Cloning allowed (will expose original URL)
+            </label>
           </div>
 
           <div class="form-group">
@@ -188,9 +197,11 @@
                       </div>
 
                       {% set name='add-before%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <input class="form-control" type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                        <label for="{{ name }}">Add new column to front</label>
+                      <div id="{{ name }}" class="checkbox">
+                        <label>
+                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                          Add new column to front
+                        </label>
                       </div>
 
                     </div>
@@ -286,9 +297,11 @@
                       </div>
 
                       {% set name='merge-before%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <input class="form-control" type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                        <label for="{{ name }}">Add merge columns to front</label>
+                      <div id="{{ name }}" class="checkbox">
+                        <label>
+                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                          Add merge columns to front
+                        </label>
                       </div>
 
                     </div>
@@ -329,9 +342,11 @@
                       </div>
 
                       {% set name='select-reverse%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <input class="form-control" type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                        <label for="{{ name }}">Invert query (all rows that <i>don't</i> match it)</label>
+                      <div id="{{ name }}" class="checkbox">
+                        <label>
+                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                          Invert query (all rows that <i>don't</i> match it)
+                        </label>
                       </div>
 
                     </div>
@@ -346,9 +361,11 @@
                       </div>
                       
                       {% set name='sort-reverse%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <input class="form-control" type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                        <label for="{{ name }}">Reverse order</label>
+                      <div id="{{ name }}" class="checkbox">
+                        <label>
+                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                          Reverse order
+                        </label>
                       </div>
 
                     </div>

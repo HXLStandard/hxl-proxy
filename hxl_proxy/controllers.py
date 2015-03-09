@@ -123,14 +123,16 @@ def filter(key=None, format="html"):
 
     source = setup_filters(profile)
 
+    show_headers = (profile.args.get('strip-headers') != 'on')
+
     if format == 'json':
-        response = Response(genJSON(source), mimetype='application/json')
+        response = Response(genJSON(source, showHeaders=show_headers), mimetype='application/json')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key)
+        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers)
     else:
-        response = Response(genHXL(source), mimetype='text/csv')
+        response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
