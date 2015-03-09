@@ -45,7 +45,10 @@ def edit_filter(key=None):
     source = None
     if profile.args.get('url'):
         source = setup_filters(profile)
-    return render_template('view-edit.html', key=key, profile=profile, source=source)
+
+    show_headers = (profile.args.get('strip-headers') != 'on')
+
+    return render_template('view-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
 
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
