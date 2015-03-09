@@ -36,7 +36,7 @@
 
 {% set filter_count = 7 %}
 {% block main %}
-    <main class="span8">
+    <main>
       <h1>{{ title }}</h1>
 
       {% if key %}
@@ -44,7 +44,7 @@
       {% set action="/actions/save-filter" %}
       {% else %}
       {% set method="GET" %}
-      {% set action="/filters/preview" %}
+      {% set action="/filters/new" %}
       {% endif %}
       <form class="form" action="{{ action }}" method="{{ method }}" id="filter-form">
 
@@ -91,9 +91,11 @@
         </fieldset>
         {% endif %}
 
+        <div class="row-fluid">
+        <fieldset class="col-md-2 btn-group btn-group-vertical">
         {% for n in range(1, filter_count+1) %}
         <div class="filter">
-          <a class="btn filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a>
+          <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a>
           <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -339,16 +341,24 @@
 
                   </fieldset>
 
-                  <button class="btn btn-success" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">Done</span></button>
+                  <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Done</span></button>
                 </div>
               </div>
             </div>
           </div>
         </div>
         {% endfor %}
+        </fieldset>
+        <div class="col-md-10">
+          {{ hxltable(source) }}
+        </div>
+      </div>
+
+      <div class="row-fluid">
 
         <input type="hidden" name="format" value="html" />
         <button class="btn btn-success" type="submit">Go!</button>
+      </div>
       </form>
     </main>
 
