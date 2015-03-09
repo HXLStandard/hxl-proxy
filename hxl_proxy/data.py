@@ -88,4 +88,4 @@ def setup_filters(profile):
             reverse = (profile.args.get('sort-reverse%02d' % n) == 'on')
             source = SortFilter(source, tags=tags, reverse=reverse)
 
-        return source
+    return source
