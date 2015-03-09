@@ -2,7 +2,7 @@
 
 from hxl_proxy import munge_url
 
-from hxl.model import TagPattern
+from hxl.model import TagPattern, Column
 from hxl.io import URLInput, HXLReader
 
 from hxl.filters.add import AddFilter
@@ -39,11 +39,12 @@ def setup_filters(profile):
     for n in range(1,filter_count+1):
         filter = profile.args.get('filter%02d' % n)
         if filter == 'add':
-            tag = TagPattern.parse(profile.args.get('add-tag%02d' % n))
-            value = profile.args.get('add-value%02d' % n)
+            tag = profile.args.get('add-tag%02d' % n)
             header = profile.args.get('add-header%02d' % n)
+            value = profile.args.get('add-value%02d' % n)
             before = (profile.args.get('add-before%02d' % n) == 'on')
-            source = AddFilter(source, {tag: [value, header]}, before)
+            values = [(Column(tag=tag, header=header), value)]
+            source = AddFilter(source, values=values, before=before)
         elif filter == 'clean':
             whitespace_tags = TagPattern.parse_list(profile.args.get('clean-whitespace-tags%02d' % n, ''))
             upper_tags = TagPattern.parse_list(profile.args.get('clean-upper-tags%02d' % n, ''))
