@@ -21,6 +21,8 @@
                 {% endif %}
               </ul>
             </li>
+{% else %}
+            <li><a data-toggle="modal" data-target="#saveDialog" href="#saveDialog">Save</a></li>
 {% endif %}
 {% endblock %}
 
@@ -92,7 +94,7 @@
 
           <div class="form-group">
             <label for="description">Filter description</label>
-            <textarea name="description">{{ profile.description|default('') }}</textarea>
+            <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
           </div>
 
           <div class="checkbox">
@@ -119,7 +121,7 @@
         <fieldset class="col-md-2 btn-group btn-group-vertical">
         {% for n in range(1, filter_count+1) %}
         <div class="filter">
-          <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">Filter #{{ n }}</a>
+          <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">{{ n }}</a>
           <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -388,6 +390,53 @@
       </form>
     </main>
 
+    <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Save this filter</h2>
+          </div>
+          <div class="modal-body">
+            <p>Save this filter and generate a short permalink. You
+            can edit the filter in the future using the password that
+            you enter below.</p>
+            <form class="form" method="POST" action="/actions/save-filter">
+              {% for name in profile.args %}
+              {% if profile.args[name] %}
+              <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
+              {% endif %}
+              {% endfor %}
+              <div class="form-group required">
+                <label for="name">Filter name</label>
+                <input name="name" required="required" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="description">Short description</label>
+                <textarea name="description" class="form-control">
+                </textarea>
+              </div>
+              <div class="form-group required">
+                <label for="password">Editing password</label>
+                <input name="password" type="password" required="required" class="form-control" />
+              </div>
+              <div class="form-group required">
+                <label for="password-repeat">Editing password (repeat)</label>
+                <input name="password-repeat" type="password" required="required" class="form-control" />
+              </div>
+              <div class="checkbox form-group">
+                <label>
+                  <input name="cloneable" type="checkbox" />
+                  Users may clone (will expose original URL)
+                </label>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-success">Save this filter</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}

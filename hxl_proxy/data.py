@@ -14,7 +14,6 @@ from hxl.filters.rename import RenameFilter
 from hxl.filters.select import SelectFilter, Query
 from hxl.filters.sort import SortFilter
 from hxl.filters.tag import Tagger
-from hxl.filters.validate import ValidateFilter
 
 def setup_filters(profile):
     """Create a filter pipeline based on a profile."""

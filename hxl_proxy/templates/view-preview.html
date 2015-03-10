@@ -45,12 +45,12 @@
             <h2 class="modal-title">Edit filter</h2>
           </div>
           <div class="modal-body">
-            <p>You need a password to edit this filter.{% if profile.cloneable %} You can also use the "Clone" option to create your own copy.{% endif %}</p>
+            <p><small>You need a password to edit this filter.{% if profile.cloneable %} You can also use the "Clone" option to create your own copy.{% endif %}</small></p>
             <form class="theme-form" method="POST" action="/data/{{ key }}/edit">
-              <label class="required">
-                <span>Password</span>
-                <input name="password" type="password" required="required" />
-              </label>
+              <div class="required form-group">
+                <label for="password">Password</label>
+                <input name="password" type="password" required="required" class="form-control" />
+              </div>
               <button type="submit">Edit this filter</button>
             </form>
           </div>

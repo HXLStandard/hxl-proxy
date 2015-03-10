@@ -21,6 +21,8 @@ from hxl.model import TagPattern
 from hxl.io import URLInput, HXLReader, genHXL, genJSON
 from hxl.schema import readSchema
 
+from hxl.filters.validate import ValidateFilter
+
 #@app.errorhandler(Exception)
 def error(e):
     if app.config.get('DEBUG'):

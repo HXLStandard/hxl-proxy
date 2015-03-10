@@ -68,3 +68,9 @@
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
     <meta name="theme-color" content="#ffffff" />
 {% endmacro %}
+
+{% macro hidden_fields(args) %}
+{% for name in args %}
+<input type="hidden" name="{{ name }}" value="{{ args[name] }}" />
+{% endfor %}
+{% endmacro %}

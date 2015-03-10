@@ -1,59 +1,15 @@
-main {
-    padding: 2ex;
+.btn-group-vertical .btn {
+    width: 10em;
 }
 
-.theme-form label {
-    display: block;
-    font-weight: normal;
-    margin-bottom: 2ex;
-}
-
-.theme-form button {
-    margin-top: 2ex;
-}
-
-.theme-form label>span {
-    display: block;
-    font-size: 83.333333%;
-}
-
-.theme-form label.required>span {
-    font-weight: bold;
-}
-
-.theme-form label.required>span:before {
+.required label:before {
     content: "* ";
 }
 
-.theme-form label>input {
-    width: 100%;
+.panel-title a.collapsed:before {
+    content: "+ ";
 }
 
-.theme-form label>input[type="checkbox"] {
-    float: left;
-    width: auto;
-    margin-right: .5em;
+.panel-title a:before {
+    content: "-";
 }
-
-.theme-form label>textarea {
-    width: 100%;
-}
-
-.theme-form table {
-    width: 100%;
-}
-
-.theme-form td {
-    padding: .5ex;
-}
-
-.map-popup th, .map-popup td {
-    padding: .5em;
-    vertical-align: text-top;
-}
-
-.map-popup th:after {
-    content: ":";
-}
-
-

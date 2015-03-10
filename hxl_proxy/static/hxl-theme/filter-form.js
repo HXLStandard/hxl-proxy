@@ -6,7 +6,7 @@ var field_types = "input,select";
 function setup_fieldset(node, index) {
     filter_name = $(node).find(".field_filter select").val();
     filter_class = ".fields-" + filter_name;
-    filter_title = "Filter #" + (index + 1) + ": " + (filter_name ? filter_name : '(not set)');
+    filter_title = "" + (index + 1) + ": " + (filter_name ? filter_name : '(not set)');
     $(node).find(".modal-title").text(filter_title);
 
     var filter_button = $(node).find(".filter-button");

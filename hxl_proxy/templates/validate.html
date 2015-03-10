@@ -1,10 +1,10 @@
+
 {% extends "page.basic.html" %}
-{% from 'snippits.html' import managemenu, datamenu %}
+{% from 'snippits.html' import datamenu, hxltable %}
 
 {% set nav_validate='active' %}
 
 {% block menu %}
-{{ managemenu(key, active_manage='active', active_validate='active') }}
 {% if key %}
 {{ datamenu(key) }}
 {% endif %}
@@ -13,59 +13,53 @@
 {% block title %}{{ title|default('HXL validation') }}{% endblock %}
 
 {% block main %}
-    <h1>{{ title|default('HXL validation') }}</h1>
+    <main class="container-fluid">
+      <h1>{{ title|default('HXL validation') }}</h1>
 
-    <form class="theme-form" action="">
-      <label>
-        <span>* HXL dataset URL</span>
-        <input name="url" type="url" required="required" value="{{ url or '' }}" />
-      </label>
-      <label>
-        <span>Schema URL</span>
-        <input name="schema_url" type="url" value="{{ schema_url or '' }}" />
-      </label>
-      <label>
-        {% if show_all %}
-        <input type="checkbox" name="show_all" checked="checked" />
-        {% else %}
-        <input type="checkbox" name="show_all" />
-        {% endif %}
-        <span>Show all rows</span>
-      </label>
-      <button type="submit">Validate</button>
-    </form>
+      <section class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <a class="{% if url %}collapsed{% endif %}" data-toggle="collapse" href="#configuration">
+              Configuration
+            </a>
+          </h2>
+        </div>
+        <div class="collapse{% if not url %} in{% endif %}" id="configuration">
+          <div class="panel-body">
+            <form class="form" action="">
 
-    {% if source %}
-    <section id="dataset">
-      <h2>Validation</h2>
+              <div class="form-group required">
+                <label class="control-label">HXL dataset URL</label>
+                <div class="input-group">
+                  <input class="form-control" name="url" type="url" required="required" value="{{ url or '' }}"
+                         placeholder="http://example.org/my-hxl-data.csv" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit">Validate</button>
+                  </span>
+                </div>
+              </div>
 
-      <table>
-        <thead>
-          {% if source.hasHeaders %}
-          <tr class="hxl-headers">
-            {% for header in source.headers %}
-            <th>{{ unicode(header) }}</th>
-            {% endfor %}
-          </tr>
-          {% endif %}
-          <tr class="hxl-tags">
-            {% for tag in source.tags %}
-            <th>{{ unicode(tag) }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in source %}
-          <tr class="{{ 'invalid' if row.get('#x_errors') }}" title="{{ row.get('#x_tags') + ' (row ' + row.get('#x_rows') + '): ' + row.get('#x_errors') if row.get('#x_errors') }}">
-            {% for value in row.values %}
-            <td>{{ unicode(value) }}</td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+              <div class="form-group">
+                <label for="schema_url">Schema URL</label>
+                <input name="schema_url" type="url" value="{{ schema_url or '' }}" class="form-control"
+                       placeholder="http://example.org/my-hxl-schema.csv" />
+              </div>
 
-    </section>
-    {% endif %}
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="show_all"{% if show_all %} checked="checked"{% endif %}/>
+                  Show all rows
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
 
+      {% if source %}
+      <section id="dataset">
+        {{ hxltable(source) }}
+      </section>
+      {% endif %}
+    </main>
 {% endblock %}
