@@ -13,3 +13,13 @@
 .panel-title a:before {
     content: "-";
 }
+
+.table-container {
+    overflow-x: auto;
+}
+
+td>.content {
+    display: block;
+    max-height: 10ex;
+    overflow-y: auto;
+}

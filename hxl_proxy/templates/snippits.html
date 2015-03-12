@@ -21,6 +21,7 @@
 
 {% macro hxltable(source, show_headers=True) %}
     {% if source %}
+    <div class="table-container">
     <table class="table">
       <thead>
         {% if show_headers and source.hasHeaders %}
@@ -40,12 +41,13 @@
         {% for row in source %}
         <tr>
           {% for value in row.values %}
-          <td>{{ unicode(value) }}</td>
+          <td><span class="content">{{ unicode(value) }}</span></td>
           {% endfor %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    </div>
     {% endif %}
 {% endmacro %}
 
