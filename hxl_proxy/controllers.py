@@ -7,11 +7,10 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-from urllib2 import urlopen
 import sys
 import copy
 
-from flask import Response, request, render_template, stream_with_context, redirect
+from flask import Response, request, render_template, stream_with_context, redirect, abort
 
 from hxl_proxy import app, stream_template, munge_url
 from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
@@ -120,6 +119,8 @@ def filter(key=None, format="html"):
     if key:
         # look up a saved filter
         profile = get_profile(str(key))
+        if not profile:
+            abort(404)
     else:
         # use GET parameters
         profile = make_profile(request.args)
