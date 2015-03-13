@@ -43,7 +43,7 @@ def get_profile(key):
     """
     dict = shelve.open(app.config['PROFILE_FILE'])
     try:
-        if key in dict:
+        if str(key) in dict:
             return copy.copy(dict[key])
         else:
             return None
