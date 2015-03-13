@@ -15,6 +15,7 @@ if sys.version_info < (3, 3):
 else:
     from unittest.mock import patch
 
+from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
 
@@ -107,4 +108,19 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertTrue(filter.overwrite)
         #self.assertEquals(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
 
+    def test_add_rename_filter(self):
+        args = {
+            'rename-oldtag08': 'loc-sensitive',
+            'rename-newtag08': 'adm1',
+            'rename-header08': 'Provincia'
+        }
+        filter = add_rename_filter(self.source, args, 8)
+        self.assertEqual('RenameFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        for key in filter.rename:
+            # assuming just one key ...
+            self.assertEqual('#loc-sensitive', str(key))
+            self.assertEqual('#adm1', str(filter.rename[key][0]))
+            self.assertEqual('Provincia', filter.rename[key][1])
+            
 # end
