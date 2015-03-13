@@ -24,7 +24,7 @@ class Profile(object):
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
         if password:
-            self.passhash = hashlib.md5(password).digest()
+            self.passhash = _make_md5(password)
         else:
             self.passhash = None
 
@@ -33,7 +33,7 @@ class Profile(object):
         # if none is set, also succeeds
         if not hasattr(self, 'passhash') or self.passhash is None:
             return True
-        return (self.passhash == hashlib.md5(password).digest())
+        return (self.passhash == _make_md5(password))
 
 def get_profile(key):
     """
@@ -41,7 +41,6 @@ def get_profile(key):
     @param key the string key for the profile.  
     @return the profile as an associative array.
     """
-    key = str(key)
     dict = shelve.open(app.config['PROFILE_FILE'])
     try:
         if key in dict:
@@ -86,7 +85,12 @@ def _gen_key():
     """
     Generate a pseudo-random, 6-character hash for use as a key.
     """
-    hash = base64.urlsafe_b64encode(hashlib.md5(str(time.time() * random.random())).digest())
-    return hash[:6]
+    salt = str(time.time() * random.random())
+    encoded_hash = base64.urlsafe_b64encode(_make_md5(salt))
+    return encoded_hash[:6]
+
+def _make_md5(s):
+    """Return an MD5 hash for a string."""
+    return hashlib.md5(s.encode('utf-8')).digest()
 
 # end

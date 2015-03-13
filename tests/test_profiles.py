@@ -7,10 +7,15 @@ License: Public Domain
 """
 
 import unittest
+import sys
 import os
 import tempfile
 
-from mock import MagicMock
+if sys.version_info < (3, 3):
+    from mock import MagicMock
+else:
+    from unittest.mock import MagicMock
+
 from hxl_proxy.profiles import Profile, get_profile, add_profile, update_profile
 
 ARGS = {
