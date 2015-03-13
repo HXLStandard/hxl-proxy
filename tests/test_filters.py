@@ -10,12 +10,6 @@ import unittest
 import sys
 
 from hxl.io import ArrayInput, HXLReader
-
-if sys.version_info < (3, 3):
-    from mock import MagicMock
-else:
-    from unittest.mock import MagicMock
-
 from hxl_proxy.filters import *
 
 DATA = [
