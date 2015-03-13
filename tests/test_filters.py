@@ -26,6 +26,9 @@ DATA = [
     ['Org C', 'Protection', 'Country A']
 ]
 
+# TODO test setup_filters
+
+# TODO test make_input
 
 class TestPipelineFunctions(unittest.TestCase):
 
@@ -79,6 +82,7 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual('#targeted_num+f', str(filter.aggregate_tag))
     
     def test_add_cut_filter(self):
+        """Test constructing a hxl.filters.CutFilter from HTTP parameters."""
         args = {
             'cut-include-tags01': 'org,adm1,adm2+pcode',
             'cut-exclude-tags01': 'email+external,name-ngo'
@@ -91,6 +95,7 @@ class TestPipelineFunctions(unittest.TestCase):
 
     @patch('urllib.urlopen')
     def test_add_merge_filter(self, urlopen_mock):
+        """Test constructing a hxl.filters.MergeFilter from HTTP parameters."""
         urlopen_mock.return_value = 'x'
         args = {
             'merge-keys11': 'adm2_id+pcode',
@@ -109,6 +114,7 @@ class TestPipelineFunctions(unittest.TestCase):
         #self.assertEquals(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
 
     def test_add_rename_filter(self):
+        """Test constructing a hxl.filters.RenameFilter from HTTP parameters."""
         args = {
             'rename-oldtag08': 'loc-sensitive',
             'rename-newtag08': 'adm1',
@@ -118,9 +124,13 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual('RenameFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source)
         for key in filter.rename:
-            # assuming just one key ...
+            # XXX assuming just one key, or else this will break badly
             self.assertEqual('#loc-sensitive', str(key))
             self.assertEqual('#adm1', str(filter.rename[key][0]))
             self.assertEqual('Provincia', filter.rename[key][1])
-            
+
+    # TODO add_select_filter
+
+    # TODO add_sort_filter
+
 # end
