@@ -56,25 +56,22 @@ class TestPipelineFunctions(unittest.TestCase):
             'clean-number-tags07': 'aff_num+idp,targeted_num'
         }
         filter = add_clean_filter(self.source, args, 7)
-
         self.assertEqual('CleanFilter', filter.__class__.__name__)
+        self.assertEqual(['#adm1', '#sector-cluster'], [str(p) for p in filter.whitespace])
+        self.assertEqual(['#adm1_id', '#sector_id'], [str(p) for p in filter.upper])
+        self.assertEqual(['#org_id', '#agesex_id'], [str(p) for p in filter.lower])
+        self.assertEqual(['#from_date', '#to_date'], [str(p) for p in filter.date])
+        self.assertEqual(['#aff_num+idp', '#targeted_num'], [str(p) for p in filter.number])
 
-        self.assertEqual(2, len(filter.whitespace))
-        self.assertEqual('#adm1', str(filter.whitespace[0]))
-        self.assertEqual('#sector-cluster', str(filter.whitespace[1]))
+    def test_add_count_filter(self):
+        """Test constructing a hxl.filters.CountFilter from HTTP parameters."""
+        args = {
+            'count-tags03': 'country,adm1,adm2+ocha',
+            'count-aggregate-tag03': 'targeted_num+f'
+        }
+        filter = add_count_filter(self.source, args, 3)
+        self.assertEqual('CountFilter', filter.__class__.__name__)
+        self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.count_tags])
+        self.assertEqual('#targeted_num+f', str(filter.aggregate_tag))
 
-        self.assertEqual(2, len(filter.upper))
-        self.assertEqual('#adm1_id', str(filter.upper[0]))
-        self.assertEqual('#sector_id', str(filter.upper[1]))
-
-        self.assertEqual(2, len(filter.lower))
-        self.assertEqual('#org_id', str(filter.lower[0]))
-        self.assertEqual('#agesex_id', str(filter.lower[1]))
-
-        self.assertEqual(2, len(filter.date))
-        self.assertEqual('#from_date', str(filter.date[0]))
-        self.assertEqual('#to_date', str(filter.date[1]))
-
-        self.assertEqual(2, len(filter.number))
-        self.assertEqual('#aff_num+idp', str(filter.number[0]))
-        self.assertEqual('#targeted_num', str(filter.number[1]))
+# end
