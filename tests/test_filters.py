@@ -51,6 +51,7 @@ class TestPipelineFunctions(unittest.TestCase):
         }
         filter = add_clean_filter(self.source, args, 7)
         self.assertEqual('CleanFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
         self.assertEqual(['#adm1', '#sector-cluster'], [str(p) for p in filter.whitespace])
         self.assertEqual(['#adm1_id', '#sector_id'], [str(p) for p in filter.upper])
         self.assertEqual(['#org_id', '#agesex_id'], [str(p) for p in filter.lower])
@@ -65,7 +66,19 @@ class TestPipelineFunctions(unittest.TestCase):
         }
         filter = add_count_filter(self.source, args, 3)
         self.assertEqual('CountFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
         self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.count_tags])
         self.assertEqual('#targeted_num+f', str(filter.aggregate_tag))
+    
+    def test_add_cut_filter(self):
+        args = {
+            'cut-include-tags01': 'org,adm1,adm2+pcode',
+            'cut-exclude-tags01': 'email+external,name-ngo'
+        }
+        filter = add_cut_filter(self.source, args, 1)
+        self.assertEqual('CutFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
+        self.assertEqual(['#email+external', '#name-ngo'], [str(p) for p in filter.exclude_tags])
 
 # end
