@@ -35,9 +35,6 @@ class Profile(object):
             return True
         return (self.passhash == hashlib.md5(password).digest())
 
-def make_profile(args):
-    return Profile(args)
-
 def get_profile(key):
     """
     Get an existing profile.

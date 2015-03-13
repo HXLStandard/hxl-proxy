@@ -13,7 +13,7 @@ import copy
 from flask import Response, request, render_template, stream_with_context, redirect, abort
 
 from hxl_proxy import app, stream_template, munge_url
-from hxl_proxy.profiles import add_profile, update_profile, get_profile, make_profile
+from hxl_proxy.profiles import Profile, add_profile, update_profile, get_profile
 from hxl_proxy.data import setup_filters
 
 from hxl.model import TagPattern
@@ -42,7 +42,7 @@ def edit_filter(key=None):
         if not profile.check_password(password):
             raise Exception("Wrong password")
     else:
-        profile = make_profile(request.args)
+        profile = Profile(request.args)
     source = None
     if profile.args.get('url'):
         source = setup_filters(profile)
@@ -65,7 +65,7 @@ def save_filter():
         profile = get_profile(key)
         profile.args = request.form
     else:
-        profile = make_profile(request.form)
+        profile = Profile(request.form)
     profile.name = name
     profile.description = description
     profile.cloneable = cloneable
@@ -123,7 +123,7 @@ def filter(key=None, format="html"):
             abort(404)
     else:
         # use GET parameters
-        profile = make_profile(request.args)
+        profile = Profile(request.args)
 
     name = profile.args.get('name', 'Filtered HXL dataset')
 
