@@ -120,10 +120,11 @@ def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
     tags = TagPattern.parse_list(args.get('merge-tags%02d' % index, []))
     keys = TagPattern.parse_list(args.get('merge-keys%02d' % index, []))
-    before = (args.get('merge-before%02d' % index) == 'on')
+    replace = (args.get('merge-replace%02d' % index) == 'on')
+    overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
     merge_source = HXLReader(URLInput(munge_url(url)))
-    return MergeFilter(source, merge_source, keys, tags, before)
+    return MergeFilter(source, merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""

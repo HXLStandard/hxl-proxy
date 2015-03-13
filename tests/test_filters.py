@@ -8,6 +8,12 @@ License: Public Domain
 
 import unittest
 import sys
+import urllib # needed for @patch
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
@@ -18,6 +24,7 @@ DATA = [
     ['Org B', 'Health', 'Country B'],
     ['Org C', 'Protection', 'Country A']
 ]
+
 
 class TestPipelineFunctions(unittest.TestCase):
 
@@ -80,5 +87,24 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(self.source, filter.source)
         self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
         self.assertEqual(['#email+external', '#name-ngo'], [str(p) for p in filter.exclude_tags])
+
+    @patch('urllib.urlopen')
+    def test_add_merge_filter(self, urlopen_mock):
+        urlopen_mock.return_value = 'x'
+        args = {
+            'merge-keys11': 'adm2_id+pcode',
+            'merge-tags11': 'lat_deg,lon_deg',
+            'merge-replace11': 'on',
+            'merge-overwrite11': 'on',
+            'merge-url11': 'http://example.org/data.csv'
+        }
+        filter = add_merge_filter(self.source, args, 11)
+        self.assertEqual('MergeFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(['#adm2_id+pcode'], [str(p) for p in filter.keys])
+        self.assertEqual(['#lat_deg', '#lon_deg'], [str(p) for p in filter.merge_tags])
+        self.assertTrue(filter.replace)
+        self.assertTrue(filter.overwrite)
+        #self.assertEquals(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
 
 # end
