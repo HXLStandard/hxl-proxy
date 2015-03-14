@@ -70,7 +70,7 @@ class ProfileManager:
         dict = shelve.open(self.filename)
         try:
             dict[str(key)] = profile
-            return key
+            return str(key)
         finally:
             dict.close()
 
@@ -101,6 +101,6 @@ def _gen_key():
     """
     salt = str(time.time() * random.random())
     encoded_hash = base64.urlsafe_b64encode(_make_md5(salt))
-    return encoded_hash[:6]
+    return str(encoded_hash[:6])
 
 # end
