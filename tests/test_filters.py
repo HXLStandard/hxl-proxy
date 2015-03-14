@@ -146,6 +146,15 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(['WASH', '3', 'UNICEF'], [str(q.value) for q in filter.queries])
         self.assertTrue(filter.reverse)
 
-    # TODO add_sort_filter
+    def test_add_sort_filter(self):
+        """Test constructing a hxl.filters.SortFilter from HTTP parameters."""
+        args = {
+            'sort-tags13': 'country,adm1,org+ngo',
+            'sort-reverse13': 'on'
+        }
+        filter = add_sort_filter(self.source, args, 13)
+        self.assertEqual('SortFilter', filter.__class__.__name__)
+        self.assertEqual(['#country', '#adm1', '#org+ngo'], [str(p) for p in filter.sort_tags])
+        self.assertTrue(filter.reverse)
 
 # end
