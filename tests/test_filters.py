@@ -8,6 +8,7 @@ License: Public Domain
 
 import unittest
 import sys
+import operator
 import urllib # needed for @patch
 
 if sys.version_info < (3, 3):
@@ -129,7 +130,21 @@ class TestPipelineFunctions(unittest.TestCase):
             self.assertEqual('#adm1', str(filter.rename[key][0]))
             self.assertEqual('Provincia', filter.rename[key][1])
 
-    # TODO add_select_filter
+    def test_add_select_filter(self):
+        """Test constructing a hxl.filters.SelectFilter from HTTP parameters."""
+        args = {
+            'select-query09-01': 'sector+cluster=WASH',
+            'select-query09-02': 'aff_num-adult<3',
+            'select-query09-03': 'org!=UNICEF',
+            'select-reverse09': 'on'
+        }
+        filter = add_select_filter(self.source, args, 9)
+        self.assertEqual('SelectFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(['#sector+cluster', '#aff_num-adult', '#org'], [str(q.pattern) for q in filter.queries])
+        self.assertEqual([operator.eq, operator.lt, operator.ne], [q.op for q in filter.queries])
+        self.assertEqual(['WASH', '3', 'UNICEF'], [str(q.value) for q in filter.queries])
+        self.assertTrue(filter.reverse)
 
     # TODO add_sort_filter
 
