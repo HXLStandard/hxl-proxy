@@ -13,7 +13,7 @@ import copy
 from flask import Response, request, render_template, stream_with_context, redirect, abort
 
 from hxl_proxy import app, stream_template, munge_url
-from hxl_proxy.profiles import Profile, add_profile, update_profile, get_profile
+from hxl_proxy.profiles import Profile, ProfileManager
 from hxl_proxy.filters import setup_filters
 
 from hxl.model import TagPattern
@@ -21,6 +21,8 @@ from hxl.io import URLInput, HXLReader, genHXL, genJSON
 from hxl.schema import readSchema
 
 from hxl.filters.validate import ValidateFilter
+
+profiles = ProfileManager(app.config['PROFILE_FILE'])
 
 #@app.errorhandler(Exception)
 def error(e):
@@ -37,7 +39,7 @@ def home():
 @app.route("/data/<key>/edit", methods=['POST'])
 def edit_filter(key=None):
     if key:
-        profile = get_profile(str(key))
+        profile = profiles.get_profile(str(key))
         password = request.form.get('password')
         if not profile.check_password(password):
             raise Exception("Wrong password")
@@ -62,7 +64,7 @@ def save_filter():
     cloneable = (request.form.get('cloneable') == 'on')
 
     if key:
-        profile = get_profile(key)
+        profile = profiles.get_profile(key)
         profile.args = request.form
     else:
         profile = Profile(request.form)
@@ -78,13 +80,13 @@ def save_filter():
                 profile.set_password(new_password)
             else:
                 raise Exception("Passwords don't match")
-        update_profile(str(key), profile)
+        profiles.update_profile(str(key), profile)
     else:
         if password == password_repeat:
             profile.set_password(password)
         else:
             raise Exception("Passwords don't match")
-        key = add_profile(profile)
+        key = profiles.add_profile(profile)
 
     return redirect("/data/" + key, 303)
 
@@ -118,7 +120,7 @@ def filter(key=None, format="html"):
 
     if key:
         # look up a saved filter
-        profile = get_profile(str(key))
+        profile = profiles.get_profile(str(key))
         if not profile:
             abort(404)
     else:
@@ -144,7 +146,7 @@ def filter(key=None, format="html"):
 
 @app.route('/data/<key>/chart')
 def chart(key):
-    profile = get_profile(key)
+    profile = profiles.get_profile(key)
     tag = request.args.get('tag')
     if tag:
             tag = TagPattern.parse(tag);
@@ -156,6 +158,6 @@ def chart(key):
 
 @app.route('/data/<key>/map')
 def map(key):
-    profile = get_profile(key)
+    profile = profiles.get_profile(key)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)

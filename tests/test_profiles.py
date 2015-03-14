@@ -16,7 +16,7 @@ if sys.version_info < (3, 3):
 else:
     from unittest.mock import MagicMock
 
-from hxl_proxy.profiles import Profile, get_profile, add_profile, update_profile
+from hxl_proxy.profiles import Profile, ProfileManager
 
 ARGS = {
     'arg1': 'value1',
@@ -44,27 +44,28 @@ class TestProfile(unittest.TestCase):
     def test_different_password_fails(self):
         self.assertFalse(self.profile.check_password('X' + PASSWORD), "Different password should fail.")
 
-class TestFunctions(unittest.TestCase):
+class TestProfileManager(unittest.TestCase):
 
     def setUp(self):
-        self.filename = tempfile.NamedTemporaryFile(delete=False).name
-        app = MagicMock(side_effect=lambda: { PROFILE_FILE: self.filename })
+        with tempfile.NamedTemporaryFile(delete=True) as file:
+            self.filename = file.name
+        self.manager = ProfileManager(self.filename)
         self.profile = Profile(ARGS)
-        self.key = add_profile(self.profile)
+        self.key = self.manager.add_profile(self.profile)
 
     def tearDown(self):
         os.remove(self.filename)
 
     def test_profile_not_present(self):
-        self.assertFalse(get_profile('X' + self.key))
+        self.assertFalse(self.manager.get_profile('X' + self.key))
 
     def test_profile_exists(self):
-        profile = get_profile(self.key)
+        profile = self.manager.get_profile(self.key)
         self.assertTrue(profile.args)
         self.assertEqual(ARGS, profile.args)
 
     def test_update_profile(self):
         self.profile.args['XXX'] = 'YYY'
-        self.assertNotEqual(self.profile.args, get_profile(self.key).args)
-        update_profile(self.key, self.profile)
-        self.assertEqual(self.profile.args, get_profile(self.key).args)
+        self.assertNotEqual(self.profile.args, self.manager.get_profile(self.key).args)
+        self.manager.update_profile(self.key, self.profile)
+        self.assertEqual(self.profile.args, self.manager.get_profile(self.key).args)

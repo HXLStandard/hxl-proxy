@@ -13,8 +13,10 @@ import urllib # needed for @patch
 
 if sys.version_info < (3, 3):
     from mock import patch
+    URLOPEN_PATCH = 'urllib.urlopen'
 else:
     from unittest.mock import patch
+    URLOPEN_PATCH = 'urllib.request.urlopen'
 
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
@@ -94,7 +96,7 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
         self.assertEqual(['#email+external', '#name-ngo'], [str(p) for p in filter.exclude_tags])
 
-    @patch('urllib.urlopen')
+    @patch(URLOPEN_PATCH)
     def test_add_merge_filter(self, urlopen_mock):
         """Test constructing a hxl.filters.MergeFilter from HTTP parameters."""
         urlopen_mock.return_value = 'x'

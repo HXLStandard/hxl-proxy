@@ -13,13 +13,13 @@ import copy
 
 VERSION=1.0
 
-from hxl_proxy import app
-
 class Profile(object):
+    """Profile for a filter pipeline."""
 
     def __init__(self, args):
         self.version = 1.0
         self.args = args
+        self.passhash = None
 
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
@@ -35,51 +35,65 @@ class Profile(object):
             return True
         return (self.passhash == _make_md5(password))
 
-def get_profile(key):
-    """
-    Get an existing profile.
-    @param key the string key for the profile.  
-    @return the profile as an associative array.
-    """
-    dict = shelve.open(app.config['PROFILE_FILE'])
-    try:
-        if str(key) in dict:
-            return copy.copy(dict[key])
-        else:
-            return None
-    finally:
-        dict.close()
+class ProfileManager:
+    """Manage saved filter pipelines."""
 
-def update_profile(key, profile):
-    """
-    Update an existing profile.
-    @param key the string key for the profile
-    @param profile the profile as an associative array
-    @return the key provided
-    """
-    dict = shelve.open(app.config['PROFILE_FILE'])
-    try:
-        dict[str(key)] = profile
-        return key
-    finally:
-        dict.close()
+    def __init__(self, filename):
+        """
+        Construct a new profile manager.
+        @param filename The base filename for an on-disk key database file.
+        """
+        self.filename = filename
 
-def add_profile(profile):
-    """
-    Add a new profile.
-    @param profile the profile as an associative array.
-    @return the generated key for the new profile.
-    """
-    key = _gen_key()
-    dict = shelve.open(app.config['PROFILE_FILE'])
-    try:
-        # check for collisions
-        while key in dict:
-            key = _gen_key()
-        dict[str(key)] = profile
-        return key
-    finally:
-        dict.close()
+    def get_profile(self, key):
+        """
+        Get an existing profile.
+        @param key the string key for the profile.  
+        @return the profile as an associative array.
+        """
+        dict = shelve.open(self.filename)
+        try:
+            if str(key) in dict:
+                return copy.copy(dict[key])
+            else:
+                return None
+        finally:
+            dict.close()
+
+    def update_profile(self, key, profile):
+        """
+        Update an existing profile.
+        @param key the string key for the profile
+        @param profile the profile as an associative array
+        @return the key provided
+        """
+        dict = shelve.open(self.filename)
+        try:
+            dict[str(key)] = profile
+            return key
+        finally:
+            dict.close()
+
+    def add_profile(self, profile):
+        """
+        Add a new profile.
+        @param profile the profile as an associative array.
+        @return the generated key for the new profile.
+        """
+        key = _gen_key()
+        dict = shelve.open(self.filename)
+        try:
+            # check for collisions
+            while key in dict:
+                key = _gen_key()
+            dict[str(key)] = profile
+            return key
+        finally:
+            dict.close()
+
+def _make_md5(s):
+    """Return an MD5 hash for a string."""
+    return hashlib.md5(s.encode('utf-8')).digest()
 
 def _gen_key():
     """
@@ -88,9 +102,5 @@ def _gen_key():
     salt = str(time.time() * random.random())
     encoded_hash = base64.urlsafe_b64encode(_make_md5(salt))
     return encoded_hash[:6]
-
-def _make_md5(s):
-    """Return an MD5 hash for a string."""
-    return hashlib.md5(s.encode('utf-8')).digest()
 
 # end
