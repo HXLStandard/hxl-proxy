@@ -59,333 +59,348 @@
       {% endif %}
       <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
-        <fieldset>
-          <input type="hidden" name="filter_count" value="{{ filter_count }}" />
-
-          <div class="form-group required">
-            <label class="control-label">HXL dataset URL</label>
-            <div class="input-group">
-              <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" />
-              <span class="input-group-btn">
-                <button class="btn btn-success" type="submit">Update</button>
-              </span>
-            </div>
-          </div>
-
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
-              Strip text headers before hashtags.
-            </label>
-          </div>
-
+        <fieldset class="panel panel-default">
           {% if key %}
-          <input type="hidden" name="key" value="{{ key }}" />
-
-          <div class="form-group required">
-            <label for="name">Filter name</label>
-            <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
-          </div>
-
-          <div class="form-group required">
-            <label for="password">Current password</label>
-            <input class="form-control" name="password" type="password" required="required" />
-          </div>
-
-          <div class="form-group">
-            <label for="description">Filter description</label>
-            <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
-          </div>
-
-          <div class="checkbox">
-            <label>
-              <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
-              Cloning allowed (will expose original URL)
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label for="new-password">New password</label>
-            <input class="form-control" name="new-password" type="password" />
-          </div>
-
-          <div class="form-group">
-            <label for="password-repeat">Repeat new password</label>
-            <input class="form-control" name="password-repeat" type="password" />
+          <div class="panel-heading">
+            <h4><a class="collapsed" data-toggle="collapse" href="#settings-collapse">Settings</a></h4>
           </div>
           {% endif %}
+          <div id="settings-collapse" class="panel-collapse collapse">
+            <div class="panel-body">
+              <input type="hidden" name="filter_count" value="{{ filter_count }}" />
 
-          <input type="hidden" name="format" value="html" />
-        </fieldset>
-        <div class="row-fluid">
-        <fieldset class="col-md-2 btn-group btn-group-vertical">
-        {% for n in range(1, filter_count+1) %}
-        <div class="filter">
-          <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">{{ n }}</a>
-          <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h2 class="modal-title">Filter #{{ n }}</h2>
+              <div class="form-group required">
+                <label class="control-label">HXL dataset URL</label>
+                <div class="input-group">
+                  <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" type="submit">Update</button>
+                  </span>
                 </div>
-                <div class="modal-body">
-                  <fieldset id="{{ 'filter-group%02d' % n }}">
-                    <div id="{{ 'filter%02d' % n }}" class="field_filter">
-                      <label for="{{ name }}">Filter type</label>
-                      {% set name='filter%02d' % n %}
-                      <select name="{{ name }}">
-                        <option value="">(none)</option>
-                        {% if n == 1 %}
-                        <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
-                        {% endif %}
-                        <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add</option>
-                        <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
-                        <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
-                        <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
-                        <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
-                        <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename</option>
-                        <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
-                        <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
-                      </select>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+                  Strip text headers before hashtags.
+                </label>
+              </div>
+
+              {% if key %}
+              <input type="hidden" name="key" value="{{ key }}" />
+
+              <div class="form-group required">
+                <label for="name">Filter name</label>
+                <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
+              </div>
+
+              {% if profile.passhash %}
+              <input type="hidden" name="passhash" value="{{ unicode(profile.passhash) }}" />
+              {% else %}
+              <div class="form-group required">
+                <label for="password">Current password</label>
+                <input class="form-control" name="password" type="password" required="required" />
+              </div>
+              {% endif %}
+
+              <div class="form-group">
+                <label for="description">Filter description</label>
+                <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
+                  Cloning allowed (will expose original URL)
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label for="new-password">New password</label>
+                <input class="form-control" name="new-password" type="password" />
+              </div>
+
+              <div class="form-group">
+                <label for="password-repeat">Repeat new password</label>
+                <input class="form-control" name="password-repeat" type="password" />
+              </div>
+              {% endif %}
+
+              <input type="hidden" name="format" value="html" />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row-fluid">
+          <fieldset class="col-md-2 btn-group btn-group-vertical">
+            <legend>HXL filters</legend>
+            {% for n in range(1, filter_count+1) %}
+            <div class="filter">
+              <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">{{ n }}</a>
+              <div class="modal fade" id="filter-dialog-{{ n }}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h2 class="modal-title">Filter #{{ n }}</h2>
                     </div>
+                    <div class="modal-body">
+                      <fieldset id="{{ 'filter-group%02d' % n }}">
+                        <div id="{{ 'filter%02d' % n }}" class="field_filter">
+                          <label for="{{ name }}">Filter type</label>
+                          {% set name='filter%02d' % n %}
+                          <select name="{{ name }}">
+                            <option value="">(none)</option>
+                            {% if n == 1 %}
+                            <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
+                            {% endif %}
+                            <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add</option>
+                            <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean</option>
+                            <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count</option>
+                            <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut</option>
+                            <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge</option>
+                            <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename</option>
+                            <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select</option>
+                            <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort</option>
+                          </select>
+                        </div>
 
-                    <div class="fields-tagger hideable">
-                      <p class="doc">If your source data does not already include HXL hashtags, you can use this filter to add up to 10 tags. It's not necessary to include the whole header string.</p>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Header (sub)string</th>
-                            <th>HXL hashtag</th>
-                          </tr>
-                          <tr>
-                            <td><i>E.g.</i></td>
-                            <td><code>Province</code></td>
-                            <td><code>#adm1</code></td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for i in range(1,11) %}
-                          {% set name='tagger-%02d' % i %}
-                          <tr>
-                            <td>{{ i }}</td>
-                            <td><input class="form-control" name="{{ name + '-header' }}" value="{{ profile.args[name + '-header'] }}" /></td>
-                            <td><input class="form-control" name="{{ name + '-tag' }}" value="{{ profile.args[name + '-tag'] }}" /></td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+                        <div class="fields-tagger hideable">
+                          <p class="doc">If your source data does not already include HXL hashtags, you can use this filter to add up to 10 tags. It's not necessary to include the whole header string.</p>
+                          <table>
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th>Header (sub)string</th>
+                                <th>HXL hashtag</th>
+                              </tr>
+                              <tr>
+                                <td><i>E.g.</i></td>
+                                <td><code>Province</code></td>
+                                <td><code>#adm1</code></td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for i in range(1,11) %}
+                              {% set name='tagger-%02d' % i %}
+                              <tr>
+                                <td>{{ i }}</td>
+                                <td><input class="form-control" name="{{ name + '-header' }}" value="{{ profile.args[name + '-header'] }}" /></td>
+                                <td><input class="form-control" name="{{ name + '-tag' }}" value="{{ profile.args[name + '-tag'] }}" /></td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div class="fields-add hideable">
+                          <p class="doc">Add a new column (with a constant value) to the data.</p>
+
+                          {% set name='add-tag%02d' % n %}
+                          <div class="form-group required" id="{{ name }}">
+                            <label for="{{ name }}">Tag for new column.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
+                          </div>
+
+                          {% set name='add-value%02d' % n %}
+                          <div class="form-group required" id="{{ name }}">
+                            <label for="{{ name }}">Fixed value for new column.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
+                          </div>
+
+                          {% set name='add-header%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Display header for new column.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
+                          </div>
+
+                          {% set name='add-before%02d' % n %}
+                          <div id="{{ name }}" class="checkbox">
+                            <label>
+                              <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                              Add new column to front
+                            </label>
+                          </div>
+
+                        </div>
+
+                        <div class="fields-clean hideable">
+                          <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
+
+                          {% set name='clean-whitespace-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Normalise whitespace for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='clean-toupper-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Convert to uppercase for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='clean-tolower-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Convert to lowercase for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='clean-date-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Standardise dates for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='clean-num-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Standardise numbers for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                        </div>
+
+                        <div class="fields-count hideable">
+                          <p class="doc">Count and aggregate HXL data to generate reports or hide personally-identifiable data.</p>
+
+                          {% set name='count-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group required">
+                            <label for="{{ name }}">Count values for these hashtags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='count-aggregate-tag%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Aggregate values for this tag (sum, average, min, max)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filter_pattern }}$" title="{{ filter_pattern_help }}" />
+                          </div>
+
+                        </div>
+
+                        <div class="fields-cut hideable">
+                          <p class="doc">Remove columns from your dataset (e.g. for privacy).</p>
+
+                          {% set name='cut-include-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Whitelist: include only these tags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='cut-exclude-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Blacklist: include everything <i>but</i> these tags (comma-separated)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                        </div>
+
+                        <div class="fields-merge hideable">
+                          <p class="doc">Merge fields from one HXL dataset into another one. You can use this to look up information like latitude/longitude or population from a reference dataset and add it to your main one.</p>
+
+                          {% set name='merge-url%02d' % n %}
+                          <div id="{{ name }}" class="form-group required">
+                            <label for="{{ name }}">URL of merge dataset (pull extra data from here)</label>
+                            <input class="form-control" name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
+                          </div>
+
+                          {% set name='merge-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group required">
+                            <label for="{{ name }}">Tags to copy from other dataset</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='merge-keys%02d' % n %}
+                          <div id="{{ name }}" class="form-group required">
+                            <label for="{{ name }}">Shared keys (values that are the same in both datasets)</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+
+                          {% set name='merge-before%02d' % n %}
+                          <div id="{{ name }}" class="checkbox">
+                            <label>
+                              <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                              Add merge columns to front
+                            </label>
+                          </div>
+
+                        </div>
+
+                        <div class="fields-rename hideable">
+                          <p class="doc">Add a new column (with a constant value) to the data.</p>
+
+                          {% set name='rename-oldtag%02d' % n %}
+                          <div class="form-group required" id="{{ name }}">
+                            <label for="{{ name }}">Original tag.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filter_pattern }}$" title="{{ filter_pattern_help }}" required="required" />
+                          </div>
+
+                          {% set name='rename-newtag%02d' % n %}
+                          <div class="form-group required" id="{{ name }}">
+                            <label for="{{ name }}">New tag.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
+                          </div>
+
+                          {% set name='rename-header%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">New display header.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
+                          </div>
+
+                        </div>
+
+                        <div class="fields-select hideable">
+                          <p class="doc">Remove all rows from the dataset unless they match a query condition (e.g. a specific sector or ADM1).</p>
+
+                          {% set name='select-query%02d' % n %}
+                          <div id="{{ name }}" class="form-group required">
+                            <label for="{{ name }}">Queries (e.g. adm1=Bomo)</label>
+                            {% for n in range(1, 6) %}
+                            {% set query_name = '%s-%02d' % (name, n) %}
+                            <input class="form-control" name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
+                            {% endfor %}
+                          </div>
+
+                          {% set name='select-reverse%02d' % n %}
+                          <div id="{{ name }}" class="checkbox">
+                            <label>
+                              <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                              Invert query (all rows that <i>don't</i> match it)
+                            </label>
+                          </div>
+
+                        </div>
+
+                        <div class="fields-sort hideable">
+                          <p class="doc">Sort the records in a HXL dataset.</p>
+
+                          {% set name='sort-tags%02d' % n %}
+                          <div id="{{ name }}" class="form-group">
+                            <label for="{{ name }}">Use these tags for sorting.</label>
+                            <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
+                          </div>
+                          
+                          {% set name='sort-reverse%02d' % n %}
+                          <div id="{{ name }}" class="checkbox">
+                            <label>
+                              <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                              Reverse order
+                            </label>
+                          </div>
+
+                        </div>
+
+                      </fieldset>
+
+                      <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
                     </div>
-
-                    <div class="fields-add hideable">
-                      <p class="doc">Add a new column (with a constant value) to the data.</p>
-
-                      {% set name='add-tag%02d' % n %}
-                      <div class="form-group required" id="{{ name }}">
-                        <label for="{{ name }}">Tag for new column.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
-                      </div>
-
-                      {% set name='add-value%02d' % n %}
-                      <div class="form-group required" id="{{ name }}">
-                        <label for="{{ name }}">Fixed value for new column.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
-                      </div>
-
-                      {% set name='add-header%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Display header for new column.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
-                      </div>
-
-                      {% set name='add-before%02d' % n %}
-                      <div id="{{ name }}" class="checkbox">
-                        <label>
-                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                          Add new column to front
-                        </label>
-                      </div>
-
-                    </div>
-
-                    <div class="fields-clean hideable">
-                      <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
-
-                      {% set name='clean-whitespace-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Normalise whitespace for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='clean-toupper-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Convert to uppercase for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='clean-tolower-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Convert to lowercase for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='clean-date-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Standardise dates for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='clean-num-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Standardise numbers for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                    </div>
-
-                    <div class="fields-count hideable">
-                      <p class="doc">Count and aggregate HXL data to generate reports or hide personally-identifiable data.</p>
-
-                      {% set name='count-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group required">
-                        <label for="{{ name }}">Count values for these hashtags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='count-aggregate-tag%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Aggregate values for this tag (sum, average, min, max)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filter_pattern }}$" title="{{ filter_pattern_help }}" />
-                      </div>
-
-                    </div>
-
-                    <div class="fields-cut hideable">
-                      <p class="doc">Remove columns from your dataset (e.g. for privacy).</p>
-
-                      {% set name='cut-include-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Whitelist: include only these tags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='cut-exclude-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Blacklist: include everything <i>but</i> these tags (comma-separated)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                    </div>
-
-                    <div class="fields-merge hideable">
-                      <p class="doc">Merge fields from one HXL dataset into another one. You can use this to look up information like latitude/longitude or population from a reference dataset and add it to your main one.</p>
-
-                      {% set name='merge-url%02d' % n %}
-                      <div id="{{ name }}" class="form-group required">
-                        <label for="{{ name }}">URL of merge dataset (pull extra data from here)</label>
-                        <input class="form-control" name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
-                      </div>
-
-                      {% set name='merge-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group required">
-                        <label for="{{ name }}">Tags to copy from other dataset</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='merge-keys%02d' % n %}
-                      <div id="{{ name }}" class="form-group required">
-                        <label for="{{ name }}">Shared keys (values that are the same in both datasets)</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-
-                      {% set name='merge-before%02d' % n %}
-                      <div id="{{ name }}" class="checkbox">
-                        <label>
-                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                          Add merge columns to front
-                        </label>
-                      </div>
-
-                    </div>
-
-                    <div class="fields-rename hideable">
-                      <p class="doc">Add a new column (with a constant value) to the data.</p>
-
-                      {% set name='rename-oldtag%02d' % n %}
-                      <div class="form-group required" id="{{ name }}">
-                        <label for="{{ name }}">Original tag.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filter_pattern }}$" title="{{ filter_pattern_help }}" required="required" />
-                      </div>
-
-                      {% set name='rename-newtag%02d' % n %}
-                      <div class="form-group required" id="{{ name }}">
-                        <label for="{{ name }}">New tag.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ tag_pattern }}$" title="{{ tag_pattern_help }}" required="required" />
-                      </div>
-
-                      {% set name='rename-header%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">New display header.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
-                      </div>
-
-                    </div>
-
-                    <div class="fields-select hideable">
-                      <p class="doc">Remove all rows from the dataset unless they match a query condition (e.g. a specific sector or ADM1).</p>
-
-                      {% set name='select-query%02d' % n %}
-                      <div id="{{ name }}" class="form-group required">
-                        <label for="{{ name }}">Queries (e.g. adm1=Bomo)</label>
-                        {% for n in range(1, 6) %}
-                        {% set query_name = '%s-%02d' % (name, n) %}
-                        <input class="form-control" name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ query_pattern }}$" title="{{ query_pattern_help }}"/>
-                        {% endfor %}
-                      </div>
-
-                      {% set name='select-reverse%02d' % n %}
-                      <div id="{{ name }}" class="checkbox">
-                        <label>
-                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                          Invert query (all rows that <i>don't</i> match it)
-                        </label>
-                      </div>
-
-                    </div>
-
-                    <div class="fields-sort hideable">
-                      <p class="doc">Sort the records in a HXL dataset.</p>
-
-                      {% set name='sort-tags%02d' % n %}
-                      <div id="{{ name }}" class="form-group">
-                        <label for="{{ name }}">Use these tags for sorting.</label>
-                        <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ filters_pattern }}$" title="{{ filters_pattern_help }}" />
-                      </div>
-                      
-                      {% set name='sort-reverse%02d' % n %}
-                      <div id="{{ name }}" class="checkbox">
-                        <label>
-                          <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
-                          Reverse order
-                        </label>
-                      </div>
-
-                    </div>
-
-                  </fieldset>
-
-                  <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
+                  </div>
                 </div>
               </div>
             </div>
+            {% endfor %}
+          </fieldset>
+          <div class="col-md-10">
+            {{ hxltable(source, show_headers) }}
           </div>
         </div>
-        {% endfor %}
-        </fieldset>
-        <div class="col-md-10">
-          {{ hxltable(source, show_headers) }}
-        </div>
-      </div>
 
       </form>
     </main>

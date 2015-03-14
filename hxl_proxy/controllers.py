@@ -10,7 +10,9 @@ Documentation: http://hxlstandard.org
 import sys
 import copy
 
-from flask import Response, request, render_template, stream_with_context, redirect, abort
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
+
+from flask import Response, request, render_template, stream_with_context, redirect
 
 from hxl_proxy import app, stream_template, munge_url
 from hxl_proxy.profiles import Profile, ProfileManager
@@ -24,12 +26,12 @@ from hxl.filters.validate import ValidateFilter
 
 profiles = ProfileManager(app.config['PROFILE_FILE'])
 
-#@app.errorhandler(Exception)
 def error(e):
-    if app.config.get('DEBUG'):
-        raise e
-    else:
-        return render_template('error.html', message=str(e))
+    return render_template('error.html', message=str(e))
+
+if not app.config.get('DEBUG'):
+    app.register_error_handler(Exception, error)
+
 
 @app.route("/")
 def home():
@@ -42,13 +44,12 @@ def edit_filter(key=None):
         profile = profiles.get_profile(str(key))
         password = request.form.get('password')
         if not profile.check_password(password):
-            raise Exception("Wrong password")
+            raise Forbidden("Wrong password")
     else:
         profile = Profile(request.args)
     source = None
     if profile.args.get('url'):
         source = setup_filters(profile)
-
     show_headers = (profile.args.get('strip-headers') != 'on')
 
     return render_template('view-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
@@ -56,12 +57,6 @@ def edit_filter(key=None):
 @app.route("/actions/save-filter", methods=['POST'])
 def save_filter():
     key = request.form.get('key')
-    name = request.form.get('name')
-    description = request.form.get('description')
-    password = request.form.get('password')
-    new_password = request.form.get('new-password')
-    password_repeat = request.form.get('password-repeat')
-    cloneable = (request.form.get('cloneable') == 'on')
 
     if key:
         profile = profiles.get_profile(key)
@@ -73,19 +68,26 @@ def save_filter():
     profile.cloneable = cloneable
 
     if key:
-        if not profile.check_password(password):
-            raise Exception("Wrong password")
+        passhash = request.form.get('passhash')
+        name = request.form.get('name')
+        description = request.form.get('description')
+        password = request.form.get('password')
+        new_password = request.form.get('new-password')
+        password_repeat = request.form.get('password-repeat')
+        cloneable = (request.form.get('cloneable') == 'on')
+        if profile.passhash != passhash or not profile.check_password(password):
+            raise Forbidden("Wrong password")
         if new_password:
             if new_password == password_repeat:
                 profile.set_password(new_password)
             else:
-                raise Exception("Passwords don't match")
+                raise BadRequest("Passwords don't match")
         profiles.update_profile(str(key), profile)
     else:
         if password == password_repeat:
             profile.set_password(password)
         else:
-            raise Exception("Passwords don't match")
+            raise BadRequest("Passwords don't match")
         key = profiles.add_profile(profile)
 
     return redirect("/data/" + key, 303)
@@ -122,7 +124,7 @@ def filter(key=None, format="html"):
         # look up a saved filter
         profile = profiles.get_profile(str(key))
         if not profile:
-            abort(404)
+            raise NotFound('No profile saved for key "' + str(key) + '"')
     else:
         # use GET parameters
         profile = Profile(request.args)
