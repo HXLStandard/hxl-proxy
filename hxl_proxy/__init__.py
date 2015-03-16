@@ -10,7 +10,10 @@ Documentation: http://hxlstandard.org
 import six
 import re
 import os
-from flask import Flask, url_for
+import base64
+
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
+from flask import Flask, url_for, request
 
 # Main application object
 app = Flask(__name__)
@@ -57,6 +60,16 @@ def url_escape_tag(tag):
     if tag[0] == '#':
         tag = tag[1:]
     return tag
+
+def check_auth(profile):
+    """Check authorisation."""
+    passhash = request.cookies.get('hxl')
+    if passhash and profile.passhash == base64.b64decode(passhash):
+        return True
+    password = request.form.get('password')
+    if password and profile.check_password(password):
+        return True
+    return False
 
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers

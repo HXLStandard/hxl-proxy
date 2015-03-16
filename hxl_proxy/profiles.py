@@ -54,7 +54,7 @@ class ProfileManager:
         dict = shelve.open(self.filename)
         try:
             if str(key) in dict:
-                return copy.copy(dict[key])
+                return copy.copy(dict[str(key)])
             else:
                 return None
         finally:

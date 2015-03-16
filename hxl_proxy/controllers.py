@@ -9,12 +9,13 @@ Documentation: http://hxlstandard.org
 
 import sys
 import copy
+import base64
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, request, render_template, stream_with_context, redirect
+from flask import Response, request, render_template, stream_with_context, redirect, make_response
 
-from hxl_proxy import app, stream_template, munge_url
+from hxl_proxy import app, stream_template, munge_url, check_auth
 from hxl_proxy.profiles import Profile, ProfileManager
 from hxl_proxy.filters import setup_filters
 
@@ -29,22 +30,22 @@ profiles = ProfileManager(app.config['PROFILE_FILE'])
 def error(e):
     return render_template('error.html', message=str(e))
 
-if not app.config.get('DEBUG'):
-    app.register_error_handler(Exception, error)
-
+#if not app.config.get('DEBUG'):
+#    app.register_error_handler(Exception, error)
 
 @app.route("/")
 def home():
+    """Home page."""
     return render_template('home.html')
     
 @app.route("/filters/new")
-@app.route("/data/<key>/edit", methods=['POST'])
-def edit_filter(key=None):
+@app.route("/data/<key>/edit", methods=['GET', 'POST'])
+def edit_pipeline(key=None):
+    """Create or edit a filter pipeline."""
     if key:
         profile = profiles.get_profile(str(key))
-        password = request.form.get('password')
-        if not profile.check_password(password):
-            raise Forbidden("Wrong password")
+        if not check_auth(profile):
+            raise Forbidden("Wrong or missing password.")
     else:
         profile = Profile(request.args)
     source = None
@@ -52,31 +53,46 @@ def edit_filter(key=None):
         source = setup_filters(profile)
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    return render_template('view-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
+    response = make_response(render_template('view-edit.html', key=key, profile=profile, source=source, show_headers=show_headers))
+    if key:
+        response.set_cookie('hxl', base64.b64encode(profile.passhash))
+    return response
 
 @app.route("/actions/save-filter", methods=['POST'])
-def save_filter():
+def save_pipeline():
+    """
+    Start a new saved pipeline, or update an existing one.
+
+    Can be called from the full pipeline-edit form, or from
+    the mini popup for a pipeline that the user is saving
+    for the first time.
+    """
+
+    # We will have a key if we're updating an existing pipeline
     key = request.form.get('key')
 
     if key:
         profile = profiles.get_profile(key)
+        if not check_auth(profile):
+            raise Forbidden("Wrong or missing password.")
         profile.args = request.form
     else:
         profile = Profile(request.form)
+
+    name = request.form.get('name')
+    description = request.form.get('description')
+    password = request.form.get('password')
+    new_password = request.form.get('new-password')
+    password_repeat = request.form.get('password-repeat')
+    cloneable = (request.form.get('cloneable') == 'on')
+
+    # Update profile information
     profile.name = name
     profile.description = description
     profile.cloneable = cloneable
 
     if key:
-        passhash = request.form.get('passhash')
-        name = request.form.get('name')
-        description = request.form.get('description')
-        password = request.form.get('password')
-        new_password = request.form.get('new-password')
-        password_repeat = request.form.get('password-repeat')
-        cloneable = (request.form.get('cloneable') == 'on')
-        if profile.passhash != passhash or not profile.check_password(password):
-            raise Forbidden("Wrong password")
+        # Updating an existing profile.
         if new_password:
             if new_password == password_repeat:
                 profile.set_password(new_password)
@@ -84,6 +100,7 @@ def save_filter():
                 raise BadRequest("Passwords don't match")
         profiles.update_profile(str(key), profile)
     else:
+        # Creating a new profile.
         if password == password_repeat:
             profile.set_password(password)
         else:
@@ -118,13 +135,16 @@ def validate():
 @app.route("/filters/preview")
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
-def filter(key=None, format="html"):
+def preview_data(key=None, format="html"):
+
+    is_authorised = False
 
     if key:
         # look up a saved filter
         profile = profiles.get_profile(str(key))
         if not profile:
             raise NotFound('No profile saved for key "' + str(key) + '"')
+        is_authorised = check_auth(profile)
     else:
         # use GET parameters
         profile = Profile(request.args)
@@ -140,7 +160,7 @@ def filter(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers)
+        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers, is_authorised=is_authorised)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
