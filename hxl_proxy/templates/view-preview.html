@@ -15,7 +15,7 @@
               <ul class="dropdown-menu" role="menu">
                 <li class="active"><a href="/data/{{ key }}">Browse</a></li>
                 {% if profile.cloneable %}
-                <li><a href="/filters/new?{{ profile.args|urlencode }}">Clone</a></li>
+                <li><a href="/data/new?{{ profile.args|urlencode }}">Clone</a></li>
                 {% endif %}
                 <li>
                   {% if is_authorised %}
@@ -29,7 +29,7 @@
 {{ datamenu(key) }}
 {% else %}
             <li><a data-toggle="modal" data-target="#saveDialog" href="#saveDialog">Save</a></li>
-            <li><a href="/filters/new?{{ profile.args|urlencode }}">Change</a></li>
+            <li><a href="/data/new?{{ profile.args|urlencode }}">Change</a></li>
 {% endif %}
 {% endblock %}
 
@@ -78,7 +78,7 @@
             <p>Save this filter and generate a short permalink. You
             can edit the filter in the future using the password that
             you enter below.</p>
-            <form class="theme-form" method="POST" action="/actions/save-filter">
+            <form class="theme-form" method="POST" action="/actions/save-profile">
               {% for name in profile.args %}
               {% if profile.args[name] %}
               <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />

@@ -38,7 +38,8 @@ def home():
     """Home page."""
     return render_template('home.html')
     
-@app.route("/filters/new")
+@app.route("/filters/new") # deprecated
+@app.route("/data/new")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def edit_pipeline(key=None):
     """Create or edit a filter pipeline."""
@@ -58,8 +59,8 @@ def edit_pipeline(key=None):
         response.set_cookie('hxl', base64.b64encode(profile.passhash))
     return response
 
-@app.route("/actions/save-filter", methods=['POST'])
-def save_pipeline():
+@app.route("/actions/save-profile", methods=['POST'])
+def do_save_profile():
     """
     Start a new saved pipeline, or update an existing one.
 
@@ -132,7 +133,8 @@ def validate():
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
-@app.route("/filters/preview")
+@app.route("/filters/preview") # deprecated
+@app.route("/data/preview")
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
 def preview_data(key=None, format="html"):

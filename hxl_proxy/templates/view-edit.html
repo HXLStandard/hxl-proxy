@@ -17,7 +17,7 @@
                 <li><a href="/data/{{ key }}">Browse</a></li>
                 <li class="active"><a data-toggle="modal" data-target="#editDialog" href="#editDialog">Edit</a></li>
                 {% if profile.cloneable %}
-                <li><a href="/filters/new?{{ profile.args|urlencode }}">Clone</a></li>
+                <li><a href="/data/new?{{ profile.args|urlencode }}">Clone</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -52,10 +52,10 @@
 
       {% if key %}
       {% set method="POST" %}
-      {% set action="/actions/save-filter" %}
+      {% set action="/actions/save-profile" %}
       {% else %}
       {% set method="GET" %}
-      {% set action="/filters/new" %}
+      {% set action="/data/new" %}
       {% endif %}
       <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
@@ -415,7 +415,7 @@
             <p>Save this filter and generate a short permalink. You
             can edit the filter in the future using the password that
             you enter below.</p>
-            <form class="form" method="POST" action="/actions/save-filter">
+            <form class="form" method="POST" action="/actions/save-profile">
               {% for name in profile.args %}
               {% if profile.args[name] %}
               <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
