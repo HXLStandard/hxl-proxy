@@ -65,7 +65,7 @@
             <h4><a class="collapsed" data-toggle="collapse" href="#settings-collapse">Settings</a></h4>
           </div>
           {% endif %}
-          <div id="settings-collapse" class="panel-collapse collapse">
+          <div id="settings-collapse" class="{% if key %}panel-collapse collapse{% endif %}">
             <div class="panel-body">
               <input type="hidden" name="filter_count" value="{{ filter_count }}" />
 

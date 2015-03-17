@@ -15,8 +15,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, stream_with_context, redirect, make_response
 
-from hxl_proxy import app, stream_template, munge_url, check_auth
-from hxl_proxy.profiles import Profile, ProfileManager
+from hxl_proxy import app, profiles, stream_template, munge_url, get_profile, check_auth
 from hxl_proxy.filters import setup_filters
 
 from hxl.model import TagPattern
@@ -25,13 +24,11 @@ from hxl.schema import readSchema
 
 from hxl.filters.validate import ValidateFilter
 
-profiles = ProfileManager(app.config['PROFILE_FILE'])
-
 def error(e):
     return render_template('error.html', message=str(e))
 
-#if not app.config.get('DEBUG'):
-#    app.register_error_handler(Exception, error)
+if not app.config.get('DEBUG'):
+    app.register_error_handler(Exception, error)
 
 @app.route("/")
 def show_home():
@@ -43,12 +40,7 @@ def show_home():
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_edit_profile(key=None):
     """Create or edit a filter pipeline."""
-    if key:
-        profile = profiles.get_profile(str(key))
-        if not check_auth(profile):
-            raise Forbidden("Wrong or missing password.")
-    else:
-        profile = Profile(request.args)
+    profile = get_profile(key, auth=True)
     source = None
     if profile.args.get('url'):
         source = setup_filters(profile)
@@ -72,13 +64,7 @@ def do_save_profile():
     # We will have a key if we're updating an existing pipeline
     key = request.form.get('key')
 
-    if key:
-        profile = profiles.get_profile(key)
-        if not check_auth(profile):
-            raise Forbidden("Wrong or missing password.")
-        profile.args = request.form
-    else:
-        profile = Profile(request.form)
+    profile = get_profile(key, auth=True, args=request.form)
 
     name = request.form.get('name')
     description = request.form.get('description')
@@ -110,6 +96,50 @@ def do_save_profile():
 
     return redirect("/data/" + key, 303)
 
+@app.route("/filters/preview") # deprecated
+@app.route("/data/preview")
+@app.route("/data/<key>")
+@app.route("/data/<key>.<format>")
+def show_preview_data(key=None, format="html"):
+    profile = get_profile(key)
+    if key:
+        is_authorised = check_auth(profile)
+    else:
+        is_authorised = False
+
+    name = profile.args.get('name', 'Filtered HXL dataset')
+    source = setup_filters(profile)
+    show_headers = (profile.args.get('strip-headers') != 'on')
+    if format == 'json':
+        response = Response(genJSON(source, showHeaders=show_headers), mimetype='application/json')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    elif format == 'html':
+        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key,
+                               show_headers=show_headers, is_authorised=is_authorised)
+    else:
+        response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+
+@app.route('/data/<key>/chart')
+def show_chart(key):
+    profile = get_profile(key)
+    tag = request.args.get('tag')
+    if tag:
+            tag = TagPattern.parse(tag);
+    label = request.args.get('label')
+    if label:
+            label = TagPattern.parse(label);
+    type = request.args.get('type', 'pie')
+    return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
+
+@app.route('/data/<key>/map')
+def show_map(key):
+    profile = get_profile(key)
+    layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
+    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
+
 @app.route("/validate")
 def show_validate():
     format = 'html' # fixme
@@ -129,59 +159,8 @@ def show_validate():
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
     elif format == 'html':
-        return Response(stream_with_context(stream_template('validate.html', url=url, schema_url=schema_url, show_all=show_all, source=source)))
+        return render_template('validate.html', url=url, schema_url=schema_url, show_all=show_all, source=source)
     else:
         return Response(genHXL(source), mimetype='text/csv')
 
-@app.route("/filters/preview") # deprecated
-@app.route("/data/preview")
-@app.route("/data/<key>")
-@app.route("/data/<key>.<format>")
-def show_preview_data(key=None, format="html"):
-
-    is_authorised = False
-
-    if key:
-        # look up a saved filter
-        profile = profiles.get_profile(str(key))
-        if not profile:
-            raise NotFound('No profile saved for key "' + str(key) + '"')
-        is_authorised = check_auth(profile)
-    else:
-        # use GET parameters
-        profile = Profile(request.args)
-
-    name = profile.args.get('name', 'Filtered HXL dataset')
-
-    source = setup_filters(profile)
-
-    show_headers = (profile.args.get('strip-headers') != 'on')
-
-    if format == 'json':
-        response = Response(genJSON(source, showHeaders=show_headers), mimetype='application/json')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
-    elif format == 'html':
-        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers, is_authorised=is_authorised)
-    else:
-        response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
-
-@app.route('/data/<key>/chart')
-def show_chart(key):
-    profile = profiles.get_profile(key)
-    tag = request.args.get('tag')
-    if tag:
-            tag = TagPattern.parse(tag);
-    label = request.args.get('label')
-    if label:
-            label = TagPattern.parse(label);
-    type = request.args.get('type', 'pie')
-    return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
-
-@app.route('/data/<key>/map')
-def show_map(key):
-    profile = profiles.get_profile(key)
-    layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
-    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
+# end

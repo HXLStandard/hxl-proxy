@@ -15,6 +15,8 @@ import base64
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from flask import Flask, url_for, request
 
+from hxl_proxy.profiles import Profile, ProfileManager
+
 # Main application object
 app = Flask(__name__)
 
@@ -24,6 +26,11 @@ app.config.from_object('hxl_proxy.default_config')
 # If the environment variable HXL_PROXY_CONFIG exists, use it for local config
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
+
+#
+# Global profile manager
+#
+profiles = ProfileManager(app.config['PROFILE_FILE'])
 
 #
 # Utilities
@@ -60,6 +67,19 @@ def url_escape_tag(tag):
     if tag[0] == '#':
         tag = tag[1:]
     return tag
+
+def get_profile(key, auth=False, args=None):
+    """Load a profile or create from args."""
+    if args is None:
+        args = request.args
+    if key:
+        profile = profiles.get_profile(str(key))
+        if not check_auth(profile):
+            raise Forbidden("Wrong or missing password.")
+    else:
+        profile = Profile(request.args)
+    return profile
+
 
 def check_auth(profile):
     """Check authorisation."""
