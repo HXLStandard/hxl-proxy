@@ -19,19 +19,21 @@
             </li>
 {% endmacro %}
 
-{% macro hxltable(source, show_headers=True) %}
+{% macro hxltable(source, show_headers=True, validation=False) %}
     {% if source %}
     <div class="table-container">
     <table class="table">
       <thead>
         {% if show_headers and source.hasHeaders %}
         <tr class="hxl-headers">
+          <th></th>
           {% for header in source.headers %}
           <th>{{ unicode(header) }}</th>
           {% endfor %}
         </tr>
         {% endif %}
         <tr class="hxl-tags">
+          <th></th>
           {% for tag in source.displayTags %}
           <th>{{ unicode(tag) }}</th>
           {% endfor %}
@@ -40,6 +42,7 @@
       <tbody>
         {% for row in source %}
         <tr>
+          <td><span class="content">{{ row.row_number + 1 }}</span></td>
           {% for value in row.values %}
           <td><span class="content">{{ unicode(value) }}</span></td>
           {% endfor %}

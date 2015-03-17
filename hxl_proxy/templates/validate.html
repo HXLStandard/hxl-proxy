@@ -10,55 +10,88 @@
 {% endif %}
 {% endblock %}
 
-{% block title %}{{ title|default('HXL validation') }}{% endblock %}
+{% block title %}HXL data validation{% endblock %}
 
 {% block main %}
     <main class="container-fluid">
-      <h1>{{ title|default('HXL validation') }}</h1>
 
-      <section class="panel panel-default">
+      <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="/data/new">Data</a></li>
+        {% if key %}
+        <li><a href="/data/{{ key }}">{{ profile.name }}</a></li>
+        {% endif %}
+      </ol>
+
+      <h1>HXL data validatation</h1>
+
+      {% if profile.args.url %}
+      {% if errors %}
+      <div class="panel panel-error">
         <div class="panel-heading">
-          <h2 class="panel-title">
-            <a class="{% if url %}collapsed{% endif %}" data-toggle="collapse" href="#configuration">
-              Configuration
-            </a>
-          </h2>
+          <h2>Validation errors.</h2>
         </div>
-        <div class="collapse{% if not url %} in{% endif %}" id="configuration">
-          <div class="panel-body">
-            <form class="form" action="">
+        <div class="panel-body">
+          <p>Failed</p>
+        </div>
+      </div>
+      {% else %}
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h2 class="panel-title">Success!</h2>
+        </div>
+        <div class="panel-body">
+          <p>
+            {% if key %}
+            <cite><a href="/data/{{ key }}">{{ profile.name}}</a></cite> has no
+            {% else %}
+            No
+            {% endif %} 
+            validation errors with 
+            {% if profile.args.schema_url %}
+            <a href="{{ profile.args.schema_url }}">custom schema</a>
+            {% else %}
+            the default HXL schema{% endif %}.
+          </p>
 
-              {% if not key %}
-              <div class="form-group required">
-                <label class="control-label">HXL dataset URL</label>
-                <input class="form-control" name="url" type="url" required="required" value="{{ url or '' }}"
-                       placeholder="http://example.org/my-hxl-data.csv" />
-              </div>
-              {% endif %}
+          <p><a class="btn btn-default" data-toggle="modal" data-target="#customise">Customise</a></p>
 
-              <div class="form-group">
-                <label for="schema_url">Schema URL</label>
-                <input name="schema_url" type="url" value="{{ schema_url or '' }}" class="form-control"
-                       placeholder="http://example.org/my-hxl-schema.csv" />
-              </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
 
-              <button class="btn btn-success" type="submit">Validate</button>
+      <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title">Customise validation</h2>
+            </div>
+            <div class="modal-body">
+              <form class="form" action="">
 
-            </form>
+                {% if not key %}
+                <div class="form-group required">
+                  <label class="control-label">HXL dataset URL</label>
+                  <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url or '' }}"
+                         placeholder="http://example.org/my-hxl-data.csv" />
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                  <label for="schema_url">Custom HXL schema URL</label>
+                  <input name="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
+                         placeholder="http://example.org/my-hxl-schema.csv" />
+                  <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
+                </div>
+
+                <button class="btn btn-success" type="submit">Update</button>
+
+              </form>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {% if show_all %}
-      <p class="panel panel-info">Showing all rows (<a href="?show_all=off">show only errors</a>).</p>
-      {% else %}
-      <p class="panel panel-info">Showing only errors (<a href="?show_all=on">show all</a>).</p>
-      {% endif %}
-
-      {% if source %}
-      <section id="dataset">
-        {{ hxltable(source) }}
-      </section>
-      {% endif %}
     </main>
 {% endblock %}

@@ -17,12 +17,10 @@ from flask import Response, request, render_template, redirect, make_response
 
 from hxl_proxy import app, profiles, munge_url, get_profile, check_auth
 from hxl_proxy.filters import setup_filters
+from hxl_proxy.validate import do_validate
 
 from hxl.model import TagPattern
-from hxl.io import URLInput, HXLReader, genHXL, genJSON
-from hxl.schema import readSchema
-
-from hxl.filters.validate import ValidateFilter
+from hxl.io import genHXL, genJSON
 
 def error(e):
     return render_template('error.html', message=str(e))
@@ -153,22 +151,11 @@ def show_validate(key):
     # Get the parameters
     url = profile.args.get('url')
     schema_url = profile.args.get('schema_url', None)
-    show_all = (request.args.get('show_all') == 'on')
-    format = 'html' # fixme
 
     # If we have a URL, validate the data.
     if url:
-        if schema_url:
-            schema = readSchema(HXLReader(URLInput(munge_url(schema_url))))
-        else:
-            schema = readSchema()
-        source = ValidateFilter(source=setup_filters(profile), schema=schema, show_all=show_all)
+        errors = do_validate(setup_filters(profile), schema_url)
         
-    if format == 'json':
-        return Response(genJSON(source), mimetype='application/json')
-    elif format == 'html':
-        return render_template('validate.html', url=url, schema_url=schema_url, show_all=show_all, source=source)
-    else:
-        return Response(genHXL(source), mimetype='text/csv')
+    return render_template('validate.html', key=key, profile=profile, errors=errors)
 
 # end
