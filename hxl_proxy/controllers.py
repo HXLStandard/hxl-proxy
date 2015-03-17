@@ -34,14 +34,14 @@ def error(e):
 #    app.register_error_handler(Exception, error)
 
 @app.route("/")
-def home():
+def show_home():
     """Home page."""
     return render_template('home.html')
     
 @app.route("/filters/new") # deprecated
 @app.route("/data/new")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
-def edit_pipeline(key=None):
+def show_edit_profile(key=None):
     """Create or edit a filter pipeline."""
     if key:
         profile = profiles.get_profile(str(key))
@@ -54,7 +54,7 @@ def edit_pipeline(key=None):
         source = setup_filters(profile)
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    response = make_response(render_template('view-edit.html', key=key, profile=profile, source=source, show_headers=show_headers))
+    response = make_response(render_template('profile-edit.html', key=key, profile=profile, source=source, show_headers=show_headers))
     if key:
         response.set_cookie('hxl', base64.b64encode(profile.passhash))
     return response
@@ -111,7 +111,7 @@ def do_save_profile():
     return redirect("/data/" + key, 303)
 
 @app.route("/validate")
-def validate():
+def show_validate():
     format = 'html' # fixme
     url = request.args.get('url', None)
     schema_url = request.args.get('schema_url', None)
@@ -137,7 +137,7 @@ def validate():
 @app.route("/data/preview")
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
-def preview_data(key=None, format="html"):
+def show_preview_data(key=None, format="html"):
 
     is_authorised = False
 
@@ -162,14 +162,14 @@ def preview_data(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('view-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers, is_authorised=is_authorised)
+        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key, show_headers=show_headers, is_authorised=is_authorised)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
 @app.route('/data/<key>/chart')
-def chart(key):
+def show_chart(key):
     profile = profiles.get_profile(key)
     tag = request.args.get('tag')
     if tag:
@@ -181,7 +181,7 @@ def chart(key):
     return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
-def map(key):
+def show_map(key):
     profile = profiles.get_profile(key)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
