@@ -28,16 +28,13 @@
           <div class="panel-body">
             <form class="form" action="">
 
+              {% if not key %}
               <div class="form-group required">
                 <label class="control-label">HXL dataset URL</label>
-                <div class="input-group">
-                  <input class="form-control" name="url" type="url" required="required" value="{{ url or '' }}"
-                         placeholder="http://example.org/my-hxl-data.csv" />
-                  <span class="input-group-btn">
-                    <button class="btn btn-success" type="submit">Validate</button>
-                  </span>
-                </div>
+                <input class="form-control" name="url" type="url" required="required" value="{{ url or '' }}"
+                       placeholder="http://example.org/my-hxl-data.csv" />
               </div>
+              {% endif %}
 
               <div class="form-group">
                 <label for="schema_url">Schema URL</label>
@@ -45,16 +42,18 @@
                        placeholder="http://example.org/my-hxl-schema.csv" />
               </div>
 
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="show_all"{% if show_all %} checked="checked"{% endif %}/>
-                  Show all rows
-                </label>
-              </div>
+              <button class="btn btn-success" type="submit">Validate</button>
+
             </form>
           </div>
         </div>
       </section>
+
+      {% if show_all %}
+      <p class="panel panel-info">Showing all rows (<a href="?show_all=off">show only errors</a>).</p>
+      {% else %}
+      <p class="panel panel-info">Showing only errors (<a href="?show_all=on">show all</a>).</p>
+      {% endif %}
 
       {% if source %}
       <section id="dataset">

@@ -13,9 +13,9 @@ import base64
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, request, render_template, stream_with_context, redirect, make_response
+from flask import Response, request, render_template, redirect, make_response
 
-from hxl_proxy import app, profiles, stream_template, munge_url, get_profile, check_auth
+from hxl_proxy import app, profiles, munge_url, get_profile, check_auth
 from hxl_proxy.filters import setup_filters
 
 from hxl.model import TagPattern
@@ -101,7 +101,7 @@ def do_save_profile():
 @app.route("/data/<key>")
 @app.route("/data/<key>.<format>")
 def show_preview_data(key=None, format="html"):
-    profile = get_profile(key)
+    profile = get_profile(key, auth=False)
     if key:
         is_authorised = check_auth(profile)
     else:
@@ -124,6 +124,7 @@ def show_preview_data(key=None, format="html"):
 
 @app.route('/data/<key>/chart')
 def show_chart(key):
+    """Show a chart visualisation for the data."""
     profile = get_profile(key)
     tag = request.args.get('tag')
     if tag:
@@ -136,25 +137,32 @@ def show_chart(key):
 
 @app.route('/data/<key>/map')
 def show_map(key):
+    """Show a map visualisation for the data."""
     profile = get_profile(key)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
 
-@app.route("/validate")
-def show_validate():
-    format = 'html' # fixme
-    url = request.args.get('url', None)
-    schema_url = request.args.get('schema_url', None)
+@app.route("/data/validate")
+@app.route("/data/<key>/validate")
+def show_validate(key):
+    """Validate the data."""
+
+    # Get the profile
+    profile = get_profile(key)
+
+    # Get the parameters
+    url = profile.args.get('url')
+    schema_url = profile.args.get('schema_url', None)
     show_all = (request.args.get('show_all') == 'on')
-    source = None
+    format = 'html' # fixme
+
+    # If we have a URL, validate the data.
     if url:
-        source = HXLReader(URLInput(munge_url(url)))
-        schema_source = None
         if schema_url:
             schema = readSchema(HXLReader(URLInput(munge_url(schema_url))))
         else:
             schema = readSchema()
-        source = ValidateFilter(source=source, schema=schema, show_all=show_all)
+        source = ValidateFilter(source=setup_filters(profile), schema=schema, show_all=show_all)
         
     if format == 'json':
         return Response(genJSON(source), mimetype='application/json')
