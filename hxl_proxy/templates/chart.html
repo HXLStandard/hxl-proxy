@@ -2,22 +2,39 @@
 {% from 'snippits.html' import datamenu %}
 
 {% block menu %}
-{% if key %}
 {{ datamenu(profile, key=key, facet='chart') }}
-{% endif %}
 {% endblock %}
 
 {% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
-    <h1>Chart it</h1>
+    <h1>
+      Chart:
+      {% if key %}
+      <cite>{{ profile.name }}</cite>
+      {% else %}
+      HXL data
+      {% endif %}
+    </h1>
 
     <div id="chart_div" style="min-height:480px"></div>
+
+    <p class="small">
+      Dataset: 
+      <a href="{{ data_url(profile, key) }}">
+        {% if key %}
+        {{ profile.name }}
+        {% else %}
+        {{ profile.args.url }}
+        {% endif %}
+      </a>
+    </p>
+
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
-      var csv_url = "/data/{{ key }}.csv";
+      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
       var chart_type = "{{ type }}";
       var chart_value_tag = "{{ tag }}";
       var chart_label_tag = "{{ label }}";

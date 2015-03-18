@@ -106,7 +106,7 @@ def make_data_url(profile, key=None, facet=None, format=None):
         if format:
             url += '.' + urllib.quote(format)
         elif facet:
-            url += '/' + urllib.quote(facet) + '?'
+            url += '/' + urllib.quote(facet)
         url += '?' + urllib.urlencode(profile.args)
 
     return url

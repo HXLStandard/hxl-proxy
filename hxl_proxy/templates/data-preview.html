@@ -21,7 +21,15 @@
     {% else %}
     <h1>New filter preview</h2>
     {% endif %}
-    {{ hxltable(source) }}
+
+    {% if not key or profile.cloneable %}
+    <p class="small">Original dataset: <a href="{{ profile.args.url }}">{{ profile.args.url }}</a></p>
+    {% endif %}
+
+    <section id="data">
+      <h2>Data</h2>
+      {{ hxltable(source) }}
+    </section>
     {% if key %}
     <div class="modal fade" id="editDialog" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">

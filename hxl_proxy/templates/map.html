@@ -2,9 +2,7 @@
 {% from 'snippits.html' import datamenu %}
 
 {% block menu %}
-{% if key %}
 {{ datamenu(profile, key=key, facet='map') }}
-{% endif %}
 {% endblock %}
 
 {% block title %}{{ profile.args.name|default('Filtered HXL data') }} (map){% endblock %}
@@ -17,17 +15,34 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Map it</h1>
+    <h1>
+      Map:
+      {% if key %}
+      <cite>{{ profile.name }}</cite>
+      {% else %}
+      HXL data
+      {% endif %}
+    </h1>
 
     <div id="map-div" style="height: 480px"></div>
 
-    <p>Dataset: <a href="/data/{{ key }}">{{ profile.name }}</a></p>
+    <p class="small">
+      Dataset: 
+      <a href="{{ data_url(profile, key) }}">
+        {% if key %}
+        {{ profile.name }}
+        {% else %}
+        {{ profile.args.url }}
+        {% endif %}
+      </a>
+    </p>
 
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
-      var csv_url = "/data/{{ key }}.csv";
+      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
+      console.log(csv_url);
       var map_layer_tag = "{{ layer_tag }}";
     </script>
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>

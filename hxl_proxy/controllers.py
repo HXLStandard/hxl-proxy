@@ -113,7 +113,6 @@ def show_chart(key=None):
 def show_map(key=None):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
-    print(profile)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, profile=profile, layer_tag=layer_tag)
 
@@ -124,13 +123,14 @@ def show_map(key=None):
 @app.route("/data.<format>")
 @app.route("/data")
 def show_preview_data(key=None, format="html"):
+
     profile = get_profile(key, auth=False)
+
     if key:
         is_authorised = check_auth(profile)
     else:
         is_authorised = False
 
-    name = profile.args.get('name', 'Filtered HXL dataset')
     source = setup_filters(profile)
     show_headers = (profile.args.get('strip-headers') != 'on')
 
@@ -139,7 +139,7 @@ def show_preview_data(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key,
+        return render_template('data-preview.html', source=source, profile=profile, key=key,
                                show_headers=show_headers, is_authorised=is_authorised)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')

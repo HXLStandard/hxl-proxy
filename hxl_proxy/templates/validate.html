@@ -11,7 +11,14 @@
 {% block title %}HXL Proxy: Validate it{% endblock %}
 
 {% block main %}
-      <h1>Validate it</h1>
+    <h1>
+      Validate:
+      {% if key %}
+      <cite>{{ profile.name }}</cite>
+      {% else %}
+      HXL data
+      {% endif %}
+    </h1>
 
       {% if profile.args.url %}
       {% if errors %}

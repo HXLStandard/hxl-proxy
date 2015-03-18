@@ -1,5 +1,5 @@
 {% macro datamenu(profile, key=None, facet=None) %}
-            <li class="{% if facet=='data' %}active{% endif %}"><a href="{{ data_url(profile, key) }}"><span class="glyphicon glyphicon-th"></span> data</a></li>
+            <li class="{% if facet=='data' %}active{% endif %}"><a href="{{ data_url(profile, key) }}"><span class="glyphicon glyphicon-th-list"></span> data</a></li>
             <li class="{% if facet=='validate' %}active{% endif %}"><a href="{{ data_url(profile, key, 'validate') }}"><span class="glyphicon glyphicon-ok"></span> validate</a></li>
             <li class="{% if facet=='map' %}active{% endif %}"><a href="{{ data_url(profile, key, 'map') }}"><span class="glyphicon glyphicon-map-marker"></span> map</a></li>
             <li class="{% if facet=='chart' %}active{% endif %}"><a href="{{ data_url(profile, key, 'chart') }}"><span class="glyphicon glyphicon-signal"></span> chart</a></li>
@@ -26,14 +26,12 @@
       <thead>
         {% if show_headers and source.hasHeaders %}
         <tr class="hxl-headers">
-          <th></th>
           {% for header in source.headers %}
           <th>{{ unicode(header) }}</th>
           {% endfor %}
         </tr>
         {% endif %}
         <tr class="hxl-tags">
-          <th></th>
           {% for tag in source.displayTags %}
           <th>{{ unicode(tag) }}</th>
           {% endfor %}
@@ -42,7 +40,6 @@
       <tbody>
         {% for row in source %}
         <tr>
-          <td><span class="content">{{ row.row_number + 1 }}</span></td>
           {% for value in row.values %}
           <td><span class="content">{{ unicode(value) }}</span></td>
           {% endfor %}
