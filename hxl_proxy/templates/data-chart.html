@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'snippets/datamenu.html' import datamenu %}
+{% from 'macros/datamenu.html' import datamenu %}
 
 {% block menu %}
 {{ datamenu(profile, key=key, facet='chart') }}
