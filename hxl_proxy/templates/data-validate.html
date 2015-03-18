@@ -39,10 +39,10 @@
           <p>
             The HXL dataset
             {% if key %}
-            <cite><a href="/data/{{ key }}">{{ profile.name}}</a></cite> has no
+            <cite><a href="/data/{{ key }}">{{ profile.name}}</a></cite>
             {% else %}
             {% endif %} 
-            has validation errors or warnings with 
+            has no validation errors or warnings with 
             {% if profile.args.schema_url %}
             <a href="{{ profile.args.schema_url }}">custom schema</a>
             {% else %}
