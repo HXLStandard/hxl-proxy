@@ -5,25 +5,13 @@
 {% set nav_validate='active' %}
 
 {% block menu %}
-{% if key %}
-{{ datamenu(key) }}
-{% endif %}
+{{ datamenu(profile, key=key, facet='validate') }}
 {% endblock %}
 
-{% block title %}HXL data validation{% endblock %}
+{% block title %}HXL Proxy: Validate it{% endblock %}
 
 {% block main %}
-    <main class="container-fluid">
-
-      <ol class="breadcrumb">
-        <li><a href="/">Home</a></li>
-        <li><a href="/data/new">Data</a></li>
-        {% if key %}
-        <li><a href="/data/{{ key }}">{{ profile.name }}</a></li>
-        {% endif %}
-      </ol>
-
-      <h1>HXL data validatation</h1>
+      <h1>Validate it</h1>
 
       {% if profile.args.url %}
       {% if errors %}
@@ -42,16 +30,16 @@
         </div>
         <div class="panel-body">
           <p>
+            The HXL dataset
             {% if key %}
             <cite><a href="/data/{{ key }}">{{ profile.name}}</a></cite> has no
             {% else %}
-            No
             {% endif %} 
-            validation errors with 
+            has validation errors or warnings with 
             {% if profile.args.schema_url %}
             <a href="{{ profile.args.schema_url }}">custom schema</a>
             {% else %}
-            the default HXL schema{% endif %}.
+            the default schema{% endif %}.
           </p>
 
           <p><a class="btn btn-default" data-toggle="modal" data-target="#customise">Customise</a></p>
@@ -92,6 +80,4 @@
           </div>
         </div>
       </div>
-
-    </main>
 {% endblock %}

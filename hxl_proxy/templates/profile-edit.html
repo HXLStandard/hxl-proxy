@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'snippits.html' import hxltable %}
+{% from 'snippits.html' import hxltable, datamenu %}
 
 {% set nav_filter='active' %}
 
@@ -10,20 +10,8 @@
 {% endif %}
 
 {% block menu %}
-{% if key %}
-            <li class="dropdown active">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Data <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/data/{{ key }}">Browse</a></li>
-                <li class="active"><a data-toggle="modal" data-target="#editDialog" href="#editDialog">Edit</a></li>
-                {% if profile.cloneable %}
-                <li><a href="/data/new?{{ profile.args|urlencode }}">Clone</a></li>
-                {% endif %}
-              </ul>
-            </li>
-{% else %}
             <li><a data-toggle="modal" data-target="#saveDialog" href="#saveDialog">Save</a></li>
-{% endif %}
+{{ datamenu(profile, key=key, facet='edit') }}
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}

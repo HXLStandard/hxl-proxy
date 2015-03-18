@@ -11,6 +11,7 @@ import six
 import re
 import os
 import base64
+import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from flask import Flask, url_for, request
@@ -91,6 +92,22 @@ def check_auth(profile):
         return True
     return False
 
+def make_data_url(profile, key=None, facet='preview'):
+    """Construct a data URL for a profile."""
+    url = None
+    if key:
+        url = '/data/' + urllib.quote(key)
+        if facet:
+            url += '/' + urllib.quote(facet)
+    else:
+        url = '/data'
+        if facet:
+            url += '/' + urllib.quote(facet)
+        url += '?' + urllib.urlencode(profile.args)
+
+    return url
+
+
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
 
@@ -106,5 +123,8 @@ app.jinja_env.globals['unicode'] = (
     decode_string
 )
 
+app.jinja_env.globals['data_url'] = (
+    make_data_url
+)
 
 # end

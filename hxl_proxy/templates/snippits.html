@@ -1,22 +1,22 @@
-{% macro datamenu(key) %}
-            <li class="dropdown {{ kwargs.active_visualise }}">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Visualise <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li class="{{ kwargs.active_pie }}"><a href="/data/{{ key }}/chart?type=pie">Pie chart</a></li>
-                <li class="{{ kwargs.active_bar }}"><a href="/data/{{ key }}/chart?type=bar">Bar graph</a></li>
-                <li class="{{ kwargs.active_column }}"><a href="/data/{{ key }}/chart?type=column">Column graph</a></li>
-                <li class="divider"></li>
-                <li class="{{ kwargs.active_map }}"><a href="/data/{{ key }}/map">Map</a></li>
-              </ul>
-            </li>
-
+{% macro datamenu(profile, key=None, facet=None) %}
+            <li class="{% if facet=='data' %}active{% endif %}"><a href="{{ data_url(profile, key) }}"><span class="glyphicon glyphicon-th"></span> data</a></li>
+            <li class="{% if facet=='validate' %}active{% endif %}"><a href="{{ data_url(profile, key, 'validate') }}"><span class="glyphicon glyphicon-ok"></span> validate</a></li>
+            <li class="{% if facet=='map' %}active{% endif %}"><a href="{{ data_url(profile, key, 'map') }}"><span class="glyphicon glyphicon-map-marker"></span> map</a></li>
+            <li class="{% if facet=='chart' %}active{% endif %}"><a href="{{ data_url(profile, key, 'chart') }}"><span class="glyphicon glyphicon-signal"></span> chart</a></li>
+            {% if profile.cloneable %}
+            <li><a href="{{ data_url(profile, None, 'edit') }}"><span class="glyphicon glyphicon-copy"></span> clone</a></li>
+            {% endif %}
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Download <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle"
+                 data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="/data/{{ key }}.csv">Download as CSV</a></li>
-                <li><a href="/data/{{ key }}.json">Download as JSON</a></li>
+                <li><a href="/data/{{ key }}.csv">download as CSV</a></li>
+                <li><a href="/data/{{ key }}.json">download as JSON</a></li>
               </ul>
             </li>
+            {% if facet=='data' or facet=='edit' %}
+            <li class="{% if facet=='edit' %}active{% endif %}"><a href="/data/{{ key }}/chart"><span class="glyphicon glyphicon-pencil"></span> edit</a></li>
+            {% endif %}
 {% endmacro %}
 
 {% macro hxltable(source, show_headers=True, validation=False) %}

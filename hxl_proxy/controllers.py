@@ -34,7 +34,7 @@ def show_home():
     return render_template('home.html')
     
 @app.route("/filters/new") # deprecated
-@app.route("/data/new")
+@app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_edit_profile(key=None):
     """Create or edit a filter pipeline."""
@@ -131,14 +131,14 @@ def show_chart(key):
     if label:
             label = TagPattern.parse(label);
     type = request.args.get('type', 'pie')
-    return render_template('chart.html', key=key, args=profile.args, tag=tag, label=label, filter=filter, type=type)
+    return render_template('chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
 def show_map(key):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
-    return render_template('map.html', key=key, args=profile.args, layer_tag=layer_tag)
+    return render_template('map.html', key=key, profile=profile, layer_tag=layer_tag)
 
 @app.route("/data/validate")
 @app.route("/data/<key>/validate")

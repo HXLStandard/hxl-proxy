@@ -3,15 +3,14 @@
 
 {% block menu %}
 {% if key %}
-    <li><a href="/data/{{ key }}">Data</a></li>
-{{ datamenu(key, active_visualise='active') }}
+{{ datamenu(profile, key=key, facet='chart') }}
 {% endif %}
 {% endblock %}
 
-{% block title %}{% if label %}{{ label }} in {% endif %}{{ args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
+{% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
-    <h1>{% if label %}{{ label }} in {% endif %}{{ args.name|default('Filtered HXL data') }} ({{ type }} chart)</h1>
+    <h1>Chart it</h1>
 
     <div id="chart_div" style="min-height:480px"></div>
 {% endblock %}

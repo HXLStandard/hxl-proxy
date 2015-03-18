@@ -3,12 +3,11 @@
 
 {% block menu %}
 {% if key %}
-    <li><a href="/data/{{ key }}">Data</a></li>
-{{ datamenu(key, active_visualise='active', active_map='active') }}
+{{ datamenu(profile, key=key, facet='map') }}
 {% endif %}
 {% endblock %}
 
-{% block title %}{{ args.name|default('Filtered HXL data') }} (map){% endblock %}
+{% block title %}{{ profile.args.name|default('Filtered HXL data') }} (map){% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -18,9 +17,12 @@
 {% endblock %}
 
 {% block main %}
-    <h1>{{ args.name|default('Filtered HXL data') }} (map)</h1>
+    <h1>Map it</h1>
 
     <div id="map-div" style="height: 480px"></div>
+
+    <p>Dataset: <a href="/data/{{ key }}">{{ profile.name }}</a></p>
+
 {% endblock %}
 
 {% block scripts %}
