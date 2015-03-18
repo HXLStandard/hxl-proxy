@@ -34,7 +34,7 @@
                 <li><a href="{{ data_url(profile, key, format='json') }}">download as JSON</a></li>
               </ul>
             </li>
-            {% if facet=='data' or facet=='edit' %}
+            {% if not key or facet=='data' or facet=='edit' %}
             <li class="{% if facet=='edit' %}active{% endif %}">
               <a href="{{ data_url(profile, key, 'edit') }}">
                 <span class="glyphicon glyphicon-pencil"></span> edit
