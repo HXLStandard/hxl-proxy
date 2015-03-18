@@ -94,34 +94,9 @@ def do_save_profile():
 
     return redirect("/data/" + key, 303)
 
-@app.route("/filters/preview") # deprecated
-@app.route("/data/preview")
-@app.route("/data/<key>")
-@app.route("/data/<key>.<format>")
-def show_preview_data(key=None, format="html"):
-    profile = get_profile(key, auth=False)
-    if key:
-        is_authorised = check_auth(profile)
-    else:
-        is_authorised = False
-
-    name = profile.args.get('name', 'Filtered HXL dataset')
-    source = setup_filters(profile)
-    show_headers = (profile.args.get('strip-headers') != 'on')
-    if format == 'json':
-        response = Response(genJSON(source, showHeaders=show_headers), mimetype='application/json')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
-    elif format == 'html':
-        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key,
-                               show_headers=show_headers, is_authorised=is_authorised)
-    else:
-        response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
-
 @app.route('/data/<key>/chart')
-def show_chart(key):
+@app.route('/data/chart')
+def show_chart(key=None):
     """Show a chart visualisation for the data."""
     profile = get_profile(key)
     tag = request.args.get('tag')
@@ -134,15 +109,46 @@ def show_chart(key):
     return render_template('chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')
-def show_map(key):
+@app.route('/data/map')
+def show_map(key=None):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
+    print(profile)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('map.html', key=key, profile=profile, layer_tag=layer_tag)
 
+@app.route("/filters/preview") # deprecated
+@app.route("/data/preview")
+@app.route("/data/<key>")
+@app.route("/data/<key>.<format>")
+@app.route("/data.<format>")
+@app.route("/data")
+def show_preview_data(key=None, format="html"):
+    profile = get_profile(key, auth=False)
+    if key:
+        is_authorised = check_auth(profile)
+    else:
+        is_authorised = False
+
+    name = profile.args.get('name', 'Filtered HXL dataset')
+    source = setup_filters(profile)
+    show_headers = (profile.args.get('strip-headers') != 'on')
+
+    if format == 'json':
+        response = Response(genJSON(source, showHeaders=show_headers), mimetype='application/json')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    elif format == 'html':
+        return render_template('data-preview.html', title=name, source=source, profile=profile, key=key,
+                               show_headers=show_headers, is_authorised=is_authorised)
+    else:
+        response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+
 @app.route("/data/validate")
 @app.route("/data/<key>/validate")
-def show_validate(key):
+def show_validate(key=None):
     """Validate the data."""
 
     # Get the profile

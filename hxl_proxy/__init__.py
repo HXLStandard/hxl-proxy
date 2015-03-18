@@ -92,17 +92,21 @@ def check_auth(profile):
         return True
     return False
 
-def make_data_url(profile, key=None, facet='preview'):
+def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
     url = None
     if key:
         url = '/data/' + urllib.quote(key)
         if facet:
             url += '/' + urllib.quote(facet)
+        elif format:
+            url += '.' + urllib.quote(format)
     else:
         url = '/data'
-        if facet:
-            url += '/' + urllib.quote(facet)
+        if format:
+            url += '.' + urllib.quote(format)
+        elif facet:
+            url += '/' + urllib.quote(facet) + '?'
         url += '?' + urllib.urlencode(profile.args)
 
     return url
