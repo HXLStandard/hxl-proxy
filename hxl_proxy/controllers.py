@@ -75,6 +75,12 @@ def show_data_edit(key=None):
         response.set_cookie('hxl', base64.b64encode(profile.passhash))
     return response
 
+@app.route("/data/save")
+def show_data_save():
+    """Show form to save a profile."""
+    profile = get_profile(key=None)
+    return render_template('data-save.html', profile=profile)
+
 @app.route('/data/<key>/chart')
 @app.route('/data/chart')
 def show_data_chart(key=None):

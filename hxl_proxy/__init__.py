@@ -78,7 +78,7 @@ def get_profile(key, auth=False, args=None):
         if auth and not check_auth(profile):
             raise Forbidden("Wrong or missing password.")
     else:
-        profile = Profile(request.args)
+        profile = Profile(args)
     return profile
 
 
