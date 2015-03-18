@@ -79,6 +79,8 @@ def show_data_edit(key=None):
 def show_data_save():
     """Show form to save a profile."""
     profile = get_profile(key=None)
+    if not profile or not profile.args.get('url'):
+        return redirect('/data/edit', 303)
     return render_template('data-save.html', profile=profile)
 
 @app.route('/data/<key>/chart')
@@ -86,6 +88,8 @@ def show_data_save():
 def show_data_chart(key=None):
     """Show a chart visualisation for the data."""
     profile = get_profile(key)
+    if not profile or not profile.args.get('url'):
+        return redirect('/data/edit', 303)
     tag = request.args.get('tag')
     if tag:
             tag = TagPattern.parse(tag);
@@ -100,8 +104,30 @@ def show_data_chart(key=None):
 def show_data_map(key=None):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
+    if not profile or not profile.args.get('url'):
+        return redirect('/data/edit', 303)
     layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('data-map.html', key=key, profile=profile, layer_tag=layer_tag)
+
+@app.route("/data/validate")
+@app.route("/data/<key>/validate")
+def show_validate(key=None):
+    """Validate the data."""
+
+    # Get the profile
+    profile = get_profile(key)
+    if not profile or not profile.args.get('url'):
+        return redirect('/data/edit', 303)
+
+    # Get the parameters
+    url = profile.args.get('url')
+    schema_url = profile.args.get('schema_url', None)
+
+    # If we have a URL, validate the data.
+    if url:
+        errors = do_validate(setup_filters(profile), schema_url)
+        
+    return render_template('data-validate.html', key=key, profile=profile, errors=errors)
 
 @app.route("/data/<key>.<format>")
 @app.route("/data.<format>")
@@ -110,6 +136,8 @@ def show_data_map(key=None):
 def show_data(key=None, format="html"):
 
     profile = get_profile(key, auth=False)
+    if not profile or not profile.args.get('url'):
+        return redirect('/data/edit', 303)
 
     if key:
         is_authorised = check_auth(profile)
@@ -130,24 +158,6 @@ def show_data(key=None, format="html"):
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
-
-@app.route("/data/validate")
-@app.route("/data/<key>/validate")
-def show_validate(key=None):
-    """Validate the data."""
-
-    # Get the profile
-    profile = get_profile(key)
-
-    # Get the parameters
-    url = profile.args.get('url')
-    schema_url = profile.args.get('schema_url', None)
-
-    # If we have a URL, validate the data.
-    if url:
-        errors = do_validate(setup_filters(profile), schema_url)
-        
-    return render_template('data-validate.html', key=key, profile=profile, errors=errors)
 
 @app.route("/actions/save-profile", methods=['POST'])
 def do_data_save():

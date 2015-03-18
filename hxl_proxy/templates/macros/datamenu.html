@@ -1,4 +1,5 @@
 {% macro datamenu(profile, key=None, facet=None) %}
+            {% if profile.args.url %}
             <li class="{% if facet=='data' %}active{% endif %}">
               <a href="{{ data_url(profile, key) }}">
                 <span class="glyphicon glyphicon-th-list"></span> data
@@ -34,6 +35,7 @@
                 <li><a href="{{ data_url(profile, key, format='json') }}">download as JSON</a></li>
               </ul>
             </li>
+            {% endif %}
             {% if not key or facet=='data' or facet=='edit' %}
             <li class="{% if facet=='edit' %}active{% endif %}">
               <a href="{{ data_url(profile, key, 'edit') }}">
@@ -41,7 +43,7 @@
               </a>
             </li>
             {% endif %}
-            {% if not key %}
+            {% if not key and profile.args.url %}
             <li class="{% if facet=='save' %}active{% endif %}">
               <a href="{{ data_url(profile, None, 'save') }}">
                 <span class="glyphicon glyphicon-share"></span> save
