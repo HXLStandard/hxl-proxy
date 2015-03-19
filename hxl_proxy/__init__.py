@@ -75,6 +75,8 @@ def get_profile(key, auth=False, args=None):
         args = request.args
     if key:
         profile = profiles.get_profile(str(key))
+        if not profile:
+            raise NotFound("No saved profile for " + key)
         if auth and not check_auth(profile):
             raise Forbidden("Wrong or missing password.")
     else:
