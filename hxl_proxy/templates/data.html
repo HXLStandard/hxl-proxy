@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'macros/datamenu.html' import datamenu %}
+{% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/hxltable.html' import hxltable %}
 
 {% block title %}{{ title|default('Filtered HXL data') }}{% endblock %}
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block menu %}
-{{ datamenu(profile=profile, key=key, facet='data') }}
+{{ navmenu(profile=profile, key=key, facet='data') }}
 {% endblock %}
 
 {% block main %}

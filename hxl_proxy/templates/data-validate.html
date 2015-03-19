@@ -1,11 +1,11 @@
 
 {% extends "page.basic.html" %}
-{% from 'macros/datamenu.html' import datamenu, hxltable %}
+{% from 'macros/navmenu.html' import navmenu, hxltable %}
 
 {% set nav_validate='active' %}
 
 {% block menu %}
-{{ datamenu(profile, key=key, facet='validate') }}
+{{ navmenu(profile, key=key, facet='validate') }}
 {% endblock %}
 
 {% block title %}HXL Proxy: Validate it{% endblock %}

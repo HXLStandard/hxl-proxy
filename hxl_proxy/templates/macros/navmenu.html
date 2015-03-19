@@ -1,4 +1,4 @@
-{% macro datamenu(profile, key=None, facet=None) %}
+{% macro navmenu(profile, key=None, facet=None) %}
             {% if profile.args.url %}
             <li class="{% if facet=='data' %}active{% endif %}">
               <a href="{{ data_url(profile, key) }}">
@@ -20,18 +20,6 @@
                 <span class="glyphicon glyphicon-signal"></span> chart
               </a>
             </li>
-            {% if profile.cloneable %}
-            <li>
-              <a href="{{ data_url(profile, None, 'edit') }}">
-                <span class="glyphicon glyphicon-copy"></span> clone
-              </a>
-            </li>
-            {% endif %}
-            <li>
-              <a href="/data/edit">
-                <span class="glyphicon glyphicon-plus"></span> new
-              </a>
-            </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle"
                  data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
@@ -41,18 +29,39 @@
               </ul>
             </li>
             {% endif %}
-            {% if not key or facet=='data' or facet=='edit' %}
-            <li class="{% if facet=='edit' %}active{% endif %}">
-              <a href="{{ data_url(profile, key, 'edit') }}">
-                <span class="glyphicon glyphicon-pencil"></span> edit
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <span class="glyphicon glyphicon-cog"></span> customise<span class="caret"></span>
               </a>
+              <ul class="dropdown-menu" role="menu">
+                {% if profile.args.url %}
+                <li>
+                  <a href="/data/edit">
+                    <span class="glyphicon glyphicon-plus"></span> new
+                  </a>
+                </li>
+                {% endif %}
+                {% if profile.cloneable %}
+                <li>
+                  <a href="{{ data_url(profile, None, 'edit') }}">
+                    <span class="glyphicon glyphicon-copy"></span> clone
+                  </a>
+                </li>
+                {% endif %}
+                {% if not key or facet=='data' or facet=='edit' %}
+                <li class="{% if facet=='edit' %}active{% endif %}">
+                  <a href="{{ data_url(profile, key, 'edit') }}">
+                    <span class="glyphicon glyphicon-pencil"></span> edit
+                  </a>
+                </li>
+                {% endif %}
+                {% if not key and profile.args.url %}
+                <li class="{% if facet=='save' %}active{% endif %}">
+                  <a href="{{ data_url(profile, None, 'save') }}">
+                    <span class="glyphicon glyphicon-share"></span> save
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
             </li>
-            {% endif %}
-            {% if not key and profile.args.url %}
-            <li class="{% if facet=='save' %}active{% endif %}">
-              <a href="{{ data_url(profile, None, 'save') }}">
-                <span class="glyphicon glyphicon-share"></span> save
-              </a>
-            </li>
-            {% endif %}
 {% endmacro %}

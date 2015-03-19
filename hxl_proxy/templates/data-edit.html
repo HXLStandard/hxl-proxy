@@ -1,5 +1,5 @@
 {% extends "page.basic.html" %}
-{% from 'macros/datamenu.html' import datamenu %}
+{% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/hxltable.html' import hxltable %}
 
 {% set nav_filter='active' %}
@@ -11,7 +11,7 @@
 {% endif %}
 
 {% block menu %}
-{{ datamenu(profile, key=key, facet='edit') }}
+{{ navmenu(profile, key=key, facet='edit') }}
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}

@@ -1,8 +1,8 @@
 {% extends "page.basic.html" %}
-{% from 'macros/datamenu.html' import datamenu %}
+{% from 'macros/navmenu.html' import navmenu %}
 
 {% block menu %}
-{{ datamenu(profile, key=key, facet='chart') }}
+{{ navmenu(profile, key=key, facet='chart') }}
 {% endblock %}
 
 {% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
