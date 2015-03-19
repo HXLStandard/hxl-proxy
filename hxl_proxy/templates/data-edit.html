@@ -71,8 +71,6 @@
                 </div>
                 {% if datasets %}
                 <p class="small">&hellip; or <a data-toggle="modal" href="#hdx-dialog">pick a HXL dataset from HDX</a></p>
-                {% else %}
-                <p class="small">(<a href="/data/edit">clear and start over</a>)</p>
                 {% endif %}
               </div>
 
@@ -406,23 +404,19 @@
     <div class="modal fade" id="hdx-dialog" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">HXL datasets in HDX</h2>
-        </div>
-        <div class="modal-body">
-          <ul>
-            {% for dataset in datasets %}
-            <li>
-              {{ dataset.title }}
-              <ul>
-                {% for resource in dataset.resources %}
-                <li><a href="/data/edit?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</li>
-                {% endfor %}
-              </ul>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
+          <div class="modal-header">
+            <h2 class="modal-title">HXL datasets in HDX</h2>
+          </div>
+          <div class="modal-body">
+            <dl>
+              {% for dataset in datasets %}
+              <dt>{{ dataset.title }}</dt>
+              {% for resource in dataset.resources %}
+              <dd><a href="/data/edit?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</dd>
+              {% endfor %}
+              {% endfor %}
+            </dl>
+          </div>
         </div>
       </div>
     </div>
