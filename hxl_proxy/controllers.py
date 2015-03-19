@@ -41,6 +41,11 @@ if not app.config.get('DEBUG'):
 # Redirects for deprecated URL patterns
 #
 
+@app.route("/")
+def redirect_home():
+    # home isn't moved permanently
+    return redirect("/data/edit?" + urllib.urlencode(request.args) , 302)
+
 @app.route("/filters/new") # deprecated
 def redirect_edit():
     return redirect("/data/edit?" + urllib.urlencode(request.args) , 301)
@@ -55,11 +60,6 @@ def redirect_data():
 # Primary controllers
 #
 
-@app.route("/")
-def show_home():
-    """Home page."""
-    return render_template('home.html')
-    
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_data_edit(key=None):
