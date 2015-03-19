@@ -19,6 +19,7 @@ from flask import Response, request, render_template, redirect, make_response
 from hxl_proxy import app, profiles, munge_url, get_profile, check_auth
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
+from hxl_proxy.hdx import get_hdx_datasets
 
 from hxl.model import TagPattern
 from hxl.io import genHXL, genJSON
@@ -66,11 +67,14 @@ def show_data_edit(key=None):
     """Create or edit a filter pipeline."""
     profile = get_profile(key, auth=True)
     source = None
+    datasets = None
     if profile.args.get('url'):
         source = setup_filters(profile)
+    else:
+        datasets = get_hdx_datasets()
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    response = make_response(render_template('data-edit.html', key=key, profile=profile, source=source, show_headers=show_headers))
+    response = make_response(render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets, show_headers=show_headers))
     if key:
         response.set_cookie('hxl', base64.b64encode(profile.passhash))
     return response
