@@ -1,1 +1,1 @@
-PROFILE_FILE = "/tmp/hdx-proxy-profiles"
+PROFILE_FILE = "/tmp/hxl-proxy-profiles"
