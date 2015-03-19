@@ -1,5 +1,4 @@
 {% extends "page.basic.html" %}
-{% from 'macros/forms.html' import input_filters %}
 {% from 'macros/datamenu.html' import datamenu %}
 {% from 'macros/hxltable.html' import hxltable %}
 
@@ -70,6 +69,7 @@
                     <button class="btn btn-success" type="submit">Update</button>
                   </span>
                 </div>
+                <p class="small">&hellip; or <a data-toggle="modal" href="#hdx-dialog">pick a HXL dataset from HDX</a></p>
               </div>
 
               <div class="checkbox">
@@ -397,6 +397,21 @@
 
       </form>
     </main>
+
+    {% if not profile.args.url %}
+    <div class="modal fade" id="hdx-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">HXL datasets in HDX</h2>
+        </div>
+        <div class="modal-body">
+          <p>List goes here</p>
+        </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
 {% endblock %}
 
