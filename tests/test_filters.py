@@ -21,6 +21,7 @@ else:
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
+from hxl_proxy.profiles import Profile
 
 DATA = [
     ['#org', '#sector', '#country'],
@@ -29,9 +30,61 @@ DATA = [
     ['Org C', 'Protection', 'Country A']
 ]
 
-# TODO test setup_filters
+class TestSetupFilters(unittest.TestCase):
 
-# TODO test make_input
+    def test_filters(self):
+        """Test the normal case of a filter pipeline."""
+        args = {
+            'url': 'http://example.org/data.csv',
+            'filter_count': 3,
+            'filter01': 'count',
+            'count-tags02': 'adm1,adm2',
+            'filter02': 'select',
+            'select-query02-01': 'country=Liberia',
+            'filter03': 'sort',
+            'sort-tags02': 'adm1,adm2'
+        }
+        profile = Profile(args)
+        source = setup_filters(profile)
+
+        # check the whole pipeline
+        self.assertEqual('SortFilter', source.__class__.__name__)
+        self.assertEqual('SelectFilter', source.source.__class__.__name__)
+        self.assertEqual('CountFilter', source.source.source.__class__.__name__)
+        self.assertEqual('HXLReader', source.source.source.source.__class__.__name__)
+
+    def test_null_profile(self):
+        """Test passing a null profile to setup_filters"""
+        self.assertIsNone(setup_filters(None))
+
+    def test_null_url(self):
+        "Test passing a profile with no url."
+        profile = Profile({})
+        self.assertIsNone(setup_filters(profile))
+
+
+class TestMakeInput(unittest.TestCase):
+
+    def test_plain_input(self):
+        """Test setting up normal URL input."""
+        args = {
+            'url': 'http://example.org/data.csv'
+        }
+        input = make_input(args)
+        self.assertEqual('URLInput', input.__class__.__name__)
+
+    def test_tagger_input(self):
+        """Test setting up normal auto-tagger input."""
+        args = {
+            'url': 'http://example.org/data.csv',
+            'filter01': 'tagger',
+            'tagger-01-tag': '#org',
+            'tagger-01-header': 'Organisation',
+        }
+        input = make_input(args)
+        self.assertEqual('Tagger', input.__class__.__name__)
+        self.assertEqual([('organisation', '#org')], input.specs)
+
 
 class TestPipelineFunctions(unittest.TestCase):
 

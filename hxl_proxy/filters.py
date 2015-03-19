@@ -35,11 +35,14 @@ def setup_filters(profile):
     @return a HXL DataSource representing the full pipeline.
     """
 
+    # null profile or url means null source
+    if not profile or not profile.args.get('url'):
+        return None
+
     # Basic input source
     source = HXLReader(make_input(profile.args))
 
     # Create the filter pipeline from the source
-    # (Maximum
     filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
     for index in range(1, 1+filter_count):
         filter = profile.args.get('filter%02d' % index)
@@ -65,6 +68,7 @@ def setup_filters(profile):
 def make_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
+    print("URL:" + munge_url(url))
 
     # TODO raise exception
     input = URLInput(munge_url(url))
