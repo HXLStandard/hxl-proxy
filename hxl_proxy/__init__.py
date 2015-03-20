@@ -69,6 +69,13 @@ def url_escape_tag(tag):
         tag = tag[1:]
     return tag
 
+def urlencode_utf8(params):
+    if hasattr(params, 'items'):
+        params = params.items()
+    return '&'.join(
+        (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
+            for k, v in params))
+
 def get_profile(key, auth=False, args=None):
     """Load a profile or create from args."""
     if args is None:
@@ -81,6 +88,7 @@ def get_profile(key, auth=False, args=None):
             raise Forbidden("Wrong or missing password.")
     else:
         profile = Profile(args)
+    print(profile.args)
     return profile
 
 
@@ -109,7 +117,7 @@ def make_data_url(profile, key=None, facet=None, format=None):
             url += '.' + urllib.quote(format)
         elif facet:
             url += '/' + urllib.quote(facet)
-        url += '?' + urllib.urlencode(profile.args)
+        url += '?' + urlencode_utf8(profile.args)
 
     return url
 

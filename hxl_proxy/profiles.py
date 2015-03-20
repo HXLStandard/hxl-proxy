@@ -51,14 +51,14 @@ class ProfileManager:
         @param key the string key for the profile.  
         @return the profile as an associative array.
         """
-        dict = shelve.open(self.filename)
+        profile_map = shelve.open(self.filename)
         try:
-            if str(key) in dict:
-                return copy.copy(dict[str(key)])
+            if str(key) in profile_map:
+                return copy.copy(profile_map[str(key)])
             else:
                 return None
         finally:
-            dict.close()
+            profile_map.close()
 
     def update_profile(self, key, profile):
         """

@@ -198,6 +198,8 @@ def do_data_save():
                 profile.set_password(new_password)
             else:
                 raise BadRequest("Passwords don't match")
+        # copy in the new args
+        profile.args = request.form.copy()
         profiles.update_profile(str(key), profile)
     else:
         # Creating a new profile.
