@@ -2,7 +2,7 @@
 {% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/hxltable.html' import hxltable %}
 
-{% block title %}{{ title|default('Filtered HXL data') }}{% endblock %}
+{% block title %}{{ profile.name|default("Filtered data") }}{% endblock %}
 
 {% block head %}
 {{ super() }}
