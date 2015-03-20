@@ -48,13 +48,17 @@
                   </a>
                 </li>
                 {% endif %}
-                {% if not key or facet=='data' or facet=='edit' %}
                 <li class="{% if facet=='edit' %}active{% endif %}">
+                  {% if key %}
+                  <a data-toggle="modal" href="#editDialog">
+                    <span class="glyphicon glyphicon-pencil"></span> edit
+                  </a>
+                  {% else %}
                   <a href="{{ data_url(profile, key, 'edit') }}">
                     <span class="glyphicon glyphicon-pencil"></span> edit
                   </a>
+                  {% endif %}
                 </li>
-                {% endif %}
                 {% if not key and profile.args.url %}
                 <li class="{% if facet=='save' %}active{% endif %}">
                   <a href="{{ data_url(profile, None, 'save') }}">

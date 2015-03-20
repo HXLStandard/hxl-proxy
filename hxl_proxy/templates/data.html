@@ -31,75 +31,11 @@
       <h2>Data</h2>
       {{ hxltable(source) }}
     </section>
+
     {% if key %}
-    <div class="modal fade" id="editDialog" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title">Edit filter</h2>
-          </div>
-          <div class="modal-body">
-            {% if not is_authorised %}
-            <p><small>You need a password to edit this filter.{% if profile.cloneable %} You can also use the "Clone" option to create your own copy.{% endif %}</small></p>
-            {% endif %}
-            <form class="theme-form" method="POST" action="/data/{{ key }}/edit">
-              {% if not is_authorised %}
-              <div class="required form-group">
-                <label for="password">Password</label>
-                <input name="password" type="password" required="required" class="form-control" />
-              </div>
-              {% endif %}
-              <button type="submit">Edit this filter</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title">Save this filter</h2>
-          </div>
-          <div class="modal-body">
-            <p>Save this filter and generate a short permalink. You
-            can edit the filter in the future using the password that
-            you enter below.</p>
-            <form class="theme-form" method="POST" action="/actions/save-profile">
-              {% for name in profile.args %}
-              {% if profile.args[name] %}
-              <input type="hidden" name="{{ name }}" value="{{ profile.args[name] }}" />
-              {% endif %}
-              {% endfor %}
-              <label class="required">
-                <span>Filter name</span>
-                <input name="name" required="required" />
-              </label>
-              <label>
-                <span>Short description</span>
-                <textarea name="description">
-                </textarea>
-              </label>
-              <label class="required">
-                <span>Editing password</span>
-                <input name="password" type="password" required="required" />
-              </label>
-              <label class="required">
-                <span>Editing password (repeat)</span>
-                <input name="password-repeat" type="password" required="required" />
-              </label>
-              <label>
-                <input name="cloneable" type="checkbox" />
-                <span>Users may clone (will expose original URL)</span>
-              </label>
-              <button type="submit">Save this filter</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include 'snippets/edit-dialog.html' %}
     {% endif %}
+
 {% endblock %}
 
 {% block scripts %}
