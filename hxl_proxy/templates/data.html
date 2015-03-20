@@ -1,6 +1,5 @@
 {% extends "page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/hxltable.html' import hxltable %}
 
 {% block title %}{{ profile.name|default("Filtered data") }}{% endblock %}
 
@@ -29,7 +28,7 @@
 
     <section id="data">
       <h2>Data</h2>
-      {{ hxltable(source) }}
+      {% include 'snippets/hxltable.html' %}
     </section>
 
     {% if key %}

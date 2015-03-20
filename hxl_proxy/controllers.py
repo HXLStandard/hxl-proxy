@@ -72,9 +72,10 @@ def show_data_edit(key=None):
         source = setup_filters(profile)
     else:
         datasets = get_hdx_datasets()
-    show_headers = (profile.args.get('strip-headers') != 'on')
 
-    response = make_response(render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets, show_headers=show_headers))
+    response = make_response(
+        render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets)
+    )
     if key:
         response.set_cookie('hxl', base64.b64encode(profile.passhash))
     return response
@@ -157,7 +158,7 @@ def show_data(key=None, format="html"):
         return response
     elif format == 'html':
         return render_template('data.html', source=source, profile=profile, key=key,
-                               show_headers=show_headers, is_authorised=is_authorised)
+                               is_authorised=is_authorised)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'

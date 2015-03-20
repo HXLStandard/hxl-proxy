@@ -76,7 +76,7 @@ def make_input(args):
     # Intercept tagging as a special data input
     if args.get('filter01') == 'tagger':
         specs = []
-        for n in range(1, 11):
+        for n in range(1, 21):
             header = args.get('tagger-%02d-header' % n)
             tag = args.get('tagger-%02d-tag' % n)
             if header and tag:
