@@ -47,7 +47,7 @@
     {% for message in messages %}
     <div class="alert alert-warning">
       <a href="#" class="close" data-dismiss="alert">&times;</a>
-      <p>{{ message }}</p>
+      <p>{{ unicode(message) }}</p>
     </div>
     {% endfor %}
     {% endif %}

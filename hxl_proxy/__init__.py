@@ -14,7 +14,7 @@ import base64
 import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from flask import Flask, url_for, request, flash
+from flask import Flask, url_for, request, flash, session
 
 from hxl_proxy.profiles import Profile, ProfileManager
 
@@ -103,14 +103,16 @@ def get_profile(key, auth=False, args=None):
 
 def check_auth(profile):
     """Check authorisation."""
-    passhash = request.cookies.get('hxl')
-    if passhash and profile.passhash == base64.b64decode(passhash):
+    passhash = session.get('passhash')
+    if passhash and profile.passhash == passhash:
         return True
     password = request.form.get('password')
     if password:
         if profile.check_password(password):
+            session['passhash'] = profile.passhash
             return True
         else:
+            session['passhash'] = None
             flash("Wrong password")
     return False
 

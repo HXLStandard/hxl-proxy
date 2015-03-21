@@ -86,12 +86,7 @@ def show_data_edit(key=None):
         # pass a list of HDX datasets tagged "hxl"
         datasets = get_hdx_datasets()
 
-    response = make_response(
-        render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets)
-    )
-    if key:
-        response.set_cookie('hxl', base64.b64encode(profile.passhash))
-    return response
+    return render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets)
 
 @app.route("/data/save")
 def show_data_save():
@@ -216,9 +211,6 @@ def do_data_save():
             raise BadRequest("Passwords don't match")
         key = profiles.add_profile(profile)
 
-    response = make_response(redirect(make_data_url(profile, key=key, facet='edit'), 303))
-    if key:
-        response.set_cookie('hxl', base64.b64encode(profile.passhash))
-    return response
+    return redirect(make_data_url(profile, key=key, facet='edit'), 303)
 
 # end
