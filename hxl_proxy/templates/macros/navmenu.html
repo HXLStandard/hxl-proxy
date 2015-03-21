@@ -1,4 +1,4 @@
-{% macro navmenu(profile, key=None, facet=None, is_authorised=False) %}
+{% macro navmenu(profile, key=None, facet=None) %}
             {% if profile.args.url %}
             <li class="{% if facet=='data' %}active{% endif %}">
               <a href="{{ data_url(profile, key) }}">

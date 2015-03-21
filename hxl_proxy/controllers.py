@@ -157,11 +157,6 @@ def show_data(key=None, format="html"):
     if not profile or not profile.args.get('url'):
         return redirect('/data/edit', 303)
 
-    if key:
-        is_authorised = check_auth(profile)
-    else:
-        is_authorised = False
-
     source = setup_filters(profile)
     show_headers = (profile.args.get('strip-headers') != 'on')
 
@@ -170,8 +165,7 @@ def show_data(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('data.html', source=source, profile=profile, key=key,
-                               is_authorised=is_authorised)
+        return render_template('data.html', source=source, profile=profile, key=key)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
