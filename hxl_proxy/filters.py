@@ -87,11 +87,11 @@ def make_input(args):
 
 def add_add_filter(source, args, index):
     """Add the hxladd filter to the end of the chain."""
-    tag = args.get('add-tag%02d' % index)
+    tagspec = _parse_tagspec(args.get('add-tag%02d' % index))
     header = args.get('add-header%02d' % index)
     value = args.get('add-value%02d' % index)
     before = (args.get('add-before%02d' % index) == 'on')
-    values = [(Column(tag=tag, header=header), value)]
+    values = [(Column.parse(tagspec, header=header), value)]
     return AddFilter(source, values=values, before=before)
 
 def add_clean_filter(source, args, index):
@@ -132,9 +132,10 @@ def add_merge_filter(source, args, index):
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
     oldtag = TagPattern.parse(args.get('rename-oldtag%02d' % index))
-    newtag = TagPattern(args.get('rename-newtag%02d' % index))
+    tagspec = _parse_tagspec(args.get('rename-newtag%02d' % index))
     header = args.get('rename-header%02d' % index)
-    return RenameFilter(source, [(oldtag, Column(tag=newtag, header=header))])
+    column = Column.parse(tagspec, header=header)
+    return RenameFilter(source, [(oldtag, column)])
 
 def add_select_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
@@ -151,5 +152,11 @@ def add_sort_filter(source, args, index):
     tags = TagPattern.parse_list(args.get('sort-tags%02d' % index, ''))
     reverse = (args.get('sort-reverse%02d' % index) == 'on')
     return SortFilter(source, tags=tags, reverse=reverse)
+
+def _parse_tagspec(s):
+    if (s[0] == '#'):
+        return s
+    else:
+        return '#' + s
 
 # end
