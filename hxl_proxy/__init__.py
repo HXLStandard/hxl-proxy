@@ -40,12 +40,17 @@ profiles = ProfileManager(app.config['PROFILE_FILE'])
 # https://docs.google.com/spreadsheets/d/1ytPD-f4a8CbNKTfMS3EqZOpBo9LWCk_NDKxJCgmpXA8/edit?usp=sharing
 def munge_url(url):
     """If a URL points to a tab in a Google Sheet, grab the CSV export."""
-    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*(?:gid=([0-9]+))?', str(url))
+
+    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*gid=([0-9]+)', str(url))
     if result:
-        if result.group(2):
-            url = 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}'.format(result.group(1), result.group(2))
-        else:
+        return 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}'.format(result.group(1), result.group(2))
+
+    # FIXME shouldn't need two patterns, but it's defeating me right now
+    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44})', str(url))
+    if result:
             url = 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv'.format(result.group(1))
+
+    # Return the original URL
     return url
 
 def decode_string(s):
