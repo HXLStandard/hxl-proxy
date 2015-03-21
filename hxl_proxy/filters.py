@@ -132,9 +132,9 @@ def add_merge_filter(source, args, index):
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
     oldtag = TagPattern.parse(args.get('rename-oldtag%02d' % index))
-    newtag = TagPattern.parse(args.get('rename-newtag%02d' % index))
+    newtag = TagPattern(args.get('rename-newtag%02d' % index))
     header = args.get('rename-header%02d' % index)
-    return RenameFilter(source, {oldtag: [newtag, header]})
+    return RenameFilter(source, [(oldtag, Column(tag=newtag, header=header))])
 
 def add_select_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
