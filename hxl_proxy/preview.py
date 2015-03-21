@@ -9,23 +9,29 @@ class PreviewFilter(DataProvider):
         self.source = source
         self.max = max
         self.count = 0
-        self.has_more = True
+        self.has_more = False
+        self._done = False
 
     @property
     def columns(self):
         return self.source.columns
 
     def __next__(self):
+        if self._done:
+            return
+
         row = self.source.next()
         if not row:
+            self._done = True
             self.has_more = False
             return None
         elif self.count >= self.max:
+            self._done = True
             self.has_more = True
             return None
         else:
             self.count += 1
-            return self.source.next()
+            return row
 
     next = __next__
 

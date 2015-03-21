@@ -38,7 +38,7 @@ profiles = ProfileManager(app.config['PROFILE_FILE'])
 # Utilities
 #
 
-# https://docs.google.com/spreadsheets/d/1ytPD-f4a8CbNKTfMS3EqZOpBo9LWCk_NDKxJCgmpXA8/edit?usp=sharing
+
 def munge_url(url):
     """If a URL points to a tab in a Google Sheet, grab the CSV export."""
 
