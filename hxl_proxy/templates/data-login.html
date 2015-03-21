@@ -1,0 +1,17 @@
+{% extends "models/page.basic.html" %}
+
+{% block title %}Password required{% endblock %}
+
+{% block main %}
+    <h1>Password required</h1>
+    <p>You need to enter the correct password to edit <a href="{{ data_url(profile, key) }}">{{ profile.name }}</a></p>
+    <form class="theme-form" method="POST" action="/data/{{ key }}/edit">
+      {% if not is_authorised %}
+      <div class="required form-group">
+        <label for="password">Password</label>
+        <input name="password" type="password" required="required" class="form-control" />
+      </div>
+      {% endif %}
+      <button type="submit">Edit this filter</button>
+    </form>
+{% endblock %}

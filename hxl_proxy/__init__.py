@@ -14,12 +14,13 @@ import base64
 import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, flash
 
 from hxl_proxy.profiles import Profile, ProfileManager
 
 # Main application object
 app = Flask(__name__)
+app.secret_key = app.config['SECRET_KEY']
 
 # Global config
 app.config.from_object('hxl_proxy.default_config')
@@ -106,8 +107,11 @@ def check_auth(profile):
     if passhash and profile.passhash == base64.b64decode(passhash):
         return True
     password = request.form.get('password')
-    if password and profile.check_password(password):
-        return True
+    if password:
+        if profile.check_password(password):
+            return True
+        else:
+            flash("Wrong password")
     return False
 
 def make_data_url(profile, key=None, facet=None, format=None):

@@ -62,11 +62,21 @@ def redirect_data():
 # Primary controllers
 #
 
+@app.route("/data/<key>/login")
+def show_data_login(key):
+    profile = get_profile(key)
+    return render_template('data-login.html', key=key, profile=profile)
+
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_data_edit(key=None):
     """Create or edit a filter pipeline."""
-    profile = get_profile(key, auth=True)
+
+    try:
+        profile = get_profile(key, auth=True)
+    except Forbidden, e:
+        return redirect(make_data_url(None, key=key, facet='login'))
+
     source = None
     datasets = None
     if profile.args.get('url'):
