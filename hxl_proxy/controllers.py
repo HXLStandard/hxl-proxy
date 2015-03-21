@@ -20,6 +20,7 @@ from hxl_proxy import app, profiles, munge_url, get_profile, check_auth, make_da
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
+from hxl_proxy.preview import PreviewFilter
 
 from hxl.model import TagPattern
 from hxl.io import genHXL, genJSON
@@ -74,7 +75,7 @@ def show_data_edit(key=None):
         datasets = get_hdx_datasets()
 
     response = make_response(
-        render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets)
+        render_template('data-edit.html', key=key, profile=profile, source=PreviewFilter(source, max=4), datasets=datasets)
     )
     if key:
         response.set_cookie('hxl', base64.b64encode(profile.passhash))

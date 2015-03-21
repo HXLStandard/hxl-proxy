@@ -391,9 +391,17 @@
             </div>
             {% endfor %}
           </fieldset>
-          <div class="col-md-10">
+          <section class="col-md-10">
+            <h2>Data preview</h2>
+            {% if source %}
             {% include 'snippets/hxltable.html' %}
-          </div>
+            {% if source.has_more %}
+            <p>Displaying first {{ source.count }} line(s) only.</p>
+            {% endif %}
+            {% else %}
+            (no data yet)
+            {% endif %}
+          </section>
         </div>
 
       </form>
