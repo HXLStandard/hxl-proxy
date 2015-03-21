@@ -15,7 +15,5 @@ setup(
     url='https://github.com/HXLStandard/hxl-proxy',
     install_requires=['flask', 'libhxl', 'ckanapi'],
     test_suite = "tests",
-    tests_require = {
-        'test': ['mock']
-    }
+    tests_require = ['mock']
 )
