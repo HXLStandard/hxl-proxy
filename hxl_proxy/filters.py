@@ -68,7 +68,6 @@ def setup_filters(profile):
 def make_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
-    print("URL:" + munge_url(url))
 
     # TODO raise exception
     input = URLInput(munge_url(url))

@@ -88,7 +88,6 @@ def get_profile(key, auth=False, args=None):
             raise Forbidden("Wrong or missing password.")
     else:
         profile = Profile(args)
-    print(profile.args)
     return profile
 
 
