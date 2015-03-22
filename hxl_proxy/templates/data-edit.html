@@ -397,13 +397,12 @@
           <p class="alert alert-warning">Select a HXL dataset URL before creating filters.</p>
           {% endif %}
           <section class="col-md-10">
-            <h2>Data preview</h2>
             {% if source %}
             <div id="preview-table">
               {% include 'snippets/hxltable.html' %}
             </div>
             {% if source.has_more_rows %}
-            <p id="preview-warning" class="alert alert-warning hxltable-warning">Displaying only the first {{ "{:,}".format(source.max_rows) }} out of {{ "{:,}".format(source.total_rows) }} data rows.</p>
+            <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
             {% endif %}
             {% else %}
             <p class="alert alert-info">No data yet.</p>
