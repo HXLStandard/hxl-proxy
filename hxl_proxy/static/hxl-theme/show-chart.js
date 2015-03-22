@@ -5,7 +5,6 @@ google.load('visualization', '1.0', {'packages':['corechart']});
 google.setOnLoadCallback(drawChart);
 
 function get_label_tag(hxl) {
-    console.log(hxl);
     if (chart_label_tag && hxl.hasColumn(chart_label_tag)) {
         return chart_label_tag;
     } else {
@@ -37,7 +36,6 @@ function drawChart() {
         var hxlData = new HXLDataset(rawData);
         var label_tag = get_label_tag(hxlData);
         var value_tag = get_value_tag(hxlData);
-        console.log(label_tag, value_tag);
 
         var chartData = [[label_tag, value_tag]];
         var iterator = hxlData.iterator();

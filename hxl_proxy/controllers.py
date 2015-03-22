@@ -81,7 +81,7 @@ def show_data_edit(key=None):
     datasets = None
     if profile.args.get('url'):
         # show only a short preview
-        source = PreviewFilter(setup_filters(profile), max=5)
+        source = PreviewFilter(setup_filters(profile), max_rows=5)
     else:
         # pass a list of HDX datasets tagged "hxl"
         datasets = get_hdx_datasets()

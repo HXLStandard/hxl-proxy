@@ -42,7 +42,6 @@
 {% block scripts %}
     <script type="text/javascript">
       var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
-      console.log(csv_url);
       var map_layer_tag = "{{ layer_tag }}";
     </script>
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>

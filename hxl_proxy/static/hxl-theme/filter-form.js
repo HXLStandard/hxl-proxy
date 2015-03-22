@@ -26,7 +26,6 @@ function setup_fieldset(node, index) {
 
 // Add triggers to hide/show fields based on filter
 $("#filter-form div.filter").each(function (index) {
-    console.log(index);
     var filter_node = this;
     setup_fieldset(filter_node, index);
     $(filter_node).find(".field_filter select").on("change", function () {

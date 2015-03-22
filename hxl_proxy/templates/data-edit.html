@@ -126,8 +126,10 @@
         </fieldset>
 
         <div class="row-fluid">
+          {% if profile.args.url %}
           <fieldset class="col-md-2 btn-group btn-group-vertical">
             <legend>HXL filters</legend>
+            <p>Set filters to change the HXL data on the fly.</p>
             {% for n in range(1, filter_count+1) %}
             <div class="filter">
               <a class="btn btn-default filter-button" data-toggle="modal" data-target="#filter-dialog-{{ n }}" href="#filter-dialog-{{ n }}">{{ n }}</a>
@@ -139,10 +141,10 @@
                     </div>
                     <div class="modal-body">
                       <fieldset id="{{ 'filter-group%02d' % n }}">
-                        <div id="{{ 'filter%02d' % n }}" class="field_filter">
+                        <div id="{{ 'filter%02d' % n }}" class="field_filter form-group">
                           <label for="{{ name }}">Filter type</label>
                           {% set name='filter%02d' % n %}
-                          <select name="{{ name }}">
+                          <select name="{{ name }}" class="form-control">
                             <option value="">(none)</option>
                             {% if n == 1 %}
                             <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
@@ -391,15 +393,20 @@
             </div>
             {% endfor %}
           </fieldset>
+          {% else %}
+          <p class="alert alert-warning">Select a HXL dataset URL before creating filters.</p>
+          {% endif %}
           <section class="col-md-10">
             <h2>Data preview</h2>
             {% if source %}
-            {% include 'snippets/hxltable.html' %}
-            {% if source.has_more %}
-            <p>Displaying first {{ source.count }} line(s) only.</p>
+            <div id="preview-table">
+              {% include 'snippets/hxltable.html' %}
+            </div>
+            {% if source.has_more_rows %}
+            <p id="preview-warning" class="alert alert-warning hxltable-warning">Displaying only the first {{ "{:,}".format(source.max_rows) }} out of {{ "{:,}".format(source.total_rows) }} data rows.</p>
             {% endif %}
             {% else %}
-            (no data yet)
+            <p class="alert alert-info">No data yet.</p>
             {% endif %}
           </section>
         </div>
@@ -434,4 +441,9 @@
 {% block scripts %}
 {{ super() }}
     <script src="{{ static('hxl-theme/filter-form.js') }}"></script>
+    <script>
+      $(document).ready(function() {
+        $("#preview-warning").insertBefore($("#preview-table"));
+      });
+    </script>
 {% endblock %}

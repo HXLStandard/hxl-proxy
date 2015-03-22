@@ -5,32 +5,30 @@ from hxl.model import DataProvider
 class PreviewFilter(DataProvider):
     """Show only up to the first n rows of a dataset."""
 
-    def __init__(self, source, max=10):
+    def __init__(self, source, max_rows=10):
         self.source = source
-        self.max = max
-        self.count = 0
-        self.has_more = False
-        self._done = False
+        self.max_rows = max_rows
+        self.has_more_rows = False
+        self.total_rows = 0
+        self._row_counter = 0
+
 
     @property
     def columns(self):
         return self.source.columns
 
     def __next__(self):
-        if self._done:
-            return
-
         row = self.source.next()
-        if not row:
-            self._done = True
-            self.has_more = False
-            return None
-        elif self.count >= self.max:
-            self._done = True
-            self.has_more = True
-            return None
+
+        if self._row_counter >= self.max_rows:
+            self.has_more_rows = True
+            self.total_rows +=1
+            for row in self.source:
+                self.total_rows += 1
+            raise StopIteration()
         else:
-            self.count += 1
+            self._row_counter += 1
+            self.total_rows += 1
             return row
 
     next = __next__
