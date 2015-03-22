@@ -86,7 +86,9 @@ def show_data_edit(key=None):
         # pass a list of HDX datasets tagged "hxl"
         datasets = get_hdx_datasets()
 
-    return render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets)
+    show_headers = (profile.args.get('strip-headers') != 'on')
+
+    return render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets, show_headers=show_headers)
 
 @app.route("/data/save")
 def show_data_save():
@@ -160,7 +162,7 @@ def show_data(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
-        return render_template('data.html', source=source, profile=profile, key=key)
+        return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
     else:
         response = Response(genHXL(source, showHeaders=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
