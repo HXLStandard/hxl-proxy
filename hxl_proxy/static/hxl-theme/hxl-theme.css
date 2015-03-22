@@ -1,5 +1,5 @@
 .btn-group-vertical .btn {
-    width: 10em;
+    width: 100%;
 }
 
 .required label:before {
