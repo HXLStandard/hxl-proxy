@@ -179,11 +179,11 @@ class TestPipelineFunctions(unittest.TestCase):
         filter = add_rename_filter(self.source, args, 8)
         self.assertEqual('RenameFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source)
-        for key in filter.rename:
+        for spec in filter.rename:
             # XXX assuming just one key, or else this will break badly
-            self.assertEqual('#loc-sensitive', str(key))
-            self.assertEqual('#adm1', str(filter.rename[key][0]))
-            self.assertEqual('Provincia', filter.rename[key][1])
+            self.assertEqual('#loc-sensitive', str(spec[0]))
+            self.assertEqual('#adm1', spec[1].displayTag)
+            self.assertEqual('Provincia', spec[1].header)
 
     def test_add_select_filter(self):
         """Test constructing a hxl.filters.SelectFilter from HTTP parameters."""
