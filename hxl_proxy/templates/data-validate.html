@@ -25,7 +25,14 @@
 
       <ul>
         {% for error in errors %}
-        <li><a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>: {{ error }}</li>
+        <li>
+          {% if error.row %}
+          <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>:
+          {% else %}
+          <a href="{{ data_url(profile) }}#hashtag-row">Hashtag row</a>:
+          {% endif %}
+          {{ error }}
+        </li>
         {% endfor %}
       </ul>
       {% else %}
