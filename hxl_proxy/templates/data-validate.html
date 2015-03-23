@@ -28,7 +28,7 @@ HXL data
 
       {% if profile.args.url %}
       {% if errors %}
-      <p class="alert alert-danger">Failed validation: {{ errors|length }} error(s).</p>
+      <p class="alert alert-danger">Failed validation: {{ errors|length }} error(s). <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
 
       <table class="table">
         <thead>
@@ -59,20 +59,18 @@ HXL data
         </tbody>
       </table>
       {% else %}
-      <p class="alert alert-success">Validation succeeded with no error.</p>
+      <p class="alert alert-success">Validation succeeded with no error. <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
       {% endif %}
+      {% else %}
       <p class="alert alert-default">No data yet to validate</p>
       {% endif %}
-
-      <p><a class="btn btn-default" data-toggle="modal" data-target="#customise">Customise</a></p>
 
       <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h2 class="modal-title">Customise validation</h2>
-            </div>
-            <div class="modal-body">
+
               <form class="form" action="">
 
                 {% if not key %}
