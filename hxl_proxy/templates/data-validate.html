@@ -7,7 +7,14 @@
 {{ navmenu(profile, key=key, facet='validate') }}
 {% endblock %}
 
-{% block title %}HXL Proxy: Validate it{% endblock %}
+{% block title %}
+Validate:
+{% if key %}
+{{ profile.name }}
+{% else %}
+HXL data
+{% endif %}
+{% endblock %}
 
 {% block main %}
     <h1>
@@ -23,18 +30,34 @@
       {% if errors %}
       <p class="alert alert-danger">Failed validation: {{ errors|length }} error(s).</p>
 
-      <ul>
-        {% for error in errors %}
-        <li>
-          {% if error.row %}
-          <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>:
-          {% else %}
-          <a href="{{ data_url(profile) }}#hashtag-row">Hashtag row</a>:
-          {% endif %}
-          {{ error }}
-        </li>
-        {% endfor %}
-      </ul>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Severity</th>
+            <th>Tag</th>
+            <th>Value</th>
+            <th>Message</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for error in errors %}
+          <tr>
+            <td><span class="badge">{{ error.severity_label }}</span></td>
+            <td>{{ error.rule.tag_pattern|nonone }}</td>
+            <td>{{ error.value|nonone }}</td>
+            <td>{{ error.message|nonone }}</td>
+            <td>
+              {% if error.row %}
+              <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>
+              {% else %}
+              <a href="{{ data_url(profile) }}#hashtag-row">Hashtag row</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       {% else %}
       <p class="alert alert-success">Validation succeeded with no error.</p>
 

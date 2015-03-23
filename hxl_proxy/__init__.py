@@ -139,6 +139,10 @@ def make_data_url(profile, key=None, facet=None, format=None):
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
 
+app.jinja_env.filters['nonone'] = (
+    lambda s: '' if s is None else s
+)
+
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)
 )
