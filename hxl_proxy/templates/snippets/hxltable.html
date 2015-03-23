@@ -17,7 +17,7 @@
       </thead>
       <tbody>
         {% for row in source %}
-        <tr>
+        <tr id="row_{{ row.row_number }}">
           {% for value in row.values %}
           <td><span class="content">{{ unicode(value) }}</span></td>
           {% endfor %}
