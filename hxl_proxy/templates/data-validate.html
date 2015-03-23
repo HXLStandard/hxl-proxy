@@ -60,10 +60,11 @@ HXL data
       </table>
       {% else %}
       <p class="alert alert-success">Validation succeeded with no error.</p>
+      {% endif %}
+      <p class="alert alert-default">No data yet to validate</p>
+      {% endif %}
 
       <p><a class="btn btn-default" data-toggle="modal" data-target="#customise">Customise</a></p>
-      {% endif %}
-      {% endif %}
 
       <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
