@@ -14,7 +14,7 @@ import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, request, render_template, redirect, make_response
+from flask import Response, request, render_template, redirect, make_response, session
 
 from hxl_proxy import app, profiles, munge_url, get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
@@ -212,6 +212,8 @@ def do_data_save():
         else:
             raise BadRequest("Passwords don't match")
         key = profiles.add_profile(profile)
+        # FIXME other auth information is in __init__.py
+        session['passhash'] = profile.passhash
 
     return redirect(make_data_url(profile, key=key, facet='edit'), 303)
 
