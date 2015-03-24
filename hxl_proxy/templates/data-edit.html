@@ -88,18 +88,14 @@
                 <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
               </div>
 
-              {% if profile.passhash %}
-              <input type="hidden" name="passhash" value="{{ unicode(profile.passhash) }}" />
-              {% else %}
-              <div class="form-group required">
-                <label for="password">Current password</label>
-                <input class="form-control" name="password" type="password" required="required" />
-              </div>
-              {% endif %}
-
               <div class="form-group">
                 <label for="description">Filter description</label>
                 <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="schema_url">Default schema URL (for validation)</label>
+                <input class="form-control" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
               </div>
 
               <div class="checkbox">

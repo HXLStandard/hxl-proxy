@@ -27,8 +27,19 @@ HXL data
     </h1>
 
       {% if profile.args.url %}
+
+      <p class="alert alert-info alert-dismissable" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+          {% if schema_url %}
+          Using a <a href="/data?url={{ schema_url|urlencode }}">custom schema</a>.
+          {% else %}
+          Using the default schema.
+          {% endif %}
+          <a class="btn btn-default" data-toggle="modal" data-target="#customise">Change schema</a>
+      </p>
+
       {% if errors %}
-      <p class="alert alert-warning">{{ errors|length }} validation issue(s). <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
+      <p class="alert alert-warning">{{ errors|length }} validation issue(s).</p>
 
       <table class="table">
         <thead>
@@ -61,7 +72,7 @@ HXL data
         </tbody>
       </table>
       {% else %}
-      <p class="alert alert-success">Validation succeeded with no error. <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
+      <p class="alert alert-success">Validation succeeded with no error.</p>
       {% endif %}
       {% else %}
       <p class="alert alert-default">No data yet to validate</p>
@@ -75,12 +86,9 @@ HXL data
 
               <form class="form" action="">
 
-                {% if not key %}
-                <div class="form-group required">
-                  <label class="control-label">HXL dataset URL</label>
-                  <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url or '' }}"
-                         placeholder="http://example.org/my-hxl-data.csv" />
-                </div>
+                {% if key %}
+                <p>Temporarilty override the default schema for this profile. To change the default schema, go to the
+                <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
                 {% endif %}
 
                 <div class="form-group">

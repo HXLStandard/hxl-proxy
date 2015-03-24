@@ -136,13 +136,16 @@ def show_validate(key=None):
 
     # Get the parameters
     url = profile.args.get('url')
-    schema_url = profile.args.get('schema_url', None)
+    if request.args.get('schema_url'):
+        schema_url = request.args.get('schema_url', None)
+    else:
+        schema_url = profile.args.get('schema_url', None)
 
     # If we have a URL, validate the data.
     if url:
         errors = do_validate(setup_filters(profile), schema_url)
         
-    return render_template('data-validate.html', key=key, profile=profile, errors=errors)
+    return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors)
 
 @app.route("/data/<key>.<format>")
 @app.route("/data.<format>")

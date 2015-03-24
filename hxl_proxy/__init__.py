@@ -152,6 +152,10 @@ app.jinja_env.filters['nonone'] = (
     lambda s: '' if s is None else s
 )
 
+app.jinja_env.filters['urlencode'] = (
+    urllib.quote_plus
+)
+
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)
 )
