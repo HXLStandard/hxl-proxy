@@ -30,6 +30,26 @@ td>.content {
     float: right;
     color: grey;
 }
+
 .panel-heading a.collapsed:after {
     content:"\e080";
+}
+
+.badge {
+    width: 6em;
+    padding: .5ex;
+}
+
+.severity_error {
+    background: red;
+}
+
+.severity_warning {
+    background: yellow;
+    color: black;
+}
+
+.severity_info {
+    background: green;
+    color: black;
 }

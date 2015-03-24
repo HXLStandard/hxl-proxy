@@ -135,6 +135,15 @@ def make_data_url(profile, key=None, facet=None, format=None):
 
     return url
 
+def severity_class(severity):
+    """Return a CSS class for a validation error severity"""
+    if severity == 'error':
+        return 'severity_error'
+    elif severity == 'warning':
+        return 'severity_warning'
+    else:
+        return 'severity_info'
+
 
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
@@ -157,6 +166,10 @@ app.jinja_env.globals['unicode'] = (
 
 app.jinja_env.globals['data_url'] = (
     make_data_url
+)
+
+app.jinja_env.globals['severity_class'] = (
+    severity_class
 )
 
 # end

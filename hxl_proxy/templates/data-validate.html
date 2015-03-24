@@ -28,7 +28,7 @@ HXL data
 
       {% if profile.args.url %}
       {% if errors %}
-      <p class="alert alert-danger">Failed validation: {{ errors|length }} error(s). <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
+      <p class="alert alert-warning">{{ errors|length }} validation issue(s). <a class="btn btn-default" data-toggle="modal" data-target="#customise">Schema</a></p>
 
       <table class="table">
         <thead>
@@ -36,6 +36,7 @@ HXL data
             <th>Severity</th>
             <th>Tag</th>
             <th>Value</th>
+            <th>Description</th>
             <th>Message</th>
             <th>Location</th>
           </tr>
@@ -43,9 +44,10 @@ HXL data
         <tbody>
           {% for error in errors %}
           <tr>
-            <td><span class="badge">{{ error.severity_label }}</span></td>
+            <td><span class="badge {{ severity_class(error.severity) }}">{{ error.severity }}</span></td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td>{{ error.value|nonone }}</td>
+            <td>{{ error.rule.description|nonone }}</td>
             <td>{{ error.message|nonone }}</td>
             <td>
               {% if error.row %}
