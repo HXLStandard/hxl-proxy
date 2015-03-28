@@ -16,7 +16,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, redirect, make_response, session
 
-from hxl_proxy import app, profiles, munge_url, get_profile, check_auth, make_data_url
+from hxl_proxy import app, profiles, get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets

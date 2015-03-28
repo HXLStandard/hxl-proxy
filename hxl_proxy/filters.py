@@ -7,10 +7,10 @@ module uses the numbers to group the parameters, then to construct the
 hxl.filter objects from them and build a pipeline.
 """
 
-from hxl_proxy import munge_url
+from hxl_proxy import make_input
 
 from hxl.model import TagPattern, Column
-from hxl.io import URLInput, HXLReader
+from hxl.io import HXLReader
 
 from hxl.filters.add import AddFilter
 from hxl.filters.clean import CleanFilter
@@ -40,7 +40,7 @@ def setup_filters(profile):
         return None
 
     # Basic input source
-    source = HXLReader(make_input(profile.args))
+    source = HXLReader(make_tagged_input(profile.args))
 
     # Create the filter pipeline from the source
     filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
@@ -65,12 +65,12 @@ def setup_filters(profile):
 
     return source
 
-def make_input(args):
+def make_tagged_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
 
     # TODO raise exception
-    input = URLInput(munge_url(url))
+    input = make_input(url)
 
     # Intercept tagging as a special data input
     if args.get('filter01') == 'tagger':
@@ -126,7 +126,7 @@ def add_merge_filter(source, args, index):
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = HXLReader(URLInput(munge_url(url)))
+    merge_source = HXLReader(make_input(url))
     return MergeFilter(source, merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):

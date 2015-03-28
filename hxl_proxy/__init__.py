@@ -17,6 +17,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from flask import Flask, url_for, request, flash, session
 
 from hxl_proxy.profiles import Profile, ProfileManager
+from hxl.io import CSVInput, ExcelInput
 
 # Main application object
 app = Flask(__name__)
@@ -53,6 +54,13 @@ def munge_url(url):
 
     # Return the original URL
     return url
+
+def make_input(url):
+    """Create an input object for a URL."""
+    if re.match(r'.*\.xlsx?$', url):
+        return ExcelInput(url)
+    else:
+        return CSVInput(url)
 
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
