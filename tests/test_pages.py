@@ -11,6 +11,8 @@ import sys
 import os
 import tempfile
 
+from . import resolve_path
+
 if sys.version_info < (3, 3):
     from mock import patch
     URLOPEN_PATCH = 'urllib.urlopen'
@@ -56,8 +58,13 @@ class TestDataPage(unittest.TestCase):
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
-        # TODO - mock up URL access to a local file
-        response = self.app.get('/data?url=/tmp/foo')
+        mock.return_value = open(resolve_path('files/basic-dataset.csv'))
+        response = self.app.get('/data?url=http://example.org')
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('<h1>New filter preview</h1>' in response.data)
+        self.assertTrue('Org A' in response.data)
+        self.assertTrue(u'Education' in response.data)
+        self.assertTrue('Myanmar' in response.data)
 
 class TestValidationPage(unittest.TestCase):
     """Test /data/validate and /data/key/validate"""
