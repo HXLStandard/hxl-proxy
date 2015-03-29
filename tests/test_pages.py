@@ -46,15 +46,12 @@ class TestDataPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        # No URL should redirect to data
         response = self.app.get('/data')
-        print response.headers
-        self.assertEqual(303, response.status_code)
+        self.assertEqual(303, response.status_code, "/data with no URL redirects to /data/edit")
 
     def test_local_file(self):
-        # Trying to read a non-URL should result in 403 Forbidden
         response = self.app.get('/data?url=/etc/passwd')
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(403, response.status_code, "non-URL forbidden")
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
@@ -62,9 +59,11 @@ class TestDataPage(unittest.TestCase):
         response = self.app.get('/data?url=http://example.org')
         self.assertEqual(200, response.status_code)
         self.assertTrue('<h1>New filter preview</h1>' in response.data)
-        self.assertTrue('Org A' in response.data)
-        self.assertTrue(u'Education' in response.data)
-        self.assertTrue('Myanmar' in response.data)
+        self.assertTrue('Country' in response.data, "header from dataset on page")
+        self.assertTrue('#country' in response.data, "hashtag from dataset on page")
+        self.assertTrue('Org A' in response.data, "org from dataset on page")
+        self.assertTrue(u'Education' in response.data, "sector from dataset on page")
+        self.assertTrue('Myanmar' in response.data, "country from dataset on page")
 
 class TestValidationPage(unittest.TestCase):
     """Test /data/validate and /data/key/validate"""
@@ -77,8 +76,11 @@ class TestValidationPage(unittest.TestCase):
 
     def test_empty_url(self):
         response = self.app.get('/data')
-        self.assertEqual(303, response.status_code)
+        self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
 
+#
+# Utility functions
+#
 
 def start_tests(tests):
     """Set up a test object with a temporary profile database"""
