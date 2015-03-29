@@ -57,10 +57,13 @@ def munge_url(url):
 
 def make_input(url):
     """Create an input object for a URL."""
-    if re.match(r'.*\.xlsx?$', url):
-        return ExcelInput(url)
+    if re.match(r'^https?://.+$', url):
+        if re.match(r'.*\.xlsx?$', url):
+            return ExcelInput(url)
+        else:
+            return CSVInput(url)
     else:
-        return CSVInput(url)
+        raise Forbidden('Only http and https URLs supported')
 
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
