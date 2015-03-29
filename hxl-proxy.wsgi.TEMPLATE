@@ -11,4 +11,30 @@ Assumes that hxl_proxy is installed as an app. If running locally, add
 the directory containing the hxl_proxy module to sys.path.
 """
 
+import sys
+import os
+
+# If you want to run in a virtualenv (recommended), then uncomment the
+# following two lines, and set the value to the appropriate path
+
+#activate_this = '/path/to/virtualenv/bin/activate_this.py'
+#execfile(activate_this, dict(__file__=activate_this))
+
+# If you are running from a source distribution, uncomment the
+# following line and set to the root of the distro
+
+#sys.path.insert(0, '/srv/www/hxl-proxy/')
+
+# Set config file location
+# (set to the location of your custom config.py)
+
+os.environ['HXL_PROXY_CONFIG'] = '/path/config.py'
+
+
+#
+# Run ...
+#
+
 from hxl_proxy import app as application
+
+# end

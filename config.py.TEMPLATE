@@ -1,0 +1,27 @@
+########################################################################
+# Configuration template for hxl-proxy
+#
+# Copy this to config.py (or similar), then change the values to suit.
+# Before launching the application, set the environment variable
+# HXL_PROXY_CONFIG to the full path to your config file, so that
+# the hxl-proxy app can find it.
+########################################################################
+
+#
+# If True, will show detailed debugging information on errors
+# Should be False for a production system
+#
+DEBUG=True
+
+#
+# Name of a file for storing saved profile information
+#
+PROFILE_FILE='/tmp/hxl-proxy-profiles'
+
+#
+# Change this to a key known only to your server
+# (Used to secure cookies)
+#
+SECRET_KEY='In charity, there can be no excess.'
+
+# end

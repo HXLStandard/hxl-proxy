@@ -8,12 +8,12 @@ dependency_links=[
 setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
-    version = '0.0.1',
+    version = '0.1alpha',
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
-    install_requires=['flask', 'libhxl', 'ckanapi'],
+    install_requires=['flask', 'libhxl>=1.02beta', 'ckanapi'],
     test_suite = "tests",
     tests_require = ['mock']
 )
