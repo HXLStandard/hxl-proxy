@@ -63,29 +63,6 @@ class TestSetupFilters(unittest.TestCase):
         self.assertIsNone(setup_filters(profile))
 
 
-class TestMakeInput(unittest.TestCase):
-
-    def test_plain_input(self):
-        """Test setting up normal URL input."""
-        args = {
-            'url': 'http://example.org/data.csv'
-        }
-        input = make_input(args)
-        self.assertEqual('URLInput', input.__class__.__name__)
-
-    def test_tagger_input(self):
-        """Test setting up normal auto-tagger input."""
-        args = {
-            'url': 'http://example.org/data.csv',
-            'filter01': 'tagger',
-            'tagger-01-tag': '#org',
-            'tagger-01-header': 'Organisation',
-        }
-        input = make_input(args)
-        self.assertEqual('Tagger', input.__class__.__name__)
-        self.assertEqual([('organisation', '#org')], input.specs)
-
-
 class TestPipelineFunctions(unittest.TestCase):
 
     def setUp(self):
@@ -182,7 +159,7 @@ class TestPipelineFunctions(unittest.TestCase):
         for spec in filter.rename:
             # XXX assuming just one key, or else this will break badly
             self.assertEqual('#loc-sensitive', str(spec[0]))
-            self.assertEqual('#adm1', spec[1].displayTag)
+            self.assertEqual('#adm1', spec[1].display_tag)
             self.assertEqual('Provincia', spec[1].header)
 
     def test_add_select_filter(self):

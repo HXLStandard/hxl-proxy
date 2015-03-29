@@ -2,7 +2,7 @@
     <div class="table-container hxltable">
     <table class="table">
       <thead>
-        {% if show_headers and source.hasHeaders %}
+        {% if show_headers and source.has_Headers %}
         <tr class="hxl-headers">
           {% for header in source.headers %}
           <th>{{ unicode(header) }}</th>
@@ -10,7 +10,7 @@
         </tr>
         {% endif %}
         <tr class="hxl-tags" id="hashtag-row">
-          {% for tag in source.displayTags %}
+          {% for tag in source.display_tags %}
           <th>{{ unicode(tag) }}</th>
           {% endfor %}
         </tr>

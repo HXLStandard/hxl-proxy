@@ -3,7 +3,7 @@ Validation support
 """
 
 from hxl.io import HXLReader
-from hxl.schema import readSchema
+from hxl.schema import read_schema
 from hxl_proxy import make_input
 
 def do_validate(source, schema_url=None):
@@ -21,9 +21,9 @@ def make_schema(schema_url=None):
     """Get a schema object for validation."""
     if schema_url:
         # return a custom schema
-        return readSchema(HXLReader(make_input(schema_url)))
+        return read_schema(HXLReader(make_input(schema_url)))
     else:
         # return the built-in default schema
-        return readSchema()
+        return read_schema()
 
 # end
