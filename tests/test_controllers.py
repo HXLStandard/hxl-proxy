@@ -21,6 +21,7 @@ else:
     URLOPEN_PATCH = 'urllib.request.urlopen'
 
 import hxl_proxy
+from hxl_proxy.profiles import ProfileManager, Profile
 
 class TestEditPage(unittest.TestCase):
     """Test /data/edit and /data/<key>/edit"""
@@ -32,7 +33,7 @@ class TestEditPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        rv = self.app.get('/data/edit')
+        rv = self.client.get('/data/edit')
         self.assertTrue('New HXL view' in rv.data)
         self.assertTrue('No data yet' in rv.data)
 
@@ -46,17 +47,17 @@ class TestDataPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        response = self.app.get('/data')
+        response = self.client.get('/data')
         self.assertEqual(303, response.status_code, "/data with no URL redirects to /data/edit")
 
     def test_local_file(self):
-        response = self.app.get('/data?url=/etc/passwd')
+        response = self.client.get('/data?url=/etc/passwd')
         self.assertEqual(403, response.status_code, "non-URL forbidden")
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
         mock.return_value = open(resolve_path('files/basic-dataset.csv'))
-        response = self.app.get('/data?url=http://example.org')
+        response = self.client.get('/data?url=http://example.org')
         self.assertEqual(200, response.status_code)
         self.assertTrue('<h1>New filter preview</h1>' in response.data)
         self.assertTrue('Country' in response.data, "header from dataset on page")
@@ -75,7 +76,7 @@ class TestValidationPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        response = self.app.get('/data')
+        response = self.client.get('/data')
         self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
 
 #
@@ -84,10 +85,13 @@ class TestValidationPage(unittest.TestCase):
 
 def start_tests(tests):
     """Set up a test object with a temporary profile database"""
-    with tempfile.NamedTemporaryFile(delete=False) as file:
+    with tempfile.NamedTemporaryFile(delete=True) as file:
         tests.filename = file.name
-    os.environ['HXL_PROXY_CONFIG'] = tests.filename
-    tests.app = hxl_proxy.app.test_client()
+    hxl_proxy.app.config['PROFILE_FILE'] = tests.filename
+    tests.key = ProfileManager(tests.filename).add_profile(Profile({
+        'url': 'http://example.org'
+    }))
+    tests.client = hxl_proxy.app.test_client()
 
 def end_tests(tests):
     """Remove the temporary profile database"""
