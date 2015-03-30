@@ -14,9 +14,9 @@ import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, request, render_template, redirect, make_response, session
+from flask import Response, request, render_template, redirect, make_response, session, g
 
-from hxl_proxy import app, profiles, get_profile, check_auth, make_data_url
+from hxl_proxy import app, get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
@@ -207,14 +207,14 @@ def do_data_save():
                 raise BadRequest("Passwords don't match")
         # copy in the new args
         profile.args = request.form.copy()
-        profiles.update_profile(str(key), profile)
+        g.profiles.update_profile(str(key), profile)
     else:
         # Creating a new profile.
         if password == password_repeat:
             profile.set_password(password)
         else:
             raise BadRequest("Passwords don't match")
-        key = profiles.add_profile(profile)
+        key = g.profiles.add_profile(profile)
         # FIXME other auth information is in __init__.py
         session['passhash'] = profile.passhash
 

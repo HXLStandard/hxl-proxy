@@ -14,26 +14,22 @@ import base64
 import urllib
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from flask import Flask, url_for, request, flash, session
+from flask import Flask, url_for, request, flash, session, g
 
 from hxl_proxy.profiles import Profile, ProfileManager
 from hxl.io import CSVInput, ExcelInput
 
 # Main application object
 app = Flask(__name__)
-app.secret_key = app.config['SECRET_KEY']
 
-# Global config
-app.config.from_object('hxl_proxy.default_config')
-
-# If the environment variable HXL_PROXY_CONFIG exists, use it for local config
-if os.environ.get('HXL_PROXY_CONFIG'):
-    app.config.from_envvar('HXL_PROXY_CONFIG')
-
-#
-# Global profile manager
-#
-profiles = ProfileManager(app.config['PROFILE_FILE'])
+@app.before_request
+def before_request():
+    """Code to run immediately before the request"""
+    app.config.from_object('hxl_proxy.default_config')
+    if os.environ.get('HXL_PROXY_CONFIG'):
+        app.config.from_envvar('HXL_PROXY_CONFIG')
+    app.secret_key = app.config['SECRET_KEY']
+    g.profiles = ProfileManager(app.config['PROFILE_FILE'])
 
 #
 # Utilities
@@ -102,7 +98,7 @@ def get_profile(key, auth=False, args=None):
     if args is None:
         args = request.args
     if key:
-        profile = profiles.get_profile(str(key))
+        profile = g.profiles.get_profile(str(key))
         if not profile:
             raise NotFound("No saved profile for " + key)
         if auth and not check_auth(profile):
