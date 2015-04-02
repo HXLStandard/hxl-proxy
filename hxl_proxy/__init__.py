@@ -53,6 +53,7 @@ def munge_url(url):
 
 def make_input(url):
     """Create an input object for a URL."""
+    url = munge_url(url);
     if re.match(r'^https?://.+$', url):
         if re.match(r'.*\.xlsx?$', url):
             return ExcelInput(url)
