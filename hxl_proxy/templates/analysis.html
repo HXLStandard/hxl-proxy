@@ -1,0 +1,34 @@
+{% extends "models/page.basic.html" %}
+{% from 'macros/navmenu.html' import navmenu %}
+
+{% block title %}{{ profile.name|default("Analysis") }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block menu %}
+{{ navmenu(profile=profile, key=key, facet='analysis') }}
+{% endblock %}
+
+{% block main %}
+    <h1>{{ profile.name|default("Analysis") }}</h1>
+    {% if profile.description %}
+    <p>{{ profile.description }}</p>
+    {% endif %}
+
+    {% if not key or profile.cloneable %}
+    <p class="small">Original dataset: <a href="{{ profile.args.url }}">{{ profile.args.url }}</a></p>
+    {% endif %}
+
+    <section id="data">
+      <h2>Data</h2>
+      {% include 'snippets/hxltable.html' %}
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
