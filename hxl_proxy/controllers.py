@@ -19,6 +19,7 @@ from flask import Response, request, render_template, redirect, make_response, s
 from hxl_proxy import app, get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
+from hxl_proxy.analysis import do_analyse
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 
@@ -170,6 +171,24 @@ def show_data(key=None, format="html"):
         response = Response(gen_hxl(source, show_headers=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
+
+@app.route('/analysis/new')
+@app.route('/analysis/<key>')
+@app.route('/analysis/new/<tag>')
+@app.route('/analysis/<key>/<tag>')
+def show_analysis(key=None, tag=None):
+    """
+    Show leading figures for a dataset
+    """
+    profile = get_profile(key, auth=False)
+
+    source = setup_filters(profile)
+    
+    analysis = do_analyse(source, tag)
+
+    return render_template('analysis.html', profile=profile, key=key, source=source, analysis=analysis)
+
+    
 
 @app.route("/actions/save-profile", methods=['POST'])
 def do_data_save():

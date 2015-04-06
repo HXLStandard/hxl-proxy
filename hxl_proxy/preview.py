@@ -10,27 +10,36 @@ class PreviewFilter(DataProvider):
         self.max_rows = max_rows
         self.has_more_rows = False
         self.total_rows = 0
-        self._row_counter = 0
 
 
     @property
     def columns(self):
         return self.source.columns
 
-    def __next__(self):
-        row = self.source.next()
+    def __iter__(self):
+        return PreviewFilter.Iterator(self)
 
-        if self._row_counter >= self.max_rows:
-            self.has_more_rows = True
-            self.total_rows +=1
-            for row in self.source:
-                self.total_rows += 1
-            raise StopIteration()
-        else:
-            self._row_counter += 1
-            self.total_rows += 1
-            return row
+    class Iterator:
 
-    next = __next__
+        def __init__(self, outer):
+            self.outer = outer
+            self.iterator = iter(outer.source)
+            self._row_counter = 0
+
+        def __next__(self):
+            row = next(self.iterator)
+
+            if self._row_counter >= self.outer.max_rows:
+                self.outer.has_more_rows = True
+                self.outer.total_rows +=1
+                while next(self.iterator):
+                    self.outer.total_rows += 1
+                raise StopIteration()
+            else:
+                self._row_counter += 1
+                self.outer.total_rows += 1
+                return row
+
+        next = __next__
 
 # end
