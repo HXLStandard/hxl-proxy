@@ -37,23 +37,24 @@ class Analysis:
             self._saved_source = CacheFilter(HXLReader(make_input(self.args.get('url'))))
         return self._saved_source
 
-    def get_frequencies(self, pattern):
+    def get_value_counts(self, pattern):
         """Get a list of values and frequencies for a tag pattern."""
-        pattern = TagPattern.parse(pattern)
+        total = 0
         occurs = {}
         for row in self.source:
             values = row.get_all(pattern)
             for value in values:
                 key = norm(value)
                 if value:
+                    total += 1
                     if occurs.get(key):
                         occurs[key] += 1
                     else:
                         occurs[key] = 1
-        return occurs.items()
+        return [ { 'value': key, 'count': occurs[key], 'percentage': float(occurs[key]) / total } for key in occurs ]
 
-    def get_top_values(self, pattern, max=3):
-        return sorted(self.get_frequencies(pattern), key = lambda frequency: frequency[1], reverse=True)[:max]
+    def get_top_values(self, pattern):
+        return sorted(self.get_value_counts(pattern), key = lambda entry: entry['count'], reverse=True)
 
     @property
     def patterns(self):

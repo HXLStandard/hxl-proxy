@@ -173,16 +173,21 @@ def show_data(key=None, format="html"):
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
-@app.route('/analysis/new')
-@app.route('/analysis/<key>')
-def show_analysis(key=None):
+@app.route('/analysis')
+@app.route('/analysis/<tag_pattern>')
+def show_analysis(tag_pattern=None):
     """
     Show leading figures for a dataset
     """
     
     analysis = Analysis(args=request.args)
+    if tag_pattern:
+        tag_pattern = TagPattern.parse(tag_pattern)
 
-    return render_template('analysis.html', analysis=analysis)
+    if tag_pattern:
+        return render_template('analysis-tag.html', analysis=analysis, tag_pattern=tag_pattern)
+    else:
+        return render_template('analysis-overview.html', analysis=analysis)
 
     
 

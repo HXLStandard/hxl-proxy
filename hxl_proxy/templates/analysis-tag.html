@@ -1,0 +1,50 @@
+{% extends "models/page.basic.html" %}
+{% from 'macros/navmenu.html' import navmenu %}
+
+{% set title=analysis.title|default('Analysis of ' + tag_pattern.__str__()) %}
+{% set values=analysis.get_top_values(tag_pattern) %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block menu %}
+{{ navmenu(profile=analysis, facet='analysis-tag') }}
+{% endblock %}
+
+{% block main %}
+    <h1>{{ title }}</h1>
+
+    {% if analysis.description %}
+    <p>{{ analysis.description }}</p>
+    {% endif %}
+
+    <p class="small">Original dataset: <a href="{{ analysis.args.url }}">{{ analysis.args.url }}</a></p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ tag_pattern }}</th>
+          <th>Number</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in values %}
+        <tr>
+          <td>{{ unicode(entry.value) }}</td>
+          <td>{{ entry.count }}</td>
+          <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
