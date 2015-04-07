@@ -1,7 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% set title=analysis.title|default('Analysis of ' + tag_pattern.__str__()) %}
+{% set title=analysis.title(tag_pattern)|default('Analysis of ' + tag_pattern.__str__()) %}
 {% set values=analysis.get_top_values(tag_pattern) %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -16,6 +16,18 @@
 {% endblock %}
 
 {% block main %}
+    <ul class="breadcrumb">
+      {% if not analysis.filters %}
+      <li class="active">3W data</li>
+      {% else %}
+      <li><a href="?url={{ analysis.args.url|urlencode }}">3W data</a></li>
+      {% endif %}
+      {% for filter in analysis.filters %}
+      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ unicode(filter.orig) }}</a></li>
+      {% endfor %}
+      <li class="active">{{ tag_pattern }}</li>
+    </ul>
+
     <h1>{{ title }}</h1>
 
     {% if analysis.description %}

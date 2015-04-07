@@ -15,6 +15,10 @@ class Analysis:
             ('#org', 'organisations')
         ],
         [
+            ('#sector', 'sectors'),
+            ('#subsector', 'subsectors')
+        ],
+        [
             ('#region', 'geographical regions'),
             ('#country', 'countries'),
             ('#adm1', 'level one subdivisions'),
@@ -22,10 +26,6 @@ class Analysis:
             ('#adm3', 'level three subdivisions'),
             ('#adm4', 'level four subdivisions'),
             ('#adm5', 'level five subdivisions')
-        ],
-        [
-            ('#sector', 'sectors'),
-            ('#subsector', 'subsectors')
         ]
     ]
 
@@ -33,6 +33,7 @@ class Analysis:
         self.args = args
         self._saved_source = None
         self._saved_filters = None
+        self._get_original_values()
 
     def get_value_counts(self, pattern):
         """Get a list of values and frequencies for a tag pattern."""
@@ -53,22 +54,32 @@ class Analysis:
     def get_top_values(self, pattern):
         return sorted(self.get_value_counts(pattern), key = lambda entry: entry['count'], reverse=True)
 
-    def make_query(self, pattern=None, value=None):
+    def make_query(self, pattern=None, value=None, limit=None):
         """Construct a query string"""
-        queries = [ [ urllib.quote(str(filter['pattern'])[1:]), urllib.quote(filter['value']) ] for filter in self.filters]
+        queries = []
+        for filter in self.filters:
+            queries.append([urllib.quote(str(filter['pattern'])[1:]), urllib.quote(filter['value'])])
+            if limit is not None and filter == limit:
+                break
         if pattern:
             queries.append([ urllib.quote(str(pattern)[1:]), urllib.quote(value) ])
         queries.append([ urllib.quote('url'), urllib.quote(self.args.get('url')) ])
         return '&'.join(map(lambda item: '='.join(item), queries))
 
-    @property
     def title(self, tag_pattern=None):
+        who = self.who
+        what = self.what
+        where = self.where
         if tag_pattern:
-            return "List of " + str(tag_pattern)
+            title = "List of " + str(tag_pattern)
+            if who:
+                title += " for " + who
+            if what:
+                title += " working on " + what
+            if where:
+                title += " in " + where
+            return title
         else:
-            who = self.who
-            what = self.what
-            where = self.where
             if who and what and where:
                 return 'What is {} doing for {} in {}?'.format(who, what, where)
             elif who and what:
@@ -90,28 +101,28 @@ class Analysis:
     def who(self):
         for filter in self.filters:
             if filter['pattern'].tag == '#org':
-                return filter['value']
+                return filter['orig']
         return None
 
     @property
     def what(self):
         for filter in self.filters:
             if filter['pattern'].tag in ('#sector', '#subsector'):
-                return filter['value']
+                return filter['orig']
         return None
 
     @property
     def where(self):
         for filter in self.filters:
             if filter['pattern'].tag in ('#region', '#country', '#adm1', '#adm2', '#adm3', '#adm4', '#adm5', '#loc'):
-                return filter['value']
+                return filter['orig']
         return None
 
-    def overview_url(self, pattern=None, value=None):
-        return '/analysis?{}'.format(self.make_query(pattern, value))
+    def overview_url(self, pattern=None, value=None, limit=None):
+        return '/analysis?{}'.format(self.make_query(pattern, value, limit))
 
-    def tag_url(self, tag_pattern, pattern=None, value=None):
-        return '/analysis/{}?{}'.format(urllib.quote(str(tag_pattern)[1:]), self.make_query(pattern, value))
+    def tag_url(self, tag_pattern, pattern=None, value=None, limit=None):
+        return '/analysis/{}?{}'.format(urllib.quote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
 
     @property
     def patterns(self):
@@ -146,6 +157,12 @@ class Analysis:
             for filter_data in self.filters:
                 query = Query(filter_data['pattern'], operator.eq, filter_data['value'])
                 source = SelectFilter(source, queries=[query])
-            self._saved_source = CacheFilter(source)
+            source = CacheFilter(source)
+            self._saved_source = source
         return self._saved_source
+
+    def _get_original_values(self):
+        row = next(iter(self.source))
+        for filter in self.filters:
+            filter['orig'] = row.get(filter['pattern'], default=filter['value'])
 

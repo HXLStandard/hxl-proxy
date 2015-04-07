@@ -1,7 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% block title %}{{ analysis.title }}{% endblock %}
+{% block title %}{{ unicode(analysis.title()) }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,7 +13,23 @@
 {% endblock %}
 
 {% block main %}
-    <h1>{{ analysis.title }}</h1>
+
+    <ul class="breadcrumb">
+      {% if not analysis.filters %}
+      <li class="active">3W data</li>
+      {% else %}
+      <li><a href="?url={{ analysis.args.url|urlencode }}">3W data</a></li>
+      {% endif %}
+      {% for filter in analysis.filters %}
+      {% if filter == analysis.filters|last %}
+      <li class="active">{{ unicode(filter.orig) }}</li>
+      {% else %}
+      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ unicode(filter.orig) }}</a></li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+
+    <h1>{{ unicode(analysis.title()) }}</h1>
 
     {% if analysis.description %}
     <p>{{ analysis.description }}</p>

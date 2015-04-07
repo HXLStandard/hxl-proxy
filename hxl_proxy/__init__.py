@@ -9,7 +9,9 @@ Documentation: http://hxlstandard.org
 
 import os
 
-from flask import Flask, g
+from flask import Flask, g, request
+
+import werkzeug.datastructures
 
 from hxl_proxy.profiles import ProfileManager
 
@@ -23,6 +25,7 @@ if os.environ.get('HXL_PROXY_CONFIG'):
 def before_request():
     """Code to run immediately before the request"""
     app.secret_key = app.config['SECRET_KEY']
+    request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     g.profiles = ProfileManager(app.config['PROFILE_FILE'])
 
 # Needed to register annotations in the controllers
