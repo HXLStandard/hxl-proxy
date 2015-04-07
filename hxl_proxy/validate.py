@@ -4,7 +4,7 @@ Validation support
 
 from hxl.io import HXLReader
 from hxl.schema import read_schema
-from hxl_proxy import make_input
+from hxl_proxy.util import make_input
 
 def do_validate(source, schema_url=None):
     """Validate a source, and return a list of errors."""

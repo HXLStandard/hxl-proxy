@@ -13,7 +13,11 @@
 {% endblock %}
 
 {% block main %}
+{%if profile.args.tag %}
+    <h1>{{ profile.args.title|default(profile.args.tag) }}</h1>
+{% else %}
     <h1>{{ profile.name|default("Analysis") }}</h1>
+{% endif %}
     {% if profile.description %}
     <p>{{ profile.description }}</p>
     {% endif %}
@@ -22,9 +26,40 @@
     <p class="small">Original dataset: <a href="{{ profile.args.url }}">{{ profile.args.url }}</a></p>
     {% endif %}
 
-    <section id="data">
-      <h2>Data</h2>
-      {% include 'snippets/hxltable.html' %}
+    {% if profile.args.tag %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ profile.args.tag }}</th>
+          <th>#</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for frequency_pair in analysis.get_top_values(profile.args.tag, max=-1) %}
+        <tr>
+          <td>{{ unicode(frequency_pair[0]) }}</td>
+          <td>{{ frequency_pair[1] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    {% for pattern in analysis.patterns %}
+    <section class="leading-figure">
+      <h2>Top {{ pattern[1]|default('values for' + pattern[0]) }}</a></h2>
+      <table>
+        {% for frequency_pair in analysis.get_top_values(pattern[0], max=3) %}
+        <tr>
+          <th><a href="?url={{ profile.args.url|urlencode }}&amp;xxx=xxx">{{ unicode(frequency_pair[0]) }}</a></th>
+          <td>{{ frequency_pair[1] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <a class="btn btn-default" href="?url={{ profile.args.url|urlencode }}&tag={{ pattern[0]|urlencode }}&title={{ pattern[1]|urlencode }}">see all</a>
+    </section>
+    {% endfor %}
+    {% endif %}
+
     </section>
 
 {% endblock %}

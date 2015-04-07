@@ -16,7 +16,8 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, redirect, make_response, session, g
 
-from hxl_proxy import app, get_profile, check_auth, make_data_url
+from hxl_proxy import app
+from hxl_proxy.util import get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import do_analyse
@@ -174,17 +175,18 @@ def show_data(key=None, format="html"):
 
 @app.route('/analysis/new')
 @app.route('/analysis/<key>')
-@app.route('/analysis/new/<tag>')
-@app.route('/analysis/<key>/<tag>')
-def show_analysis(key=None, tag=None):
+def show_analysis(key=None):
     """
     Show leading figures for a dataset
     """
-    profile = get_profile(key, auth=False)
-
-    source = setup_filters(profile)
     
-    analysis = do_analyse(source, tag)
+    class Profile(object):
+        def __init__(self, args):
+            self.args = args
+
+    profile = Profile(request.args)
+    source = setup_filters(profile)    
+    analysis = do_analyse(source, profile)
 
     return render_template('analysis.html', profile=profile, key=key, source=source, analysis=analysis)
 
