@@ -22,7 +22,7 @@
     <p>{{ analysis.description }}</p>
     {% endif %}
 
-    <p class="small">Original dataset: <a href="{{ analysis.args.url }}">{{ analysis.args.url }}</a></p>
+    <p class="small"><a href="{{ analysis.args.url }}">Original dataset</a></p>
 
     <table class="table">
       <thead>
@@ -35,7 +35,7 @@
       <tbody>
         {% for entry in values %}
         <tr>
-          <td>{{ unicode(entry.value) }}</td>
+          <td><a href="{{ analysis.overview_url(tag_pattern, entry.value) }}">{{ unicode(entry.orig) }}</a></td>
           <td>{{ entry.count }}</td>
           <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
         </tr>
