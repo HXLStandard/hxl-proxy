@@ -20,7 +20,7 @@ from hxl_proxy import app
 from hxl_proxy.util import get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
-from hxl_proxy.analysis import do_analyse
+from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 
@@ -180,15 +180,9 @@ def show_analysis(key=None):
     Show leading figures for a dataset
     """
     
-    class Profile(object):
-        def __init__(self, args):
-            self.args = args
+    analysis = Analysis(args=request.args)
 
-    profile = Profile(request.args)
-    source = setup_filters(profile)    
-    analysis = do_analyse(source, profile)
-
-    return render_template('analysis.html', profile=profile, key=key, source=source, analysis=analysis)
+    return render_template('analysis.html', analysis=analysis)
 
     
 

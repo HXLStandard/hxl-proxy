@@ -1,13 +1,8 @@
 from hxl.model import TagPattern
+from hxl.io import HXLReader
 from hxl.filters.cache import CacheFilter
 
-from hxl_proxy.util import norm
-
-class Data:
-
-    def __init__(self, url):
-        self.url = url
-        self.source = HXLReader(CSVInput(munge_url(url)))
+from hxl_proxy.util import norm, make_input
 
 class Analysis:
 
@@ -30,10 +25,17 @@ class Analysis:
         ]
     ]
 
-    def __init__(self, source, profile, filter_tags=[]):
-        self.source = CacheFilter(source)
-        self.view_tag = profile.args.get('tag')
-        self.filter_tags = filter_tags
+    def __init__(self, args):
+        self.args = args
+        self.filter_tags = [] # TODO
+        self._saved_source = None
+
+    @property
+    def source(self):
+        """Open the input on initial request."""
+        if not self._saved_source:
+            self._saved_source = CacheFilter(HXLReader(make_input(self.args.get('url'))))
+        return self._saved_source
 
     def get_frequencies(self, pattern):
         """Get a list of values and frequencies for a tag pattern."""
@@ -64,5 +66,3 @@ class Analysis:
                     break
         return patterns
 
-def do_analyse(source, tag=None):
-    return Analysis(source, tag)
