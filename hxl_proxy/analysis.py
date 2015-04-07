@@ -89,7 +89,7 @@ class Analysis:
             elif what and where:
                 return 'Who is working on {} in {}?'.format(what, where)
             elif who:
-                return 'What is {} working on, where?'.format(who)
+                return 'What is {} doing, where?'.format(who)
             elif what:
                 return 'Who is working on {}, where?'.format(what)
             elif where:
