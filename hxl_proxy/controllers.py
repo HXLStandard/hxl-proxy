@@ -180,7 +180,11 @@ def show_analysis(tag_pattern=None):
     Show leading figures for a dataset
     """
     
-    analysis = Analysis(args=request.args)
+    if request.args.get('url'):
+        analysis = Analysis(args=request.args)
+    else:
+        analysis = None
+        
     if tag_pattern:
         tag_pattern = TagPattern.parse(tag_pattern)
 

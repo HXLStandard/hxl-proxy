@@ -1,5 +1,5 @@
 {% macro navmenu(profile, key=None, facet=None) %}
-            {% if profile.args.url %}
+            {% if profile and profile.args.url %}
             <li class="{% if facet=='data' %}active{% endif %}">
               <a href="{{ data_url(profile, key) }}">
                 <span class="glyphicon glyphicon-th-list"></span> data
@@ -34,7 +34,7 @@
                 <span class="glyphicon glyphicon-cog"></span> customise<span class="caret"></span>
               </a>
               <ul class="dropdown-menu" role="menu">
-                {% if profile.args.url %}
+                {% if profile and profile.args.url %}
                 <li>
                   <a href="/data/edit">
                     <span class="glyphicon glyphicon-plus"></span> new

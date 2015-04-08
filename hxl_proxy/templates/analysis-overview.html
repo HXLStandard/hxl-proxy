@@ -1,7 +1,13 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% block title %}{{ unicode(analysis.title()) }}{% endblock %}
+{% if analysis %}
+{% set title = unicode(analysis.title()) %}
+{% else %}
+{% set title = 'Analyse HXL data' %}
+{% endif %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -9,11 +15,11 @@
 {% endblock %}
 
 {% block menu %}
-{{ navmenu(profile=analysis, facet='analysis-overview') }}
 {% endblock %}
 
 {% block main %}
 
+    {% if analysis %}
     <ul class="breadcrumb">
       {% if not analysis.filters %}
       <li class="active">3W data</li>
@@ -28,14 +34,24 @@
       {% endif %}
       {% endfor %}
     </ul>
-
-    <h1>{{ unicode(analysis.title()) }}</h1>
-
-    {% if analysis.description %}
-    <p>{{ analysis.description }}</p>
     {% endif %}
 
-    <p class="small"><a href="{{ analysis.args.url }}">Original dataset</a></p>
+    <h1>{{ title }}</h1>
+
+    {% if not analysis %}
+    <form>
+      <div class="form-group">
+        <label for="url">Dataset URL</label>
+        <div class="input-group">
+          <input class="form-control" name="url" type="url" required="required" placeholder="http://example.org/dataset.csv" />
+          <span class="input-group-btn">
+            <button class="btn btn-success" type="submit">Analyse</button>
+          </span>
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <p><a href="{{ analysis.args.url }}">Original dataset</a> (<a href="/analysis">Change</a>)</p>
 
     {% if analysis.patterns %}
     <section class="row">
@@ -71,6 +87,7 @@
     {% set profile=analysis %}
     {% set source=analysis.source %}
     {% include 'snippets/hxltable.html' %}
+    {% endif %}
     {% endif %}
 
 {% endblock %}
