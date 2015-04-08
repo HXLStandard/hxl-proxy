@@ -13,18 +13,26 @@
 {% block menu %}
             <li>
               <a href="/analysis">
-                <span class="glyphicon glyphicon-th-list"></span> new
+                <span class="glyphicon glyphicon-plus"></span> new
               </a>
             </li>
             <li>
               <a href="{{ analysis.overview_url() }}">
-                <span class="glyphicon glyphicon-th-list"></span> overview
+                <span class="glyphicon glyphicon-wrench"></span> overview
               </a>
             </li>
             <li class="active">
               <a href="{{ analysis.data_url() }}">
                 <span class="glyphicon glyphicon-th-list"></span> data
               </a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle"
+                 data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{{ analysis.data_url(format='csv') }}">download as CSV</a></li>
+                <li><a href="{{ analysis.data_url(format='json') }}">download as JSON</a></li>
+              </ul>
             </li>
 {% endblock %}
 
@@ -46,6 +54,8 @@
     </ul>
 
     <h1>{{ title }}</h1>
+
+    <p><a href="{{ analysis.args.url }}">Original dataset</a></p>
 
     {% set profile=analysis %}
     {% set source=analysis.source %}

@@ -12,7 +12,38 @@
 {% endblock %}
 
 {% block menu %}
-{{ navmenu(profile=analysis, facet='analysis-tag') }}
+            <li>
+              <a href="/analysis">
+                <span class="glyphicon glyphicon-plus"></span>
+                new
+              </a>
+            </li>
+            <li>
+              <a href="{{ analysis.overview_url() }}">
+                <span class="glyphicon glyphicon-wrench"></span>
+                overview
+              </a>
+            </li>
+            <li class="active">
+              <a>
+                <span class="glyphicon glyphicon-tag"></span>
+                {{ tag_pattern.tag }}
+              </a>
+            </li>
+            <li>
+              <a href="{{ analysis.data_url() }}">
+                <span class="glyphicon glyphicon-th-list"></span>
+                data
+              </a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle"
+                 data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{{ analysis.data_url(format='csv') }}">download as CSV</a></li>
+                <li><a href="{{ analysis.data_url(format='json') }}">download as JSON</a></li>
+              </ul>
+            </li>
 {% endblock %}
 
 {% block main %}
@@ -30,11 +61,7 @@
 
     <h1>{{ title }}</h1>
 
-    {% if analysis.description %}
-    <p>{{ analysis.description }}</p>
-    {% endif %}
-
-    <p class="small"><a href="{{ analysis.args.url }}">Original dataset</a></p>
+    <p>Select a link to zoom in on part of the data.</p>
 
     <table class="table">
       <thead>
@@ -47,13 +74,20 @@
       <tbody>
         {% for entry in values %}
         <tr>
-          <td><a href="{{ analysis.overview_url(tag_pattern, entry.value) }}">{{ unicode(entry.orig) }}</a></td>
+          <td>
+            <a href="{{ analysis.overview_url(tag_pattern, entry.value) }}">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+              {{ unicode(entry.orig) }}
+            </a>
+          </td>
           <td>{{ entry.count }}</td>
           <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    <p class="small"><a href="{{ analysis.args.url }}">Original dataset</a></p>
 
 {% endblock %}
 

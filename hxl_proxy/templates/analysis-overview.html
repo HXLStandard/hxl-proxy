@@ -13,18 +13,29 @@
 {% block menu %}
             <li>
               <a href="/analysis">
-                <span class="glyphicon glyphicon-th-list"></span> new
+                <span class="glyphicon glyphicon-plus"></span>
+                new
               </a>
             </li>
             <li class="active">
               <a href="{{ analysis.overview_url() }}">
-                <span class="glyphicon glyphicon-th-list"></span> analysis
+                <span class="glyphicon glyphicon-wrench"></span>
+                overview
               </a>
             </li>
             <li>
               <a href="{{ analysis.data_url() }}">
-                <span class="glyphicon glyphicon-th-list"></span> data
+                <span class="glyphicon glyphicon-th-list"></span>
+                data
               </a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle"
+                 data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{{ analysis.data_url(format='csv') }}">download as CSV</a></li>
+                <li><a href="{{ analysis.data_url(format='json') }}">download as JSON</a></li>
+              </ul>
             </li>
 {% endblock %}
 
@@ -47,23 +58,11 @@
 
     <h1>{{ title }}</h1>
 
-    {% if not analysis %}
-    <form>
-      <div class="form-group">
-        <label for="url">Dataset URL</label>
-        <div class="input-group">
-          <input class="form-control" name="url" type="url" required="required" placeholder="http://example.org/dataset.csv" />
-          <span class="input-group-btn">
-            <button class="btn btn-success" type="submit">Analyse</button>
-          </span>
-        </div>
-      </div>
-    </form>
-    {% else %}
-    <p><a href="{{ analysis.args.url }}">Original dataset</a> (<a href="/analysis">Change</a>)</p>
-
     {% set seen_summary = [] %}
     {% if analysis.patterns %}
+
+    <p>Select a link to zoom in on part of the data.</p>
+
     <section class="row">
     {% for pattern in analysis.patterns %}
     {% set entries = analysis.get_top_values(pattern[0]) %}
@@ -80,7 +79,12 @@
         <tbody>
           {% for entry in entries[:3] %}
           <tr>
-            <th><a href="{{ analysis.overview_url(pattern[0], entry.value) }}">{{ unicode(entry.orig) }}</a></th>
+            <td>
+              <a href="{{ analysis.overview_url(pattern[0], entry.value) }}">
+                <span class="glyphicon glyphicon-zoom-in"></span> 
+                {{ unicode(entry.orig) }}
+              </a>
+            </td>
             <td>{{ entry.count }}</td>
             <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
           </tr>
@@ -89,7 +93,7 @@
       </table>
       </div>
       <div class="panel-footer">
-        <a class="btn btn-default" href="{{ analysis.tag_url(pattern[0]) }}">see all {{ pattern[1]|default('values for' +
+        <a class="btn btn-default" href="{{ analysis.tag_url(pattern[0]) }}">Choose from all {{ pattern[1]|default('values for' +
       pattern[0]) }}</a>
       </div>
       </div>
@@ -99,11 +103,11 @@
     </section>
     {% endif %}
 
-    {% if not seen_summary %}
-    {% set profile=analysis %}
-    {% set source=analysis.source %}
-    {% include 'snippets/hxltable.html' %}
-    {% endif %}
+    {% if seen_summary %}
+    <p><a href="{{ analysis.args.url }}">Original dataset</a></p>
+    {% else %}
+    <p>Nothing left to filter!</p>
+    <p><a class="btn btn-success" href="{{ analysis.data_url() }}">See the data</a></p>
     {% endif %}
 
 {% endblock %}

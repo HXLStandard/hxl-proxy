@@ -48,7 +48,7 @@ if not app.config.get('DEBUG'):
 @app.route("/")
 def redirect_home():
     # home isn't moved permanently
-    return redirect("/data/edit?" + urllib.urlencode(request.args) , 302)
+    return redirect("/analysis?" + urllib.urlencode(request.args) , 302)
 
 @app.route("/filters/new") # deprecated
 def redirect_edit():
@@ -192,10 +192,20 @@ def show_analysis_overview():
         return redirect("/analysis", 301)
 
 @app.route('/analysis/data')
-def show_analysis_data():
+@app.route('/analysis/data.<format>')
+def show_analysis_data(format=None):
     if request.args.get('url'):
         analysis = Analysis(args=request.args)
-        return render_template('analysis-data.html', analysis=analysis)
+        if format == 'csv':
+            response = Response(gen_csv(analysis.source), mimetype='text/csv')
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
+        elif format == 'json':
+            response = Response(gen_json(analysis.source), mimetype='application/json')
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
+        else:
+            return render_template('analysis-data.html', analysis=analysis)
     else:
         return redirect("/analysis", 301)
 
