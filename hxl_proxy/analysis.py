@@ -119,10 +119,13 @@ class Analysis:
         return None
 
     def overview_url(self, pattern=None, value=None, limit=None):
-        return '/analysis?{}'.format(self.make_query(pattern, value, limit))
+        return '/analysis/overview?{}'.format(self.make_query(pattern, value, limit))
+
+    def data_url(self, pattern=None, value=None, limit=None):
+        return '/analysis/data?{}'.format(self.make_query(pattern, value, limit))
 
     def tag_url(self, tag_pattern, pattern=None, value=None, limit=None):
-        return '/analysis/{}?{}'.format(urllib.quote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
+        return '/analysis/tag/{}?{}'.format(urllib.quote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
 
     @property
     def patterns(self):

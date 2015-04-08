@@ -1,0 +1,48 @@
+{% extends "models/page.basic.html" %}
+{% from 'macros/navmenu.html' import navmenu %}
+
+{% set title = 'New HXL analysis' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block menu %}
+            <li class="active">
+              <a href="/analysis">
+                <span class="glyphicon glyphicon-th-list"></span> new
+              </a>
+            </li>
+{% endblock %}
+
+{% block main %}
+
+    <h1>{{ title }}</h1>
+
+    <p>Enter the URL of a <a
+    href="http://hxlstandard.org">HXL-tagged</a> 3W dataset to start
+    the analysis. You may use the address of an online dataset in CSV
+    or Excel formats, or a Google Sheet.</p>
+
+    <form>
+      <div class="form-group">
+        <label for="url">Dataset URL</label>
+        <div class="input-group">
+          <input class="form-control" name="url" type="url" required="required" placeholder="http://example.org/dataset.csv" />
+          <span class="input-group-btn">
+            <button class="btn btn-success" type="submit">Analyse</button>
+          </span>
+        </div>
+      </div>
+    </form>
+
+    <p>&hellip; or <a href="/analysis/hdx">choose a HXL dataset from HDX</a></p>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

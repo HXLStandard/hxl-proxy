@@ -174,26 +174,39 @@ def show_data(key=None, format="html"):
         return response
 
 @app.route('/analysis')
-@app.route('/analysis/<tag_pattern>')
-def show_analysis(tag_pattern=None):
-    """
-    Show leading figures for a dataset
-    """
-    
+def show_analysis_form():
+    url = request.args.get('url')
+    return render_template('analysis-form.html', url=url)
+
+@app.route('/analysis/hdx')
+def show_analysis_hdx():
+    datasets = get_hdx_datasets()
+    return render_template('analysis-hdx.html', datasets=datasets)
+
+@app.route('/analysis/overview')
+def show_analysis_overview():
     if request.args.get('url'):
         analysis = Analysis(args=request.args)
+        return render_template('analysis-overview.html', analysis=analysis)
     else:
-        analysis = None
-        
-    if tag_pattern:
-        tag_pattern = TagPattern.parse(tag_pattern)
+        return redirect("/analysis", 301)
 
-    if tag_pattern:
+@app.route('/analysis/data')
+def show_analysis_data():
+    if request.args.get('url'):
+        analysis = Analysis(args=request.args)
+        return render_template('analysis-data.html', analysis=analysis)
+    else:
+        return redirect("/analysis", 301)
+
+@app.route('/analysis/tag/<tag_pattern>')
+def show_analysis_tag(tag_pattern):
+    if request.args.get('url'):
+        analysis = Analysis(args=request.args)
+        tag_pattern = TagPattern.parse(tag_pattern)
         return render_template('analysis-tag.html', analysis=analysis, tag_pattern=tag_pattern)
     else:
-        return render_template('analysis-overview.html', analysis=analysis)
-
-    
+        return redirect("/analysis", 301)
 
 @app.route("/actions/save-profile", methods=['POST'])
 def do_data_save():

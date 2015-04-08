@@ -1,11 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% if analysis %}
 {% set title = unicode(analysis.title()) %}
-{% else %}
-{% set title = 'Analyse HXL data' %}
-{% endif %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -15,11 +11,25 @@
 {% endblock %}
 
 {% block menu %}
+            <li>
+              <a href="/analysis">
+                <span class="glyphicon glyphicon-th-list"></span> new
+              </a>
+            </li>
+            <li class="active">
+              <a href="{{ analysis.overview_url() }}">
+                <span class="glyphicon glyphicon-th-list"></span> analysis
+              </a>
+            </li>
+            <li>
+              <a href="{{ analysis.data_url() }}">
+                <span class="glyphicon glyphicon-th-list"></span> data
+              </a>
+            </li>
 {% endblock %}
 
 {% block main %}
 
-    {% if analysis %}
     <ul class="breadcrumb">
       {% if not analysis.filters %}
       <li class="active">3W data</li>
@@ -34,7 +44,6 @@
       {% endif %}
       {% endfor %}
     </ul>
-    {% endif %}
 
     <h1>{{ title }}</h1>
 
@@ -53,13 +62,17 @@
     {% else %}
     <p><a href="{{ analysis.args.url }}">Original dataset</a> (<a href="/analysis">Change</a>)</p>
 
+    {% set seen_summary = [] %}
     {% if analysis.patterns %}
     <section class="row">
     {% for pattern in analysis.patterns %}
+    {% set entries = analysis.get_top_values(pattern[0]) %}
+    {% if entries %}
+    {# hack around variable scope #}
+    {% set _dummy = seen_summary.append(True) %}
     <section class="col-lg-3 col-md-4 col-sm-6">
       <div class="panel panel-default">
       <div class="panel-heading">
-      {% set entries = analysis.get_top_values(pattern[0]) %}
       <h2 class="panel-title">Top {{ pattern[1]|default('values for' + pattern[0]) }} (of {{ entries|count }})</h2>
       </div>
       <div class="panel-body">
@@ -81,9 +94,12 @@
       </div>
       </div>
     </section>
+    {% endif %}
     {% endfor %}
     </section>
-    {% else %}
+    {% endif %}
+
+    {% if not seen_summary %}
     {% set profile=analysis %}
     {% set source=analysis.source %}
     {% include 'snippets/hxltable.html' %}

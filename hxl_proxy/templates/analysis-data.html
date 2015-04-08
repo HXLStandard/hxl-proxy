@@ -1,0 +1,58 @@
+{% extends "models/page.basic.html" %}
+{% from 'macros/navmenu.html' import navmenu %}
+
+{% set title = unicode(analysis.title()) %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block menu %}
+            <li>
+              <a href="/analysis">
+                <span class="glyphicon glyphicon-th-list"></span> new
+              </a>
+            </li>
+            <li>
+              <a href="{{ analysis.overview_url() }}">
+                <span class="glyphicon glyphicon-th-list"></span> overview
+              </a>
+            </li>
+            <li class="active">
+              <a href="{{ analysis.data_url() }}">
+                <span class="glyphicon glyphicon-th-list"></span> data
+              </a>
+            </li>
+{% endblock %}
+
+{% block main %}
+
+    <ul class="breadcrumb">
+      {% if not analysis.filters %}
+      <li class="active">3W data</li>
+      {% else %}
+      <li><a href="?url={{ analysis.args.url|urlencode }}">3W data</a></li>
+      {% endif %}
+      {% for filter in analysis.filters %}
+      {% if filter == analysis.filters|last %}
+      <li class="active">{{ unicode(filter.orig) }}</li>
+      {% else %}
+      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ unicode(filter.orig) }}</a></li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+
+    <h1>{{ title }}</h1>
+
+    {% set profile=analysis %}
+    {% set source=analysis.source %}
+    {% include 'snippets/hxltable.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
