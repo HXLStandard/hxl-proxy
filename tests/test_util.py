@@ -2,7 +2,7 @@
 
 import unittest
 
-from hxl_proxy import *
+from hxl_proxy.util import *
 
 class TestUtil(unittest.TestCase):
 

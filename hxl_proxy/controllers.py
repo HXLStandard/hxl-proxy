@@ -25,7 +25,6 @@ from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 
 from hxl.model import TagPattern
-from hxl.io import gen_hxl, gen_json
 
 
 #
@@ -163,13 +162,13 @@ def show_data(key=None, format="html"):
     show_headers = (profile.args.get('strip-headers') != 'on')
 
     if format == 'json':
-        response = Response(gen_json(source, show_headers=show_headers), mimetype='application/json')
+        response = Response(source.gen_json(show_headers=show_headers), mimetype='application/json')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
         return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
     else:
-        response = Response(gen_hxl(source, show_headers=show_headers), mimetype='text/csv')
+        response = Response(source.gen_hxl(show_headers=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 

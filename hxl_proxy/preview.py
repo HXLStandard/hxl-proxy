@@ -1,8 +1,8 @@
 """HXL filter for previewing a dataset."""
 
-from hxl.model import DataProvider
+from hxl.model import Dataset
 
-class PreviewFilter(DataProvider):
+class PreviewFilter(Dataset):
     """Show only up to the first n rows of a dataset."""
 
     def __init__(self, source, max_rows=10):

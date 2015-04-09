@@ -105,8 +105,8 @@ class TestPipelineFunctions(unittest.TestCase):
         filter = add_count_filter(self.source, args, 3)
         self.assertEqual('CountFilter', filter.__class__.__name__, "count filter from args")
         self.assertEqual(self.source, filter.source, "source ok")
-        self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.count_tags], "tags ok")
-        self.assertEqual('#targeted_num+f', str(filter.aggregate_tag), "aggregate tag ok")
+        self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.patterns], "tags ok")
+        self.assertEqual('#targeted_num+f', str(filter.aggregate_pattern), "aggregate tag ok")
     
     def test_add_cut_filter(self):
         args = {

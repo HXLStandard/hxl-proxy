@@ -111,7 +111,7 @@ def add_count_filter(source, args, index):
         aggregate_tag = TagPattern.parse(aggregate_tag)
     else:
         aggregate_tag = None
-    return CountFilter(source, tags=tags, aggregate_tag=aggregate_tag)
+    return CountFilter(source, patterns=tags, aggregate_pattern=aggregate_tag)
 
 def add_cut_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""
