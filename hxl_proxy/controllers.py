@@ -168,7 +168,7 @@ def show_data(key=None, format="html"):
     elif format == 'html':
         return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
     else:
-        response = Response(source.gen_hxl(show_headers=show_headers), mimetype='text/csv')
+        response = Response(source.gen_csv(show_headers=show_headers), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
