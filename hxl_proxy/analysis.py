@@ -1,11 +1,15 @@
-import operator
+"""
+Analysis logic
+
+For now, focusses on 3W-type data.
+"""
+
 import urllib
 
+from hxl import hxl
 from hxl.model import TagPattern
-from hxl.io import HXLReader
-from hxl.filters import CacheFilter, RowFilter
 
-from hxl_proxy.util import norm, make_input
+from hxl_proxy.util import norm, munge_url
 
 class Analysis:
 
@@ -157,11 +161,10 @@ class Analysis:
     def source(self):
         """Open the input on initial request."""
         if not self._saved_source:
-            source = HXLReader(make_input(self.args.get('url')))
+            source = hxl(munge_url(self.args.get('url'))).cache()
             for filter_data in self.filters:
-                query = RowFilter.Query(filter_data['pattern'], operator.eq, filter_data['value'])
-                source = RowFilter(source, queries=[query])
-            source = CacheFilter(source)
+                query = '{}={}'.format(filter_data['pattern'], filter_data['value'])
+                source = source.with_rows(query)
             self._saved_source = source
         return self._saved_source
 
@@ -170,3 +173,4 @@ class Analysis:
         for filter in self.filters:
             filter['orig'] = row.get(filter['pattern'], default=filter['value'])
 
+# end
