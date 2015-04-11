@@ -12,15 +12,8 @@ from hxl_proxy.util import make_input
 from hxl.model import TagPattern, Column
 from hxl.io import HXLReader
 
-from hxl.filters.add import AddFilter
-from hxl.filters.clean import CleanFilter
-from hxl.filters.count import CountFilter
-from hxl.filters.cut import CutFilter
-from hxl.filters.merge import MergeFilter
-from hxl.filters.rename import RenameFilter
-from hxl.filters.select import SelectFilter, Query
-from hxl.filters.sort import SortFilter
-from hxl.filters.tag import Tagger
+from hxl.filters import AddFilter, CleanFilter, ColumnFilter, CountFilter, MergeFilter, RenameFilter, RowFilter, SortFilter
+from hxl.converters import Tagger
 
 # Minimum default number of filters to check
 DEFAULT_FILTER_COUNT = 5
@@ -52,14 +45,14 @@ def setup_filters(profile):
             source = add_clean_filter(source, profile.args, index)
         elif filter == 'count':
             source = add_count_filter(source, profile.args, index)
-        elif filter == 'cut':
-            source = add_cut_filter(source, profile.args, index)
+        elif filter == 'column' or filter == 'cut':
+            source = add_column_filter(source, profile.args, index)
         elif filter == 'merge':
             source = add_merge_filter(source, profile.args, index)
         elif filter == 'rename':
             source = add_rename_filter(source, profile.args, index)
-        elif filter == 'select':
-            source = add_select_filter(source, profile.args, index)
+        elif filter == 'rows' or filter == 'select':
+            source = add_row_filter(source, profile.args, index)
         elif filter == 'sort':
             source = add_sort_filter(source, profile.args, index)
 
@@ -113,11 +106,11 @@ def add_count_filter(source, args, index):
         aggregate_tag = None
     return CountFilter(source, patterns=tags, aggregate_pattern=aggregate_tag)
 
-def add_cut_filter(source, args, index):
+def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""
     include_tags = TagPattern.parse_list(args.get('cut-include-tags%02d' % index, []))
     exclude_tags = TagPattern.parse_list(args.get('cut-exclude-tags%02d' % index, []))
-    return CutFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
+    return ColumnFilter(source, include_tags=include_tags, exclude_tags=exclude_tags)
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
@@ -137,15 +130,15 @@ def add_rename_filter(source, args, index):
     column = Column.parse(tagspec, header=header)
     return RenameFilter(source, [(oldtag, column)])
 
-def add_select_filter(source, args, index):
+def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
     queries = []
     for subindex in range(1, 6):
         query = args.get('select-query%02d-%02d' % (index, subindex))
         if query:
-            queries.append(Query.parse(query))
+            queries.append(query)
     reverse = (args.get('select-reverse%02d' % index) == 'on')
-    return SelectFilter(source, queries=queries, reverse=reverse)
+    return RowFilter(source, queries=queries, reverse=reverse)
 
 def add_sort_filter(source, args, index):
     """Add the hxlsort filter to the end of the pipeline."""

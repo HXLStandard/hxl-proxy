@@ -48,7 +48,7 @@ class TestSetupFilters(unittest.TestCase):
 
         # check the whole pipeline
         self.assertEqual('SortFilter', source.__class__.__name__, "sort filter is fourth")
-        self.assertEqual('SelectFilter', source.source.__class__.__name__, "select filter is third")
+        self.assertEqual('RowFilter', source.source.__class__.__name__, "select filter is third")
         self.assertEqual('CountFilter', source.source.source.__class__.__name__, "count filter is second")
         self.assertEqual('HXLReader', source.source.source.source.__class__.__name__, "reader is first")
 
@@ -108,13 +108,13 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.patterns], "tags ok")
         self.assertEqual('#targeted_num+f', str(filter.aggregate_pattern), "aggregate tag ok")
     
-    def test_add_cut_filter(self):
+    def test_add_column_filter(self):
         args = {
             'cut-include-tags01': 'org,adm1,adm2+pcode',
             'cut-exclude-tags01': 'email+external,name-ngo'
         }
-        filter = add_cut_filter(self.source, args, 1)
-        self.assertEqual('CutFilter', filter.__class__.__name__, "cut filter from args")
+        filter = add_column_filter(self.source, args, 1)
+        self.assertEqual('ColumnFilter', filter.__class__.__name__, "cut filter from args")
         self.assertEqual(self.source, filter.source, "source ok")
         self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags], "include ok")
         self.assertEqual(['#email+external', '#name-ngo'], [str(p) for p in filter.exclude_tags], "exclude ok")
@@ -153,15 +153,15 @@ class TestPipelineFunctions(unittest.TestCase):
             self.assertEqual('#adm1', spec[1].display_tag, "replacement tag pattern ok")
             self.assertEqual('Provincia', spec[1].header, "header ok")
 
-    def test_add_select_filter(self):
+    def test_add_row_filter(self):
         args = {
             'select-query09-01': 'sector+cluster=WASH',
             'select-query09-02': 'aff_num-adult<3',
             'select-query09-03': 'org!=UNICEF',
             'select-reverse09': 'on'
         }
-        filter = add_select_filter(self.source, args, 9)
-        self.assertEqual('SelectFilter', filter.__class__.__name__, "select filter from args")
+        filter = add_row_filter(self.source, args, 9)
+        self.assertEqual('RowFilter', filter.__class__.__name__, "select filter from args")
         self.assertEqual(self.source, filter.source, "source ok")
         self.assertEqual(
             ['#sector+cluster', '#aff_num-adult', '#org'],

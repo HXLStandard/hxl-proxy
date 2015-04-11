@@ -3,8 +3,7 @@ import urllib
 
 from hxl.model import TagPattern
 from hxl.io import HXLReader
-from hxl.filters.cache import CacheFilter
-from hxl.filters.select import SelectFilter, Query
+from hxl.filters import CacheFilter, RowFilter
 
 from hxl_proxy.util import norm, make_input
 
@@ -160,8 +159,8 @@ class Analysis:
         if not self._saved_source:
             source = HXLReader(make_input(self.args.get('url')))
             for filter_data in self.filters:
-                query = Query(filter_data['pattern'], operator.eq, filter_data['value'])
-                source = SelectFilter(source, queries=[query])
+                query = RowFilter.Query(filter_data['pattern'], operator.eq, filter_data['value'])
+                source = RowFilter(source, queries=[query])
             source = CacheFilter(source)
             self._saved_source = source
         return self._saved_source
