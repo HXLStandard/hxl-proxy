@@ -74,11 +74,11 @@ class TestPipelineFunctions(unittest.TestCase):
             'add-before05': 'on'
         }
         filter = add_add_filter(self.source, args, 5)
-        self.assertEqual('AddFilter', filter.__class__.__name__, "add filter from args")
-        self.assertEqual(self.source, filter.source, "source OK")
-        self.assertEqual(args['add-tag05'], filter.values[0][0].tag, "tag OK")
-        self.assertEqual(args['add-value05'], filter.values[0][1], "value OK")
-        self.assertTrue(filter.before, "before ok")
+        self.assertEqual('AddColumnsFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(args['add-tag05'], filter.values[0][0].tag)
+        self.assertEqual(args['add-value05'], filter.values[0][1])
+        self.assertTrue(filter.before)
 
     def test_add_clean_filter(self):
         args = {
@@ -89,7 +89,7 @@ class TestPipelineFunctions(unittest.TestCase):
             'clean-number-tags07': 'aff_num+idp,targeted_num'
         }
         filter = add_clean_filter(self.source, args, 7)
-        self.assertEqual('CleanFilter', filter.__class__.__name__, "clean filter from args")
+        self.assertEqual('CleanDataFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source, "source ok")
         self.assertEqual(['#adm1', '#sector-cluster'], [str(p) for p in filter.whitespace], "whitespace ok")
         self.assertEqual(['#adm1_id', '#sector_id'], [str(p) for p in filter.upper], "upper ok")
@@ -110,14 +110,12 @@ class TestPipelineFunctions(unittest.TestCase):
     
     def test_add_column_filter(self):
         args = {
-            'cut-include-tags01': 'org,adm1,adm2+pcode',
-            'cut-exclude-tags01': 'email+external,name-ngo'
+            'cut-include-tags01': 'org,adm1,adm2+pcode'
         }
         filter = add_column_filter(self.source, args, 1)
-        self.assertEqual('ColumnFilter', filter.__class__.__name__, "cut filter from args")
-        self.assertEqual(self.source, filter.source, "source ok")
-        self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags], "include ok")
-        self.assertEqual(['#email+external', '#name-ngo'], [str(p) for p in filter.exclude_tags], "exclude ok")
+        self.assertEqual('ColumnFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
 
     @patch(URLOPEN_PATCH)
     def test_add_merge_filter(self, urlopen_mock):
@@ -130,12 +128,12 @@ class TestPipelineFunctions(unittest.TestCase):
             'merge-url11': 'http://example.org/data.csv'
         }
         filter = add_merge_filter(self.source, args, 11)
-        self.assertEqual('MergeFilter', filter.__class__.__name__, "merge filter from args")
-        self.assertEqual(self.source, filter.source, "source ok")
-        self.assertEqual(['#adm2_id+pcode'], [str(p) for p in filter.keys], "keys ok")
-        self.assertEqual(['#lat_deg', '#lon_deg'], [str(p) for p in filter.merge_tags], "merge tags ok")
-        self.assertTrue(filter.replace, "replace flag ok")
-        self.assertTrue(filter.overwrite, "overwrite flag ok")
+        self.assertEqual('MergeDataFilter', filter.__class__.__name__)
+        self.assertEqual(self.source, filter.source)
+        self.assertEqual(['#adm2_id+pcode'], [str(p) for p in filter.keys])
+        self.assertEqual(['#lat_deg', '#lon_deg'], [str(p) for p in filter.merge_tags])
+        self.assertTrue(filter.replace)
+        self.assertTrue(filter.overwrite)
         #self.assertEquals(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
 
     def test_add_rename_filter(self):

@@ -12,6 +12,7 @@ from hxl_proxy.util import make_input
 from hxl.model import TagPattern, Column
 from hxl.io import HXLReader
 
+from hxl.filters import *
 from hxl.converters import Tagger
 
 # Minimum default number of filters to check
