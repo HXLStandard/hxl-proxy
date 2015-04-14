@@ -12,7 +12,6 @@ from hxl_proxy.util import make_input
 from hxl.model import TagPattern, Column
 from hxl.io import HXLReader
 
-from hxl.filters import CleanFilter, MergeFilter
 from hxl.converters import Tagger
 
 # Minimum default number of filters to check
@@ -94,7 +93,7 @@ def add_clean_filter(source, args, index):
     lower_tags = TagPattern.parse_list(args.get('clean-lower-tags%02d' % index, ''))
     date_tags = TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
     number_tags = TagPattern.parse_list(args.get('clean-number-tags%02d' % index, ''))
-    return CleanFilter(source, whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+    return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
 
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
@@ -124,7 +123,7 @@ def add_merge_filter(source, args, index):
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
     merge_source = HXLReader(make_input(url))
-    return MergeFilter(source, merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
+    return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
