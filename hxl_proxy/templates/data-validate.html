@@ -55,7 +55,7 @@ HXL data
         <tbody>
           {% for error in errors %}
           <tr>
-            <td><span class="badge {{ severity_class(error.severity) }}">{{ error.severity }}</span></td>
+            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td>{{ error.value|nonone }}</td>
             <td>{{ error.rule.description|nonone }}</td>
