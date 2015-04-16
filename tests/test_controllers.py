@@ -99,8 +99,16 @@ class TestValidationPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        response = self.client.get('/data')
+        response = self.client.get('/data/validate')
         self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
+
+    @patch(URLOPEN_PATCH)
+    def test_default_schema(self, mock):
+        mock_basic_dataset(mock)
+        response = self.client.get('/data/validate?url=http://example.org/data.csv')
+        self.assertTrue('Using the default schema' in response.data)
+        self.assertTrue('Validation succeeded' in response.data)
+
 
 #
 # Utility functions
