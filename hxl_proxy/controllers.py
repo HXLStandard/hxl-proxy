@@ -47,7 +47,7 @@ if not app.config.get('DEBUG'):
 @app.route("/")
 def redirect_home():
     # home isn't moved permanently
-    return redirect("/analysis?" + urllib.urlencode(request.args) , 302)
+    return redirect("/data?" + urllib.urlencode(request.args) , 302)
 
 @app.route("/filters/new") # deprecated
 def redirect_edit():
