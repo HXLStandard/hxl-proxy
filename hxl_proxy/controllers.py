@@ -142,9 +142,11 @@ def show_validate(key=None):
     else:
         schema_url = profile.args.get('schema_url', None)
 
+    severity_level = request.args.get('severity', None)
+
     # If we have a URL, validate the data.
     if url:
-        errors = do_validate(setup_filters(profile), schema_url)
+        errors = do_validate(setup_filters(profile), schema_url, severity_level)
         
     return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors)
 

@@ -38,8 +38,23 @@ HXL data
           <a class="btn btn-default" data-toggle="modal" data-target="#customise">Change schema</a>
       </p>
 
+      <form id="severity-form" class="form" action="" method="GET">
+        <div class="form-group">
+          <label for="severity">Minimum error level to show</label>
+          <select name="severity" class="form-control" onchange="$('#severity-form').submit();">
+            <option value="info"{% if request.args.severity=='info' %} selected="selected"{% endif %}>Suggestions</option>
+            <option value="warning"{% if request.args.severity=='warning' %} selected="selected"{% endif %}>Warnings</option>
+            <option value="error"{% if request.args.severity=='error' %} selected="selected"{% endif %}>Errors</option>
+          </select>
+          <button class="hidden btn btn-default" type="submit">Change</button>
+        </div>
+        {% include 'snippets/profile-form.html' %}
+      </form>
+
       {% if errors %}
-      <p class="alert alert-warning">{{ errors|length }} validation issue(s).</p>
+      <p class="alert alert-warning">{{ errors|length }} validation
+      issue(s){% if profile.args.severity %} (minimum severity: {{ profile.args.severity}}){%
+      endif %}.</p>
 
       <table class="table">
         <thead>
@@ -56,10 +71,10 @@ HXL data
           {% for error in errors %}
           <tr>
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
-            <td>{{ error.value|nonone }}</td>
-            <td>{{ error.rule.description|nonone }}</td>
-            <td>{{ error.message|nonone }}</td>
+            <td>{{ unicode(error.rule.tag_pattern)|nonone }}</td>
+            <td>{{ unicode(error.value)|nonone }}</td>
+            <td>{{ unicode(error.rule.description)|nonone }}</td>
+            <td>{{ unicode(error.message)|nonone }}</td>
             <td>
               {% if error.row %}
               <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>
@@ -90,6 +105,8 @@ HXL data
                 <p>Temporarilty override the default schema for this profile. To change the default schema, go to the
                 <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
                 {% endif %}
+
+                {% include 'snippets/profile-form.html' %}
 
                 <div class="form-group">
                   <label for="schema_url">Custom HXL schema URL</label>
