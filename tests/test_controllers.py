@@ -9,6 +9,7 @@ License: Public Domain
 import unittest
 import sys
 import os
+import re
 import tempfile
 
 from . import resolve_path
@@ -41,7 +42,7 @@ class TestEditPage(unittest.TestCase):
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data/edit?url=http://example.org')
+        response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
         self.assertTrue('<h1>New HXL view</h1>' in response.data)
         assert_basic_dataset(self, response)
 
@@ -74,14 +75,13 @@ class TestDataPage(unittest.TestCase):
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data?url=http://example.org')
+        response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
         self.assertTrue('<h1>New filter preview</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     @patch(URLOPEN_PATCH)
     def test_key(self, mock):
         mock_basic_dataset(mock)
-        mock.return_value = open(resolve_path('files/basic-dataset.csv'))
         response = self.client.get('/data/{}'.format(self.key))
         self.assertTrue('<h1>Sample dataset</h1>' in response.data)
         assert_basic_dataset(self, response)
@@ -105,7 +105,14 @@ class TestValidationPage(unittest.TestCase):
     @patch(URLOPEN_PATCH)
     def test_default_schema(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data/validate?url=http://example.org/data.csv')
+        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
+        self.assertTrue('Using the default schema' in response.data)
+        self.assertTrue('Validation succeeded' in response.data)
+
+    @patch(URLOPEN_PATCH)
+    def test_good_schema(self, mock):
+        mock_basic_dataset(mock)
+        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
         self.assertTrue('Using the default schema' in response.data)
         self.assertTrue('Validation succeeded' in response.data)
 
@@ -128,14 +135,18 @@ def end_tests(tests):
 
 def make_profile():
     profile = Profile({
-        'url': 'http://example.org'
+        'url': 'http://example.org/basic-dataset.csv'
     })
     profile.name = 'Sample dataset'
     return profile
 
 def mock_basic_dataset(mock):
-    mock.return_value = open(resolve_path('files/basic-dataset.csv'))
-        
+    """Will open last element of the URL path as a local file under ./files/"""
+    def side_effect(url):
+        filename = re.sub(r'^.*/([^/]+)$', '\\1', url)
+        return open(resolve_path('files/' + filename))
+    mock.side_effect = side_effect
+
 def assert_basic_dataset(test, response):
     """Check that we're looking at the basic dataset"""
     test.assertEqual(200, response.status_code)
