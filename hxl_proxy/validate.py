@@ -13,6 +13,7 @@ SEVERITY_LEVELS = {
 
 def do_validate(source, schema_url=None, severity_level=None):
     """Validate a source, and return a list of errors."""
+    print("VALIDATE")
     min_severity = SEVERITY_LEVELS.get(severity_level, -1)
     errors = []
     def callback(error):

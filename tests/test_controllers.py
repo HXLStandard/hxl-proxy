@@ -109,13 +109,6 @@ class TestValidationPage(unittest.TestCase):
         self.assertTrue('Using the default schema' in response.data)
         self.assertTrue('Validation succeeded' in response.data)
 
-    @patch(URLOPEN_PATCH)
-    def test_good_schema(self, mock):
-        mock_basic_dataset(mock)
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
-        self.assertTrue('Using the default schema' in response.data)
-        self.assertTrue('Validation succeeded' in response.data)
-
 
 #
 # Utility functions

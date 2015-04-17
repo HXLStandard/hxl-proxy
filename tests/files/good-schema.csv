@@ -1,0 +1,5 @@
+Tag,Required
+#valid_tag,#valid_required
+#org,true
+#sector,true
+#adm1,true
