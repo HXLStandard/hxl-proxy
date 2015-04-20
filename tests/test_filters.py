@@ -9,11 +9,11 @@ License: Public Domain
 import unittest
 import sys
 import operator
-import urllib # needed for @patch
+import urllib2 # needed for @patch
 
 if sys.version_info < (3, 3):
     from mock import patch
-    URLOPEN_PATCH = 'urllib.urlopen'
+    URLOPEN_PATCH = 'urllib2.urlopen'
 else:
     from unittest.mock import patch
     URLOPEN_PATCH = 'urllib.request.urlopen'
@@ -32,7 +32,9 @@ DATA = [
 
 class TestSetupFilters(unittest.TestCase):
 
-    def test_filters(self):
+    @patch(URLOPEN_PATCH)
+    def test_filters(self, mock):
+        mock.return_value = 'x'
         args = {
             'url': 'http://example.org/data.csv',
             'filter_count': 3,
@@ -76,7 +78,6 @@ class TestPipelineFunctions(unittest.TestCase):
         filter = add_add_filter(self.source, args, 5)
         self.assertEqual('AddColumnsFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source)
-        print("VALUES: " + str(filter.values))
         self.assertEqual(args['add-tag05'], str(filter.specs[0][0]))
         self.assertEqual(args['add-value05'], str(filter.specs[0][1]))
         self.assertTrue(filter.before)

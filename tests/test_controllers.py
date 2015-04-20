@@ -16,7 +16,7 @@ from . import resolve_path
 
 if sys.version_info < (3, 3):
     from mock import patch
-    URLOPEN_PATCH = 'urllib.urlopen'
+    URLOPEN_PATCH = 'urllib2.urlopen'
 else:
     from unittest.mock import patch
     URLOPEN_PATCH = 'urllib.request.urlopen'
@@ -112,7 +112,8 @@ class TestValidationPage(unittest.TestCase):
     @patch(URLOPEN_PATCH)
     def test_good_schema(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
+        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=foo')
+        print(response.data)
         self.assertTrue('Validation succeeded' in response.data)
 
 
