@@ -76,8 +76,9 @@ class TestPipelineFunctions(unittest.TestCase):
         filter = add_add_filter(self.source, args, 5)
         self.assertEqual('AddColumnsFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source)
-        self.assertEqual(args['add-tag05'], filter.values[0][0].tag)
-        self.assertEqual(args['add-value05'], filter.values[0][1])
+        print("VALUES: " + str(filter.values))
+        self.assertEqual(args['add-tag05'], str(filter.specs[0][0]))
+        self.assertEqual(args['add-value05'], str(filter.specs[0][1]))
         self.assertTrue(filter.before)
 
     def test_add_clean_filter(self):

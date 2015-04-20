@@ -110,10 +110,9 @@ class TestValidationPage(unittest.TestCase):
         self.assertTrue('Validation succeeded' in response.data)
 
     @patch(URLOPEN_PATCH)
-    def test_default_schema(self, mock):
+    def test_good_schema(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
-        self.assertTrue('Using the default schema' in response.data)
+        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
         self.assertTrue('Validation succeeded' in response.data)
 
 
@@ -144,7 +143,6 @@ def mock_basic_dataset(mock):
     """Will open last element of the URL path as a local file under ./files/"""
     def side_effect(url):
         filename = re.sub(r'^.*/([^/]+)$', '\\1', url)
-        print("FILENAME: " + filename)
         return open(resolve_path('files/' + filename))
     mock.side_effect = side_effect
 
