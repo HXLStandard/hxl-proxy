@@ -7,10 +7,8 @@ module uses the numbers to group the parameters, then to construct the
 hxl.filter objects from them and build a pipeline.
 """
 
-from hxl_proxy.util import make_input
-
 from hxl.model import TagPattern, Column
-from hxl.io import HXLReader
+from hxl.io import HXLReader, make_input
 
 from hxl.filters import *
 from hxl.converters import Tagger

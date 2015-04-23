@@ -70,7 +70,7 @@ class TestDataPage(unittest.TestCase):
 
     def test_local_file(self):
         response = self.client.get('/data?url=/etc/passwd')
-        self.assertEqual(403, response.status_code, "non-URL forbidden")
+        self.assertEqual(403, response.status_code)
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
@@ -112,8 +112,7 @@ class TestValidationPage(unittest.TestCase):
     @patch(URLOPEN_PATCH)
     def test_good_schema(self, mock):
         mock_basic_dataset(mock)
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=foo')
-        print(response.data)
+        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
         self.assertTrue('Validation succeeded' in response.data)
 
 

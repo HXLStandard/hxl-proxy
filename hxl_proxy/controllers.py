@@ -33,7 +33,12 @@ from hxl.model import TagPattern
 
 def error(e):
     """Default error page."""
-    return render_template('error.html', message=str(e))
+    if isinstance(e, IOError):
+        # probably tried to open an inappropriate URL
+        status = 403
+    else:
+        status = 500
+    return render_template('error.html', message=str(e)), status
 
 if not app.config.get('DEBUG'):
     # Register only if not in DEBUG mode

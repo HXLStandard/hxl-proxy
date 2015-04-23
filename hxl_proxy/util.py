@@ -22,33 +22,6 @@ def norm (s):
     """Normalise a string"""
     return s.strip().lower().replace(r'\s\s+', ' ')
 
-
-def munge_url(url):
-    """If a URL points to a tab in a Google Sheet, grab the CSV export."""
-
-    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44}).*gid=([0-9]+)', str(url))
-    if result:
-        return 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}'.format(result.group(1), result.group(2))
-
-    # FIXME shouldn't need two patterns, but it's defeating me right now
-    result = re.match(r'https?://docs.google.com.*/spreadsheets/.*([0-9A-Za-z_-]{44})', str(url))
-    if result:
-            url = 'https://docs.google.com/spreadsheets/d/{0}/export?format=csv'.format(result.group(1))
-
-    # Return the original URL
-    return url
-
-def make_input(url):
-    """Create an input object for a URL."""
-    url = munge_url(url);
-    if re.match(r'^https?://.+$', url):
-        if re.match(r'.*\.xlsx?$', url):
-            return ExcelInput(url)
-        else:
-            return CSVInput(url)
-    else:
-        raise Forbidden('Only http and https URLs supported')
-
 def decode_string(s):
     """Decode a UTF-8 or Latin 1 string into Unicode."""
     if not s:

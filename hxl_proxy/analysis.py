@@ -9,7 +9,7 @@ import urllib
 from hxl import hxl
 from hxl.model import TagPattern
 
-from hxl_proxy.util import norm, munge_url
+from hxl_proxy.util import norm
 
 class Analysis:
 
@@ -161,7 +161,7 @@ class Analysis:
     def source(self):
         """Open the input on initial request."""
         if not self._saved_source:
-            source = hxl(munge_url(self.args.get('url'))).cache()
+            source = hxl(self.args.get('url')).cache()
             for filter_data in self.filters:
                 query = '{}={}'.format(filter_data['pattern'], filter_data['value'])
                 source = source.with_rows(query)
