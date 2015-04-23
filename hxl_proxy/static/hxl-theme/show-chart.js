@@ -18,7 +18,7 @@ function get_value_tag(hxl) {
         return chart_value_tag;
     } else {
         for (i in hxl.columns) {
-            if (/_num$/.test(hxl.columns[i].tag)) {
+            if (hxl.columns[i].tag == '#meta+count' || /_num$/.test(hxl.columns[i].tag)) {
                 return hxl.columns[i].tag;
             }
         }
