@@ -8,7 +8,7 @@ dependency_links=[
 setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
-    version = '0.3alpha',
+    version = '0.3',
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
     author_email='contact@megginson.com',
