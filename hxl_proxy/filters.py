@@ -88,8 +88,8 @@ def add_add_filter(source, args, index):
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""
     whitespace_tags = TagPattern.parse_list(args.get('clean-whitespace-tags%02d' % index, ''))
-    upper_tags = TagPattern.parse_list(args.get('clean-upper-tags%02d' % index, ''))
-    lower_tags = TagPattern.parse_list(args.get('clean-lower-tags%02d' % index, ''))
+    upper_tags = TagPattern.parse_list(args.get('clean-toupper-tags%02d' % index, ''))
+    lower_tags = TagPattern.parse_list(args.get('clean-tolower-tags%02d' % index, ''))
     date_tags = TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
     number_tags = TagPattern.parse_list(args.get('clean-number-tags%02d' % index, ''))
     return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
