@@ -183,7 +183,7 @@ hxl_proxy.setupMap = function() {
         for (i in row.values) {
             column = row.columns[i];
             value = row.values[i];
-            if (value && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
+            if (value && column.tag != '#geo' && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
                 label += "  <tr>\n";
                 if (column.header) {
                     label += "    <th>" + escapeHTML(column.header) + "</th>\n";
@@ -216,8 +216,8 @@ hxl_proxy.setupMap = function() {
 
         while (row = iterator.next()) {
             var layer = get_map_layer(row.get(map_layer_tag));
-            var lat = row.get('#lat_deg');
-            var lon = row.get('#lon_deg');
+            var lat = row.get('#geo+lat') || row.get('#lat_deg');
+            var lon = row.get('#geo+lon') || row.get('#lon_deg');
             if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
                 var marker = L.marker([lat, lon]);
                 marker.bindPopup(make_label(row));
@@ -252,17 +252,18 @@ hxl_proxy.setupMap = function() {
     function draw_polygons(hxl) {
         var features = L.featureGroup([]);
 
-        var min_value = hxl.getMin('#x_count_num');
-        var max_value = hxl.getMax('#x_count_num');
+        var min_value = hxl.getMin('#meta+count') || hxl.getMin('#x_count_num');
+        var max_value = hxl.getMax('#meta+count') || hxl.getMax('#x_count_num');
 
         var iterator = hxl.iterator();
         while (row = iterator.next()) {
-            bounds_str = row.get('#x_bounds_js');
+            bounds_str = row.get('#geo+bounds') || row.get('#x_bounds_js');
             if (bounds_str) {
                 var geometry = jQuery.parseJSON(bounds_str);
+                var count = row.get('#meta+count') || row.get('#x_count_num');
                 var layer = L.geoJson(geometry, {
                     style: {
-                        color: make_color(row.get('#x_count_num'), min_value, max_value),
+                        color: make_color(count, min_value, max_value),
                         opacity: 0.5,
                         weight: 2
                     }
@@ -282,12 +283,12 @@ hxl_proxy.setupMap = function() {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var hxl = new HXLDataset(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
-        if (hxl.hasColumn('#x_bounds_js')) {
+        if (hxl.hasColumn('#geo+bounds') || hxl.hasColumn('#x_bounds_js')) {
             draw_polygons(hxl);
-        } else if (hxl.hasColumn('#lat_deg') && hxl.hasColumn('#lon_deg')) {
+        } else if ((hxl.hasColumn('#geo+lat') || hxl.hasColumn('#lat_deg')) && (hxl.hasColumn('#geo+lon') || hxl.hasColumn('#lon_deg'))) {
             draw_points(hxl);
         } else {
-            alert("Either #x_bounds_js or #lat_deg and #lon_deg needed for a map.");
+            alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
         }
     });
 
@@ -298,9 +299,6 @@ hxl_proxy.setupMap = function() {
     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
     map.addLayer(osm);
-
-    // FIXME - try to guess, and/or let user specify
-    var map_count_tag = '#x_count_num';
 };
 
 // end
