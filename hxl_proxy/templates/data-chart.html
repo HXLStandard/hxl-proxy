@@ -33,15 +33,17 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript">
-      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
-      var chart_type = "{{ type }}";
-      var chart_value_tag = "{{ tag }}";
-      var chart_label_tag = "{{ label }}";
-    </script>
 {{ super() }}
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('hxl-theme/hxl.js') }}"></script>
-    <script type="text/javascript" src="{{ static('hxl-theme/show-chart.js') }}"></script>
+    <script type="text/javascript" src="{{ static('hxl-theme/hxl-proxy.js') }}"></script>
+    <script type="text/javascript">
+      hxl_proxy.setupChart({
+        data_url: "{{ data_url(profile, key, format='csv') | safe }}",
+        type: "{{ type|nonone|safe }}",
+        value_pattern: "{{ tag|nonone|safe }}",
+        label_pattern: "{{ label|nonone|safe }}"
+      });
+    </script>
 {% endblock %}
