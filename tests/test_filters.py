@@ -24,10 +24,10 @@ from hxl_proxy.filters import *
 from hxl_proxy.profiles import Profile
 
 DATA = [
-    ['#org', '#sector', '#country'],
-    ['Org A', 'WASH', 'Country A'],
-    ['Org B', 'Health', 'Country B'],
-    ['Org C', 'Protection', 'Country A']
+    ['#org', '#sector', '#country', '#affected'],
+    ['Org A', 'WASH', 'Country A', '200'],
+    ['Org B', 'Health', 'Country B', '50'],
+    ['Org C', 'Protection', 'Country A', '100']
 ]
 
 class TestSetupFilters(unittest.TestCase):
