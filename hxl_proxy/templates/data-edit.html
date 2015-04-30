@@ -440,7 +440,7 @@
 {{ super() }}
     <script src="{{ static('hxl-theme/hxl-proxy.js') }}"></script>
     <script>
-      hxl_proxy.prepare_form();
+      hxl_proxy.setupForm();
       $(document).ready(function() {
         $("#preview-warning").insertBefore($("#preview-table"));
       });

@@ -3,7 +3,7 @@
  */
 var hxl_proxy = {}
 
-hxl_proxy.prepare_form = function() {
+hxl_proxy.setupForm = function() {
 
     function setup_fieldset(node, index) {
         filter_name = $(node).find(".field_filter select").val();
