@@ -438,8 +438,9 @@
 
 {% block scripts %}
 {{ super() }}
-    <script src="{{ static('hxl-theme/filter-form.js') }}"></script>
+    <script src="{{ static('hxl-theme/hxl-proxy.js') }}"></script>
     <script>
+      hxl_proxy.prepare_form();
       $(document).ready(function() {
         $("#preview-warning").insertBefore($("#preview-table"));
       });
