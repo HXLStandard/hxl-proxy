@@ -1,8 +1,26 @@
+////////////////////////////////////////////////////////////////////////
+// JavaScript library for the HXL Proxy
+//
+// All functions and varibles appear as properties of the hxl_proxy
+// object.
+//
+// Main entry points:
+//   hxl_proxy.setupForm()
+//   hxl_proxy.setupChart(params)
+//   hxl_proxy.setupMap()
+////////////////////////////////////////////////////////////////////////
+
+
 /**
  * Root object for all HXL Proxy functions and variables.
  */
 var hxl_proxy = {}
 
+
+/**
+ * Set up a page containing a form.
+ * External dependencies: none
+ */
 hxl_proxy.setupForm = function() {
 
     function setup_fieldset(node, index) {
@@ -38,6 +56,14 @@ hxl_proxy.setupForm = function() {
 };
 
 
+/**
+ * Set up a page containing a chart.
+ * External dependencies: Google Charts, JQuery, HXL
+ * @param params.data_url URL to a CSV HXL dataset
+ * @param params.type currently "pie", "bar", or "column" (defaults to "pie")
+ * @param params.label_pattern HXL tag pattern for the column containing labels (defaults to first column)
+ * @param params.value_pattern HXL tag pattern for the column containing values (defaults to #meta+count if present, or fails)
+ */
 hxl_proxy.setupChart = function(params) {
 
     // Callback that creates and populates a data table,
@@ -113,6 +139,11 @@ hxl_proxy.setupChart = function(params) {
 
 };
 
+
+/**
+ * Set up a page containing a map.
+ * External dependencies: Leaflet, Leaflet marker cluster plugin, JQuery, HXL
+ */
 hxl_proxy.setupMap = function() {
 
     /**
@@ -271,3 +302,5 @@ hxl_proxy.setupMap = function() {
     // FIXME - try to guess, and/or let user specify
     var map_count_tag = '#x_count_num';
 };
+
+// end
