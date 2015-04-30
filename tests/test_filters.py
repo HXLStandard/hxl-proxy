@@ -85,8 +85,8 @@ class TestPipelineFunctions(unittest.TestCase):
     def test_add_clean_filter(self):
         args = {
             'clean-whitespace-tags07': 'adm1,sector-cluster',
-            'clean-upper-tags07': 'adm1_id,sector_id',
-            'clean-lower-tags07': 'org_id,agesex_id',
+            'clean-toupper-tags07': 'adm1_id,sector_id',
+            'clean-tolower-tags07': 'org_id,agesex_id',
             'clean-date-tags07': 'from_date,to_date',
             'clean-number-tags07': 'aff_num+idp,targeted_num'
         }
