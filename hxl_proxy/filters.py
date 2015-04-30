@@ -111,7 +111,7 @@ def add_column_filter(source, args, index):
     if include_tags:
         source = source.with_columns(include_tags)
     if exclude_tags:
-        source = source.with_columns(exclude_tags)
+        source = source.without_columns(exclude_tags)
     return source
 
 def add_merge_filter(source, args, index):
