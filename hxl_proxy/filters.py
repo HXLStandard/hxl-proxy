@@ -61,7 +61,7 @@ def make_tagged_input(args):
     url = args.get('url')
 
     # TODO raise exception
-    input = make_input(url, False)
+    input = make_input(url, True)
 
     # Intercept tagging as a special data input
     if args.get('filter01') == 'tagger':

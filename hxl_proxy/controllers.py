@@ -7,11 +7,14 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
+import os
 import sys
 import copy
 import base64
 import urllib
+import tempfile
 
+from werkzeug import secure_filename
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, redirect, make_response, session, g
@@ -72,6 +75,12 @@ def redirect_data():
 def show_data_login(key):
     profile = get_profile(key)
     return render_template('data-login.html', key=key, profile=profile)
+
+@app.route("/data/upload")
+def show_data_upload():
+    """Form for uploading a HXL file."""
+    profile = get_profile(None)
+    return render_template('data-upload.html', profile=profile)
 
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
@@ -272,5 +281,16 @@ def do_data_save():
         session['passhash'] = profile.passhash
 
     return redirect(make_data_url(profile, key=key, facet='edit'), 303)
+
+@app.route("/actions/upload", methods=['POST'])
+def do_data_upload():
+    file = request.files.get('file')
+    if file:
+        path = tempfile.mkdtemp(prefix="hxl-proxy-")
+        dest = os.path.join(path, secure_filename(file.filename))
+        file.save(dest)
+        return redirect('/data/edit?url=' + dest, 303)
+    else:
+        return "No file"
 
 # end
