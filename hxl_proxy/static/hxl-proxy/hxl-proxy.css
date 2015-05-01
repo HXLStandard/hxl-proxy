@@ -54,3 +54,6 @@ td>.content {
     color: black;
 }
 
+.validation-message {
+    font-size: 120%;
+}

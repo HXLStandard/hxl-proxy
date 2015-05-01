@@ -59,29 +59,27 @@ HXL data
       <table class="table">
         <thead>
           <tr>
-            <th>Severity</th>
+            <th></th>
+            <th>Row</th>
+            <th>Explanation</th>
             <th>Tag</th>
             <th>Value</th>
-            <th>Description</th>
-            <th>Message</th>
-            <th>Location</th>
           </tr>
         </thead>
         <tbody>
           {% for error in errors %}
           <tr>
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td>{{ unicode(error.rule.tag_pattern)|nonone }}</td>
-            <td>{{ unicode(error.value)|nonone }}</td>
-            <td>{{ unicode(error.rule.description)|nonone }}</td>
-            <td>{{ unicode(error.message)|nonone }}</td>
             <td>
               {% if error.row %}
-              <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">Row {{ error.row.row_number+1 }}</a>
+              <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
               {% else %}
-              <a href="{{ data_url(profile) }}#hashtag-row">Hashtag row</a>
+              <a href="{{ data_url(profile) }}#hashtag-row">Hashtags</a>
               {% endif %}
             </td>
+            <td class="validation-message">{{ unicode(error.rule.description) or unicode(error.message|nonone) }}</td>
+            <td>{{ unicode(error.rule.tag_pattern)|nonone }}</td>
+            <td>{{ unicode(error.value)|nonone }}</td>
           </tr>
           {% endfor %}
         </tbody>
