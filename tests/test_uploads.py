@@ -35,3 +35,21 @@ class TestUpload(unittest.TestCase):
         self.upload.write(DATA)
         self.assertEqual(DATA, self.upload.read())
 
+
+class TestUploadManager:
+
+    def setUp(self):
+        self.manager = UploadManager(ROOT_DIR, BASE_DIR)
+
+    def test_create_default(self):
+        upload = self.manager.create_upload()
+        self.assertEqual(ROOT_DIR, upload.root_dir)
+        self.assertEqual(BASE_DIR, upload.base_dir)
+        self.assertTrue(upload.reldir.endswith('data.csv'))
+
+    def test_create_named(self):
+        NAME = 'new_dataset.csv'
+        upload = self.manager.create_upload(NAME)
+        self.assertEqual(ROOT_DIR, upload.root_dir)
+        self.assertEqual(BASE_DIR, upload.base_dir)
+        self.assertTrue(upload.reldir.endswith(NAME))
