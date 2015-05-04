@@ -22,9 +22,9 @@ class UploadManager:
         @param filename the filename to use inside the directory (defaults to "data.csv")
         @return an Upload object representing the file upload
         """
-        dir = mkdtemp(dir=self.root_dir)
+        dir = tempfile.mkdtemp(dir=self.root_dir, prefix='')
         relpath = os.path.relpath(os.path.join(dir, filename), self.root_dir)
-        return Upload(self.root_dir, self.base_url, self.relpath)
+        return Upload(self.root_dir, self.base_url, relpath)
 
 
 class Upload:

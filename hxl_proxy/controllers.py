@@ -286,10 +286,11 @@ def do_data_save():
 def do_data_upload():
     file = request.files.get('file')
     if file:
-        path = tempfile.mkdtemp(prefix="hxl-proxy-")
-        dest = os.path.join(path, secure_filename(file.filename))
-        file.save(dest)
-        return redirect('/data/edit?url=' + dest, 303)
+        upload = g.uploads.create_upload(file.filename)
+        print(upload)
+        file.save(upload.get_path())
+        #return redirect('/data/edit?url=' + urllib.quote_plus(upload.get_url()), 303)
+        return upload.get_url()
     else:
         return "No file"
 

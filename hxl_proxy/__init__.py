@@ -14,6 +14,7 @@ from flask import Flask, g, request
 import werkzeug.datastructures
 
 from hxl_proxy.profiles import ProfileManager
+from hxl_proxy.uploads import UploadManager
 
 # Main application object
 app = Flask(__name__)
@@ -27,6 +28,7 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     g.profiles = ProfileManager(app.config['PROFILE_FILE'])
+    g.uploads = UploadManager(app.config.get('UPLOAD_DIR', '/tmp'), request.url_root + app.config.get('UPLOAD_URL_PATH'))
 
 # Needed to register annotations in the controllers
 import hxl_proxy.controllers
