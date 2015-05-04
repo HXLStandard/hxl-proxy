@@ -24,7 +24,7 @@ class Profile(object):
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
         if password:
-            self.passhash = _make_md5(password)
+            self.passhash = make_md5(password)
         else:
             self.passhash = None
 
@@ -33,7 +33,7 @@ class Profile(object):
         # if none is set, also succeeds
         if not hasattr(self, 'passhash') or self.passhash is None:
             return True
-        return (self.passhash == _make_md5(password))
+        return (self.passhash == make_md5(password))
 
 class ProfileManager:
     """Manage saved filter pipelines."""
@@ -80,27 +80,27 @@ class ProfileManager:
         @param profile the profile as an associative array.
         @return the generated key for the new profile.
         """
-        key = _gen_key()
+        key = gen_key()
         dict = shelve.open(self.filename)
         try:
             # check for collisions
             while key in dict:
-                key = _gen_key()
+                key = gen_key()
             dict[str(key)] = profile
             return key
         finally:
             dict.close()
 
-def _make_md5(s):
+def make_md5(s):
     """Return an MD5 hash for a string."""
     return hashlib.md5(s.encode('utf-8')).digest()
 
-def _gen_key():
+def gen_key():
     """
     Generate a pseudo-random, 6-character hash for use as a key.
     """
     salt = str(time.time() * random.random())
-    encoded_hash = base64.urlsafe_b64encode(_make_md5(salt))
+    encoded_hash = base64.urlsafe_b64encode(make_md5(salt))
     return str(encoded_hash[:6])
 
 # end
