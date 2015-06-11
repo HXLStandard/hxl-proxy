@@ -84,6 +84,18 @@ def check_auth(profile):
             flash("Wrong password")
     return False
 
+def add_args(args):
+    """Add GET parameters."""
+    new_args = {}
+    for key in request.args:
+        new_args[key] = request.args[key]
+    for key in args:
+        if args[key]:
+            new_args[key] = args[key]
+        else:
+            del args[key]
+    return '?' + urlencode_utf8(new_args)
+
 def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
     url = None
@@ -131,6 +143,10 @@ app.jinja_env.globals['urltag'] = (
 
 app.jinja_env.globals['unicode'] = (
     decode_string
+)
+
+app.jinja_env.globals['add_args'] = (
+    add_args
 )
 
 app.jinja_env.globals['data_url'] = (
