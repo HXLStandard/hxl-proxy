@@ -85,7 +85,7 @@ hxl_proxy.setupChart = function(params) {
                 return params.value_pattern;
             } else {
                 for (i in hxl.columns) {
-                    if (hxl.columns[i].tag == '#meta+count' || /_num$/.test(hxl.columns[i].tag)) {
+                    if (hxl.columns[i].displayTag == '#meta+count' || /_num$/.test(hxl.columns[i].tag)) {
                         return hxl.columns[i].tag;
                     }
                 }
@@ -95,7 +95,7 @@ hxl_proxy.setupChart = function(params) {
 
         $.get(params.data_url, function(csvString) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-            var hxlData = new HXLDataset(rawData);
+            var hxlData = hxl.wrap(rawData);
             var label_pattern = get_label_pattern(hxlData);
             var value_pattern = get_value_pattern(hxlData);
 

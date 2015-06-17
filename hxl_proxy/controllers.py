@@ -122,10 +122,10 @@ def show_data_chart(key=None):
         return redirect('/data/edit', 303)
     tag = request.args.get('tag')
     if tag:
-            tag = TagPattern.parse(tag);
+        tag = TagPattern.parse(tag);
     label = request.args.get('label')
     if label:
-            label = TagPattern.parse(label);
+        label = TagPattern.parse(label);
     type = request.args.get('type', 'pie')
     return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
 
