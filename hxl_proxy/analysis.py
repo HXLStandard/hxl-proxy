@@ -15,20 +15,20 @@ class Analysis:
 
     TAGS = [
         [
-            ('#org', 'organisations')
+            ('#org-code-type', 'organisations')
         ],
         [
-            ('#sector', 'sectors'),
-            ('#subsector', 'subsectors')
+            ('#sector-code', 'sectors'),
+            ('#subsector-code', 'subsectors')
         ],
         [
-            ('#region', 'geographical regions'),
-            ('#country', 'countries'),
-            ('#adm1', 'level one subdivisions'),
-            ('#adm2', 'level two subdivisions'),
-            ('#adm3', 'level three subdivisions'),
-            ('#adm4', 'level four subdivisions'),
-            ('#adm5', 'level five subdivisions')
+            ('#region-code', 'geographical regions'),
+            ('#country-code', 'countries'),
+            ('#adm1-code', 'level one subdivisions'),
+            ('#adm2-code', 'level two subdivisions'),
+            ('#adm3-code', 'level three subdivisions'),
+            ('#adm4-code', 'level four subdivisions'),
+            ('#adm5-code', 'level five subdivisions')
         ]
     ]
 
