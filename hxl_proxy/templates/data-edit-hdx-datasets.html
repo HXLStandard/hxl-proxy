@@ -15,14 +15,45 @@
 <main>
   <h1>HXL datasets on HDX</h1>
 
-  <dl>
-    {% for dataset in datasets %}
-    <dt>{{ dataset.title }}</dt>
+  <section class="panel panel-primary">
+    <div class="panel-heading">
+      <h2 class="panel-title">
+        Introduction
+      </h2>
+    </div>
+    <div class="panel-body">
+      <p>Select a file ("resource") from one of the datasets
+      tagged &ldquo;<a target="_blank"
+      href="https://data.hdx.rwlabs.org/search?tags=hxl"><code>hxl</code></a>&rdquo; on the <b><a
+      target="_blank" href="https://data.hdx.rwlabs.org">Humanitarian Data Exchange</a></b>.</p>
+
+      <ol>
+        <li>Private datasets will not appear in this list.</li>
+        <li>Not all files in a dataset will have HXL tags — use the
+        names and formats to pick the most-likely candidates.</li>
+        <li>Select the update date to see the original dataset on HDX.</li>
+      </ol>
+    </div>
+  </section>
+
+  {% for dataset in datasets %}
+  <section>
+    <h2>
+      {{ dataset.title }}
+    </h2>
+    <p><i>Published by <a target="_blank" href="https://data.hdx.rwlabs.org/organization/{{ dataset.organization.name }}">{{ dataset.organization.title }}</a>, last updated <a target="_blank" href="https://data.hdx.rwlabs.org/dataset/{{ dataset.name }}">{{dataset.metadata_modified.strftime}}</a>.</i></p>
+    <p>Choose a file:</p>
+    <ul>
     {% for resource in dataset.resources %}
-    <dd><a href="/data/edit?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</dd>
+    <li>
+      <a href="/data/edit?url={{ resource.url|urlencode}}">{{resource.name }}</a>
+      ({{ resource.format }})
+    </li>
     {% endfor %}
+    </ul>
+  </section>
     {% endfor %}
-  </dl>
+
 </main>
 {% endblock %}
 
