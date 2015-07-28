@@ -8,5 +8,5 @@ def get_hdx_datasets(tag='hxl'):
     """Get datasets from CKAN using a tag."""
     ckan = ckanapi.RemoteCKAN(ckan_url)
     tag_info = ckan.action.tag_show(id='hxl')
-    return tag_info.get('packages')
+    return sorted(tag_info.get('packages'), key=lambda dataset: dataset['metadata_modified'], reverse=True)
 

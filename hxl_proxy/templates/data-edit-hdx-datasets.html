@@ -41,7 +41,7 @@
     <h2>
       {{ dataset.title }}
     </h2>
-    <p><i>Published by <a target="_blank" href="https://data.hdx.rwlabs.org/organization/{{ dataset.organization.name }}">{{ dataset.organization.title }}</a>, last updated <a target="_blank" href="https://data.hdx.rwlabs.org/dataset/{{ dataset.name }}">{{dataset.metadata_modified.strftime}}</a>.</i></p>
+    <p><i>Published by <a target="_blank" href="https://data.hdx.rwlabs.org/organization/{{ dataset.organization.name }}">{{ dataset.organization.title }}</a>, last updated <a target="_blank" href="https://data.hdx.rwlabs.org/dataset/{{ dataset.name }}">{{dataset.metadata_modified|display_date}}</a>.</i></p>
     <p>Choose a file:</p>
     <ul>
     {% for resource in dataset.resources %}

@@ -7,6 +7,7 @@ Started 2015-02-18 by David Megginson
 import six
 import re
 import urllib
+import datetime
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -124,6 +125,9 @@ def severity_class(severity):
     else:
         return 'severity_info'
 
+def display_date(date_string):
+    """Reformat an ISO datetime into something readable."""
+    return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f').strftime('%c')
 
 app.jinja_env.filters['nonone'] = (
     lambda s: '' if s is None else s
@@ -131,6 +135,10 @@ app.jinja_env.filters['nonone'] = (
 
 app.jinja_env.filters['urlencode'] = (
     urllib.quote_plus
+)
+
+app.jinja_env.filters['display_date'] = (
+    display_date
 )
 
 app.jinja_env.globals['static'] = (
@@ -156,3 +164,4 @@ app.jinja_env.globals['data_url'] = (
 app.jinja_env.globals['severity_class'] = (
     severity_class
 )
+
