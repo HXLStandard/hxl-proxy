@@ -68,9 +68,7 @@
                     <button class="btn btn-success" type="submit">Update</button>
                   </span>
                 </div>
-                {% if datasets %}
-                <p class="small">&hellip; or <a data-toggle="modal" href="#hdx-dialog">pick a HXL dataset from HDX</a></p>
-                {% endif %}
+                <p class="small">&hellip; or <a href="/data/edit/hdx-datasets">pick a HXL dataset from HDX</a></p>
               </div>
 
               <div class="checkbox">
@@ -411,29 +409,6 @@
 
       </form>
     </main>
-
-    {% if datasets %}
-    <div class="modal fade" id="hdx-dialog" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title">HXL datasets in HDX</h2>
-          </div>
-          <div class="modal-body">
-            <dl>
-              {% for dataset in datasets %}
-              <dt>{{ dataset.title }}</dt>
-              {% for resource in dataset.resources %}
-              <dd><a href="/data/edit?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</dd>
-              {% endfor %}
-              {% endfor %}
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
 {% endblock %}
 
 {% block scripts %}

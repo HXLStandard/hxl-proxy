@@ -1,0 +1,32 @@
+{% extends "models/page.basic.html" %}
+{% from 'macros/navmenu.html' import navmenu %}
+
+{% block title %}HXL datasets on HDX{% endblock %}
+
+{% block head %}
+{{ super() }}
+    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block menu %}
+{% endblock %}
+
+{% block main %}
+<main>
+  <h1>HXL datasets on HDX</h1>
+
+  <dl>
+    {% for dataset in datasets %}
+    <dt>{{ dataset.title }}</dt>
+    {% for resource in dataset.resources %}
+    <dd><a href="/data/edit?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</dd>
+    {% endfor %}
+    {% endfor %}
+  </dl>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+

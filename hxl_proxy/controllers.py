@@ -97,13 +97,16 @@ def show_data_edit(key=None):
     if profile.args.get('url'):
         # show only a short preview
         source = PreviewFilter(setup_filters(profile), max_rows=5)
-    else:
-        # pass a list of HDX datasets tagged "hxl"
-        datasets = get_hdx_datasets()
 
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    return render_template('data-edit.html', key=key, profile=profile, source=source, datasets=datasets, show_headers=show_headers)
+    return render_template('data-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
+
+@app.route("/data/edit/hdx-datasets")
+def show_data_hdx_datasets():
+    "Show a picklist of HDX datasets."
+    datasets = get_hdx_datasets()
+    return render_template('data-edit-hdx-datasets.html', datasets=datasets)
 
 @app.route("/data/save")
 def show_data_save():
