@@ -101,6 +101,6 @@ def gen_key():
     """
     salt = str(time.time() * random.random())
     encoded_hash = base64.urlsafe_b64encode(make_md5(salt))
-    return str(encoded_hash[:6])
+    return encoded_hash[:6].decode('ascii')
 
 # end
