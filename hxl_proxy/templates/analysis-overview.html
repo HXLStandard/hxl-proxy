@@ -1,7 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% set title = unicode(analysis.title()) %}
+{% set title = analysis.title() %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -49,9 +49,9 @@
       {% endif %}
       {% for filter in analysis.filters %}
       {% if filter == analysis.filters|last %}
-      <li class="active">{{ unicode(filter.orig) }}</li>
+      <li class="active">{{ filter.orig }}</li>
       {% else %}
-      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ unicode(filter.orig) }}</a></li>
+      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ filter.orig }}</a></li>
       {% endif %}
       {% endfor %}
     </ul>
@@ -82,7 +82,7 @@
             <td>
               <a href="{{ analysis.overview_url(pattern[0], entry.value) }}">
                 <span class="glyphicon glyphicon-zoom-in"></span> 
-                {{ unicode(entry.orig) }}
+                {{ entry.orig }}
               </a>
             </td>
             <td>{{ entry.count }}</td>

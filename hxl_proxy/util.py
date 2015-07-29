@@ -23,18 +23,6 @@ def norm (s):
     """Normalise a string"""
     return s.strip().lower().replace(r'\s\s+', ' ')
 
-def decode_string(s):
-    """Decode a UTF-8 or Latin 1 string into Unicode."""
-    if not s:
-        return ''
-    elif isinstance(s, six.string_types):
-        try:
-            return s.decode('utf8')
-        except:
-            return s.decode('latin1')
-    else:
-        return s
-
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
     app.update_template_context(context)
@@ -52,7 +40,7 @@ def urlencode_utf8(params):
     if hasattr(params, 'items'):
         params = params.items()
     return '&'.join(
-        (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
+        (urllib.parse.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.parse.quote_plus(v.encode('utf8'), safe='/')
             for k, v in params))
 
 def get_profile(key, auth=False, args=None):
@@ -101,17 +89,17 @@ def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
     url = None
     if key:
-        url = '/data/' + urllib.quote(key)
+        url = '/data/' + urllib.parse.quote(key)
         if facet:
-            url += '/' + urllib.quote(facet)
+            url += '/' + urllib.parse.quote(facet)
         elif format:
-            url += '.' + urllib.quote(format)
+            url += '.' + urllib.parse.quote(format)
     else:
         url = '/data'
         if format:
-            url += '.' + urllib.quote(format)
+            url += '.' + urllib.parse.quote(format)
         elif facet:
-            url += '/' + urllib.quote(facet)
+            url += '/' + urllib.parse.quote(facet)
         url += '?' + urlencode_utf8(profile.args)
 
     return url
@@ -134,7 +122,7 @@ app.jinja_env.filters['nonone'] = (
 )
 
 app.jinja_env.filters['urlencode'] = (
-    urllib.quote_plus
+    urllib.parse.quote_plus
 )
 
 app.jinja_env.filters['display_date'] = (
@@ -147,10 +135,6 @@ app.jinja_env.globals['static'] = (
 
 app.jinja_env.globals['urltag'] = (
     url_escape_tag
-)
-
-app.jinja_env.globals['unicode'] = (
-    decode_string
 )
 
 app.jinja_env.globals['add_args'] = (

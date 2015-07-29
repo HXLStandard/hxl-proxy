@@ -54,7 +54,7 @@
       <li><a href="?url={{ analysis.args.url|urlencode }}">3W data</a></li>
       {% endif %}
       {% for filter in analysis.filters %}
-      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ unicode(filter.orig) }}</a></li>
+      <li><a href="{{ analysis.overview_url(limit=filter) }}">{{ filter.orig }}</a></li>
       {% endfor %}
       <li class="active">{{ tag_pattern }}</li>
     </ul>
@@ -77,7 +77,7 @@
           <td>
             <a href="{{ analysis.overview_url(tag_pattern, entry.value) }}">
               <span class="glyphicon glyphicon-zoom-in"></span>
-              {{ unicode(entry.orig) }}
+              {{ entry.orig }}
             </a>
           </td>
           <td>{{ entry.count }}</td>

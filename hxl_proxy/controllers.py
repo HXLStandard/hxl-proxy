@@ -89,7 +89,7 @@ def show_data_edit(key=None):
 
     try:
         profile = get_profile(key, auth=True)
-    except Forbidden, e:
+    except Forbidden as e:
         return redirect(make_data_url(None, key=key, facet='login'))
 
     source = None

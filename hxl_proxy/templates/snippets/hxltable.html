@@ -5,13 +5,13 @@
         {% if not profile.args.hide_headers and source.has_headers %}
         <tr class="hxl-headers">
           {% for header in source.headers %}
-          <th>{{ unicode(header) }}</th>
+          <th>{{ header }}</th>
           {% endfor %}
         </tr>
         {% endif %}
         <tr class="hxl-tags" id="hashtag-row">
           {% for tag in source.display_tags %}
-          <th>{{ unicode(tag) }}</th>
+          <th>{{ tag }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -19,7 +19,7 @@
         {% for row in source %}
         <tr id="row_{{ row.row_number }}">
           {% for value in row.values %}
-          <td><span class="content">{{ unicode(value) }}</span></td>
+          <td><span class="content">{{ value }}</span></td>
           {% endfor %}
         </tr>
         {% endfor %}

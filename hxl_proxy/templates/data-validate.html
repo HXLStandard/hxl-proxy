@@ -77,9 +77,9 @@ HXL data
               <a href="{{ data_url(profile) }}#hashtag-row">Hashtags</a>
               {% endif %}
             </td>
-            <td class="validation-message">{{ unicode(error.rule.description) or unicode(error.message|nonone) }}</td>
-            <td>{{ unicode(error.rule.tag_pattern)|nonone }}</td>
-            <td>{{ unicode(error.value)|nonone }}</td>
+            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
+            <td>{{ error.rule.tag_pattern|nonone }}</td>
+            <td>{{ error.value|nonone }}</td>
           </tr>
           {% endfor %}
         </tbody>
