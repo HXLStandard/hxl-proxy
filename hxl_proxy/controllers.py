@@ -129,7 +129,7 @@ def show_data_chart(key=None):
     label = request.args.get('label')
     if label:
         label = TagPattern.parse(label);
-    type = request.args.get('type', 'pie')
+    type = request.args.get('type', 'bar')
     return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
 
 @app.route('/data/<key>/map')

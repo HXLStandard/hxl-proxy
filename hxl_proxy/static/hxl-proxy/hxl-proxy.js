@@ -62,7 +62,7 @@ hxl_proxy.setupForm = function() {
  * @param params.data_url URL to a CSV HXL dataset
  * @param params.type currently "pie", "bar", or "column" (defaults to "pie")
  * @param params.label_pattern HXL tag pattern for the column containing labels (defaults to first column)
- * @param params.value_pattern HXL tag pattern for the column containing values (defaults to #meta+count if present, or fails)
+ * @param params.value_pattern HXL tag pattern for the column containing values (defaults to a numbery column, if present)
  */
 hxl_proxy.setupChart = function(params) {
 
@@ -85,8 +85,8 @@ hxl_proxy.setupChart = function(params) {
                 return params.value_pattern;
             } else {
                 for (i in hxl.columns) {
-                    if (hxl.columns[i].displayTag == '#meta+count' || /_num$/.test(hxl.columns[i].tag)) {
-                        return hxl.columns[i].tag;
+                    if (hxl.isNumbery(hxl.columns[i].displayTag)) {
+                        return hxl.columns[i];
                     }
                 }
                 alert("Can't guess numeric column for charting.");
@@ -97,7 +97,14 @@ hxl_proxy.setupChart = function(params) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
             var hxlData = hxl.wrap(rawData);
             var label_pattern = get_label_pattern(hxlData);
-            var value_pattern = get_value_pattern(hxlData);
+            var value_column = get_value_pattern(hxlData);
+            var value_pattern = value_column.displayTag;
+            var title = '';
+            if (value_column.header) {
+                title = value_column.header + ' (' + value_column.displayTag + ')';
+            } else {
+                title = value_column.displayTag;
+            }
 
             var chartData = [[label_pattern, value_pattern]];
             var iterator = hxlData.iterator();
@@ -113,10 +120,11 @@ hxl_proxy.setupChart = function(params) {
 
             if (params.type == 'bar') {
                 options = {
+                    title: title,
                     width: '100%',
                     height: hxlData.getRows().length * 40,
                     chartArea: {
-                        top: 20
+                        top: 50
                     },
                     legend: {
                         position: 'none'
@@ -125,9 +133,10 @@ hxl_proxy.setupChart = function(params) {
                 var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
             } else if (params.type == 'column') {
                 options = {
+                    title: title,
                     width: hxlData.getRows().length * 60,
                     chartArea: {
-                        top: 20,
+                        top: 50,
                         left: 50
                     },
                     legend: {
@@ -140,11 +149,12 @@ hxl_proxy.setupChart = function(params) {
                     alert("Unknown chart type: " + params.type + "\nPlease use 'bar', 'column', or 'pie'");
                 }
                 options = {
+                    title: title,
                     width: '100%',
                     height: '100%',
                     chartArea: {
-                        top: 20,
-                        left: 20,
+                        top: 50,
+                        left: 50,
                     }
                 }
                 var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
