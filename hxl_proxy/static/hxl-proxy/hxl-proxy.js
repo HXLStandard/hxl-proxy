@@ -111,18 +111,41 @@ hxl_proxy.setupChart = function(params) {
 
             var data = google.visualization.arrayToDataTable(chartData);
 
-            var options = {
-                width: '100%',
-                height: '480'
-            };
-
             if (params.type == 'bar') {
+                options = {
+                    width: '100%',
+                    height: hxlData.getRows().length * 40,
+                    chartArea: {
+                        top: 20
+                    },
+                    legend: {
+                        position: 'none'
+                    }
+                }
                 var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
             } else if (params.type == 'column') {
+                options = {
+                    width: hxlData.getRows().length * 60,
+                    chartArea: {
+                        top: 20,
+                        left: 50
+                    },
+                    legend: {
+                        position: 'none'
+                    }
+                }
                 var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
             } else {
                 if (params.type && params.type != 'pie') {
                     alert("Unknown chart type: " + params.type + "\nPlease use 'bar', 'column', or 'pie'");
+                }
+                options = {
+                    width: '100%',
+                    height: '100%',
+                    chartArea: {
+                        top: 20,
+                        left: 20,
+                    }
                 }
                 var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
             }
