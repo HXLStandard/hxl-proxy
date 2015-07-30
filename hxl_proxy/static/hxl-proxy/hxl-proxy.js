@@ -18,6 +18,19 @@ var hxl_proxy = {}
 
 
 /**
+ * Bring up the Dropbox file selector.
+ */
+hxl_proxy.doDropbox = function() {
+    Dropbox.choose({
+        success: function(files) {
+            url = files[0].link;
+            window.location = "/data/edit?url=" + encodeURIComponent(url);
+        }
+    });
+}
+
+
+/**
  * Set up a page containing a form.
  * External dependencies: none
  */

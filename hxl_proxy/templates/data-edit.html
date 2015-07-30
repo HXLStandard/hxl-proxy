@@ -68,7 +68,8 @@
                     <button class="btn btn-success" type="submit">Update</button>
                   </span>
                 </div>
-                <p class="small">&hellip; or <a href="/data/edit/hdx-datasets">pick a HXL dataset from HDX</a></p>
+                <p class="small">&hellip; or pick a dataset from <a
+                href="/data/edit/hdx-datasets">HDX</a> or <a href="#" onclick="hxl_proxy.doDropbox(); return false;">Dropbox</a></p>
               </div>
 
               <div class="checkbox">
@@ -414,10 +415,11 @@
 {% block scripts %}
 {{ super() }}
     <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
     <script>
       hxl_proxy.setupForm();
       $(document).ready(function() {
         $("#preview-warning").insertBefore($("#preview-table"));
-      });
+        });
     </script>
 {% endblock %}
