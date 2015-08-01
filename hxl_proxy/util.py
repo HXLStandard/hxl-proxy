@@ -19,6 +19,9 @@ from hxl_proxy import app
 from hxl_proxy.profiles import Profile
 
 
+def make_cache_key ():
+    return request.full_path
+    
 def norm (s):
     """Normalise a string"""
     return s.strip().lower().replace(r'\s\s+', ' ')

@@ -23,7 +23,11 @@ app.config.from_object('hxl_proxy.default_config')
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
 
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+# Set up cache
+cache = Cache(app,config={
+    'CACHE_TYPE': 'simple',
+    'CACHE_DEFAULT_TIMEOUT': 3600
+})
 
 @app.before_request
 def before_request():
