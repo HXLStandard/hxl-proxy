@@ -174,23 +174,31 @@ def show_validate(key=None):
 @cache.cached(key_prefix=make_cache_key, unless=skip_cache_p)
 def show_data(key=None, format="html"):
 
-    profile = get_profile(key, auth=False)
-    if not profile or not profile.args.get('url'):
-        return redirect('/data/edit', 303)
+    def get_result (key, format):
+        profile = get_profile(key, auth=False)
+        if not profile or not profile.args.get('url'):
+            return redirect('/data/edit', 303)
 
-    source = setup_filters(profile)
-    show_headers = (profile.args.get('strip-headers') != 'on')
+        source = setup_filters(profile)
+        show_headers = (profile.args.get('strip-headers') != 'on')
 
-    if format == 'json':
-        response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
-    elif format == 'html':
-        return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
-    else:
-        response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
+        if format == 'json':
+            response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
+        elif format == 'html':
+            return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
+        else:
+            response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            return response
+
+    result = get_result(key, format)
+    if skip_cache_p():
+        # Want to store the new value, but can't get the key to work
+        # Clearing the whole cache for now (heavy-handed)
+        cache.clear()
+    return result
 
 @app.route('/analysis')
 def show_analysis_form():
