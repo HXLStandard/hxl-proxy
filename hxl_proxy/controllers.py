@@ -197,7 +197,7 @@ def show_data(key=None, format="html"):
     if skip_cache_p():
         # Want to store the new value, but can't get the key to work
         # Clearing the whole cache for now (heavy-handed)
-        cache.clear()
+        cache.set(show_data.make_cache_key(), result)
     return result
 
 @app.route('/analysis')

@@ -8,6 +8,7 @@ import six
 import re
 import urllib
 import datetime
+import pickle
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -18,10 +19,15 @@ from hxl.io import CSVInput, ExcelInput
 from hxl_proxy import app
 from hxl_proxy.profiles import Profile
 
+EXCLUDES = ['force']
 
 def make_cache_key ():
     """Make a key for a caching request, based on the full path."""
-    return request.full_path
+    args = {}
+    for name in request.args:
+        if name not in EXCLUDES:
+            args[name] = request.args.get(name)
+    return request.path + pickle.dumps(args).decode('latin1')
 
 def skip_cache_p ():
     """Test if we should skip the cache."""
