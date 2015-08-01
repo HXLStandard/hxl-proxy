@@ -10,6 +10,7 @@ Documentation: http://hxlstandard.org
 import os
 
 from flask import Flask, g, request
+from flask.ext.cache import Cache
 
 import werkzeug.datastructures
 
@@ -21,6 +22,8 @@ app = Flask(__name__)
 app.config.from_object('hxl_proxy.default_config')
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
+
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 @app.before_request
 def before_request():

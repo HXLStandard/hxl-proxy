@@ -19,7 +19,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, redirect, make_response, session, g
 
-from hxl_proxy import app
+from hxl_proxy import app, cache
 from hxl_proxy.util import get_profile, check_auth, make_data_url
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
@@ -171,6 +171,7 @@ def show_validate(key=None):
 @app.route("/data.<format>")
 @app.route("/data")
 @app.route("/data/<key>") # must come last, or it will steal earlier patterns
+@cache.memoize(3600)
 def show_data(key=None, format="html"):
 
     profile = get_profile(key, auth=False)
@@ -181,13 +182,13 @@ def show_data(key=None, format="html"):
     show_headers = (profile.args.get('strip-headers') != 'on')
 
     if format == 'json':
-        response = Response(source.gen_json(show_headers=show_headers), mimetype='application/json')
+        response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     elif format == 'html':
         return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
     else:
-        response = Response(source.gen_csv(show_headers=show_headers), mimetype='text/csv')
+        response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
