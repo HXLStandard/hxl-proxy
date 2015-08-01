@@ -20,7 +20,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from flask import Response, request, render_template, redirect, make_response, session, g
 
 from hxl_proxy import app, cache
-from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key
+from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
@@ -171,7 +171,7 @@ def show_validate(key=None):
 @app.route("/data.<format>")
 @app.route("/data")
 @app.route("/data/<key>") # must come last, or it will steal earlier patterns
-@cache.cached(key_prefix=make_cache_key)
+@cache.cached(key_prefix=make_cache_key, unless=skip_cache_p)
 def show_data(key=None, format="html"):
 
     profile = get_profile(key, auth=False)

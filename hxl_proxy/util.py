@@ -20,7 +20,12 @@ from hxl_proxy.profiles import Profile
 
 
 def make_cache_key ():
+    """Make a key for a caching request, based on the full path."""
     return request.full_path
+
+def skip_cache_p ():
+    """Test if we should skip the cache."""
+    return True if request.args.get('force') else False
     
 def norm (s):
     """Normalise a string"""
