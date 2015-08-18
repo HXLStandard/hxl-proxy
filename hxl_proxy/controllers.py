@@ -161,11 +161,13 @@ def show_validate(key=None):
 
     severity_level = request.args.get('severity', None)
 
+    detail_hash = request.args.get('details', None)
+
     # If we have a URL, validate the data.
     if url:
         errors = do_validate(setup_filters(profile), schema_url, severity_level)
-        
-    return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors)
+
+    return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors, detail_hash=detail_hash)
 
 @app.route("/data/<key>.<format>")
 @app.route("/data.<format>")

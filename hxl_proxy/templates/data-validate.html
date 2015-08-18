@@ -52,10 +52,12 @@ HXL data
       </form>
 
       {% if errors %}
-      <p class="alert alert-warning">{{ errors|length }} validation
-      issue(s){% if profile.args.severity %} (minimum severity: {{ profile.args.severity}}){%
-      endif %}.</p>
 
+      {% if detail_hash %}
+      <p class="alert alert-warning">
+        Showing only errors for rule <code>{{ errors[detail_hash][0].message }}</code>
+        (<a href="?">back to error summary</a>)
+      </p>
       <table class="table">
         <thead>
           <tr>
@@ -67,7 +69,7 @@ HXL data
           </tr>
         </thead>
         <tbody>
-          {% for error in errors %}
+          {% for error in errors[detail_hash] %}
           <tr>
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
             <td>
@@ -84,6 +86,34 @@ HXL data
           {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p class="alert alert-warning">
+        {{ errors|length }} validation issue(s)
+        {% if profile.args.severity %} (minimum severity: {{ profile.args.severity }}){% endif %}.
+      </p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th># of errors</th>
+            <th>Tag</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule_id in errors %}
+          {% set error = errors[rule_id][0] %}
+          {% set number = errors[rule_id]|count %}
+          <tr>
+            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
+            <td><a href="?details={{ rule_id }}">See {{ number }} instance(s)</a></td>
+            <td>{{ error.rule.tag_pattern|nonone }}</td>
+            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
       {% else %}
       <p class="alert alert-success">Validation succeeded with no error.</p>
       {% endif %}
