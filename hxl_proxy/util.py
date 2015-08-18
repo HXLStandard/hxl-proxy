@@ -87,17 +87,19 @@ def check_auth(profile):
             flash("Wrong password")
     return False
 
-def add_args(args):
+def add_args(extra_args):
     """Add GET parameters."""
-    new_args = {}
+    args = {}
     for key in request.args:
-        new_args[key] = request.args[key]
-    for key in args:
-        if args[key]:
-            new_args[key] = args[key]
+        args[key] = request.args[key]
+    for key in extra_args:
+        if extra_args[key]:
+            # add keys with truthy values
+            args[key] = extra_args[key]
         else:
+            # remove keys with non-truthy values
             del args[key]
-    return '?' + urlencode_utf8(new_args)
+    return '?' + urlencode_utf8(args)
 
 def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
