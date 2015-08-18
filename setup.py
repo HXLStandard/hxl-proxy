@@ -13,7 +13,7 @@ setup(
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
-    install_requires=['flask', 'Flask-cache', 'libhxl>=1.1', 'ckanapi'],
+    install_requires=['flask-cache', 'libhxl>=1.1', 'ckanapi', 'flask'],
     test_suite = "tests",
     tests_require = ['mock']
 )
