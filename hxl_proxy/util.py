@@ -101,6 +101,14 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
+def request_args_form():
+    """Return hidden form fields for GET parameters."""
+    fields = ""
+    for key in request.args:
+        if request.args[key]:
+            fields = "<input type=\"hidden\" name=\"{}\" value=\"{}\" />\n".format(key, request.args[key])
+    return fields
+
 def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
     url = None
@@ -155,6 +163,10 @@ app.jinja_env.globals['urltag'] = (
 
 app.jinja_env.globals['add_args'] = (
     add_args
+)
+
+app.jinja_env.globals['request_args_form'] = (
+    request_args_form
 )
 
 app.jinja_env.globals['data_url'] = (

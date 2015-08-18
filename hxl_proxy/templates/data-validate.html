@@ -38,7 +38,7 @@ HXL data
       <table class="table">
         <thead>
           <tr>
-            <th></th>
+            <th>Severity</th>
             <th>Row</th>
             <th>Explanation</th>
             <th>Tag</th>
@@ -78,24 +78,24 @@ HXL data
         <div class="form-group">
           <label for="severity">Minimum error level to show</label>
           <select name="severity" class="form-control" onchange="$('#severity-form').submit();">
-            <option value="info"{% if request.args.severity=='info' %} selected="selected"{% endif %}>Suggestions</option>
-            <option value="warning"{% if request.args.severity=='warning' %} selected="selected"{% endif %}>Warnings</option>
-            <option value="error"{% if request.args.severity=='error' %} selected="selected"{% endif %}>Errors</option>
+            <option value="info"{% if severity == 'info' %} selected="selected"{% endif %}>Info (most verbose)</option>
+            <option value="warning"{% if severity == 'warning' %} selected="selected"{% endif %}>Warnings</option>
+            <option value="error"{% if severity == 'error' %} selected="selected"{% endif %}>Errors (least verbose)</option>
           </select>
           <button class="hidden btn btn-default" type="submit">Change</button>
         </div>
-        {% include 'snippets/profile-form.html' %}
+        {{ request_args_form()|safe }}
       </form>
       <p class="alert alert-warning">
         {{ errors|length }} validation issue(s)
-        {% if profile.args.severity %} (minimum severity: {{ profile.args.severity }}){% endif %}.
+        {% if profile.args.severity %} (minimum severity: {{ severity }}){% endif %}.
       </p>
       <table class="table">
         <thead>
           <tr>
-            <th></th>
-            <th># of errors</th>
-            <th>Tag</th>
+            <th>Severity</th>
+            <th>Occurrences</th>
+            <th>HXL tag pattern</th>
             <th>Explanation</th>
           </tr>
         </thead>
@@ -105,7 +105,7 @@ HXL data
           {% set number = errors[rule_id]|count %}
           <tr>
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} instance(s)</a></td>
+            <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} occurrence(s)</a></td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
           </tr>
