@@ -55,6 +55,10 @@ def setup_filters(profile):
             source = add_sort_filter(source, profile.args, index)
         elif filter == 'append':
             source = add_append_filter(source, profile.args, index)
+        elif filter == 'replace':
+            source = add_replace_filter(source, profile.args, index)
+        elif filter == 'replace-map':
+            source = add_replace_map_filter(source, profile.args, index)
         elif filter:
             raise Exception("Unknown filter type '{}'".format(filter))
 
@@ -144,6 +148,19 @@ def add_rename_filter(source, args, index):
     header = args.get('rename-header%02d' % index)
     column = Column.parse(tagspec, header=header)
     return source.rename_columns([(oldtag, column)])
+
+def add_replace_filter(source, args, index):
+    """Add the hxlreplace filter to the end of the pipeline."""
+    original = args.get('replace-pattern%02d' % index)
+    replacement = args.get('replace-value%02d' % index)
+    tags = args.get('replace-tags%02d' % index)
+    use_regex = args.get('replace-regex%02d' % index)
+    return source.replace_data(original, replacement, tags, use_regex)
+
+def add_replace_map_filter(source, args, index):
+    """Add the hxlreplace filter to the end of the pipeline."""
+    url = args.get('replace-map-url%02d' % index)
+    return source.replace_data_map(hxl.hxl(url))
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
