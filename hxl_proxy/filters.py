@@ -53,6 +53,10 @@ def setup_filters(profile):
             source = add_row_filter(source, profile.args, index)
         elif filter == 'sort':
             source = add_sort_filter(source, profile.args, index)
+        elif filter == 'append':
+            source = add_append_filter(source, profile.args, index)
+        elif filter:
+            raise Exception("Unknown filter type '{}'".format(filter))
 
     return source
 
@@ -84,6 +88,15 @@ def add_add_filter(source, args, index):
     before = (args.get('add-before%02d' % index) == 'on')
     values = [(Column.parse(tagspec, header=header), value)]
     return source.add_columns(specs=values, before=before)
+
+def add_append_filter(source, args, index):
+    """Add the hxlappend filter to the end of the chain."""
+    exclude_columns = args.get('append-exclude-columns%02d' % index, False)
+    for subindex in range(1, 100):
+        dataset_url = args.get('append-dataset%02d-%02d' % (index, subindex))
+        if dataset_url:
+            source = source.append(hxl.hxl(dataset_url), not exclude_columns)
+    return source
 
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""

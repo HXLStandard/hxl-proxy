@@ -145,14 +145,16 @@
                               {% if n == 1 %}
                               <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
                               {% endif %}
-                              <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
-                              <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
                               <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count values</option>
-                              <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Filter columns</option>
-                              <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge datasets</option>
-                              <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename columns</option>
+                              <option value="append"{% if profile.args[name]=='append' %} selected="selected"{% endif %}>Combine multiple datasets</ption>
                               <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Filter rows</option>
+                              <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Filter columns</option>
+                              <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
+                              <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename columns</option>
                               <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort data</option>
+                              <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
+                              <option value="replace"{% if profile.args[name]=='replace' %} selected="selected"{% endif %}>Replace values</option>
+                              <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge columns from another dataset</option>
                             </select>
                           </div>
 
@@ -182,6 +184,28 @@
                                 {% endfor %}
                               </tbody>
                             </table>
+                          </div>
+
+                          <div class="fields-append hideable">
+                            <p class="doc">Combine multiple HXL datasets</p>
+
+                            {% set name='append-exclude-columns%02d' % n %}
+                            <div id="{{ name }}" class="checkbox">
+                              <label>
+                                <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+                                Exclude columns not in current dataset.
+                              </label>
+                            </div>
+
+                            {% set name='append-dataset%02d' % n %}
+                            <div id="{{ name }}" class="form-group required">
+                              <label for="{{ name }}">Datasets to append</label>
+                              {% for n in range(1, 11) %}
+                              {% set dataset_name = '%s-%02d' % (name, n) %}
+                              <input class="form-control" name="{{ dataset_name }}" value="{{ profile.args[dataset_name] }}" type="url" placeholder="http://example.org/dataset.csv"/>
+                              {% endfor %}
+                            </div>
+
                           </div>
 
                           <div class="fields-add hideable">
