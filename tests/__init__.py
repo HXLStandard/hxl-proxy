@@ -22,6 +22,12 @@ class MockHTTPResponse:
     def read(self, n=None):
         return self.stream.read(n)
 
+    def __enter__(self):
+        pass
+
+    def __exit__(self):
+        self.stream.close()
+
 
 def resolve_path(filename):
     return os.path.join(os.path.dirname(__file__), filename)
