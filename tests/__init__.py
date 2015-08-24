@@ -23,9 +23,9 @@ class MockHTTPResponse:
         return self.stream.read(n)
 
     def __enter__(self):
-        pass
+        return self
 
-    def __exit__(self):
+    def __exit__(self, value, type, traceback):
         self.stream.close()
 
 
