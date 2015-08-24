@@ -8,6 +8,7 @@ hxl.filter objects from them and build a pipeline.
 """
 
 import hxl
+import hxl.filters # why do we have to import this???
 from hxl.converters import Tagger
 
 # Minimum default number of filters to check

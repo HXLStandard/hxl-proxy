@@ -12,14 +12,10 @@ import os
 import re
 import tempfile
 
-from . import resolve_path
+from . import mock_dataset
 
-if sys.version_info < (3, 3):
-    from mock import patch
-    URLOPEN_PATCH = 'urllib2.urlopen'
-else:
-    from unittest.mock import patch
-    URLOPEN_PATCH = 'urllib.request.urlopen'
+from unittest.mock import patch
+URLOPEN_PATCH = 'hxl.io.open_url'
 
 import hxl_proxy
 from hxl_proxy.profiles import ProfileManager, Profile
@@ -36,14 +32,14 @@ class TestEditPage(unittest.TestCase):
 
     def test_empty_url(self):
         rv = self.client.get('/data/edit')
-        self.assertTrue('New HXL view' in rv.data, 'title')
-        self.assertTrue('No data yet' in rv.data, 'no data warning')
+        self.assertTrue(b'New HXL view' in rv.data, 'title')
+        self.assertTrue(b'No data yet' in rv.data, 'no data warning')
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
-        mock_basic_dataset(mock)
+        mock_dataset(mock)
         response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
-        self.assertTrue('<h1>New HXL view</h1>' in response.data)
+        self.assertTrue(b'<h1>New HXL view</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     def test_need_login(self):
@@ -74,16 +70,16 @@ class TestDataPage(unittest.TestCase):
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
-        mock_basic_dataset(mock)
+        mock_dataset(mock)
         response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
-        self.assertTrue('<h1>New filter preview</h1>' in response.data)
+        self.assertTrue(b'<h1>New filter preview</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     @patch(URLOPEN_PATCH)
     def test_key(self, mock):
-        mock_basic_dataset(mock)
+        mock_dataset(mock)
         response = self.client.get('/data/{}'.format(self.key))
-        self.assertTrue('<h1>Sample dataset</h1>' in response.data)
+        self.assertTrue(b'<h1>Sample dataset</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     # TODO test that filters work
@@ -104,16 +100,16 @@ class TestValidationPage(unittest.TestCase):
 
     @patch(URLOPEN_PATCH)
     def test_default_schema(self, mock):
-        mock_basic_dataset(mock)
+        mock_dataset(mock)
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
-        self.assertTrue('Using the default schema' in response.data)
-        self.assertTrue('Validation succeeded' in response.data)
+        self.assertTrue(b'Using the default schema' in response.data)
+        self.assertTrue(b'Validation succeeded' in response.data)
 
     @patch(URLOPEN_PATCH)
     def test_good_schema(self, mock):
-        mock_basic_dataset(mock)
+        mock_dataset(mock)
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
-        self.assertTrue('Validation succeeded' in response.data)
+        self.assertTrue(b'Validation succeeded' in response.data)
 
 
 #
@@ -139,20 +135,13 @@ def make_profile():
     profile.name = 'Sample dataset'
     return profile
 
-def mock_basic_dataset(mock):
-    """Will open last element of the URL path as a local file under ./files/"""
-    def side_effect(url):
-        filename = re.sub(r'^.*/([^/]+)$', '\\1', url)
-        return open(resolve_path('files/' + filename))
-    mock.side_effect = side_effect
-
 def assert_basic_dataset(test, response):
     """Check that we're looking at the basic dataset"""
     test.assertEqual(200, response.status_code)
-    test.assertTrue('Country' in response.data, "header from dataset on page")
-    test.assertTrue('#country' in response.data, "hashtag from dataset on page")
-    test.assertTrue('Org A' in response.data, "org from dataset on page")
-    test.assertTrue(u'Education' in response.data, "sector from dataset on page")
-    test.assertTrue('Myanmar' in response.data, "country from dataset on page")
+    test.assertTrue(b'Country' in response.data, "header from dataset on page")
+    test.assertTrue(b'#country' in response.data, "hashtag from dataset on page")
+    test.assertTrue(b'Org A' in response.data, "org from dataset on page")
+    test.assertTrue(b'Education' in response.data, "sector from dataset on page")
+    test.assertTrue(b'Myanmar' in response.data, "country from dataset on page")
 
 # end

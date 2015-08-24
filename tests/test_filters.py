@@ -10,13 +10,10 @@ import unittest
 import sys
 import operator
 
-if sys.version_info < (3, 3):
-    import urllib2 # needed for @patch
-    from mock import patch
-    URLOPEN_PATCH = 'urllib2.urlopen'
-else:
-    from unittest.mock import patch
-    URLOPEN_PATCH = 'urllib.request.urlopen'
+from unittest.mock import patch
+URLOPEN_PATCH = 'hxl.io.open_url'
+
+from . import mock_dataset
 
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
@@ -34,9 +31,9 @@ class TestSetupFilters(unittest.TestCase):
 
     @patch(URLOPEN_PATCH)
     def test_filters(self, mock):
-        mock.return_value = 'x'
+        mock_dataset(mock)
         args = {
-            'url': 'http://example.org/data.csv',
+            'url': 'http://example.org/basic-dataset.csv',
             'filter_count': 3,
             'filter01': 'count',
             'count-tags02': 'adm1,adm2',
@@ -120,14 +117,14 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
 
     @patch(URLOPEN_PATCH)
-    def test_add_merge_filter(self, urlopen_mock):
-        urlopen_mock.return_value = 'x'
+    def test_add_merge_filter(self, mock):
+        mock_dataset(mock)
         args = {
             'merge-keys11': 'adm2_id+pcode',
             'merge-tags11': 'lat_deg,lon_deg',
             'merge-replace11': 'on',
             'merge-overwrite11': 'on',
-            'merge-url11': 'http://example.org/data.csv'
+            'merge-url11': 'http://example.org/basic-dataset.csv'
         }
         filter = add_merge_filter(self.source, args, 11)
         self.assertEqual('MergeDataFilter', filter.__class__.__name__)
