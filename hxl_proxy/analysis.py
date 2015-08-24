@@ -6,9 +6,7 @@ For now, focusses on 3W-type data.
 
 import urllib
 
-from hxl import hxl
-from hxl.model import TagPattern
-
+import hxl
 from hxl_proxy.util import norm
 
 class Analysis:
@@ -137,7 +135,7 @@ class Analysis:
         patterns = []
         for tag_list in self.TAGS:
             for tag_info in tag_list:
-                pattern = TagPattern.parse(tag_info[0])
+                pattern = hxl.TagPattern.parse(tag_info[0])
                 if (pattern.tag not in [filter['pattern'].tag for filter in self.filters]) and (pattern.tag in [column.tag for column in self.source.columns]):
                     patterns.append(tag_info)
                     break
@@ -151,7 +149,7 @@ class Analysis:
                 if pattern == 'url':
                     continue
                 filters.append({
-                    'pattern': TagPattern.parse(pattern),
+                    'pattern': hxl.TagPattern.parse(pattern),
                     'value': self.args.get(pattern).encode('utf8')
                 })
             self._saved_filters = filters
@@ -161,7 +159,7 @@ class Analysis:
     def source(self):
         """Open the input on initial request."""
         if not self._saved_source:
-            source = hxl(self.args.get('url')).cache()
+            source = hxl.data(self.args.get('url')).cache()
             for filter_data in self.filters:
                 query = '{}={}'.format(filter_data['pattern'], filter_data['value'])
                 source = source.with_rows(query)

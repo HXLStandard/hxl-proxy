@@ -7,10 +7,7 @@ module uses the numbers to group the parameters, then to construct the
 hxl.filter objects from them and build a pipeline.
 """
 
-from hxl.model import TagPattern, Column
-from hxl.io import HXLReader, make_input
-
-from hxl.filters import *
+import hxl
 from hxl.converters import Tagger
 
 # Minimum default number of filters to check
@@ -31,7 +28,7 @@ def setup_filters(profile):
         return None
 
     # Basic input source
-    source = HXLReader(make_tagged_input(profile.args))
+    source = hxl.data(make_tagged_input(profile.args))
 
     # Create the filter pipeline from the source
     filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
@@ -69,7 +66,7 @@ def make_tagged_input(args):
     url = args.get('url')
 
     # TODO raise exception
-    input = make_input(url)
+    input = hxl.make_input(url)
 
     # Intercept tagging as a special data input
     if args.get('filter01') == 'tagger':
@@ -90,7 +87,7 @@ def add_add_filter(source, args, index):
     header = args.get('add-header%02d' % index)
     value = args.get('add-value%02d' % index)
     before = (args.get('add-before%02d' % index) == 'on')
-    values = [(Column.parse(tagspec, header=header), value)]
+    values = [(hxl.Column.parse(tagspec, header=header), value)]
     return source.add_columns(specs=values, before=before)
 
 def add_append_filter(source, args, index):
@@ -99,32 +96,32 @@ def add_append_filter(source, args, index):
     for subindex in range(1, 100):
         dataset_url = args.get('append-dataset%02d-%02d' % (index, subindex))
         if dataset_url:
-            source = source.append(hxl.hxl(dataset_url), not exclude_columns)
+            source = source.append(hxl.data(dataset_url), not exclude_columns)
     return source
 
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""
-    whitespace_tags = TagPattern.parse_list(args.get('clean-whitespace-tags%02d' % index, ''))
-    upper_tags = TagPattern.parse_list(args.get('clean-toupper-tags%02d' % index, ''))
-    lower_tags = TagPattern.parse_list(args.get('clean-tolower-tags%02d' % index, ''))
-    date_tags = TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
-    number_tags = TagPattern.parse_list(args.get('clean-number-tags%02d' % index, ''))
+    whitespace_tags = hxl.TagPattern.parse_list(args.get('clean-whitespace-tags%02d' % index, ''))
+    upper_tags = hxl.TagPattern.parse_list(args.get('clean-toupper-tags%02d' % index, ''))
+    lower_tags = hxl.TagPattern.parse_list(args.get('clean-tolower-tags%02d' % index, ''))
+    date_tags = hxl.TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
+    number_tags = hxl.TagPattern.parse_list(args.get('clean-number-tags%02d' % index, ''))
     return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
 
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
-    tags = TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
+    tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
     aggregate_tag = args.get('count-aggregate-tag%02d' % index)
     if aggregate_tag:
-        aggregate_tag = TagPattern.parse(aggregate_tag)
+        aggregate_tag = hxl.TagPattern.parse(aggregate_tag)
     else:
         aggregate_tag = None
     return source.count(patterns=tags, aggregate_pattern=aggregate_tag)
 
 def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""
-    include_tags = TagPattern.parse_list(args.get('cut-include-tags%02d' % index, []))
-    exclude_tags = TagPattern.parse_list(args.get('cut-exclude-tags%02d' % index, []))
+    include_tags = hxl.TagPattern.parse_list(args.get('cut-include-tags%02d' % index, []))
+    exclude_tags = hxl.TagPattern.parse_list(args.get('cut-exclude-tags%02d' % index, []))
     if include_tags:
         source = source.with_columns(include_tags)
     if exclude_tags:
@@ -133,20 +130,20 @@ def add_column_filter(source, args, index):
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
-    tags = TagPattern.parse_list(args.get('merge-tags%02d' % index, []))
-    keys = TagPattern.parse_list(args.get('merge-keys%02d' % index, []))
+    tags = hxl.TagPattern.parse_list(args.get('merge-tags%02d' % index, []))
+    keys = hxl.TagPattern.parse_list(args.get('merge-keys%02d' % index, []))
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = HXLReader(make_input(url))
+    merge_source = hxl.data(url)
     return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
-    oldtag = TagPattern.parse(args.get('rename-oldtag%02d' % index))
+    oldtag = hxl.TagPattern.parse(args.get('rename-oldtag%02d' % index))
     tagspec = _parse_tagspec(args.get('rename-newtag%02d' % index))
     header = args.get('rename-header%02d' % index)
-    column = Column.parse(tagspec, header=header)
+    column = hxl.Column.parse(tagspec, header=header)
     return source.rename_columns([(oldtag, column)])
 
 def add_replace_filter(source, args, index):
@@ -160,7 +157,7 @@ def add_replace_filter(source, args, index):
 def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
-    return source.replace_data_map(hxl.hxl(url))
+    return source.replace_data_map(hxl.data(url))
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
@@ -177,7 +174,7 @@ def add_row_filter(source, args, index):
 
 def add_sort_filter(source, args, index):
     """Add the hxlsort filter to the end of the pipeline."""
-    tags = TagPattern.parse_list(args.get('sort-tags%02d' % index, ''))
+    tags = hxl.TagPattern.parse_list(args.get('sort-tags%02d' % index, ''))
     reverse = (args.get('sort-reverse%02d' % index) == 'on')
     return source.sort(tags, reverse)
 

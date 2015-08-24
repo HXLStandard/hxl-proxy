@@ -9,9 +9,9 @@ License: Public Domain
 import unittest
 import sys
 import operator
-import urllib2 # needed for @patch
 
 if sys.version_info < (3, 3):
+    import urllib2 # needed for @patch
     from mock import patch
     URLOPEN_PATCH = 'urllib2.urlopen'
 else:

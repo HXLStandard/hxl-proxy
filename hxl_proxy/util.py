@@ -14,8 +14,6 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import url_for, request, flash, session, g
 
-from hxl.io import CSVInput, ExcelInput
-
 from hxl_proxy import app
 from hxl_proxy.profiles import Profile
 

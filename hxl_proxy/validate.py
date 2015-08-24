@@ -2,9 +2,9 @@
 Validation support
 """
 
-from hxl import hxl, hxl_schema
 import hashlib
 import base64
+import hxl
 
 SEVERITY_LEVELS = {
     'info': 1,
@@ -27,7 +27,7 @@ def do_validate(source, schema_url=None, severity_level=None):
             if errors.get(rule_hash) is None:
                 errors[rule_hash] = []
             errors[rule_hash].append(error)
-    schema = hxl_schema(schema_url, callback)
+    schema = hxl.schema(schema_url, callback)
     result = schema.validate(source)
     return errors
 

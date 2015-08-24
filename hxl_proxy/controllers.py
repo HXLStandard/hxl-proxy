@@ -19,6 +19,8 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import Response, request, render_template, redirect, make_response, session, g
 
+import hxl
+
 from hxl_proxy import app, cache
 from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p
 from hxl_proxy.filters import setup_filters
@@ -26,8 +28,6 @@ from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
-
-from hxl.model import TagPattern
 
 
 #
@@ -125,10 +125,10 @@ def show_data_chart(key=None):
         return redirect('/data/edit', 303)
     tag = request.args.get('tag')
     if tag:
-        tag = TagPattern.parse(tag);
+        tag = hxl.TagPattern.parse(tag);
     label = request.args.get('label')
     if label:
-        label = TagPattern.parse(label);
+        label = hxl.TagPattern.parse(label);
     type = request.args.get('type', 'bar')
     return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
 
@@ -139,7 +139,7 @@ def show_data_map(key=None):
     profile = get_profile(key)
     if not profile or not profile.args.get('url'):
         return redirect('/data/edit', 303)
-    layer_tag = TagPattern.parse(request.args.get('layer', 'adm1'))
+    layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('data-map.html', key=key, profile=profile, layer_tag=layer_tag)
 
 @app.route("/data/validate")
@@ -242,7 +242,7 @@ def show_analysis_data(format=None):
 def show_analysis_tag(tag_pattern):
     if request.args.get('url'):
         analysis = Analysis(args=request.args)
-        tag_pattern = TagPattern.parse(tag_pattern)
+        tag_pattern = hxl.TagPattern.parse(tag_pattern)
         return render_template('analysis-tag.html', analysis=analysis, tag_pattern=tag_pattern)
     else:
         return redirect("/analysis", 301)
