@@ -31,6 +31,34 @@ hxl_proxy.doDropbox = function() {
 
 
 /**
+ * Renumber filters in sequence.
+ */
+hxl_proxy.renumberFilters = function() {
+
+    // Adjust the first numeric value in an attribute.
+    function adjustAttr(node, attrName, index) {
+        value = $(node).attr(attrName);
+        if (value) {
+            value = value.replace(/[0-9][0-9]/, index);
+            $(node).attr(attrName, value);
+        }
+    }
+
+    // look through all descendants of each filter
+    $('.filter').each(function (index, node) {
+        $(node).find('*').each(function (i, child) {
+            n = '00' + (index + 1);
+            n = n.substr(n.length - 2);
+            adjustAttr(child, 'id', n);
+            adjustAttr(child, 'name', n);
+            adjustAttr(child, 'for', n);
+            adjustAttr(child, 'data-target', n);
+            adjustAttr(child, 'href', n);
+        });
+    });
+}
+
+/**
  * Set up a page containing a form.
  * External dependencies: none
  */
@@ -40,7 +68,7 @@ hxl_proxy.setupForm = function() {
         filter_name = $(node).find(".field_filter select").val();
         filter_desc = $(node).find(".field_filter option:selected").text();
         filter_class = ".fields-" + filter_name;
-        filter_title = "" + (index + 1) + ": " + (filter_desc ? filter_desc : '(not set)');
+        filter_title = (filter_desc ? filter_desc : '(not set)');
         $(node).find(".modal-title").text(filter_title);
 
         var filter_button = $(node).find(".filter-button");
