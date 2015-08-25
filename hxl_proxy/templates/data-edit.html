@@ -188,7 +188,7 @@
                           </div>
 
                           <div class="fields-append hideable">
-                            <p class="doc">Combine multiple HXL datasets.</p>
+                            <p class="doc">Combine multiple HXL datasets (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Append-datasets-filter">help</a>).</p>
 
                             {% set name='append-exclude-columns%02d' % n %}
                             <div id="{{ name }}" class="checkbox">
@@ -210,10 +210,7 @@
                           </div>
 
                           <div class="fields-add hideable">
-                            <p class="doc">Add a new column (with a
-                            constant value) to the data (<a
-                            target="_blank"
-                            href="https://github.com/HXLStandard/libhxl-python/wiki/Add-columns-filter">help</a>).</p>
+                            <p class="doc">Add a new column (with a constant value) to the data (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Add-columns-filter">help</a>).</p>
 
                             {% set name='add-tag%02d' % n %}
                             <div class="form-group required" id="{{ name }}">
@@ -244,7 +241,7 @@
                           </div>
 
                           <div class="fields-clean hideable">
-                            <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.</p>
+                            <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.  (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Clean-data-filter">help</a>)</p>
 
                             {% set name='clean-whitespace-tags%02d' % n %}
                             <div id="{{ name }}" class="form-group">
@@ -279,7 +276,7 @@
                           </div>
 
                           <div class="fields-count hideable">
-                            <p class="doc">Count and aggregate HXL data to generate reports or hide personally-identifiable data.</p>
+                            <p class="doc">Aggregate HXL data to generate reports or protect private data (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Count-rows-filter">help</a>).</p>
 
                             {% set name='count-tags%02d' % n %}
                             <div id="{{ name }}" class="form-group required">
@@ -296,7 +293,7 @@
                           </div>
 
                           <div class="fields-cut hideable">
-                            <p class="doc">Remove columns from your dataset (e.g. for privacy).</p>
+                            <p class="doc">Remove columns from your dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Cut-columns-filter">help</a>).</p>
 
                             {% set name='cut-include-tags%02d' % n %}
                             <div id="{{ name }}" class="form-group">
@@ -313,7 +310,7 @@
                           </div>
 
                           <div class="fields-merge hideable">
-                            <p class="doc">Merge fields from one HXL dataset into another one. You can use this to look up information like latitude/longitude or population from a reference dataset and add it to your main one.</p>
+                            <p class="doc">Merge columns from one HXL dataset into another one (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Merge-columns-filter">help</a>).</p>
 
                             {% set name='merge-url%02d' % n %}
                             <div id="{{ name }}" class="form-group required">
@@ -344,7 +341,7 @@
                           </div>
 
                           <div class="fields-replace hideable">
-                            <p class="doc">Replace values in the dataset</p>
+                            <p class="doc">Replace values in the dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Replace-data-filter">help</a>).</p>
 
                             {% set name='replace-pattern%02d' % n %}
                             <div id="{{ name }}" class="form-group required">
@@ -375,7 +372,7 @@
                           </div>
 
                           <div class="fields-replace-map hideable">
-                            <p class="doc">Replace values using an external mapping table</p>
+                            <p class="doc">Replace values using an external mapping table (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Replace-data-filter">help</a>).</p>
 
                             {% set name='replace-map-url%02d' % n %}
                             <div id="{{ name }}" class="form-group required">
@@ -386,7 +383,7 @@
                           </div>
 
                           <div class="fields-rename hideable">
-                            <p class="doc">Add a new column (with a constant value) to the data.</p>
+                            <p class="doc">Rename and retag an existing column (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Rename-columns-filter">help</a>).</p>
 
                             {% set name='rename-oldtag%02d' % n %}
                             <div class="form-group required" id="{{ name }}">
@@ -409,7 +406,7 @@
                           </div>
 
                           <div class="fields-select hideable">
-                            <p class="doc">Remove all rows from the dataset unless they match a query condition (e.g. a specific sector or ADM1).</p>
+                            <p class="doc">Select specific rows from a dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Select-rows-filter">help</a>).</p>
 
                             {% set name='select-query%02d' % n %}
                             <div id="{{ name }}" class="form-group required">
@@ -431,7 +428,7 @@
                           </div>
 
                           <div class="fields-sort hideable">
-                            <p class="doc">Sort the records in a HXL dataset.</p>
+                            <p class="doc">Sort the records in a HXL dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Sort-rows-filter">help</a>).</p>
 
                             {% set name='sort-tags%02d' % n %}
                             <div id="{{ name }}" class="form-group">
