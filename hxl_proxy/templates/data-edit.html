@@ -61,22 +61,19 @@
               <input type="hidden" name="filter_count" value="{{ filter_count }}" />
 
               <div class="form-group required">
-                <label class="control-label">HXL dataset URL</label>
-                <div class="input-group">
+                <label for="url">HXL dataset URL</label>
                   <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
-                  <span class="input-group-btn">
-                    <button class="btn btn-success" type="submit">Update</button>
-                  </span>
-                </div>
                 <p class="small">&hellip; or pick a dataset from <a
                 href="/data/edit/hdx-datasets">HDX</a> or <a href="#" onclick="hxl_proxy.doDropbox(); return false;">Dropbox</a></p>
               </div>
-
-              <div class="checkbox">
+              <div class="checkbox pull-left">
                 <label>
                   <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
                   Strip text headers before hashtags.
                 </label>
+              </div>
+              <div class="form-group pull-right">
+                <button class="btn btn-success" type="submit">Update</button>
               </div>
 
               {% if key %}
