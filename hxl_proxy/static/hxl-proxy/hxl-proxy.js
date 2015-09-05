@@ -20,11 +20,10 @@ var hxl_proxy = {}
 /**
  * Bring up the Dropbox file selector.
  */
-hxl_proxy.doDropbox = function() {
+hxl_proxy.doDropbox = function(id) {
     Dropbox.choose({
         success: function(files) {
-            url = files[0].link;
-            window.location = "/data/edit?url=" + encodeURIComponent(url);
+            $(id).val(files[0].link)
         }
     });
 }

@@ -62,9 +62,9 @@
 
               <div class="form-group required">
                 <label for="url">HXL dataset URL</label>
-                  <input class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
+                  <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
                 <p class="small">&hellip; or pick a dataset from <a
-                href="/data/edit/hdx-datasets">HDX</a> or <a href="#" onclick="hxl_proxy.doDropbox(); return false;">Dropbox</a></p>
+                href="/data/edit/hdx-datasets">HDX</a> or <a href="#" onclick="hxl_proxy.doDropbox('#dataset-url'); return false;">Dropbox</a></p>
               </div>
               <div class="checkbox pull-left">
                 <label>
@@ -200,7 +200,8 @@
                               <label for="{{ name }}">Datasets to append</label>
                               {% for n in range(1, 11) %}
                               {% set dataset_name = '%s-%02d' % (name, n) %}
-                              <input class="form-control" name="{{ dataset_name }}" value="{{ profile.args[dataset_name] }}" type="url" placeholder="http://example.org/dataset.csv"/>
+                              <input class="form-control" id="{{ dataset_name }}" name="{{ dataset_name }}" value="{{ profile.args[dataset_name] }}" type="url" placeholder="http://example.org/dataset.csv"/>
+                              <p class="small">pick from <a href="#" onclick="hxl_proxy.doDropbox('#{{ dataset_name }}'); return false;">Dropbox</a></p>
                               {% endfor %}
                             </div>
 
