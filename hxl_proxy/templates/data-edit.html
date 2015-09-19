@@ -63,8 +63,11 @@
               <div class="form-group required">
                 <label for="url">HXL dataset URL</label>
                   <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
-                <p class="small">&hellip; or pick a dataset from <a
-                href="/data/edit/hdx-datasets">HDX</a> or <a href="#" onclick="hxl_proxy.doDropbox('#dataset-url'); return false;">Dropbox</a></p>
+                <p class="small">&hellip; or pick a dataset from 
+                  <a href="#" onclick="hxl_proxy.doHDX('#dataset-url'); return false;">HDX</a> 
+                    or 
+                  <a href="#" onclick="hxl_proxy.doDropbox('#dataset-url'); return false;">Dropbox</a>
+                </p>
               </div>
               <div class="checkbox pull-left">
                 <label>
@@ -481,6 +484,7 @@
 {{ super() }}
     <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
     <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+    <script src="{{ static('hdx-chooser/hdx.js') }}"></script>
     <script>
       hxl_proxy.setupForm();
       $(document).ready(function() {

@@ -17,6 +17,14 @@
 var hxl_proxy = {}
 
 
+hxl_proxy.doHDX = function(id) {
+    hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
+    hdx.choose(function (resource) {
+        $(id).val(resource.url);
+    });
+};
+
+
 /**
  * Bring up the Dropbox file selector.
  */
@@ -26,7 +34,7 @@ hxl_proxy.doDropbox = function(id) {
             $(id).val(files[0].link)
         }
     });
-}
+};
 
 
 /**
