@@ -18,7 +18,7 @@ var hxl_proxy = {}
 
 
 hxl_proxy.doHDX = function(id) {
-    hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
+    //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
     hdx.choose(function (resource) {
         $(id).val(resource.url);
     });
