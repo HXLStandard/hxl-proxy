@@ -22,6 +22,7 @@ hxl_proxy.doHDX = function(id) {
     hdx.choose(function (resource) {
         $(id).val(resource.url);
     });
+    return false;
 };
 
 
@@ -34,6 +35,7 @@ hxl_proxy.doDropbox = function(id) {
             $(id).val(files[0].link)
         }
     });
+    return false;
 };
 
 
