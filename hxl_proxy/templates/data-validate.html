@@ -1,5 +1,6 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu, hxltable %}
+{% from 'macros/selectors.html' import selectors %}
 
 {% set nav_validate='active' %}
 
@@ -141,9 +142,10 @@ HXL data
 
                 <div class="form-group">
                   <label for="schema_url">Custom HXL schema URL</label>
-                  <input name="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
+                  <input name="schema_url" id="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
                          placeholder="http://example.org/my-hxl-schema.csv" />
                   <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
+                  {{ selectors('#schema_url') }}
                 </div>
 
                 <button class="btn btn-success" type="submit">Update</button>
@@ -154,4 +156,12 @@ HXL data
         </div>
       </div>
 
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+    <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+    <script src="http://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
 {% endblock %}

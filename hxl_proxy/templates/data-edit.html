@@ -91,7 +91,8 @@
 
               <div class="form-group">
                 <label for="schema_url">Default schema URL (for validation)</label>
-                <input class="form-control" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
+                <input class="form-control" type="url" id="schema_url" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
+                {{ selectors('#schema_url') }}
               </div>
 
               <div class="checkbox">

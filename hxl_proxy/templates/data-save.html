@@ -1,5 +1,6 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu, hxltable %}
+{% from 'macros/selectors.html' import selectors %}
 
 {% set nav_validate='active' %}
 
@@ -33,7 +34,8 @@
         </div>
         <div class="form-group">
           <label for="schema_url">Default schema URL for validation</label>
-          <input name="schema_url" class="form-control" value="{{ profile.args.schema_url }}" />
+          <input name="schema_url" id="schema_url" class="form-control" value="{{ profile.args.schema_url }}" />
+          {{ selectors('#schema_url') }}
         </div>
         <div class="form-group required">
           <label for="password">Editing password</label>
@@ -53,4 +55,11 @@
           <button type="submit" class="btn btn-success">Save this filter</button>
         </div>
       </form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+    <script src="http://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
 {% endblock %}

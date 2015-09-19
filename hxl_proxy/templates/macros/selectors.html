@@ -1,0 +1,8 @@
+{% macro selectors(id) %}
+<p class="small">
+  &hellip; or pick a dataset from 
+  <a href="#" onclick="return hxl_proxy.doHDX('{{ id }}');">HDX</a> 
+  or 
+  <a href="#" onclick="return hxl_proxy.doDropbox('{{ id }}');">Dropbox</a>
+</p>
+{% endmacro %}
