@@ -65,5 +65,9 @@
     <script src="{{ static('bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ static('compat/ie10-viewport-bug-workaround.js') }}"></script>
     {% endblock %}
+    <script>
+      hxl_proxy.config.gdriveDeveloperKey = '{{ config.get('GOOGLE_CLIENT_ID') }}';
+      hxl_proxy.config.gdriveClientId = '{{ config.get('GOOGLE_OAUTH_ID') }}';
+    </script>
   </body>
 </html>
