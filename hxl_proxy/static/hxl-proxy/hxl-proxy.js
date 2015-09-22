@@ -92,6 +92,8 @@ hxl_proxy.doGDrive = function(elementId) {
                 setCallback(callback).
                 build();
             picker.setVisible(true);
+            // kludge to make sure it's in front of any modals
+            $('.picker-dialog').css('z-index', '3000');
         }
     }
 
