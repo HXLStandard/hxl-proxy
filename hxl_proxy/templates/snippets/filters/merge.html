@@ -55,7 +55,7 @@
         />
   </div>
 
-  {% set name='merge-before%02d' % n %}
+  {% set name='merge-replace%02d' % n %}
   <div id="{{ name }}" class="checkbox">
     <label>
       <input
@@ -65,7 +65,21 @@
           checked="checked"
           {% endif %}
           />
-      Add merge columns to front
+      Use existing empty cells where possible.
+    </label>
+  </div>
+
+  {% set name='merge-overwrite%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          {% if profile.args[name] %}
+          checked="checked"
+          {% endif %}
+          />
+      Overwrite existing values.
     </label>
   </div>
 
