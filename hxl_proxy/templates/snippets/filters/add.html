@@ -1,29 +1,64 @@
 <div class="fields-add hideable">
   {% import 'snippets/filters/filter-variables.j2' as vars %}
-  <p class="doc">Add a new column (with a constant value) to the data (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Add-columns-filter">help</a>).</p>
+  {% from 'macros/help.html' import help %}
+
+  <p class="doc">
+    Add a new column (with a constant value) to the data.
+    {{help('Add-columns-filter')}}
+  </p>
 
   {% set name='add-tag%02d' % n %}
   <div class="form-group required" id="{{ name }}">
-    <label for="{{ name }}">Tag for new column.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}" placeholder="{{ vars.tag_placeholder }}" />
+    <label for="{{ name }}">
+      Tag for new column.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        required="required"
+        pattern="^{{ vars.tag_pattern }}$"
+        title="{{ vars.tag_help }}"
+        placeholder="{{ vars.tag_placeholder }}"
+        />
   </div>
 
   {% set name='add-value%02d' % n %}
   <div class="form-group required" id="{{ name }}">
-    <label for="{{ name }}">Fixed value for new column.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" placeholder="Fixed value" />
+    <label for="{{ name }}">
+      Fixed value for new column.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        placeholder="Fixed value"
+        />
   </div>
 
   {% set name='add-header%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">Display header for new column.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" placeholder="Header text" />
+    <label for="{{ name }}">
+      Display header for new column.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        placeholder="Header text"
+        />
   </div>
 
   {% set name='add-before%02d' % n %}
   <div id="{{ name }}" class="checkbox">
     <label>
-      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          {% if profile.args[name] %}
+          checked="checked"
+          {% endif %}
+          />
       Add new column to front
     </label>
   </div>

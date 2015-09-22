@@ -1,17 +1,39 @@
 <div class="fields-count hideable">
   {% import 'snippets/filters/filter-variables.j2' as vars %}
-  <p class="doc">Aggregate HXL data to generate reports or protect private data (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Count-rows-filter">help</a>).</p>
+  {% from 'macros/help.html' import help %}
+
+  <p class="doc">
+    Aggregate HXL data to generate reports or protect private data.
+    {{ help('Count-rows-filter') }}
+  </p>
 
   {% set name='count-tags%02d' % n %}
   <div id="{{ name }}" class="form-group required">
-    <label for="{{ name }}">Count values for these hashtags (comma-separated)</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}" />
+    <label for="{{ name }}">
+      Count values for these hashtags (comma-separated)
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        required="required"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}" />
   </div>
 
   {% set name='count-aggregate-tag%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">Aggregate values for this tag (sum, average, min, max)</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filter_pattern }}$" title="{{ vars.filter_help }}" placeholder="tag" />
+    <label for="{{ name }}">
+      Aggregate values for this tag (sum, average, min, max)
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filter_pattern }}$"
+        title="{{ vars.filter_help }}"
+        placeholder="tag" />
   </div>
 
 </div>

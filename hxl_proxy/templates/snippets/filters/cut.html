@@ -1,17 +1,41 @@
 <div class="fields-cut hideable">
   {% import 'snippets/filters/filter-variables.j2' as vars %}
-  <p class="doc">Remove columns from your dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Cut-columns-filter">help</a>).</p>
+  {% from 'macros/help.html' import help %}
+
+  <p class="doc">
+    Remove columns from your dataset.
+    {{ help('Cut-columns-filter') }}
+  </p>
 
   {% set name='cut-include-tags%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">Whitelist: include only these tags (comma-separated)</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}" />
+    <label for="{{ name }}">
+      Whitelist: include only these tags (comma-separated)
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
   </div>
 
   {% set name='cut-exclude-tags%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">Blacklist: include everything <i>but</i> these tags (comma-separated)</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}" />
+    <label for="{{ name }}">
+      Blacklist: include everything <i>but</i> these tags
+      (comma-separated).
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
   </div>
 
 </div>

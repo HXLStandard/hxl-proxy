@@ -1,29 +1,65 @@
 <div class="fields-replace hideable">
   {% import 'snippets/filters/filter-variables.j2' as vars %}
-  <p class="doc">Replace values in the dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Replace-data-filter">help</a>).</p>
+  {% from 'macros/help.html' import help %}
+
+  <p class="doc">
+    Replace values in the dataset.
+    {{ help('Replace-data-filter') }}
+  </p>
 
   {% set name='replace-pattern%02d' % n %}
   <div id="{{ name }}" class="form-group required">
-    <label for="{{ name }}">Text or pattern to replace</label>
-    <input class="form-control" required="required" name="{{ name }}" value="{{ profile.args[name] }}" placeholder="text to replace" />
+    <label for="{{ name }}">
+      Text or pattern to replace
+    </label>
+    <input
+        class="form-control"
+        required="required"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        placeholder="text to replace"
+        />
   </div>
 
   {% set name='replace-value%02d' % n %}
   <div id="{{ name }}" class="form-group required">
-    <label for="{{ name }}">New text</label>
-    <input class="form-control" required="required" name="{{ name }}" value="{{ profile.args[name] }}" placeholder="text to replace" />
+    <label for="{{ name }}">
+      New text
+    </label>
+    <input
+        class="form-control"
+        required="required"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        placeholder="text to replace"
+        />
   </div>
 
   {% set name='replace-tags%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">Replace only in these columns</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}" />
+    <label for="{{ name }}">
+      Replace only in these columns
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
   </div>
 
   {% set name='replace-regex%02d' % n %}
   <div id="{{ name }}" class="checkbox">
     <label>
-      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          {% if profile.args[name] %}
+          checked="checked"
+          {% endif %}
+          />
       Use a regular expression pattern.
     </label>
   </div>

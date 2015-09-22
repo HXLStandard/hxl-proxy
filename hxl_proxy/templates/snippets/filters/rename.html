@@ -1,23 +1,54 @@
 <div class="fields-rename hideable">
   {% import 'snippets/filters/filter-variables.j2' as vars %}
-  <p class="doc">Rename and retag an existing column (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Rename-columns-filter">help</a>).</p>
+  {% from 'macros/help.html' import help %}
+  <p class="doc">
+    Rename and retag an existing column.
+    {{ help('Rename-columns-filter') }}
+  </p>
 
   {% set name='rename-oldtag%02d' % n %}
   <div class="form-group required" id="{{ name }}">
-    <label for="{{ name }}">Original tag.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filter_pattern }}$" title="{{ vars.filter_help }}" required="required" />
+    <label for="{{ name }}">
+      Original tag or pattern
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filter_pattern }}$"
+        title="{{ vars.filter_help }}"
+        required="required"
+        placeholder="{{ vars.filter_placeholder }}"
+        />
   </div>
 
   {% set name='rename-newtag%02d' % n %}
   <div class="form-group required" id="{{ name }}">
-    <label for="{{ name }}">New tag.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}" required="required" />
+    <label for="{{ name }}">
+      New tag
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.tag_pattern }}$"
+        title="{{ vars.tag_help }}"
+        required="required"
+        placeholder="{{ vars.tag_placeholder}}"
+        />
   </div>
 
   {% set name='rename-header%02d' % n %}
   <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">New display header.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" />
+    <label for="{{ name }}">
+      New display header.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        placeholder="New display header"
+        />
   </div>
 
 </div>
