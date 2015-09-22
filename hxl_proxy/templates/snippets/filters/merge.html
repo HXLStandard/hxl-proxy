@@ -11,13 +11,13 @@
   {% set name='merge-tags%02d' % n %}
   <div id="{{ name }}" class="form-group required">
     <label for="{{ name }}">Tags to copy from other dataset</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" />
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.filters_placeholder }}" />
   </div>
 
   {% set name='merge-keys%02d' % n %}
   <div id="{{ name }}" class="form-group required">
     <label for="{{ name }}">Shared keys (values that are the same in both datasets)</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" />
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.filters_placeholder }}" />
   </div>
 
   {% set name='merge-before%02d' % n %}
