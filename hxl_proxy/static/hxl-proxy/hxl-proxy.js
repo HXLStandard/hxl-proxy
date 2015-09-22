@@ -14,20 +14,126 @@
 /**
  * Root object for all HXL Proxy functions and variables.
  */
-var hxl_proxy = {}
+var hxl_proxy = {};
 
 
 /**
- * Bring up the Dropbox file selector.
+ * Configuration properties
  */
-hxl_proxy.doDropbox = function() {
+hxl_proxy.config = {
+    gdriveDeveloperKey: 'UNSPECIFIED',
+    gdriveClientId: 'UNSPECIFIED'
+};
+
+
+/**
+ * Select a file from HDX.
+ *
+ * @param elementId the HTML id of the form input element where
+ * the URL should appear.
+ * @returns always false.
+ */
+hxl_proxy.doHDX = function(elementId) {
+    //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
+    hdx.choose(function (resource) {
+        $(elementId).val(resource.url);
+    });
+    return false;
+};
+
+
+/**
+ * Select a file from Dropbox.
+ *
+ * @param elementId the HTML id of the form input element where
+ * the URL should appear.
+ * @returns always false.
+ */
+hxl_proxy.doDropbox = function(elementId) {
     Dropbox.choose({
         success: function(files) {
-            url = files[0].link;
-            window.location = "/data/edit?url=" + encodeURIComponent(url);
+            $(elementId).val(files[0].link)
         }
     });
-}
+    return false;
+};
+
+
+/**
+ * Select a file from Google Drive
+ *
+ * Relies on the hxl_proxy.config.gdriveDeveloperKey and the
+ * hxl_proxy.config.gdriveClientId properties.
+ *
+ * Google makes this very difficult (compared to Dropbox).
+ *
+ * @param elementId the HTML id of the form input element where
+ * the URL should appear.
+ * @returns always false.
+ */
+hxl_proxy.doGDrive = function(elementId) {
+
+    // We want to see only spreadsheets
+    var scope = ['https://www.googleapis.com/auth/drive.readonly'];
+
+    var pickerApiLoaded = false;
+    var oauthToken = null;
+
+    // Make a picker
+    function createPicker() {
+        if (pickerApiLoaded && oauthToken) {
+            var view = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS);
+            view.setMode(google.picker.DocsViewMode.LIST);
+            var picker = new google.picker.PickerBuilder().
+                addView(view).
+                enableFeature(google.picker.Feature.NAV_HIDDEN).
+                setOAuthToken(oauthToken).
+                setDeveloperKey(hxl_proxy.config.gdriveDeveloperKey).
+                setCallback(callback).
+                build();
+            picker.setVisible(true);
+        }
+    }
+
+    // Handle the authorisation, if needed
+    function onAuthApiLoad() {
+        window.gapi.auth.authorize(
+            {
+                'client_id': hxl_proxy.config.gdriveClientId,
+                'scope': scope,
+                'immediate': false
+            },
+            function(authResult) {
+                if (authResult && !authResult.error) {
+                    oauthToken = authResult.access_token;
+                    createPicker();
+                }
+            }
+        );
+    }
+
+    // On success, create the picker.
+    function onPickerApiLoad() {
+        pickerApiLoaded = true;
+        createPicker();
+    }
+
+    // Put the URL in the specified element
+    function callback(data) {
+        var url, doc;
+        if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+            doc = data[google.picker.Response.DOCUMENTS][0];
+            if (doc) {
+                $(elementId).val(doc[google.picker.Document.URL]);
+            }
+        }
+    }
+
+    // Execute the commands.
+    gapi.load('auth', {'callback': onAuthApiLoad});
+    gapi.load('picker', {'callback': onPickerApiLoad});
+    return false;
+};
 
 
 /**
