@@ -43,7 +43,7 @@
               <div class="form-group required">
                 <label for="url">HXL dataset URL</label>
                 <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
-                {{ selectors('#dataset-url') }}
+                {{ selectors('#dataset-url', true) }}
               </div>
               <div class="checkbox pull-left">
                 <label>

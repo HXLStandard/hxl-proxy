@@ -33,10 +33,13 @@ hxl_proxy.config = {
  * the URL should appear.
  * @returns always false.
  */
-hxl_proxy.doHDX = function(elementId) {
+hxl_proxy.doHDX = function(elementId, submit) {
     //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
     hdx.choose(function (resource) {
         $(elementId).val(resource.url);
+        if (submit) {
+            $(elementId).closest('form').submit();
+        }
     });
     return false;
 };
@@ -49,10 +52,13 @@ hxl_proxy.doHDX = function(elementId) {
  * the URL should appear.
  * @returns always false.
  */
-hxl_proxy.doDropbox = function(elementId) {
+hxl_proxy.doDropbox = function(elementId, submit) {
     Dropbox.choose({
         success: function(files) {
             $(elementId).val(files[0].link)
+            if (submit) {
+                $(elementId).closest('form').submit();
+            }
         }
     });
     return false;
@@ -71,7 +77,7 @@ hxl_proxy.doDropbox = function(elementId) {
  * the URL should appear.
  * @returns always false.
  */
-hxl_proxy.doGDrive = function(elementId) {
+hxl_proxy.doGDrive = function(elementId, submit) {
 
     // We want to see only spreadsheets
     var scope = ['https://www.googleapis.com/auth/drive.readonly'];
@@ -127,6 +133,9 @@ hxl_proxy.doGDrive = function(elementId) {
             doc = data[google.picker.Response.DOCUMENTS][0];
             if (doc) {
                 $(elementId).val(doc[google.picker.Document.URL]);
+                if (submit) {
+                    $(elementId).closest('form').submit();
+                }
             }
         }
     }

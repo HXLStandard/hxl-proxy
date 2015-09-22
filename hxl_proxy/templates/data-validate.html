@@ -145,7 +145,7 @@ HXL data
                   <input name="schema_url" id="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
                          placeholder="http://example.org/my-hxl-schema.csv" />
                   <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
-                  {{ selectors('#schema_url') }}
+                  {{ selectors('#schema_url', true) }}
                 </div>
 
                 <button class="btn btn-success" type="submit">Update</button>

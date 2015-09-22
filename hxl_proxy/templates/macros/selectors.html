@@ -1,10 +1,10 @@
-{% macro selectors(id) %}
+{% macro selectors(id, submit) %}
 <p class="small">
   &hellip; or pick a dataset from 
-  <a href="#" onclick="return hxl_proxy.doHDX('{{ id }}');">HDX</a> 
+  <a href="#" onclick="return hxl_proxy.doHDX('{{ id }}', '{{ submit }}');">HDX</a> 
   or 
-  <a href="#" onclick="return hxl_proxy.doDropbox('{{ id }}');">Dropbox</a>
+  <a href="#" onclick="return hxl_proxy.doDropbox('{{ id }}', '{{ submit }}');">Dropbox</a>
   or
-  <a href="#" onclick="return hxl_proxy.doGDrive('{{ id }}');">Google Drive</a>
+  <a href="#" onclick="return hxl_proxy.doGDrive('{{ id }}', '{{ submit }}');">Google Drive</a>
 </p>
 {% endmacro %}
