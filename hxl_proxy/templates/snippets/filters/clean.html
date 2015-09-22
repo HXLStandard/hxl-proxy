@@ -1,0 +1,35 @@
+<div class="fields-clean hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  <p class="doc">Clean up your dataset by standardising dates and numbers, removing whitespace, etc.  (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Clean-data-filter">help</a>)</p>
+
+  {% set name='clean-whitespace-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">Normalise whitespace for these hashtags (comma-separated)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}" />
+  </div>
+
+  {% set name='clean-toupper-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">Convert to uppercase for these hashtags (comma-separated)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}"  />
+  </div>
+
+  {% set name='clean-tolower-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">Convert to lowercase for these hashtags (comma-separated)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}"  />
+  </div>
+
+  {% set name='clean-date-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">Standardise dates for these hashtags (comma-separated)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}"  />
+  </div>
+
+  {% set name='clean-num-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">Standardise numbers for these hashtags (comma-separated)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.tags_placeholder }}"  />
+  </div>
+
+</div>

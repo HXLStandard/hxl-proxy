@@ -1,0 +1,22 @@
+<div class="fields-select hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  <p class="doc">Select specific rows from a dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Select-rows-filter">help</a>).</p>
+
+  {% set name='select-query%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">Queries (e.g. adm1=Bomo)</label>
+    {% for n in range(1, 6) %}
+    {% set query_name = '%s-%02d' % (name, n) %}
+    <input class="form-control" name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ vars.query_pattern }}$" title="{{ vars.query_help }}" placeholder="#tag=value" />
+    {% endfor %}
+  </div>
+
+  {% set name='select-reverse%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      Invert query (all rows that <i>don't</i> match it)
+    </label>
+  </div>
+
+</div>

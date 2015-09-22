@@ -1,0 +1,21 @@
+{% set token_pattern = '[A-Za-z][_0-9A-Za-z]*' %}
+
+{% set tag_pattern = '#?' + token_pattern + '([+]' + token_pattern + ')*' %}
+{% set tag_help = 'Example: adm1' %}
+{% set tag_placeholder = '#tag' %}
+
+{% set tags_pattern = '(' + tag_pattern + ')(,' + tag_pattern + ')*' %}
+{% set tags_help = 'Example: country,adm1,org,sector' %}
+{% set tags_placeholder = 'tag1,tag2+att,tag3' %}
+
+{% set filter_pattern = '#?' + token_pattern + '([+-]' + token_pattern + ')*' %}
+{% set filter_help = 'Example: org-funder' %}
+{% set filter_placeholder = '#tag+att' %}
+
+{% set filters_pattern = '(' + filter_pattern + ')(,' + filter_pattern + ')*' %}
+{% set filters_help = 'Example: country,adm1,org-funder,sector+cluster' %}
+{% set filters_placeholder = 'tag1,tag2-att,tag3+att' %}
+
+{% set query_pattern = filter_pattern + '([=~<>]|<=|>=|!=|!~).*' %}
+{% set query_help = 'Example: adm1=Bomi' %}
+

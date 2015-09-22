@@ -1,0 +1,31 @@
+<div class="fields-merge hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  <p class="doc">Merge columns from one HXL dataset into another one (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Merge-columns-filter">help</a>).</p>
+
+  {% set name='merge-url%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">URL of merge dataset (pull extra data from here)</label>
+    <input class="form-control" name="{{ name }}" type="url" value="{{ profile.args[name] }}" required="required" />
+  </div>
+
+  {% set name='merge-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">Tags to copy from other dataset</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" />
+  </div>
+
+  {% set name='merge-keys%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">Shared keys (values that are the same in both datasets)</label>
+    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" required="required" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" />
+  </div>
+
+  {% set name='merge-before%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      Add merge columns to front
+    </label>
+  </div>
+
+</div>

@@ -1,0 +1,11 @@
+<div class="fields-replace-map hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  <p class="doc">Replace values using an external mapping table (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Replace-data-filter">help</a>).</p>
+
+  {% set name='replace-map-url%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">URL of the external mapping table</label>
+    <input class="form-control" required="required" name="{{ name }}" value="{{ profile.args[name] }}"  type="url" placeholder="text to replace" />
+  </div>
+
+</div>

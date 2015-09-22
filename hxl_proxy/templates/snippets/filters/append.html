@@ -1,0 +1,22 @@
+<div class="fields-append hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  <p class="doc">Combine multiple HXL datasets (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Append-datasets-filter">help</a>).</p>
+
+  {% set name='append-exclude-columns%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      Exclude columns not in current dataset.
+    </label>
+  </div>
+
+  {% set name='append-dataset%02d' % n %}
+  <div id="{{ name }}" class="form-group required">
+    <label for="{{ name }}">Datasets to append</label>
+    {% for n in range(1, 11) %}
+    {% set dataset_name = '%s-%02d' % (name, n) %}
+    <input class="form-control" name="{{ dataset_name }}" value="{{ profile.args[dataset_name] }}" type="url" placeholder="http://example.org/dataset.csv"/>
+    {% endfor %}
+  </div>
+
+</div>
