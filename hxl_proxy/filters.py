@@ -35,7 +35,9 @@ def setup_filters(profile):
     filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
     for index in range(1, 1+filter_count):
         filter = profile.args.get('filter%02d' % index)
-        if filter == 'add':
+        if filter == 'tagger':
+            pass; # already handled
+        elif filter == 'add':
             source = add_add_filter(source, profile.args, index)
         elif filter == 'clean':
             source = add_clean_filter(source, profile.args, index)
