@@ -12,10 +12,10 @@ import hxl.filters # why do we have to import this???
 from hxl.converters import Tagger
 
 # Minimum default number of filters to check
-DEFAULT_FILTER_COUNT = 5
+DEFAULT_FILTER_COUNT = 10
 
 # Maximum number of filters to check
-MAX_FILTER_COUNT = 10
+MAX_FILTER_COUNT = 20
 
 def setup_filters(profile):
     """

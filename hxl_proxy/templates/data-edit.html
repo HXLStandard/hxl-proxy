@@ -38,8 +38,6 @@
           {% endif %}
           <div id="settings-collapse" class="{% if key %}panel-collapse collapse{% endif %}">
             <div class="panel-body">
-              <input type="hidden" name="filter_count" value="{{ filter_count }}" />
-
               <div class="form-group required">
                 <label for="url">HXL dataset URL</label>
                 <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
@@ -96,7 +94,6 @@
               </div>
               {% endif %}
 
-              <input type="hidden" name="format" value="html" />
             </div>
           </div>
         </fieldset>
@@ -174,7 +171,19 @@
     <script>
       hxl_proxy.setupForm();
       $(document).ready(function() {
-        $("#preview-warning").insertBefore($("#preview-table"));
-        });
+
+          // add the preview warning, with total row count
+          $("#preview-warning").insertBefore($("#preview-table"));
+
+          // Remove empty GET parameters to keep URLs shorter
+          $('#filter-form').submit(function () {
+              var text = $(this).find(":input").filter(function () {
+                  return $.trim(this.value).length > 0
+              }).serialize();
+              window.location = '?' + text;
+              return false;
+          });
+              
+      });
     </script>
 {% endblock %}
