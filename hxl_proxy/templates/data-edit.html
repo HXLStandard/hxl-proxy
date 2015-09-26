@@ -33,7 +33,7 @@
         <fieldset class="panel panel-default">
           {% if key %}
           <div class="panel-heading">
-            <h4><a class="collapsed" data-toggle="collapse" href="#settings-collapse">Settings</a></h4>
+            <h2><a class="collapsed" data-toggle="collapse" href="#settings-collapse">Settings</a></h2>
           </div>
           {% endif %}
           <div id="settings-collapse" class="{% if key %}panel-collapse collapse{% endif %}">
@@ -45,12 +45,16 @@
                 <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
                 {{ selectors('#dataset-url', true) }}
               </div>
+
+              {% include 'snippets/filters/tagger.html' %}
+
               <div class="checkbox pull-left">
                 <label>
                   <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
-                  Strip text headers before hashtags.
+                  Strip text headers before hashtags in output.
                 </label>
               </div>
+
               <div class="form-group pull-right">
                 <button class="btn btn-success" type="submit">Update</button>
               </div>
@@ -97,6 +101,7 @@
           </div>
         </fieldset>
 
+        {% if profile.args.url %}
         <div class="row-fluid">
           <section class="col-sm-3 col-md-2">
             <h2 class="visible-xs-block">Filters</h2>
@@ -115,7 +120,6 @@
                         <fieldset id="{{ 'filter-group%02d' % n }}">
                           {% include 'snippets/filters/filter-selector.html' %}
 
-                          {% include 'snippets/filters/tagger.html' %}
                           {% include 'snippets/filters/add.html' %}
                           {% include 'snippets/filters/append.html' %}
                           {% include 'snippets/filters/clean.html' %}
@@ -152,7 +156,10 @@
             <p class="alert alert-info">No data yet.</p>
             {% endif %}
           </section>
-        </div>
+        </div> 
+        {% else %}
+        <p class="alert alert-warning">Select a HXL dataset URL before creating filters.</p>
+        {% endif %}
 
       </form>
     </main>

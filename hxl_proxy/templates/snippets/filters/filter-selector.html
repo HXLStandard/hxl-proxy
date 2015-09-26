@@ -3,9 +3,6 @@
   {% set name='filter%02d' % n %}
   <select name="{{ name }}" class="form-control">
     <option value="">(none)</option>
-    {% if n == 1 %}
-    <option value="tagger"{% if profile.args[name]=='tagger' %} selected="selected"{% endif %}>Tag non-HXL</option>
-    {% endif %}
     <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
     <option value="append"{% if profile.args[name]=='append' %} selected="selected"{% endif %}>Append datasets</option>
     <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>

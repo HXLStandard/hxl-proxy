@@ -72,15 +72,15 @@ def make_tagged_input(args):
     input = hxl.make_input(url)
 
     # Intercept tagging as a special data input
-    if args.get('filter01') == 'tagger':
-        specs = []
-        for n in range(1, 21):
-            header = args.get('tagger-%02d-header' % n)
-            tag = args.get('tagger-%02d-tag' % n)
-            if header and tag:
-                specs.append((header, tag))
-        if len(specs) > 0:
-            input = Tagger(input, specs)
+
+    specs = []
+    for n in range(1, 21):
+        header = args.get('tagger-%02d-header' % n)
+        tag = args.get('tagger-%02d-tag' % n)
+        if header and tag:
+            specs.append((header, tag))
+    if len(specs) > 0:
+        input = Tagger(input, specs)
 
     return input
 
