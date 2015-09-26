@@ -76,12 +76,6 @@ def show_data_login(key):
     profile = get_profile(key)
     return render_template('data-login.html', key=key, profile=profile)
 
-@app.route("/data/upload")
-def show_data_upload():
-    """Form for uploading a HXL file."""
-    profile = get_profile(None)
-    return render_template('data-upload.html', profile=profile)
-
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_data_edit(key=None):
@@ -101,12 +95,6 @@ def show_data_edit(key=None):
     show_headers = (profile.args.get('strip-headers') != 'on')
 
     return render_template('data-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
-
-@app.route("/data/edit/hdx-datasets")
-def show_data_hdx_datasets():
-    "Show a picklist of HDX datasets."
-    datasets = get_hdx_datasets()
-    return render_template('data-edit-hdx-datasets.html', datasets=datasets)
 
 @app.route("/data/save")
 def show_data_save():
@@ -295,17 +283,5 @@ def do_data_save():
         session['passhash'] = profile.passhash
 
     return redirect(make_data_url(profile, key=key, facet='edit'), 303)
-
-@app.route("/actions/upload", methods=['POST'])
-def do_data_upload():
-    file = request.files.get('file')
-    if file:
-        upload = g.uploads.create_upload(file.filename)
-        print(upload)
-        file.save(upload.get_path())
-        #return redirect('/data/edit?url=' + urllib.quote_plus(upload.get_url()), 303)
-        return upload.get_url()
-    else:
-        return "No file"
 
 # end
