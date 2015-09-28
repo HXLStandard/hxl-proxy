@@ -1,0 +1,25 @@
+<div class="fields-dedup hideable">
+  {% import 'snippets/filters/filter-variables.j2' as vars %}
+  {% from 'macros/help.html' import help %}
+
+  <p class="doc">
+    Remove duplicate rows from a dataset.
+    {{help('Deduplicate-rows-filter')}}
+  </p>
+
+  {% set name='dedup-tags%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Tags to look at for deduplication (if blank, <i>all</i> columns
+      must match for a duplicate).
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}" />
+  </div>
+
+</div>
