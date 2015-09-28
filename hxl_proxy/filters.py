@@ -45,6 +45,8 @@ def setup_filters(profile):
             source = add_count_filter(source, profile.args, index)
         elif filter == 'column' or filter == 'cut':
             source = add_column_filter(source, profile.args, index)
+        elif filter == 'dedup':
+            source = add_dedup_filter(source, profile.args, index)
         elif filter == 'merge':
             source = add_merge_filter(source, profile.args, index)
         elif filter == 'rename':
@@ -130,6 +132,9 @@ def add_column_filter(source, args, index):
     if exclude_tags:
         source = source.without_columns(exclude_tags)
     return source
+
+def add_dedup_filter(source, args, index):
+    return source.dedup(args.get('dedup-tags%02d' % index, []))
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
