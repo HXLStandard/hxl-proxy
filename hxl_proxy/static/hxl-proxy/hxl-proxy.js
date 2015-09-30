@@ -245,12 +245,12 @@ hxl_proxy.setupChart = function(params) {
             } else {
                 for (i in hxl.columns) {
                     if (hxl.isNumbery(hxl.columns[i].displayTag)) {
-                        return hxl.columns[i];
+                        return hxl.columns[i].displayTag;
                     }
                 }
-                alert("Can't guess numeric column for charting.");
-                throw Exception("Can't find numeric column.");
             }
+            alert("Can't guess numeric column for charting.");
+            throw "Can't guess numeric column for charting.";
         }
 
         $.get(params.data_url, function(csvString) {

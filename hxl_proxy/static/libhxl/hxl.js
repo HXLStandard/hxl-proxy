@@ -323,7 +323,7 @@ hxl.classes.Source.prototype.getDisplayTags = function () {
 hxl.classes.Source.prototype.getMin = function(pattern) {
     var min, row, value;
     var iterator = this.iterator();
-    var pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
+    pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     while (row = iterator.next()) {
         value = row.get(pattern);
         if (min === null || (value !== null && value < min)) {
@@ -400,8 +400,8 @@ hxl.classes.Source.prototype.getValues = function(pattern) {
  * @see #getColumns
  */
 hxl.classes.Source.prototype.hasColumn = function (pattern) {
-    var pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     var cols =this.getColumns();
+    pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     for (var i = 0; i < cols.length; i++) {
         if (pattern.match(cols[i])) {
             return true;
@@ -415,7 +415,7 @@ hxl.classes.Source.prototype.hasColumn = function (pattern) {
  */
 hxl.classes.Source.prototype.getMatchingColumns = function(pattern) {
     var result = [];
-    var pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
+    pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     this.getColumns().forEach(function (col) {
         if (pattern.match(col)) {
             result.push(col);
@@ -485,10 +485,11 @@ hxl.classes.Source.prototype.forEach = hxl.classes.Source.prototype.each;
  * @return {boolean} true if at least 90% of the non-null values are numeric.
  */
 hxl.classes.Source.prototype.isNumbery = function(pattern) {
-    console.log(pattern);
     var total_seen = 0;
     var numeric_seen = 0;
-    this.getValues(pattern).forEach(function (value) {
+    pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
+    this.rows.forEach(function (row) {
+        var value = row.get(pattern);
         if (value) {
             total_seen++;
             if (!isNaN(value)) {
@@ -948,7 +949,7 @@ hxl.classes.Pattern.parse = function(pattern, useException) {
             return null;
         }
     } else {
-        result = pattern.match(/^\s*#?([A-Za-z][A-Za-z0-9_]*)((?:\s*[+-][A-Za-z][A-Za-z0-9_]*)*)\s*$/);
+        result = String(pattern).match(/^\s*#?([A-Za-z][A-Za-z0-9_]*)((?:\s*[+-][A-Za-z][A-Za-z0-9_]*)*)\s*$/);
         if (result) {
             include_attributes = [];
             exclude_attributes = [];
@@ -1020,7 +1021,7 @@ hxl.classes.Row.prototype.get = function(pattern) {
  */
 hxl.classes.Row.prototype.getAll = function(pattern) {
     var row = this, values = [];
-    var pattern = hxl.classes.Pattern.parse(pattern, true);
+    pattern = hxl.classes.Pattern.parse(pattern, true);
     this.columns.forEach(function (column, index) {
         if (pattern.match(column)) {
             values.push(row.values[index]);
