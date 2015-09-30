@@ -249,6 +249,7 @@ hxl_proxy.setupChart = function(params) {
                     }
                 }
                 alert("Can't guess numeric column for charting.");
+                throw Exception("Can't find numeric column.");
             }
         }
 
@@ -256,8 +257,8 @@ hxl_proxy.setupChart = function(params) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
             var hxlData = hxl.wrap(rawData);
             var label_pattern = get_label_pattern(hxlData);
-            var value_column = get_value_pattern(hxlData);
-            var value_pattern = value_column.displayTag;
+            var value_pattern = get_value_pattern(hxlData);
+            var value_column = hxlData.getMatchingColumns(value_pattern)[0];
             var title = '';
             if (value_column.header) {
                 title = value_column.header + ' (' + value_column.displayTag + ')';
