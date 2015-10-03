@@ -1,13 +1,13 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/selectors.html' import selectors %}
+{% from 'macros/params.html' import params %}
 
 {% set nav_filter='active' %}
 
 {% if key %}
-{% set title=profile.args.name + ' (edit)' %}
+{% set title=profile.args.name + ' (edit filters)' %}
 {% else %}
-{% set title='New HXL view' %}
+{% set title='Edit filters (optional)' %}
 {% endif %}
 
 {% block menu %}
@@ -30,75 +30,6 @@
       {% endif %}
       <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
-        <fieldset class="panel panel-default">
-          {% if key %}
-          <div class="panel-heading">
-            <h2><a class="collapsed" data-toggle="collapse" href="#settings-collapse">Settings</a></h2>
-          </div>
-          {% endif %}
-          <div id="settings-collapse" class="{% if key %}panel-collapse collapse{% endif %}">
-            <div class="panel-body">
-              <div class="form-group required">
-                <label for="url">HXL dataset URL</label>
-                <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
-                {{ selectors('#dataset-url', true) }}
-              </div>
-
-              {% include 'snippets/filters/tagger.html' %}
-
-              <div class="checkbox pull-left">
-                <label>
-                  <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
-                  Strip text headers before hashtags in output.
-                </label>
-              </div>
-
-              <div class="form-group pull-right">
-                <button class="btn btn-success" type="submit">Update</button>
-              </div>
-
-              {% if key %}
-              <input type="hidden" name="key" value="{{ key }}" />
-
-              <div class="form-group required">
-                <label for="name">Filter name</label>
-                <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
-              </div>
-
-              <div class="form-group">
-                <label for="description">Filter description</label>
-                <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="schema_url">Default schema URL (for validation)</label>
-                <input class="form-control" type="url" id="schema_url" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
-                {{ selectors('#schema_url') }}
-              </div>
-
-              <div class="checkbox">
-                <label>
-                  <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
-                  Cloning allowed (will expose original URL)
-                </label>
-              </div>
-
-              <div class="form-group">
-                <label for="new-password">New password</label>
-                <input class="form-control" name="new-password" type="password" />
-              </div>
-
-              <div class="form-group">
-                <label for="password-repeat">Repeat new password</label>
-                <input class="form-control" name="password-repeat" type="password" />
-              </div>
-              {% endif %}
-
-            </div>
-          </div>
-        </fieldset>
-
-        {% if profile.args.url %}
         <div class="row-fluid">
           <section class="col-sm-3 col-md-2">
             <h2 class="visible-xs-block">Filters</h2>
@@ -140,10 +71,25 @@
               </div>
               {% endfor %}
             </fieldset>
+                          <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+                  Strip text headers before hashtags in output.
+                </label>
+              </div>
+
           </section>
           <section class="col-sm-9 col-md-10">
             <h2 class="visible-xs-block">Preview</h2>
+            {% if not profile.key or profile.cloneable %}
+            <p class="alert alert-info">
+              <b>Source:</b>
+              <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
+            </p>
+            {% endif %}
+
             {% if source %}
+
             <div id="preview-table">
               {% include 'snippets/hxltable.html' %}
             </div>
@@ -155,10 +101,14 @@
             {% endif %}
           </section>
         </div> 
-        {% else %}
-        <p class="alert alert-warning">Select a HXL dataset URL before creating filters.</p>
-        {% endif %}
 
+      </form>
+
+      <form method="GET" action="/data">
+        {{ params() }}
+        <div class="form-group pull-right">
+          <button class="btn btn-success" type="submit">Done</button>
+        </div>
       </form>
     </main>
 {% endblock %}

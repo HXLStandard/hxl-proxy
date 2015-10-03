@@ -1,0 +1,7 @@
+{% macro params() %}
+{% for key in request.args.keys() %}
+{% if not key in varargs and request.args.get(key) %}
+<input type="hidden" name="{{ key }}" value="{{ request.args.get(key) }}" />
+{% endif %}
+{% endfor %}
+{% endmacro %}

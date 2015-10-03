@@ -1,6 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu, hxltable %}
 {% from 'macros/selectors.html' import selectors %}
+{% from 'macros/params.html' import params %}
 
 {% set nav_validate='active' %}
 
@@ -89,7 +90,7 @@ HXL data
           </select>
           <button class="hidden btn btn-default" type="submit">Change</button>
         </div>
-        {{ request_args_form()|safe }}
+        {{ params() }}
       </form>
       <p class="alert alert-warning">
         {{ errors|length }} validation issue(s)

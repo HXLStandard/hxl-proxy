@@ -17,7 +17,7 @@ import tempfile
 from werkzeug import secure_filename
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, request, render_template, redirect, make_response, session, g
+from flask import Response, flash, request, render_template, redirect, make_response, session, g
 
 import hxl
 
@@ -76,6 +76,19 @@ def show_data_login(key):
     profile = get_profile(key)
     return render_template('data-login.html', key=key, profile=profile)
 
+@app.route("/data/source")
+@app.route("/data/<key>/source")
+def show_data_source(key=None):
+    """Choose a new data source."""
+
+    try:
+        profile = get_profile(key, auth=True)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
+
+    return render_template('data-source.html', key=key, profile=profile)
+
+
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_data_edit(key=None):
@@ -86,11 +99,12 @@ def show_data_edit(key=None):
     except Forbidden as e:
         return redirect(make_data_url(None, key=key, facet='login'))
 
-    source = None
-    datasets = None
     if profile.args.get('url'):
         # show only a short preview
         source = PreviewFilter(setup_filters(profile), max_rows=5)
+    else:
+        flash('Please choose a data source first.')
+        return redirect('/data/source')
 
     show_headers = (profile.args.get('strip-headers') != 'on')
 
