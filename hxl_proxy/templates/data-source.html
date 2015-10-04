@@ -42,7 +42,7 @@
     </div>
   </section>
 
-  <p class="h3 text-center" aria-role="separator">(or)</p>
+  <p class="h3" aria-role="separator">(or)</p>
 
   <section id="manual-entry" class="panel panel-default">
     <div class="panel-heading">
@@ -56,61 +56,23 @@
     {% set action="/data/edit" %}
     {% endif %}
     <form class="panel-body" action="{{ action }}" method="{{ method }}">
-      <fieldset>
-        <div class="input-group required">
-          <input id='dataset-url'
-                 class="form-control" 
-                 name="url"
-                 type="url"
-                 required="required"
-                 value="{{ profile.args.url }}"
-                 placeholder="http://example.org/dataset.csv" />
-          <div class="input-group-btn">
-            <button class="btn btn-success"
-                    type="submit">Next</button>
-          </div>
+
+      <div class="input-group required">
+        <input id='dataset-url'
+               class="form-control" 
+               name="url"
+               type="url"
+               required="required"
+               value="{{ profile.args.url }}"
+               placeholder="http://example.org/dataset.csv" />
+        <div class="input-group-btn">
+          <button class="btn btn-success"
+                  type="submit">Next</button>
         </div>
+      </div>
 
-        {% if key %}
-        <input type="hidden" name="key" value="{{ key }}" />
+      {{ params('url') }}
 
-        <div class="form-group required">
-          <label for="name">Filter name</label>
-          <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
-        </div>
-
-        <div class="form-group">
-          <label for="description">Filter description</label>
-          <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="schema_url">Default schema URL (for validation)</label>
-          <input class="form-control" type="url" id="schema_url" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
-          {{ selectors('#schema_url') }}
-        </div>
-
-        <div class="checkbox">
-          <label>
-            <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
-            Cloning allowed (will expose original URL)
-          </label>
-        </div>
-
-        <div class="form-group">
-          <label for="new-password">New password</label>
-          <input class="form-control" name="new-password" type="password" />
-        </div>
-
-        <div class="form-group">
-          <label for="password-repeat">Repeat new password</label>
-          <input class="form-control" name="password-repeat" type="password" />
-        </div>
-        {% endif %}
-
-        {{ params('key', 'url') }}
-
-      </fieldset>
     </form>
   </section>
 </main>

@@ -35,9 +35,7 @@ def setup_filters(profile):
     filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
     for index in range(1, 1+filter_count):
         filter = profile.args.get('filter%02d' % index)
-        if filter == 'tagger':
-            pass; # already handled
-        elif filter == 'add':
+        if filter == 'add':
             source = add_add_filter(source, profile.args, index)
         elif filter == 'clean':
             source = add_clean_filter(source, profile.args, index)
@@ -69,16 +67,13 @@ def setup_filters(profile):
 def make_tagged_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
-
-    # TODO raise exception
     input = hxl.make_input(url)
 
     # Intercept tagging as a special data input
-
     specs = []
-    for n in range(1, 21):
+    for n in range(1, 101):
         header = args.get('tagger-%02d-header' % n)
-        tag = args.get('tagger-%02d-tag' % n)
+        tag = _parse_tagspec(args.get('tagger-%02d-tag' % n))
         if header and tag:
             specs.append((header, tag))
     if len(specs) > 0:
@@ -187,7 +182,9 @@ def add_sort_filter(source, args, index):
     return source.sort(tags, reverse)
 
 def _parse_tagspec(s):
-    if (s[0] == '#'):
+    if not s:
+        return None
+    elif s[0] == '#':
         return s
     else:
         return '#' + s

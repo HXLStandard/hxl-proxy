@@ -8,7 +8,7 @@
 {{ navmenu(profile, key=key, facet='source') }}
 {% endblock %}
 
-{% block title %}Choose HXL dataset{% endblock %}
+{% block title %}Add HXL tags{% endblock %}
 
 {% block main %}
 <main>
@@ -22,23 +22,40 @@
   </p>
   {% endif %}
 
-  <div class="lead">
-    <p>
-      We can't find any <a href="http://hxlstandard.org">HXL
-      hashtags</a> in your data, but all is not lost!  You can define
-      tags to go with your headers below, and the HXL Proxy will add
-      them automatically.
-    </p>
-  </div>
+  <p class="alert alert-warning">
+    We can't find any <a href="http://hxlstandard.org">HXL
+    hashtags</a> in your data, but all is not lost!  You can define
+    tags to go with your headers below, and the HXL Proxy will add
+    them automatically.
+  </p>
 
-  {% if key %}
-  {% set method="POST" %}
-  {% set action="/actions/save-profile" %}
+  {% if not header_row %}
+
+  <p class="lead">First, select the <b>last header row</b> before the data starts.</p>
+
+  <table class="table">
+    {% for row in preview %}
+    <tr>
+      <td>
+        <form method="GET" action="">
+          <input type="hidden" name="header-row" value="{{ loop.index }}" />
+          {{ params('header-row') }}
+          <button class="btn btn-default">Row {{ loop.index }}</button>
+        </form>
+      </td>
+      {% for value in row %}
+      <td>{{ value }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
   {% else %}
-  {% set method="GET" %}
-  {% set action="/data/edit" %}
-  {% endif %}
-  <form class="panel-body" action="{{ action }}" method="{{ method }}">
+
+  <p class="lead">Now, pick HXL tags for some or all of your headers.</p>
+
+  
+  <form class="panel-body" action="/data/edit" method="GET">
 
     <div class="panel-body">
       {% import 'snippets/filters/filter-variables.j2' as vars %}
@@ -56,24 +73,34 @@
           </tr>
         </thead>
         <tbody>
-          {% for i in range(1,11) %}
-          {% set name='tagger-%02d' % i %}
+          {% for value in preview[header_row-1] %}
+          {% set name='tagger-%02d' % loop.index %}
           <tr>
-            <td>{{ i }}</td>
-            <td><input class="form-control" name="{{ name + '-header' }}" value="{{ profile.args[name + '-header'] }}" placeholder="Header text" /></td>
-            <td><input class="form-control" name="{{ name + '-tag' }}" value="{{ profile.args[name + '-tag'] }}" pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}" placeholder="{{ vars.tag_placeholder }}" /></td>
+            <td>{{ loop.index }}</td>
+            <td>
+              <input class="form-control" name="{{ name + '-header' }}"
+                     value="{{ profile.args[name + '-header'] or value|norm }}"
+                     placeholder="Header text" />
+            </td>
+            <td>
+              <input class="form-control" name="{{ name + '-tag' }}"
+                     value="{{ profile.args[name + '-tag'] }}"
+                     pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
+                     placeholder="{{ vars.tag_placeholder }}" />
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <div class="form-group pull-right">
+    <div class="form-group">
       <button class="btn btn-success" type="submit">Next</button>
     </div>
 
     {{ params() }}
 
   </form>
+  {% endif %}
 </main>
 {% endblock %}
 

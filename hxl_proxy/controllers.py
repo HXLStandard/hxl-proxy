@@ -92,12 +92,28 @@ def show_data_source(key=None):
 @app.route("/data/tagger")
 @app.route("/data/<key>/tagger")
 def show_data_tag(key=None):
-    try:
-        profile = get_profile(key, auth=True)
-    except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+    """Add HXL tags to an untagged dataset."""
 
-    return render_template('data-tag.html', key=key, profile=profile)
+    profile = get_profile(key, auth=True)
+    header_row = request.args.get('header-row')
+    if header_row:
+        header_row = int(header_row)
+
+    if not profile.args.get('url'):
+        flash('Please choose a data source first.')
+        return redirect(make_data_url(profile, key, 'source'))
+
+    preview = []
+    i = 0
+    for row in hxl.io.make_input(profile.args.get('url')):
+        if i >= 25:
+            break
+        else:
+            i = i + 1
+        if row:
+            preview.append(row)
+        
+    return render_template('data-tag.html', key=key, profile=profile, preview=preview, header_row=header_row)
 
 
 @app.route("/data/edit")
@@ -116,13 +132,11 @@ def show_data_edit(key=None):
             source = PreviewFilter(setup_filters(profile), max_rows=5)
             source.columns # force-trigger an exception if not tagged
         except:
-            if key:
-                return redirect('/data/' + urllib.parse.urlencode(key) + '/tagger?' + urlencode_utf8(request.args))
-            else:
-                return redirect('/data/tagger?' + urlencode_utf8(request.args))
+            flash('No HXL tags found')
+            return redirect(make_data_url(profile, key, 'tagger'))
     else:
         flash('Please choose a data source first.')
-        return redirect('/data/source')
+        return redirect(make_data_url(profile, key, 'source'))
 
     show_headers = (profile.args.get('strip-headers') != 'on')
 

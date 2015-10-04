@@ -14,6 +14,8 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import url_for, request, flash, session, g
 
+import hxl
+
 from hxl_proxy import app
 from hxl_proxy.profiles import Profile
 
@@ -141,6 +143,10 @@ app.jinja_env.filters['urlencode'] = (
 
 app.jinja_env.filters['display_date'] = (
     display_date
+)
+
+app.jinja_env.filters['norm'] = (
+    hxl.common.normalise_string
 )
 
 app.jinja_env.globals['static'] = (
