@@ -22,7 +22,7 @@ from flask import Response, flash, request, render_template, redirect, make_resp
 import hxl
 
 from hxl_proxy import app, cache
-from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p
+from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8
 from hxl_proxy.filters import setup_filters
 from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
@@ -89,6 +89,17 @@ def show_data_source(key=None):
     return render_template('data-source.html', key=key, profile=profile)
 
 
+@app.route("/data/tagger")
+@app.route("/data/<key>/tagger")
+def show_data_tag(key=None):
+    try:
+        profile = get_profile(key, auth=True)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
+
+    return render_template('data-tag.html', key=key, profile=profile)
+
+
 @app.route("/data/edit")
 @app.route("/data/<key>/edit", methods=['GET', 'POST'])
 def show_data_edit(key=None):
@@ -101,7 +112,14 @@ def show_data_edit(key=None):
 
     if profile.args.get('url'):
         # show only a short preview
-        source = PreviewFilter(setup_filters(profile), max_rows=5)
+        try:
+            source = PreviewFilter(setup_filters(profile), max_rows=5)
+            source.columns # force-trigger an exception if not tagged
+        except:
+            if key:
+                return redirect('/data/' + urllib.parse.urlencode(key) + '/tagger?' + urlencode_utf8(request.args))
+            else:
+                return redirect('/data/tagger?' + urlencode_utf8(request.args))
     else:
         flash('Please choose a data source first.')
         return redirect('/data/source')

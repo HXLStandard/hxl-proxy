@@ -1,6 +1,5 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/selectors.html' import selectors_big %}
 {% from 'macros/params.html' import params %}
 
 {% set nav_filter='active' %}
@@ -13,17 +12,17 @@
 
 {% block main %}
 <main>
-  <h1>Step 1. choose a dataset</h1>
+  <h1>Choose a dataset</h1>
 
   <div class="lead">
     <p>
       Want to make your humanitarian data dance?  Add some <a
-      href="http://hxlstandard.org">HXL hashtags</a>, then let's get
-      started &hellip;
+      href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
+      then let's get started &hellip;
     </p>
   </div>
 
-  <div class="choosers panel panel-default">
+  <section id="cloud-services"" class="choosers panel panel-default">
     <div class="panel-heading">
       <h2 class="panel-title">Option #1: choose your dataset from a cloud service</h2>
     </div>
@@ -41,24 +40,24 @@
         <span>Google Drive</span>
       </a>
     </div>
-  </div>
+  </section>
 
-  <p class="h3 text-center">(or)</p>
+  <p class="h3 text-center" aria-role="separator">(or)</p>
 
-  {% if key %}
-  {% set method="POST" %}
-  {% set action="/actions/save-profile" %}
-  {% else %}
-  {% set method="GET" %}
-  {% set action="/data/edit" %}
-  {% endif %}
-  <div class="panel panel-default">
+  <section id="manual-entry" class="panel panel-default">
     <div class="panel-heading">
       <h2 class="panel-title">Option #2: enter your dataset's URL</h2>
     </div>
+    {% if key %}
+    {% set method="POST" %}
+    {% set action="/actions/save-profile" %}
+    {% else %}
+    {% set method="GET" %}
+    {% set action="/data/edit" %}
+    {% endif %}
     <form class="panel-body" action="{{ action }}" method="{{ method }}">
       <fieldset>
-        <div class="form-group required">
+        <div class="input-group required">
           <input id='dataset-url'
                  class="form-control" 
                  name="url"
@@ -66,12 +65,10 @@
                  required="required"
                  value="{{ profile.args.url }}"
                  placeholder="http://example.org/dataset.csv" />
-        </div>
-
-        {% include 'snippets/filters/tagger.html' %}
-
-        <div class="form-group pull-right">
-          <button class="btn btn-success" type="submit">Next</button>
+          <div class="input-group-btn">
+            <button class="btn btn-success"
+                    type="submit">Next</button>
+          </div>
         </div>
 
         {% if key %}
@@ -114,9 +111,8 @@
         {{ params('key', 'url') }}
 
       </fieldset>
-
     </form>
-  </div>
+  </section>
 </main>
 {% endblock %}
 
@@ -126,22 +122,4 @@
 <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
 <script src="http://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
 <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-<script>
-  hxl_proxy.setupForm();
-  $(document).ready(function() {
-
-  // add the preview warning, with total row count
-  $("#preview-warning").insertBefore($("#preview-table"));
-
-  // Remove empty GET parameters to keep URLs shorter
-  $('#filter-form').submit(function () {
-  var text = $(this).find(":input").filter(function () {
-  return $.trim(this.value).length > 0
-  }).serialize();
-  window.location = '?' + text;
-  return false;
-  });
-  
-  });
-</script>
 {% endblock %}

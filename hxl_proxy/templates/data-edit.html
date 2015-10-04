@@ -125,20 +125,5 @@
     <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
     <script>
       hxl_proxy.setupForm();
-      $(document).ready(function() {
-
-          // add the preview warning, with total row count
-          $("#preview-warning").insertBefore($("#preview-table"));
-
-          // Remove empty GET parameters to keep URLs shorter
-          $('#filter-form').submit(function () {
-              var text = $(this).find(":input").filter(function () {
-                  return $.trim(this.value).length > 0
-              }).serialize();
-              window.location = '?' + text;
-              return false;
-          });
-              
-      });
     </script>
 {% endblock %}

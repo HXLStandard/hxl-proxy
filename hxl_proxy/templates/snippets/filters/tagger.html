@@ -7,34 +7,6 @@
     </h3>
   </div>
   <div id="tagger-collapse" class="panel-collapse collapse">
-    <div class="panel-body">
-      <p class="alert alert-info">Add HXL tags to an untagged dataset
-      (leave blank if the source already has HXL tags).</p>
-      {% import 'snippets/filters/filter-variables.j2' as vars %}
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Header (sub)string</th>
-            <th>HXL hashtag</th>
-          </tr>
-          <tr>
-            <td><i>E.g.</i></td>
-            <td><code>Province</code></td>
-            <td><code>#adm1</code></td>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in range(1,11) %}
-          {% set name='tagger-%02d' % i %}
-          <tr>
-            <td>{{ i }}</td>
-            <td><input class="form-control" name="{{ name + '-header' }}" value="{{ profile.args[name + '-header'] }}" placeholder="Header text" /></td>
-            <td><input class="form-control" name="{{ name + '-tag' }}" value="{{ profile.args[name + '-tag'] }}" pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}" placeholder="{{ vars.tag_placeholder }}" /></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+
   </div>
 </fieldset>
