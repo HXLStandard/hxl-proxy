@@ -7,7 +7,7 @@
 {% if key %}
 {% set title=profile.args.name + ' (edit filters)' %}
 {% else %}
-{% set title='Edit filters (optional)' %}
+{% set title='Set up filters (optional)' %}
 {% endif %}
 
 {% block menu %}
@@ -20,6 +20,11 @@
 {% block main %}
     <main>
       <h1>{{ title }}</h1>
+
+      <p class="lead">
+        Now, you can add filters to transform the data, merge or
+        append multiple datasets, etc.
+      </p>
 
       {% if key %}
       {% set method="POST" %}
@@ -85,13 +90,14 @@
             <p class="alert alert-info">
               <b>Data source:</b>
               <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
-              <a class="btn btn-info btn-xs pull-right" href="">Change</a>
+              <a class="btn btn-info btn-xs pull-right" href="">Change URL</a>
             </p>
             {% endif %}
 
             {% if source %}
 
             <div id="preview-table">
+              <h3>Data preview</h3>
               {% include 'snippets/hxltable.html' %}
             </div>
             {% if source.has_more_rows %}
@@ -103,13 +109,15 @@
           </section>
         </div>
 
+        {{ params() }}
+
       </form>
 
       <div class="row-fluid">
       <form method="GET" action="/data">
         {{ params() }}
         <div class="form-group pull-right">
-          <button class="btn btn-success" type="submit">Done</button>
+          <button class="btn btn-success" type="submit">Done filters</button>
         </div>
       </form>
       </div>
