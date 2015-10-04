@@ -55,11 +55,11 @@ if not app.config.get('DEBUG'):
 @app.route("/")
 def redirect_home():
     # home isn't moved permanently
-    return redirect("/data?" + urllib.parse.urlencode(request.args) , 302)
+    return redirect("/data/source?" + urllib.parse.urlencode(request.args) , 302)
 
 @app.route("/filters/new") # deprecated
 def redirect_edit():
-    return redirect("/data/edit?" + urllib.parse.urlencode(request.args) , 301)
+    return redirect("/data/source?" + urllib.parse.urlencode(request.args) , 301)
 
 @app.route("/filters/preview") # deprecated
 @app.route("/data/preview")

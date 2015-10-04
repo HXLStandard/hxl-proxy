@@ -1,0 +1,10 @@
+{% if (not profile.key) or profile.cloneable %}
+<p>
+  <b>Current source:</b>
+  <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
+  <a class="btn btn-info btn-xs pull-right"
+     href="{{ data_url(profile, key, 'source') }}">
+    Change source
+  </a>
+</p>
+{% endif %}

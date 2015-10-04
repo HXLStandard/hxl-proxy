@@ -7,7 +7,7 @@
 {% if key %}
 {% set title=profile.args.name + ' (edit filters)' %}
 {% else %}
-{% set title='Set up filters (optional)' %}
+{% set title='Transform your data' %}
 {% endif %}
 
 {% block menu %}
@@ -18,120 +18,125 @@
 
 {% set filter_count = 7 %}
 {% block main %}
-    <main>
-      <h1>{{ title }}</h1>
+<main>
+  <h1>{{ title }}</h1>
 
-      <p class="lead">
-        Now, you can add filters to transform the data, merge or
-        append multiple datasets, etc.
-      </p>
+  <section class="row-fluid">
 
-      {% if key %}
-      {% set method="POST" %}
-      {% set action="/actions/save-profile" %}
-      {% else %}
-      {% set method="GET" %}
-      {% set action="/data/edit" %}
-      {% endif %}
+  {% include "snippets/source.html" %}
+
+  <p class="lead">
+      Now, you can (optionally) add filters to transform the data,
+      merge or append multiple datasets, etc.
+    </p>
+
+  </section>
+
+  {% if key %}
+  {% set method="POST" %}
+  {% set action="/actions/save-profile" %}
+  {% else %}
+  {% set method="GET" %}
+  {% set action="/data/edit" %}
+  {% endif %}
+  <div class="row-fluid">
+    <section class="col-sm-3 col-md-2">
+      <h3>Filters</h3>
       <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
-        <div class="row-fluid">
-          <section class="col-sm-3 col-md-2">
-            <h2 class="visible-xs-block">Filters</h2>
-            <fieldset class="btn-group btn-group-vertical btn-group-justified" role="group" aria-label="Data filters">
-              <p>Set filters to change the HXL data on the fly.</p>
-              {% for n in range(1, filter_count+1) %}
-              <div class="filter">
-                <a class="btn btn-default filter-button" data-toggle="modal" data-target="{{ '#filter-dialog-%02d' % n }}" href="{{ '#filter-dialog-%02d' % n }}">{{ n }}</a>
-                <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h2 class="modal-title">New filter</h2>
-                      </div>
-                      <div class="modal-body">
-                        <fieldset id="{{ 'filter-group%02d' % n }}">
-                          {% include 'snippets/filters/filter-selector.html' %}
+        <fieldset class="btn-group btn-group-vertical btn-group-justified" role="group" aria-label="Data filters">
+          {% for n in range(1, filter_count+1) %}
+          <div class="filter">
+            <a class="btn btn-default filter-button" data-toggle="modal" data-target="{{ '#filter-dialog-%02d' % n }}" href="{{ '#filter-dialog-%02d' % n }}">{{ n }}</a>
+            <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h2 class="modal-title">New filter</h2>
+                  </div>
+                  <div class="modal-body">
+                    <fieldset id="{{ 'filter-group%02d' % n }}">
+                      {% include 'snippets/filters/filter-selector.html' %}
 
-                          {% include 'snippets/filters/add.html' %}
-                          {% include 'snippets/filters/append.html' %}
-                          {% include 'snippets/filters/clean.html' %}
-                          {% include 'snippets/filters/count.html' %}
-                          {% include 'snippets/filters/cut.html' %}
-                          {% include 'snippets/filters/dedup.html' %}
-                          {% include 'snippets/filters/merge.html' %}
-                          {% include 'snippets/filters/rename.html' %}
-                          {% include 'snippets/filters/replace.html' %}
-                          {% include 'snippets/filters/replace-map.html' %}
-                          {% include 'snippets/filters/select.html' %}
-                          {% include 'snippets/filters/sort.html' %}
+                      {% include 'snippets/filters/add.html' %}
+                      {% include 'snippets/filters/append.html' %}
+                      {% include 'snippets/filters/clean.html' %}
+                      {% include 'snippets/filters/count.html' %}
+                      {% include 'snippets/filters/cut.html' %}
+                      {% include 'snippets/filters/dedup.html' %}
+                      {% include 'snippets/filters/merge.html' %}
+                      {% include 'snippets/filters/rename.html' %}
+                      {% include 'snippets/filters/replace.html' %}
+                      {% include 'snippets/filters/replace-map.html' %}
+                      {% include 'snippets/filters/select.html' %}
+                      {% include 'snippets/filters/sort.html' %}
 
-                        </fieldset>
+                    </fieldset>
 
-                        <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
-                      </div>
-                    </div>
+                    <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
                   </div>
                 </div>
               </div>
-              {% endfor %}
-            </fieldset>
-                          <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
-                  Strip text headers before hashtags in output.
-                </label>
-              </div>
-
-          </section>
-          <section class="col-sm-9 col-md-10">
-            <h2 class="visible-xs-block">Preview</h2>
-            {% if not profile.key or profile.cloneable %}
-            <p class="alert alert-info">
-              <b>Data source:</b>
-              <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
-              <a class="btn btn-info btn-xs pull-right" href="">Change URL</a>
-            </p>
-            {% endif %}
-
-            {% if source %}
-
-            <div id="preview-table">
-              <h3>Data preview</h3>
-              {% include 'snippets/hxltable.html' %}
             </div>
-            {% if source.has_more_rows %}
-            <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
-            {% endif %}
-            {% else %}
-            <p class="alert alert-info">No data yet.</p>
-            {% endif %}
-          </section>
-        </div>
-
+          </div>
+          {% endfor %}
+        </fieldset>
         {{ params() }}
 
+        <fieldset class="panel panel-info">
+          <div class="panel-body">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+                Strip text headers
+              </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="force"{% if profile.args['force'] %} checked="checked"{% endif %} />
+                Never cache
+              </label>
+            </div>
+            {{ params('strip-headers', 'force') }}
+            <div class="form-input pull-right">
+              <button class="btn btn-info btn-xs">Save prefs</button>
+            </div>
+          </div>
+        </fieldset>
       </form>
 
-      <div class="row-fluid">
-      <form method="GET" action="/data">
-        {{ params() }}
-        <div class="form-group pull-right">
-          <button class="btn btn-success" type="submit">Done filters</button>
-        </div>
-      </form>
+    </section>
+
+    <section class="col-sm-9 col-md-10">
+      <h3>Preview</h3>
+      <div id="preview-table">
+        {% include 'snippets/hxltable.html' %}
       </div>
+      {% if source.has_more_rows %}
+      <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
+      {% endif %}
+    </section>
+  </div>
 
-    </main>
+
+  <section class="row-fluid">
+    <p><a class="btn btn-success pull-right" href="{{ data_url(profile, key) }}">Done filters</a></p>
+  </section>
+
+</main>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-    <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-    <script src="http://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-    <script>
-      hxl_proxy.setupForm();
-    </script>
+<script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+<script src="http://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+<script>
+  hxl_proxy.setupForm();
+  $(document).ready(function() {
+  // add the preview warning, with total row count
+  $("#preview-warning").insertBefore($(".hxltable"));
+  });
+</script>
 {% endblock %}

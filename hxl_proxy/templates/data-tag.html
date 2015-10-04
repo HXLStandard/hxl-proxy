@@ -14,13 +14,7 @@
 <main>
   <h1>Add HXL tags</h1>
 
-  {% if not profile.key or profile.cloneable %}
-  <p class="alert alert-info">
-    <b>Data source:</b>
-    <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
-    <a class="btn btn-info btn-xs pull-right" href="">Change</a>
-  </p>
-  {% endif %}
+  {% include "snippets/source.html" %}
 
   <p class="alert alert-warning">
     We can't find any <a href="http://hxlstandard.org">HXL

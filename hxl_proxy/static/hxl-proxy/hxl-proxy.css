@@ -24,6 +24,20 @@ td>.content {
     overflow-y: auto;
 }
 
+.hxl-headers th {
+    background: #cccccc;
+    border: 2px white solid;
+}
+
+.hxl-tags th {
+    background: #eeeeee;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 90%;
+    font-family: mono;
+    border: 2px white solid;
+}
+
 .panel-heading a:after {
     font-family:'Glyphicons Halflings';
     content:"\e114";
