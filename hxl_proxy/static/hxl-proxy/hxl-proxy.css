@@ -57,3 +57,28 @@ td>.content {
 .validation-message {
     font-size: 120%;
 }
+
+.choosers {
+}
+
+.choosers a {
+    display: inline-block;
+    width: 7em;
+    height: 7em;
+    padding: .25em;
+    text-align: center;
+}
+
+.choosers a img {
+    padding: .25em;
+    border: 1px solid;
+    border-radius: 1em;
+    width: 4em;
+    height: 4em;
+    text-align: center;
+}
+
+.choosers a span {
+    display: block;
+    text-align: center;
+}

@@ -1,25 +1,49 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/selectors.html' import selectors %}
+{% from 'macros/selectors.html' import selectors_big %}
 {% from 'macros/params.html' import params %}
 
 {% set nav_filter='active' %}
 
-{% if key %}
-{% set title=profile.args.name + ' (change data source)' %}
-{% else %}
-{% set title='New HXL data source' %}
-{% endif %}
-
 {% block menu %}
-{{ navmenu(profile, key=key, facet='edit') }}
+{{ navmenu(profile, key=key, facet='source') }}
 {% endblock %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Choose HXL dataset{% endblock %}
 
 {% block main %}
 <main>
-  <h1>{{ title }}</h1>
+  <h1>Choose a dataset</h1>
+
+  <div class="hero-unit">
+    <p>
+      Want to make your humanitarian data dance?  Add some <a
+      href="http://hxlstandard.org">HXL hashtags</a> to it, then let's
+      get started &hellip;
+    </p>
+  </div>
+
+  <div class="choosers panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">Option #1: choose your dataset from a cloud service</h2>
+    </div>
+    <div class="panel-body">
+      <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
+        <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
+        <span>HDX</span>
+      </a>
+      <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
+        <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
+        <span>Dropbox</span>
+      </a>
+      <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
+        <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
+        <span>Google Drive</span>
+      </a>
+    </div>
+  </div>
+
+  <p>OR</p>
 
   {% if key %}
   {% set method="POST" %}
@@ -28,60 +52,71 @@
   {% set method="GET" %}
   {% set action="/data/edit" %}
   {% endif %}
-  <form action="{{ action }}" method="{{ method }}">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">Option #2: enter your dataset's URL</h2>
+    </div>
+    <form class="panel-body" action="{{ action }}" method="{{ method }}">
+      <fieldset>
+        <div class="form-group required">
+          <input id='dataset-url'
+                 class="form-control" 
+                 name="url"
+                 type="url"
+                 required="required"
+                 value="{{ profile.args.url }}"
+                 placeholder="http://example.org/dataset.csv" />
+        </div>
 
-      <div class="form-group required">
-        <label for="url">HXL dataset URL</label>
-        <input id='dataset-url' class="form-control" name="url" type="url" required="required" value="{{ profile.args.url }}" placeholder="http://example.org/dataset.csv" />
-        {{ selectors('#dataset-url', true) }}
-      </div>
+        {% include 'snippets/filters/tagger.html' %}
 
-      {% include 'snippets/filters/tagger.html' %}
+        <div class="form-group pull-right">
+          <button class="btn btn-success" type="submit">Next</button>
+        </div>
 
-      <div class="form-group pull-right">
-        <button class="btn btn-success" type="submit">Next</button>
-      </div>
+        {% if key %}
+        <input type="hidden" name="key" value="{{ key }}" />
 
-      {% if key %}
-      <input type="hidden" name="key" value="{{ key }}" />
+        <div class="form-group required">
+          <label for="name">Filter name</label>
+          <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
+        </div>
 
-      <div class="form-group required">
-        <label for="name">Filter name</label>
-        <input class="form-control" name="name" required="required" value="{{ profile.name|default('') }}"/>
-      </div>
+        <div class="form-group">
+          <label for="description">Filter description</label>
+          <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
+        </div>
 
-      <div class="form-group">
-        <label for="description">Filter description</label>
-        <textarea name="description" class="form-control">{{ profile.description|default('') }}</textarea>
-      </div>
+        <div class="form-group">
+          <label for="schema_url">Default schema URL (for validation)</label>
+          <input class="form-control" type="url" id="schema_url" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
+          {{ selectors('#schema_url') }}
+        </div>
 
-      <div class="form-group">
-        <label for="schema_url">Default schema URL (for validation)</label>
-        <input class="form-control" type="url" id="schema_url" name="schema_url" value="{{ profile.args.schema_url|nonone }}" />
-        {{ selectors('#schema_url') }}
-      </div>
+        <div class="checkbox">
+          <label>
+            <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
+            Cloning allowed (will expose original URL)
+          </label>
+        </div>
 
-      <div class="checkbox">
-        <label>
-          <input name="cloneable" type="checkbox"{% if profile.cloneable %} checked="checked"{% endif %} />
-          Cloning allowed (will expose original URL)
-        </label>
-      </div>
+        <div class="form-group">
+          <label for="new-password">New password</label>
+          <input class="form-control" name="new-password" type="password" />
+        </div>
 
-      <div class="form-group">
-        <label for="new-password">New password</label>
-        <input class="form-control" name="new-password" type="password" />
-      </div>
+        <div class="form-group">
+          <label for="password-repeat">Repeat new password</label>
+          <input class="form-control" name="password-repeat" type="password" />
+        </div>
+        {% endif %}
 
-      <div class="form-group">
-        <label for="password-repeat">Repeat new password</label>
-        <input class="form-control" name="password-repeat" type="password" />
-      </div>
-      {% endif %}
+        {{ params('key', 'url') }}
 
-    {{ params('key', 'url') }}
+      </fieldset>
 
-  </form>
+    </form>
+  </div>
 </main>
 {% endblock %}
 

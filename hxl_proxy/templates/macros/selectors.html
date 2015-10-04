@@ -8,3 +8,20 @@
   <a href="#" onclick="return hxl_proxy.doGDrive('{{ id }}', '{{ submit }}');">Google Drive</a>
 </p>
 {% endmacro %}
+
+{% macro selectors_big(id, submit) %}
+<div class="choosers">
+  <a href="#" onclick="return hxl_proxy.doHDX('{{ id }}', '{{ submit }}');">
+    <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
+    <span>HDX</span>
+  </a>
+  <a href="#" onclick="return hxl_proxy.doDropbox('{{ id }}', '{{ submit }}');">
+    <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
+    <span>Dropbox</span>
+  </a>
+  <a href="#" onclick="return hxl_proxy.doGDrive('{{ id }}', '{{ submit }}');">
+    <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
+    <span>Google Drive</span>
+  </a>
+</div>
+{% endmacro %}
