@@ -83,8 +83,9 @@
             <h2 class="visible-xs-block">Preview</h2>
             {% if not profile.key or profile.cloneable %}
             <p class="alert alert-info">
-              <b>Source:</b>
+              <b>Data source:</b>
               <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
+              <a class="btn btn-info btn-xs pull-right" href="">Change</a>
             </p>
             {% endif %}
 
@@ -100,16 +101,19 @@
             <p class="alert alert-info">No data yet.</p>
             {% endif %}
           </section>
-        </div> 
+        </div>
 
       </form>
 
+      <div class="row-fluid">
       <form method="GET" action="/data">
         {{ params() }}
         <div class="form-group pull-right">
           <button class="btn btn-success" type="submit">Done</button>
         </div>
       </form>
+      </div>
+
     </main>
 {% endblock %}
 
