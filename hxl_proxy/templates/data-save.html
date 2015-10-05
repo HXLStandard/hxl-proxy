@@ -51,6 +51,7 @@
           <button type="submit" class="btn btn-success">Save this filter</button>
         </div>
         {% if key %}
+        <input type="hidden" name="key" value="{{ key }}" />
         {{ params(profile.args) }}
         {% endif %}
         {{ params(request.args) }}

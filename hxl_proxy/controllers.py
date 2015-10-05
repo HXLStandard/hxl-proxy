@@ -327,12 +327,9 @@ def do_data_save():
         # Updating an existing profile.
         if password:
             if password == password_repeat:
-                profile.set_password(new_password)
+                profile.set_password(password)
             else:
                 raise BadRequest("Passwords don't match")
-        # copy in the new args
-        for name in request.form:
-            profile.args[name] = request.form[name]
         g.profiles.update_profile(str(key), profile)
     else:
         # Creating a new profile.
