@@ -9,6 +9,7 @@ import re
 import urllib
 import datetime
 import pickle
+import re
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -56,6 +57,12 @@ def urlencode_utf8(params):
     return '&'.join(
         (urllib.parse.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.parse.quote_plus(v.encode('utf8'), safe='/')
             for k, v in params))
+
+def using_tagger_p(profile):
+    for name in profile.args:
+        if re.match(r'^tagger-', name):
+            return True
+    return False
 
 def get_profile(key, auth=False, args=None):
     """Load a profile or create from args."""
@@ -155,6 +162,10 @@ app.jinja_env.globals['static'] = (
 
 app.jinja_env.globals['urltag'] = (
     url_escape_tag
+)
+
+app.jinja_env.globals['using_tagger_p'] = (
+    using_tagger_p
 )
 
 app.jinja_env.globals['add_args'] = (

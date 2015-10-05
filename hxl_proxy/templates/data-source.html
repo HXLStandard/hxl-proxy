@@ -1,6 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/params.html' import params %}
+{% from 'macros/edittabs.html' import edittabs %}
 
 {% set nav_filter='active' %}
 
@@ -18,6 +19,11 @@
 
 {% block main %}
 <main>
+
+  {% if profile.args.url %}
+  {{ edittabs(profile, key, 'source') }}
+  {% endif %}
+  
   <h1>{{ title }}</h1>
 
   <div class="lead">

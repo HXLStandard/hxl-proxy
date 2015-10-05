@@ -1,6 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/params.html' import params %}
+{% from 'macros/edittabs.html' import edittabs %}
 
 {% set nav_filter='active' %}
 
@@ -19,26 +20,23 @@
 {% set filter_count = 7 %}
 {% block main %}
 <main>
+
+  {{ edittabs(profile, key, 'edit') }}
+
   <h1>{{ title }}</h1>
 
   <section class="row-fluid">
 
+    {% if key %}
     <p class="lead">
-      Now, you can (optionally) add filters to transform the data,
-      merge or append multiple datasets, etc.
+      Edit the filters for your dataset, or add new ones.
     </p>
-
-    <p>
-      {% if key %}
-      <b>Saved profile:</b>
-      <cite>{{ profile.name }}</cite>
-      <a href="{{ data_url(profile, key=key, facet='save') }}" class="btn btn-info btn-xs">configure</a>
-      <br />
-      {% endif %}
-      <b>Data source:</b>
-      <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
-      <a href="{{ data_url(profile, key=key, facet='source') }}" class="btn btn-info btn-xs">change</a>
+    {% else %}
+    <p class="lead">
+      Optionally add filters to transform the data, merge or append
+      multiple datasets, etc.
     </p>
+    {% endif %}
 
   </section>
 

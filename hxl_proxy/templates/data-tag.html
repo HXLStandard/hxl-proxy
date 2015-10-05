@@ -1,6 +1,7 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/params.html' import params %}
+{% from 'macros/edittabs.html' import edittabs %}
 
 {% set nav_filter='active' %}
 
@@ -12,16 +13,23 @@
 
 {% block main %}
 <main>
+
+  {% if using_tagger_p(profile) %}
+  {{ edittabs(profile, key, 'tagger') }}
+  {% endif %}
+  
   <h1>Add HXL tags</h1>
 
   {% include "snippets/source.html" %}
 
+  {% if not using_tagger_p(profile) %}
   <p class="alert alert-warning">
     We can't find any <a href="http://hxlstandard.org">HXL
     hashtags</a> in your data, but all is not lost!  You can define
     tags to go with your headers below, and the HXL Proxy will add
     them automatically.
   </p>
+  {% endif %}
 
   {% if not header_row %}
 
@@ -49,9 +57,8 @@
 
   {% else %}
 
-  <p class="lead">Now, pick HXL tags for some or all of your headers.</p>
+  <p class="lead">Pick HXL tags for some or all of your headers.</p>
 
-  
   <form class="panel-body" action="/data/edit" method="GET">
 
     <div class="panel-body">
