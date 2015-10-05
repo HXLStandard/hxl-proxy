@@ -341,6 +341,6 @@ def do_data_save():
         # FIXME other auth information is in __init__.py
         session['passhash'] = profile.passhash
 
-    return redirect(make_data_url(profile, key=key, facet='edit'), 303)
+    return redirect(make_data_url(profile, key=key), 303)
 
 # end
