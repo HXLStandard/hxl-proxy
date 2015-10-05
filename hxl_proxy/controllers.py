@@ -304,10 +304,13 @@ def do_data_save():
 
     # We will have a key if we're updating an existing pipeline
     key = request.form.get('key')
-    try:
+    if key:
+        try:
+            profile = get_profile(key, auth=True)
+        except Forbidden as e:
+            return redirect(make_data_url(None, key=key, facet='login'))
+    else:
         profile = get_profile(key, auth=True, args=request.form)
-    except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
 
     name = request.form.get('name')
     description = request.form.get('description')
@@ -328,7 +331,8 @@ def do_data_save():
             else:
                 raise BadRequest("Passwords don't match")
         # copy in the new args
-        profile.args = request.form.copy()
+        for name in request.form:
+            profile.args[name] = request.form[name]
         g.profiles.update_profile(str(key), profile)
     else:
         # Creating a new profile.
