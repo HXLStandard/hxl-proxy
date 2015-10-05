@@ -1,23 +1,25 @@
 {% macro edittabs(profile, key, facet) %}
 <ul class="nav nav-tabs"> 
   <li class="{% if facet=='source' %}active{% endif %}">
-    <a href="{{ data_url(profile, key, 'source') }}">Data source</a>
+    <a href="{{ data_url(profile, key, 'source') }}">
+      Source
+    </a>
   </li>
   {% if using_tagger_p(profile) %}
   <li class="{% if facet=='tagger' %}active{% endif %}">
-    <a href="{{ data_url(profile, key, 'tagger') }}">Auto-tagging</a>
+    <a href="{{ data_url(profile, key, 'tagger') }}">
+      Tagging
+    </a>
   </li>
   {% endif %}
   <li class="{% if facet=='edit' %}active{% endif %}">
-    <a href="{{ data_url(profile, key, 'edit') }}">Filters</a>
+    <a href="{{ data_url(profile, key, 'edit') }}">
+      Filters
+    </a>
   </li>
   <li class="{% if facet=='save' %}active{% endif %}">
     <a href="{{ data_url(profile, key, 'save') }}">
-      {% if key %}
-      Saved profile
-      {% else %}
-      New profile
-      {% endif %}
+      Profile
     </a>
   </li>
 </ul>
