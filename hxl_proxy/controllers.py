@@ -94,7 +94,11 @@ def show_data_source(key=None):
 def show_data_tag(key=None):
     """Add HXL tags to an untagged dataset."""
 
-    profile = get_profile(key, auth=True)
+    try:
+        profile = get_profile(key, auth=True)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
+
     header_row = request.args.get('header-row')
     if header_row:
         header_row = int(header_row)
@@ -143,12 +147,19 @@ def show_data_edit(key=None):
     return render_template('data-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
 
 @app.route("/data/save")
-def show_data_save():
+@app.route("/data/<key>/save")
+def show_data_save(key=None):
     """Show form to save a profile."""
-    profile = get_profile(key=None)
+
+    try:
+        profile = get_profile(key, auth=True)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
+
     if not profile or not profile.args.get('url'):
         return redirect('/data/edit', 303)
-    return render_template('data-save.html', profile=profile)
+
+    return render_template('data-save.html', key=key, profile=profile)
 
 @app.route('/data/<key>/chart')
 @app.route('/data/chart')
@@ -293,13 +304,14 @@ def do_data_save():
 
     # We will have a key if we're updating an existing pipeline
     key = request.form.get('key')
-
-    profile = get_profile(key, auth=True, args=request.form)
+    try:
+        profile = get_profile(key, auth=True, args=request.form)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
 
     name = request.form.get('name')
     description = request.form.get('description')
     password = request.form.get('password')
-    new_password = request.form.get('new-password')
     password_repeat = request.form.get('password-repeat')
     cloneable = (request.form.get('cloneable') == 'on')
 
@@ -310,8 +322,8 @@ def do_data_save():
 
     if key:
         # Updating an existing profile.
-        if new_password:
-            if new_password == password_repeat:
+        if password:
+            if password == password_repeat:
                 profile.set_password(new_password)
             else:
                 raise BadRequest("Passwords don't match")

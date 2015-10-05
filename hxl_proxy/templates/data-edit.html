@@ -5,7 +5,7 @@
 {% set nav_filter='active' %}
 
 {% if key %}
-{% set title=profile.args.name + ' (edit filters)' %}
+{% set title=profile.name|nonone + ' (edit filters)' %}
 {% else %}
 {% set title='Transform your data' %}
 {% endif %}
@@ -23,11 +23,21 @@
 
   <section class="row-fluid">
 
-  {% include "snippets/source.html" %}
-
-  <p class="lead">
+    <p class="lead">
       Now, you can (optionally) add filters to transform the data,
       merge or append multiple datasets, etc.
+    </p>
+
+    <p>
+      {% if key %}
+      <b>Saved profile:</b>
+      <cite>{{ profile.name }}</cite>
+      <a href="{{ data_url(profile, key=key, facet='save') }}" class="btn btn-info btn-xs">configure</a>
+      <br />
+      {% endif %}
+      <b>Data source:</b>
+      <a target="_blank" href="{{ profile.args.url}}">{{ profile.args.url }}</a>
+      <a href="{{ data_url(profile, key=key, facet='source') }}" class="btn btn-info btn-xs">change</a>
     </p>
 
   </section>
@@ -81,8 +91,6 @@
           </div>
           {% endfor %}
         </fieldset>
-        {{ params() }}
-
         <fieldset class="panel panel-info">
           <div class="panel-body">
             <div class="checkbox">
@@ -97,14 +105,16 @@
                 Never cache
               </label>
             </div>
-            {{ params('strip-headers', 'force') }}
             <div class="form-input pull-right">
               <button class="btn btn-info btn-xs">Save prefs</button>
             </div>
           </div>
         </fieldset>
+        {% if key %}
+        {{ params(profile.args) }}
+        {% endif %}
+        {{ params(request.args) }}
       </form>
-
     </section>
 
     <section class="col-sm-9 col-md-10">

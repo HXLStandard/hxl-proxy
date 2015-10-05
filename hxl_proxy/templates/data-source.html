@@ -8,18 +8,32 @@
 {{ navmenu(profile, key=key, facet='source') }}
 {% endblock %}
 
-{% block title %}Choose HXL dataset{% endblock %}
+{% if key %}
+{% set title='Change your data source' %}
+{% else %}
+{% set title='Choose HXL dataset' %}
+{% endif %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block main %}
 <main>
-  <h1>Choose a dataset</h1>
+  <h1>{{ title }}</h1>
 
   <div class="lead">
+    {% if key %}
+    <p>
+      Pick a different data source.  All of your existing
+      customisation (filters, schema, etc.) will stay the same.  Your
+      existing data source URL appears below.
+    </p>
+    {% else %}
     <p>
       Want to make your humanitarian data dance?  Add some <a
       href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
       then let's get started &hellip;
     </p>
+    {% endif %}
   </div>
 
   <section id="cloud-services"" class="choosers panel panel-default">
@@ -71,7 +85,10 @@
         </div>
       </div>
 
-      {{ params('url') }}
+      {% if key %}
+      {{ params(profile.args) }}
+      {% endif %}
+      {{ params(request.args) }}
 
     </form>
   </section>
