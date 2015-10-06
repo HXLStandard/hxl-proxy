@@ -62,7 +62,7 @@
     </div>
     <div class="checkbox form-group">
       <label>
-        <input name="cloneable" type="checkbox"{% if profile.cloneable or not key %} checked="checked"{% endif %} />
+        <input name="cloneable" type="checkbox"{% if profile.cloneable or (not key) %} checked="checked"{% endif %} />
         Users may clone (will expose original URL)
       </label>
     </div>
@@ -71,9 +71,8 @@
     </div>
     {% if key %}
     <input type="hidden" name="key" value="{{ key }}" />
-    {{ params(profile.args) }}
     {% endif %}
-    {{ params(request.args) }}
+    {{ params(request.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
   </form>
 </div>
 {% endblock %}

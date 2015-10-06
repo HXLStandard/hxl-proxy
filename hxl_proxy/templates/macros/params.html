@@ -1,5 +1,7 @@
-{% macro params(args) %}
+{% macro params(args, excludes=[]) %}
 {% for key in args.keys() %}
+{% if not (key in excludes) %}
 <input type="hidden" name="{{ key }}" value="{{ args.get(key) }}" />
+{% endif %}
 {% endfor %}
 {% endmacro %}
