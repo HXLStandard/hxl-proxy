@@ -1,8 +1,26 @@
 {% extends "models/page.basic.html" %}
 
-{% block title %}Error{% endblock %}
+{% block title %}HXL proxy error{% endblock %}
 
 {% block main %}
-    <h1>Error</h1>
-    <p>{{ message }}</p>
+<div class="panel panel-danger">
+  <div class="panel-heading">
+    <h1 class="panel-title">Something went wrong!</h1>
+  </div>
+  <div class="panel-body">
+    <p class="lead">
+      {{ e.message }}
+    </p>
+    {% if e.data.input.raw_input.geturl() %}
+    <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
+      See what was returned
+    </a>
+    {% endif %}
+  </div>
+  <div class="panel-footer small">
+    Help make the HXL Proxy better! Please <a
+    href="https://github.com/HXLStandard/hxl-proxy/issues">report
+    this bug at GitHub</a> (and include the URL).
+  </div>
+</div>
 {% endblock %}

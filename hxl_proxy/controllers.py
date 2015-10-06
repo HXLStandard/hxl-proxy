@@ -41,11 +41,11 @@ def error(e):
         status = 403
     else:
         status = 500
-    return render_template('error.html', message=str(e)), status
+    return render_template('error.html', e=e), status
 
 if not app.config.get('DEBUG'):
     # Register only if not in DEBUG mode
-    app.register_error_handler(Exception, error)
+    app.register_error_handler(BaseException, error)
 
 
 #
