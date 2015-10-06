@@ -7,7 +7,7 @@
 {% set nav_validate='active' %}
 
 {% block menu %}
-{{ navmenu(profile, key=key, facet='save') }}
+{{ navmenu(profile, key=key, facet='profile') }}
 {% endblock %}
 
 {% if key %}
@@ -21,7 +21,7 @@
 {% block main %}
 <div>
 
-  {{ edittabs(profile, key, 'save') }}
+  {{ edittabs(profile, key, 'profile') }}
 
   <h1>{{ title }}</h1>
 

@@ -14,12 +14,16 @@
   {% endif %}
   <li class="{% if facet=='edit' %}active{% endif %}">
     <a href="{{ data_url(profile, key, 'edit') }}">
-      Filters
+      Transform
     </a>
   </li>
-  <li class="{% if facet=='save' %}active{% endif %}">
-    <a href="{{ data_url(profile, key, 'save') }}">
+  <li class="{% if facet=='profile' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'profile') }}">
+      {% if key %}
       Profile
+      {% else %}
+      Save
+      {% endif %}
     </a>
   </li>
 </ul>

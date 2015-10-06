@@ -1,7 +1,13 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 
-{% block title %}{{ profile.name|default("Filtered data") }}{% endblock %}
+{% if key %}
+{% set title=profile.name %}
+{% else %}
+{% set title="Result data" %}
+{% endif %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,22 +19,32 @@
 {% endblock %}
 
 {% block main %}
-{% if key %}
-<h1>{{ profile.name|default("Filtered data") }}</h1>
-{% if profile.description %}
-<p>{{ profile.description }}</p>
-{% endif %}
-{% else %}
-<h1>HXL data</h1>
-{% endif %}
+<div>
 
-{% include 'snippets/source.html' %}
+  <span class="icons pull-right">
+    <a href="">
+      <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
+      <span>CSV</span>
+    </a>
+    <a href="">
+      <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
+      <span>JSON</span>
+    </a>
+  </span>
 
-<section id="data">
-  <h2>Data</h2>
-  {% include 'snippets/hxltable.html' %}
-</section>
+  <h1>{{ title }}</h1>
 
+  {% if profile.description %}
+  <p>{{ profile.description }}</p>
+  {% endif %}
+
+  {% include 'snippets/source.html' %}
+
+  <section id="data" style="clear: both">
+    {% include 'snippets/hxltable.html' %}
+  </section>
+
+</div>
 {% endblock %}
 
 {% block scripts %}

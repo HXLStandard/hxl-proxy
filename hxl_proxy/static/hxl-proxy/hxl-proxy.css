@@ -72,10 +72,10 @@ td>.content {
     font-size: 120%;
 }
 
-.choosers {
+.icons {
 }
 
-.choosers a {
+.icons a {
     display: inline-block;
     width: 7em;
     height: 7em;
@@ -83,7 +83,7 @@ td>.content {
     text-align: center;
 }
 
-.choosers a img {
+.icons a img {
     padding: .25em;
     border: 1px solid;
     border-radius: 1em;
@@ -92,7 +92,7 @@ td>.content {
     text-align: center;
 }
 
-.choosers a span {
+.icons a span {
     display: block;
     text-align: center;
 }

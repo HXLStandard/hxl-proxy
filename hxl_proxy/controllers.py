@@ -144,11 +144,11 @@ def show_data_edit(key=None):
 
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    return render_template('data-edit.html', key=key, profile=profile, source=source, show_headers=show_headers)
+    return render_template('data-filters.html', key=key, profile=profile, source=source, show_headers=show_headers)
 
-@app.route("/data/save")
-@app.route("/data/<key>/save")
-def show_data_save(key=None):
+@app.route("/data/profile")
+@app.route("/data/<key>/profile")
+def show_data_profile(key=None):
     """Show form to save a profile."""
 
     try:
@@ -159,7 +159,7 @@ def show_data_save(key=None):
     if not profile or not profile.args.get('url'):
         return redirect('/data/edit', 303)
 
-    return render_template('data-save.html', key=key, profile=profile)
+    return render_template('data-profile.html', key=key, profile=profile)
 
 @app.route('/data/<key>/chart')
 @app.route('/data/chart')
