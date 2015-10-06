@@ -90,7 +90,7 @@ HXL data
           </select>
           <button class="hidden btn btn-default" type="submit">Change</button>
         </div>
-        {{ params() }}
+        {{ params(request.args) }}
       </form>
       <p class="alert alert-warning">
         {{ errors|length }} validation issue(s)
@@ -148,6 +148,8 @@ HXL data
                   <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
                   {{ selectors('#schema_url', true) }}
                 </div>
+
+                {{ params(request.args) }}
 
                 <button class="btn btn-success" type="submit">Update</button>
 
