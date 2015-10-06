@@ -22,11 +22,11 @@
 <div>
 
   <span class="icons pull-right">
-    <a href="">
+    <a href="{{ data_url(profile, key, format='csv') }}">
       <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
       <span>CSV</span>
     </a>
-    <a href="">
+    <a href="{{ data_url(profile, key, format='json') }}">
       <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
       <span>JSON</span>
     </a>
