@@ -38,7 +38,9 @@
   <p>{{ profile.description }}</p>
   {% endif %}
 
+  {% if (not key) or profile.cloneable %}
   {% include 'snippets/source.html' %}
+  {% endif %}
 
   <section id="data" style="clear: both">
     {% include 'snippets/hxltable.html' %}
