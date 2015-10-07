@@ -759,7 +759,7 @@ hxl.classes.Dataset.prototype._isTagRow = function(rawRow) {
     var seenTag = false, seenNonTag = false;
     rawRow.forEach(function (rawValue) {
         if (rawValue) {
-            if (rawValue.match(/^\s*#.*$/) && hxl.classes.Pattern.parse(rawValue)) {
+            if (String(rawValue).match(/^\s*#.*$/) && hxl.classes.Pattern.parse(rawValue)) {
                 seenTag = true;
             } else {
                 seenNonTag = true;
