@@ -11,7 +11,7 @@
     <p class="lead">
       {{ e.message }}
     </p>
-    {% if e.data.input.raw_input.geturl() %}
+    {% if e.data and e.data.input.raw_input.geturl() %}
     <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
       See what was returned
     </a>

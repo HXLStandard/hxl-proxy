@@ -46,11 +46,6 @@ def stream_template(template_name, **context):
     rv.enable_buffering(5)
     return rv
 
-def url_escape_tag(tag):
-    if tag[0] == '#':
-        tag = tag[1:]
-    return tag
-
 def urlencode_utf8(params):
     if hasattr(params, 'items'):
         params = params.items()
@@ -136,9 +131,14 @@ def severity_class(severity):
     else:
         return 'severity_info'
 
-def display_date(date_string):
-    """Reformat an ISO datetime into something readable."""
-    return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f').strftime('%c')
+def re_search(regex, string):
+    """Try matching a regular expression."""
+    return re.match(regex, string)
+
+
+#
+# Declare Jinja2 filters and functions
+#
 
 app.jinja_env.filters['nonone'] = (
     lambda s: '' if s is None else s
@@ -148,20 +148,12 @@ app.jinja_env.filters['urlencode'] = (
     urllib.parse.quote_plus
 )
 
-app.jinja_env.filters['display_date'] = (
-    display_date
-)
-
 app.jinja_env.filters['norm'] = (
     hxl.common.normalise_string
 )
 
 app.jinja_env.globals['static'] = (
     lambda filename: url_for('static', filename=filename)
-)
-
-app.jinja_env.globals['urltag'] = (
-    url_escape_tag
 )
 
 app.jinja_env.globals['using_tagger_p'] = (
@@ -178,5 +170,9 @@ app.jinja_env.globals['data_url'] = (
 
 app.jinja_env.globals['severity_class'] = (
     severity_class
+)
+
+app.jinja_env.globals['re_search'] = (
+    re_search
 )
 

@@ -111,9 +111,9 @@
           </div>
         </fieldset>
         {% if key %}
-        {{ params(profile.args) }}
+        {{ params(profile.args, hide_filters=True) }}
         {% endif %}
-        {{ params(request.args) }}
+        {{ params(request.args, hide_filters=True) }}
       </form>
     </section>
 
