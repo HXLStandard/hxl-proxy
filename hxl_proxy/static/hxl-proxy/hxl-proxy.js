@@ -186,6 +186,9 @@ hxl_proxy.setupForm = function() {
         filter_desc = $(node).find(".field_filter option:selected").text();
         filter_class = ".fields-" + filter_name;
         filter_title = (filter_desc ? filter_desc : '(not set)');
+        if (filter_title == '(none)') {
+            filter_title = "Add new filter";
+        }
         $(node).find(".modal-title").text(filter_title);
 
         var filter_button = $(node).find(".filter-button");

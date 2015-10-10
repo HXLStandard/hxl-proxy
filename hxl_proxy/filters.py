@@ -11,11 +11,8 @@ import hxl
 import hxl.filters # why do we have to import this???
 from hxl.converters import Tagger
 
-# Minimum default number of filters to check
-DEFAULT_FILTER_COUNT = 10
-
 # Maximum number of filters to check
-MAX_FILTER_COUNT = 20
+MAX_FILTER_COUNT = 99
 
 def setup_filters(profile):
     """
@@ -32,8 +29,7 @@ def setup_filters(profile):
     source = hxl.data(make_tagged_input(profile.args))
 
     # Create the filter pipeline from the source
-    filter_count = max(int(profile.args.get('filter_count', DEFAULT_FILTER_COUNT)), MAX_FILTER_COUNT)
-    for index in range(1, 1+filter_count):
+    for index in range(1, MAX_FILTER_COUNT):
         filter = profile.args.get('filter%02d' % index)
         if filter == 'add':
             source = add_add_filter(source, profile.args, index)

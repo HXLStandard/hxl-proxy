@@ -23,7 +23,7 @@ import hxl
 
 from hxl_proxy import app, cache
 from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8
-from hxl_proxy.filters import setup_filters
+from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
@@ -142,9 +142,17 @@ def show_data_edit(key=None):
         flash('Please choose a data source first.')
         return redirect(make_data_url(profile, key, 'source'))
 
+    # Figure out how many filter forms to show
+    filter_count = 0
+    for n in range(1, MAX_FILTER_COUNT):
+        if profile.args.get('filter%02d' % n):
+            filter_count = n
+    if filter_count < MAX_FILTER_COUNT:
+        filter_count += 1
+
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    return render_template('data-filters.html', key=key, profile=profile, source=source, show_headers=show_headers)
+    return render_template('data-filters.html', key=key, profile=profile, source=source, show_headers=show_headers, filter_count=filter_count)
 
 @app.route("/data/profile")
 @app.route("/data/<key>/profile")
