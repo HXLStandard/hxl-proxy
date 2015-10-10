@@ -133,7 +133,7 @@ def severity_class(severity):
 
 def re_search(regex, string):
     """Try matching a regular expression."""
-    return re.match(regex, string)
+    return re.search(regex, string)
 
 
 #
