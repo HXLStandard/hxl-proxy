@@ -1,38 +1,69 @@
 {% macro navmenu(profile, key=None, facet=None) %}
-<li>
-  <a href="/data/source">
-    <span class="glyphicon glyphicon-plus"></span> new
-  </a>
-</li>
-{% if key and profile.cloneable %}
-<li>
-  <a href="{{ data_url(profile, None, 'edit') }}">
-    <span class="glyphicon glyphicon-copy"></span> clone
-  </a>
-</li>
-{% endif %}
-{% if profile.args.url and not profile.key %}
-<li class="{% if facet in ['source', 'tagger', 'edit', 'profile'] %}active{% endif %}">
-  <a href="{{ data_url(profile, key, 'edit') }}">
-    <span class="glyphicon glyphicon-pencil"></span> transform
-  </a>
-</li>
-{% endif %}
 {% if profile and profile.args.url %}
 <li class="{% if facet=='data' %}active{% endif %}">
   <a href="{{ data_url(profile, key) }}">
-    <span class="glyphicon glyphicon-th-list"></span> data
+    <span class="glyphicon glyphicon-th-list"></span>
+    view data
   </a>
 </li>
 <li class="{% if facet=='validate' %}active{% endif %}">
   <a href="{{ data_url(profile, key, 'validate') }}">
-    <span class="glyphicon glyphicon-ok"></span> validate
+    <span class="glyphicon glyphicon-ok"></span>
+    validate
   </a>
 </li>
 <li class="{% if facet=='chart' %}active{% endif %}">
   <a href="{{ data_url(profile, key, 'chart') }}">
     <span class="glyphicon glyphicon-signal"></span> visualise
   </a>
+</li>
+<li class="dropdown{% if facet in ['source', 'tagger', 'edit', 'profile', 'save'] %} active{% endif %}">
+  <a href="#" 
+     class="dropdown-toggle"
+     data-toggle="dropdown"
+     role="button"
+     aria-haspopup="true"
+     aria-expanded="false">
+    <span class="glyphicon glyphicon-edit"></span>
+    actions
+  </a>
+  <ul class="dropdown-menu">
+    <li>
+      <a href="/data/source">
+        <span class="glyphicon glyphicon-plus"></span>
+        start new view
+      </a>
+    </li>
+    {% if key and profile.cloneable %}
+    <li>
+      <a href="{{ data_url(profile, None, 'edit') }}">
+        <span class="glyphicon glyphicon-copy"></span>
+        clone this view
+      </a>
+    </li>
+    {% endif %}
+    {% if profile.args.url and not profile.key %}
+    <li class="{% if facet in ['source', 'tagger', 'edit'] %}active{% endif %}">
+      <a href="{{ data_url(profile, key, 'edit') }}">
+        <span class="glyphicon glyphicon-pencil"></span>
+        edit this view
+      </a>
+    </li>
+    {% endif %}
+    {% if profile %}
+    <li class="{% if facet=='profile' %}active{% endif %}">
+      <a href="{{ data_url(profile, key, 'profile') }}">
+        {% if key %}
+        <span class="glyphicon glyphicon-cog"></span>
+        edit settings
+        {% else %}
+        <span class="glyphicon glyphicon-save"></span>
+        save this view
+        {% endif %}
+      </a>
+    </li>
+    {% endif %}
+  </ul>
 </li>
 {% endif %}
 {% endmacro %}

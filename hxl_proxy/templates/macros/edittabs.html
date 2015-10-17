@@ -17,14 +17,5 @@
       Transform
     </a>
   </li>
-  <li class="{% if facet=='profile' %}active{% endif %}">
-    <a href="{{ data_url(profile, key, 'profile') }}">
-      {% if key %}
-      Profile
-      {% else %}
-      Save
-      {% endif %}
-    </a>
-  </li>
 </ul>
 {% endmacro %}

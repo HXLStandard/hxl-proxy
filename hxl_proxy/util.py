@@ -48,10 +48,10 @@ def stream_template(template_name, **context):
 
 def urlencode_utf8(params):
     if hasattr(params, 'items'):
-        params = params.items()
+        params = list(params.items())
     return '&'.join(
         (urllib.parse.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.parse.quote_plus(v.encode('utf8'), safe='/')
-            for k, v in params))
+            for k, v in params if v))
 
 def using_tagger_p(profile):
     for name in profile.args:

@@ -110,3 +110,14 @@ td>.content {
 .doc {
     font-style: italic;
 }
+
+.source-url {
+    position: relative;
+}
+
+.source-url div {
+    width: 100%;
+    whitespace: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
