@@ -109,7 +109,7 @@ def add_count_filter(source, args, index):
     tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
     count_spec = args.get('count-spec%02d' % index, None)
     if not count_spec:
-        count_spec = None
+        count_spec = 'Count#meta+count'
     aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
     if aggregate_pattern:
         aggregate_pattern = hxl.TagPattern.parse(aggregate_pattern)
