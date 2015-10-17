@@ -106,13 +106,12 @@ def add_clean_filter(source, args, index):
 
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
-    tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
-    aggregate_tag = args.get('count-aggregate-tag%02d' % index)
-    if aggregate_tag:
-        aggregate_tag = hxl.TagPattern.parse(aggregate_tag)
-    else:
-        aggregate_tag = None
-    return source.count(patterns=tags, aggregate_pattern=aggregate_tag)
+    tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, None))
+    count_spec = args.get('count-spec%02d' % index, None)
+    aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
+    if aggregate_pattern:
+        aggregate_pattern = hxl.TagPattern.parse(aggregate_pattern)
+    return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec)
 
 def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""

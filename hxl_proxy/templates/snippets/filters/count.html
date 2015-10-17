@@ -22,10 +22,25 @@
         placeholder="{{ vars.filters_placeholder }}" />
   </div>
 
+  {% set name='count-spec%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Name and hashtag for count column (instead of <code>#meta+count</code>)
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ profile.args[name] }}"
+        title="{{ vars.filters_help }}"
+        placeholder="Header Text#tag+attributes" />
+  </div>
+
+
   {% set name='count-aggregate-tag%02d' % n %}
   <div id="{{ name }}" class="form-group">
     <label for="{{ name }}">
-      Aggregate values for this tag (sum, average, min, max)
+      Optionally also include aggregate values (sum, average, min, max) for
+      this tag pattern.
     </label>
     <input
         class="form-control"
@@ -33,7 +48,8 @@
         value="{{ profile.args[name] }}"
         pattern="^{{ vars.filter_pattern }}$"
         title="{{ vars.filter_help }}"
-        placeholder="tag" />
+        placeholder="#tag" />
   </div>
+
 
 </div>

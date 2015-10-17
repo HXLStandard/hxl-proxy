@@ -2,6 +2,16 @@
     width: 100%;
 }
 
+label {
+    font-size: 90%;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.required label {
+    font-weight: bold;
+}
+
 .required label:before {
     content: "* ";
 }
@@ -95,4 +105,8 @@ td>.content {
 .icons a span {
     display: block;
     text-align: center;
+}
+
+.doc {
+    font-style: italic;
 }
