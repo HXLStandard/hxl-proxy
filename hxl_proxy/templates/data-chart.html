@@ -75,7 +75,7 @@
                 {% endfor %}
               </select>
             </div>
-            {{ params(profile.args, excludes=['label', 'tag']) }}
+            {{ params(request.args, excludes=['label', 'tag']) }}
 
             <button class="btn btn-success" type="submit">OK</button>
           </form>
