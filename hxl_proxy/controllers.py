@@ -176,6 +176,8 @@ def show_data_chart(key=None):
     profile = get_profile(key)
     if not profile or not profile.args.get('url'):
         return redirect('/data/edit', 303)
+
+    source = setup_filters(profile)
     tag = request.args.get('tag')
     if tag:
         tag = hxl.TagPattern.parse(tag);
@@ -183,7 +185,7 @@ def show_data_chart(key=None):
     if label:
         label = hxl.TagPattern.parse(label);
     type = request.args.get('type', 'bar')
-    return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type)
+    return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type, source=source)
 
 @app.route('/data/<key>/map')
 @app.route('/data/map')

@@ -1,5 +1,6 @@
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
+{% from 'macros/params.html' import params %}
 
 {% block menu %}
 {{ navmenu(profile, key=key, facet='chart') }}
@@ -8,47 +9,95 @@
 {% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
-    <ul class="nav nav-tabs">
-      <li role="presentation"{% if type=='pie' %} class="active"{% endif %}><a href="{{ add_args({'type': 'pie'}) }}">Pie</a></li>
-      <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
-      <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
-    </ul>
-    <h1>
-      Chart:
+<main>
+  <ul class="nav nav-tabs">
+    <li role="presentation"{% if type=='pie' %} class="active"{% endif %}><a href="{{ add_args({'type': 'pie'}) }}">Pie</a></li>
+    <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
+    <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
+  </ul>
+
+  <h1>
+    Chart:
+    {% if key %}
+    <cite>{{ profile.name }}</cite>
+    {% else %}
+    HXL data
+    {% endif %}
+    <a type="button" class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#customise-modal">Customise</a>
+  </h1>
+
+  <div id="chart_div" style="min-height:480px"></div>
+
+  <p class="small">
+    Dataset: 
+    <a href="{{ data_url(profile, key) }}">
       {% if key %}
-      <cite>{{ profile.name }}</cite>
+      {{ profile.name }}
       {% else %}
-      HXL data
+      {{ profile.args.url }}
       {% endif %}
-    </h1>
+    </a>
+  </p>
 
-    <div id="chart_div" style="min-height:480px"></div>
+  <div id="customise-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Customise chart</h4>
+        </div>
+        <div class="modal-body">
+          <form method="GET" action="">
+            <div class="form-group">
+              <label for="label">
+                Choose column as label
+              </label>
+              <select name="label" class="form-control">
+                {% for column in source.columns %}
+                <option value="{{ column.display_tag }}"
+                        {% if label and label.match(column) %}selected="selected"{% endif %}
+                  >
+                  {{ column.display_tag }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tag">
+                Choose column with count
+              </label>
+              <select name="tag" class="form-control">
+                {% for column in source.columns %}
+                <option value="{{ column.display_tag }}"
+                        {% if tag and tag.match(column) %}selected="selected"{% endif %}
+                  >
+                {{ column.display_tag }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {{ params(profile.args, excludes=['label', 'tag']) }}
 
-    <p class="small">
-      Dataset: 
-      <a href="{{ data_url(profile, key) }}">
-        {% if key %}
-        {{ profile.name }}
-        {% else %}
-        {{ profile.args.url }}
-        {% endif %}
-      </a>
-    </p>
-
+            <button class="btn btn-success" type="submit">OK</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
-    <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
-    <script type="text/javascript" src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-    <script type="text/javascript">
-      hxl_proxy.setupChart({
-        data_url: "{{ data_url(profile, key, format='csv') | safe }}",
-        type: "{{ type|nonone|safe }}",
-        value_pattern: "{{ tag|nonone|safe }}",
-        label_pattern: "{{ label|nonone|safe }}"
-      });
-    </script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
+<script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
+<script type="text/javascript" src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+<script type="text/javascript">
+  hxl_proxy.setupChart({
+  data_url: "{{ data_url(profile, key, format='csv') | safe }}",
+  type: "{{ type|nonone|safe }}",
+  value_pattern: "{{ tag|nonone|safe }}",
+  label_pattern: "{{ label|nonone|safe }}"
+  });
+</script>
 {% endblock %}
