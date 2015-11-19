@@ -5,7 +5,7 @@
 {{ navmenu(profile, key=key, facet='map') }}
 {% endblock %}
 
-{% block title %}{{ profile.args.name|default('Filtered HXL data') }} (map){% endblock %}
+{% block title %}{{ profile.name|default('Filtered HXL data') }} (map){% endblock %}
 
 {% block head %}
 {{ super() }}

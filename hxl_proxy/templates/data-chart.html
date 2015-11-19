@@ -6,7 +6,7 @@
 {{ navmenu(profile, key=key, facet='chart') }}
 {% endblock %}
 
-{% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.args.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
+{% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
 <main>
