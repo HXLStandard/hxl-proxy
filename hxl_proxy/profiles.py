@@ -13,15 +13,16 @@ import copy
 
 VERSION = 1.0
 
+# Properties not to be saved or exposed in args
 BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable']
 
 class Profile(object):
     """Profile for a filter pipeline."""
 
-    def __init__(self, args):
+    def __init__(self, args, passhash=None):
         self.version = 1.0
-        self.args = {key: args[key] for key in args if key not in BLACKLIST}
-        self.passhash = None
+        self.args = self._clean(args)
+        self.passhash = passhash
 
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
@@ -36,6 +37,14 @@ class Profile(object):
         if not hasattr(self, 'passhash') or self.passhash is None:
             return True
         return (self.passhash == make_md5(password))
+
+    def copy(self):
+        return Profile(self._clean(self.args), self.passhash)
+
+    @staticmethod
+    def _clean(args):
+        """Return a clean copy of args, with any blacklisted keys removed."""
+        return {key: args[key] for key in args if key not in BLACKLIST}
 
 class ProfileManager:
     """Manage saved filter pipelines."""
@@ -56,7 +65,7 @@ class ProfileManager:
         profile_map = shelve.open(self.filename)
         try:
             if str(key) in profile_map:
-                return copy.copy(profile_map[str(key)])
+                return profile_map[str(key)].copy()
             else:
                 return None
         finally:
