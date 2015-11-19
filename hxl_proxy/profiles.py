@@ -11,14 +11,16 @@ import random
 import time
 import copy
 
-VERSION=1.0
+VERSION = 1.0
+
+BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable']
 
 class Profile(object):
     """Profile for a filter pipeline."""
 
     def __init__(self, args):
         self.version = 1.0
-        self.args = args
+        self.args = {key: args[key] for key in args if key not in BLACKLIST}
         self.passhash = None
 
     def set_password(self, password):
