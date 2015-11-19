@@ -19,10 +19,13 @@ BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable']
 class Profile(object):
     """Profile for a filter pipeline."""
 
-    def __init__(self, args, passhash=None):
+    def __init__(self, args={}, passhash=None, name=None, description=None, cloneable=False):
         self.version = 1.0
         self.args = self._clean(args)
-        self.passhash = passhash
+        self.passhash = passhash,
+        self.name = name,
+        self.description = description,
+        self.cloneable = cloneable
 
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
@@ -39,7 +42,13 @@ class Profile(object):
         return (self.passhash == make_md5(password))
 
     def copy(self):
-        return Profile(self._clean(self.args), self.passhash)
+        return Profile(
+            args=self._clean(self.args), 
+            passhash=self.passhash,
+            name=self.name,
+            description=self.description,
+            cloneable=self.cloneable
+        )
 
     @staticmethod
     def _clean(args):
