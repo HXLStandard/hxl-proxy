@@ -42,7 +42,9 @@ class Profile(object):
         return (self.passhash == make_md5(password))
 
     def copy(self):
+        """Make a safe copy of a profile, removing any sensitive fields."""
         profile = copy.copy(self)
+        profile.args = self._clean(profile.args)
         return profile
     
     @staticmethod
