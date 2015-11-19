@@ -42,14 +42,9 @@ class Profile(object):
         return (self.passhash == make_md5(password))
 
     def copy(self):
-        return Profile(
-            args=self._clean(self.args), 
-            passhash=self.passhash,
-            name=self.name,
-            description=self.description,
-            cloneable=self.cloneable
-        )
-
+        profile = copy.copy(self)
+        return profile
+    
     @staticmethod
     def _clean(args):
         """Return a clean copy of args, with any blacklisted keys removed."""
