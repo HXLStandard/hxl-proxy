@@ -39,11 +39,11 @@
   <form class="form" method="POST" action="/actions/save-profile">
     <div class="form-group required">
       <label for="name">Filter name</label>
-      <input name="name" required="required" class="form-control" value="{{ profile.args.name }}" />
+      <input name="name" required="required" class="form-control" value="{{ profile.name }}" />
     </div>
     <div class="form-group">
       <label for="description">Short description</label>
-      <textarea name="description" class="form-control">{{ profile.args.description }}</textarea>
+      <textarea name="description" class="form-control">{{ profile.description }}</textarea>
     </div>
     <div class="form-group">
       <label for="schema_url">Default schema URL for validation</label>
