@@ -53,7 +53,7 @@ class Profile(object):
     @staticmethod
     def _clean(args):
         """Return a clean copy of args, with any blacklisted keys removed."""
-        return {key: args[key] for key in args if key not in BLACKLIST}
+        return {key: args.get(key) for key in args if key not in BLACKLIST}
 
 class ProfileManager:
     """Manage saved filter pipelines."""
