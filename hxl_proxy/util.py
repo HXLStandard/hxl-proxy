@@ -20,13 +20,13 @@ import hxl
 from hxl_proxy import app
 from hxl_proxy.profiles import Profile
 
-EXCLUDES = ['force']
+CACHE_KEY_EXCLUDES = ['force']
 
 def make_cache_key ():
     """Make a key for a caching request, based on the full path."""
     args = {}
     for name in request.args:
-        if name not in EXCLUDES:
+        if name not in CACHE_KEY_EXCLUDES:
             args[name] = request.args.get(name)
     return request.path + pickle.dumps(args).decode('latin1')
 
@@ -59,10 +59,14 @@ def using_tagger_p(profile):
             return True
     return False
 
+PROFILE_OVERRIDES = ['url', 'schema_url']
+
 def get_profile(key, auth=False, args=None):
     """Load a profile or create from args."""
+
     if args is None:
         args = request.args
+
     if key:
         profile = g.profiles.get_profile(str(key))
         if not profile:
@@ -71,6 +75,13 @@ def get_profile(key, auth=False, args=None):
             raise Forbidden("Wrong or missing password.")
     else:
         profile = Profile(args)
+
+    # Allow some values to be overridden from request parameters
+    for key in PROFILE_OVERRIDES:
+        if args.get(key):
+            profile.overridden = True
+            profile.args[key] = args.get(key)
+
     return profile
 
 
