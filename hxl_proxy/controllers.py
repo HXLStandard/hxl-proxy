@@ -240,15 +240,19 @@ def show_data(key=None, format="html", stub=None):
         source = setup_filters(profile)
         show_headers = (profile.args.get('strip-headers') != 'on')
 
-        if format == 'json':
+        if format == 'html':
+            return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
+        elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
+            if profile.stub:
+                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(profile.stub)
             return response
-        elif format == 'html':
-            return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
         else:
             response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
             response.headers['Access-Control-Allow-Origin'] = '*'
+            if profile.stub:
+                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(profile.stub)
             return response
 
     result = get_result(key, format)
