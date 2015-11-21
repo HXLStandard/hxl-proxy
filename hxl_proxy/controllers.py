@@ -225,11 +225,12 @@ def show_validate(key=None):
     return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
 
 @app.route("/data/<key>.<format>")
+@app.route("/data/<key>/download/<stub>.<format>")
 @app.route("/data.<format>")
 @app.route("/data")
 @app.route("/data/<key>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=make_cache_key, unless=skip_cache_p)
-def show_data(key=None, format="html"):
+def show_data(key=None, format="html", stub=None):
 
     def get_result (key, format):
         profile = get_profile(key, auth=False)
@@ -326,12 +327,14 @@ def do_data_save():
     description = request.form.get('description')
     password = request.form.get('password')
     password_repeat = request.form.get('password-repeat')
+    stub = request.form.get('stub')
     cloneable = (request.form.get('cloneable') == 'on')
 
     # Update profile information
     profile.name = name
     profile.description = description
     profile.cloneable = cloneable
+    profile.stub = stub
 
     if key:
         # Updating an existing profile.

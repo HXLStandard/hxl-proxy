@@ -14,17 +14,17 @@ import copy
 VERSION = 1.0
 
 # Properties not to be saved or exposed in args
-BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable']
+BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub']
 
 class Profile(object):
     """Profile for a filter pipeline."""
 
-    def __init__(self, args={}, passhash=None, name=None, description=None, cloneable=False):
+    def __init__(self, args={}, passhash=None, name=None, description=None, cloneable=False, stub=None):
         self.version = 1.0
         self.args = self._clean(args)
-        self.passhash = passhash,
-        self.name = name,
-        self.description = description,
+        self.passhash = passhash
+        self.name = name
+        self.description = description
         self.cloneable = cloneable
 
     def set_password(self, password):
