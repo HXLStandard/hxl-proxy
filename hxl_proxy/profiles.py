@@ -26,6 +26,7 @@ class Profile(object):
         self.name = name
         self.description = description
         self.cloneable = cloneable
+        self.stub = stub
 
     def set_password(self, password):
         """Assign a new password to this profile (None to clear)."""
