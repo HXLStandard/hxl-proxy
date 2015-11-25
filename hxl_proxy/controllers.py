@@ -360,4 +360,13 @@ def do_data_save():
 
     return redirect(make_data_url(profile, key=key), 303)
 
+@app.route('/login')
+def do_login():
+    oauth_url = 'https://auth.dev.humanitarian.id/oauth/authorize?response_type=token&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
+        client_id = urllib.parse.quote(app.config.get('HID_CLIENT_ID')),
+        redirect_uri = urllib.parse.quote(app.config.get('HID_REDIRECT_URI')),
+        state = urllib.parse.quote('12345')
+    )
+    return redirect(oauth_url)
+
 # end

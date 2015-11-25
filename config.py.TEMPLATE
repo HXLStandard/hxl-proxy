@@ -24,4 +24,9 @@ PROFILE_FILE='/tmp/hxl-proxy-profiles'
 #
 SECRET_KEY='In charity, there can be no excess.'
 
+#
+# Values for Humanitarian.ID remote login
+#
+HID_CLIENT_ID = '<client id>'
+
 # end
