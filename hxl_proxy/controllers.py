@@ -28,7 +28,7 @@ from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
-
+from hxl_proxy.auth import openid_user
 
 #
 # Error handling
@@ -362,11 +362,18 @@ def do_data_save():
 
 @app.route('/login')
 def do_login():
-    oauth_url = 'https://auth.dev.humanitarian.id/oauth/authorize?response_type=token&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
+    oauth_url = 'http://auth.dev.humanitarian.id/oauth/authorize?response_type=code&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
         client_id = urllib.parse.quote(app.config.get('HID_CLIENT_ID')),
         redirect_uri = urllib.parse.quote(app.config.get('HID_REDIRECT_URI')),
         state = urllib.parse.quote('12345')
     )
     return redirect(oauth_url)
+
+@app.route('/oauth/authorized2/1')
+def do_hid_authorisation():
+    # now needs to submit the access token to H.ID to get more info
+    code = request.args.get('code')
+    state = request.args.get('state')
+    return Response(str(openid_user(code)), mimetype="text/plain")
 
 # end
