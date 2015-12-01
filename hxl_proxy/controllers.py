@@ -360,6 +360,14 @@ def do_data_save():
 
     return redirect(make_data_url(profile, key=key), 303)
 
+@app.route('/settings/user')
+def do_user():
+    user = session.get('user')
+    if user:
+        return render_template('settings-user.html', user=user)
+    else:
+        return redirect('/login')
+
 @app.route('/login')
 def do_login():
     return redirect(get_hid_login_url())
@@ -375,9 +383,12 @@ def do_hid_authorisation():
     # now needs to submit the access token to H.ID to get more info
     code = request.args.get('code')
     state = request.args.get('state')
+    if state != session.get('state'):
+        raise Exception("Security violation: inconsistent state returned from humanitarian.id login request")
+    else:
+        session['state'] = None
     user_info = get_hid_user(code)
     session['user'] = user_info
-    flash("Logged in as {} {}".format(user_info.get('name_given'), user_info.get('name_family')))
     return redirect('/')
 
 # end

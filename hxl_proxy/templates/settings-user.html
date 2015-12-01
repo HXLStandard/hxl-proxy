@@ -1,0 +1,50 @@
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
+
+  {% set title="Settings for {} {}".format(user.name_given, user.name_family) %}
+
+  {% block title %}{{ title }}{% endblock %}
+
+  {% block menu %}
+  {{ navmenu(profile=profile, key=key, facet='user') }}
+  {% endblock %}
+
+  {% block main %}
+  <main>
+    <h1>{{ title }}</h1>
+
+    <p>The HXL Proxy will soon allow you to save data recipes and manage private data by logging in via <a href="https://humanitarian.id">Humanitarian ID</a>. For now, we will simply show you what we know about you through H.ID (you can change the information there):</p>
+
+    <dl class="dl-horizontal">
+
+      <dt>Active H.ID user?</dt>
+      <dd>{% if user.active %}yes{% else %}no{% endif %}</dd>
+
+      <dt>Family name</dt>
+      <dd>{{ user.name_family }}</dd>
+
+      <dt>Given name</dt>
+      <dd>{{ user.name_given }}</dd>
+
+      <dt>Email (not public)</dt>
+      <dd>{{ user.email }}</dd>
+
+      <dt>H.ID user id (not public)</dt>
+      <dd>{{ user.user_id }}</dd>
+
+    </dl>
+    
+  </main>
+  {% endblock %}
+
+  {% block scripts %}
+  {{ super() }}
+  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  {% endblock %}
+
+</div>
+

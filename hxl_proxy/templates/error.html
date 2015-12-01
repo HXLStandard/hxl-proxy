@@ -9,7 +9,11 @@
   </div>
   <div class="panel-body">
     <p class="lead">
+      {% if e.message %}
       {{ e.message }}
+      {% else %}
+      {{ e }}
+      {% endif %}
     </p>
     {% if e.data and e.data.input.raw_input.geturl() %}
     <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
