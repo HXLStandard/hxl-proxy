@@ -1,18 +1,20 @@
 import requests
-import urllib
+
+from hxl_proxy import app
 
 def openid_user (code):
     params = {
+        'client_id': app.config.get('HID_CLIENT_ID'),
+        'client_secret': app.config.get('HID_CLIENT_SECRET'),
         'grant_type': 'authorization_code',
-        'redirect': 'example.org',
+        'redirect_uri': app.config.get('HID_REDIRECT_URI'),
         'code': code
     }
     headers = {
-        'Authorization': 'Basic {secret}'.format(secret='MbmXHTxj0rmiuiiJ1YC4V2bQ81O_m5x3HQnX7GdYf9c')
+        #'Authorization': 'Basic {secret}'.format(secret=app.config.get('HID_CLIENT_SECRET'))
     }
     response = requests.post(
         'http://auth.dev.humanitarian.id/oauth/access_token', 
-        auth=requests.auth.HTTPBasicAuth('hid', 'dev'),
         headers=headers,
         data=params
     )
