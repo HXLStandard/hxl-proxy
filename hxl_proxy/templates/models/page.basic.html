@@ -20,8 +20,10 @@
   </head>
   <body class="container-fluid">
 
+    {% if session.user %}
     {{ session.user.name_given }}
     {{ session.user.name_family }}
+    {% endif %}
 
     <nav class="navbar navbar-inverse">
       {% block nav %}
