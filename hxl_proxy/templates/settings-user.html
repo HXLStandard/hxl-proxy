@@ -14,7 +14,18 @@
   <main>
     <h1>{{ title }}</h1>
 
-    <p>The HXL Proxy will soon allow you to save data recipes and manage private data by logging in via <a href="https://humanitarian.id">Humanitarian ID</a>. For now, we will simply show you what we know about you through H.ID (you can change the information there):</p>
+    <p class="alert alert-warning">
+      To make changes or to logout of <em>all</em> H.ID-linked
+      applications, please visit <a
+      href="https://auth.humanitarian.id">auth.humanitarian.id</a>
+    </p>
+    
+    <p>
+      The HXL Proxy will soon allow you to save data recipes and
+      manage private data by logging in via <a
+      href="https://humanitarian.id">Humanitarian ID</a>. For now, we
+      will simply show you what we know about you through H.ID:
+    </p>
 
     <dl class="dl-horizontal">
 
@@ -34,7 +45,7 @@
       <dd>{{ user.user_id }}</dd>
 
     </dl>
-    
+
   </main>
   {% endblock %}
 

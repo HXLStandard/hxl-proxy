@@ -375,7 +375,7 @@ def do_login():
 @app.route('/logout')
 def do_logout():
     session['user'] = None
-    flash("Logged out: browsing anonymously")
+    flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return redirect('/')
 
 @app.route('/oauth/authorized2/1')
@@ -389,6 +389,7 @@ def do_hid_authorisation():
         session['state'] = None
     user_info = get_hid_user(code)
     session['user'] = user_info
+    flash("Connected to your Humanitarian.ID account.")
     return redirect('/')
 
 # end
