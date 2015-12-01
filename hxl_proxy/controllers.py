@@ -362,7 +362,8 @@ def do_data_save():
 
 @app.route('/login')
 def do_login():
-    oauth_url = 'http://auth.dev.humanitarian.id/oauth/authorize?response_type=code&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
+    oauth_url = '{base_url}/oauth/authorize?response_type=code&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
+        base_url = app.config.get('HID_BASE_URL'),
         client_id = urllib.parse.quote(app.config.get('HID_CLIENT_ID')),
         redirect_uri = urllib.parse.quote(app.config.get('HID_REDIRECT_URI')),
         state = urllib.parse.quote('12345')
