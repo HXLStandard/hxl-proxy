@@ -245,13 +245,13 @@ def show_data(key=None, format="html", stub=None):
         elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if profile.stub:
+            if hasattr(profile, 'stub') and profile.stub:
                 response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(profile.stub)
             return response
         else:
             response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if profile.stub:
+            if hasattr(profile, 'stub') and profile.stub:
                 response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(profile.stub)
             return response
 

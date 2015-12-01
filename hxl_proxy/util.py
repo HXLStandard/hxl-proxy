@@ -122,7 +122,7 @@ def make_data_url(profile, key=None, facet=None, format=None):
         if facet:
             url += '/' + urllib.parse.quote(facet)
         elif format:
-            if profile.stub:
+            if hasattr(profile, 'stub') and profile.stub:
                 url += '/download/' + urllib.parse.quote(profile.stub) + '.' + urllib.parse.quote(format)
             else:
                 url += '.' + urllib.parse.quote(format)
