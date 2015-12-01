@@ -20,6 +20,9 @@
   </head>
   <body class="container-fluid">
 
+    {{ session.user.name_given }}
+    {{ session.user.name_family }}
+
     <nav class="navbar navbar-inverse">
       {% block nav %}
       <div class="container-fluid">

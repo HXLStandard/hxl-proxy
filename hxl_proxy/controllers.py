@@ -375,6 +375,19 @@ def do_hid_authorisation():
     # now needs to submit the access token to H.ID to get more info
     code = request.args.get('code')
     state = request.args.get('state')
-    return Response(str(openid_user(code)), mimetype="text/plain")
+    user_info = openid_user(code)
+    session['user'] = user_info
+    return redirect('/')
 
 # end
+
+
+
+
+
+
+
+
+
+
+
