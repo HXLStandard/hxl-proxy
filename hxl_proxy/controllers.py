@@ -28,7 +28,7 @@ from hxl_proxy.validate import do_validate
 from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
-from hxl_proxy.auth import openid_user
+from hxl_proxy.auth import get_hid_login_url, get_hid_user
 
 #
 # Error handling
@@ -362,32 +362,22 @@ def do_data_save():
 
 @app.route('/login')
 def do_login():
-    oauth_url = '{base_url}/oauth/authorize?response_type=code&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
-        base_url = app.config.get('HID_BASE_URL'),
-        client_id = urllib.parse.quote(app.config.get('HID_CLIENT_ID')),
-        redirect_uri = urllib.parse.quote(app.config.get('HID_REDIRECT_URI')),
-        state = urllib.parse.quote('12345')
-    )
-    return redirect(oauth_url)
+    return redirect(get_hid_login_url())
+
+@app.route('/logout')
+def do_logout():
+    session['user'] = None
+    flash("Logged out: browsing anonymously")
+    return redirect('/')
 
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
     # now needs to submit the access token to H.ID to get more info
     code = request.args.get('code')
     state = request.args.get('state')
-    user_info = openid_user(code)
+    user_info = get_hid_user(code)
     session['user'] = user_info
+    flash("Logged in as {} {}".format(user_info.get('name_given'), user_info.get('name_family')))
     return redirect('/')
 
 # end
-
-
-
-
-
-
-
-
-
-
-

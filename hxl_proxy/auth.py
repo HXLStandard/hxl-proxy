@@ -2,7 +2,17 @@ import requests
 
 from hxl_proxy import app
 
-def openid_user (code):
+def get_hid_login_url ():
+    """Construct the URL for logging into Humanitarian ID."""
+    return '{base_url}/oauth/authorize?response_type=code&client_id={client_id}&scope=profile&redirect_uri={redirect_uri}&state={state}'.format(
+        base_url = app.config.get('HID_BASE_URL'),
+        client_id = requests.utils.quote(app.config.get('HID_CLIENT_ID')),
+        redirect_uri = requests.utils.quote(app.config.get('HID_REDIRECT_URI')),
+        state = requests.utils.quote('12345')
+    )
+
+
+def get_hid_user (code):
     """Look up a user from Humanitarian.ID based on an authorization token"""
 
     # Stage 1: get an access token
