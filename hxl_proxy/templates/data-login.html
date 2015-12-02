@@ -1,8 +1,10 @@
-{% extends "models/page.basic.html" %}
+<div>
+  {% extends "models/page.basic.html" %}
 
-{% block title %}Password required{% endblock %}
+  {% block title %}Password required{% endblock %}
 
-{% block main %}
+  {% block main %}
+  <div>
     <h1>Password required</h1>
     <p>You need to enter the correct password to edit <a href="{{ data_url(profile, key) }}">{{ profile.name }}</a></p>
     <form class="theme-form" method="POST" action="/data/{{ key }}/edit">
@@ -12,4 +14,6 @@
       </div>
       <button type="submit">Edit this filter</button>
     </form>
-{% endblock %}
+  </div>
+  {% endblock %}
+</div>

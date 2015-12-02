@@ -20,7 +20,7 @@
   </head>
   <body class="container-fluid">
 
-    <nav class="navbar navbar-inverse">
+    <nav role="navigation" class="navbar navbar-inverse navbar-fixed-top">
       {% block nav %}
       <div class="container-fluid">
         <div class="navbar-header">
@@ -65,21 +65,22 @@
       {% endblock %}
     </nav>
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-warning">
-      <a href="#" class="close" data-dismiss="alert">&times;</a>
-      <p>{{ message }}</p>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-
     <main>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <p>{{ message }}</p>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
       {% block main %}
-      <h1>HXL Proxy</h1>
-      <p>No content yet.</p>
+      <div>
+        <h1>HXL Proxy</h1>
+        <p>No content yet.</p>
+      </div>
       {% endblock %}
     </main>
 

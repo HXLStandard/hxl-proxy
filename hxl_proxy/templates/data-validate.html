@@ -1,24 +1,26 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu, hxltable %}
-{% from 'macros/selectors.html' import selectors %}
-{% from 'macros/params.html' import params %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu, hxltable %}
+  {% from 'macros/selectors.html' import selectors %}
+  {% from 'macros/params.html' import params %}
 
-{% set nav_validate='active' %}
+  {% set nav_validate='active' %}
 
-{% block menu %}
-{{ navmenu(profile, key=key, facet='validate') }}
-{% endblock %}
+  {% block menu %}
+  {{ navmenu(profile, key=key, facet='validate') }}
+  {% endblock %}
 
-{% block title %}
-Validate:
-{% if key %}
-{{ profile.name }}
-{% else %}
-HXL data
-{% endif %}
-{% endblock %}
+  {% block title %}
+  Validate:
+  {% if key %}
+  {{ profile.name }}
+  {% else %}
+  HXL data
+  {% endif %}
+  {% endblock %}
 
-{% block main %}
+  {% block main %}
+  <div>
     <h1>
       Validate:
       {% if key %}
@@ -28,144 +30,145 @@ HXL data
       {% endif %}
     </h1>
 
-      {% if profile.args.url %}
+    {% if profile.args.url %}
 
-      <p class="alert alert-info alert-dismissable" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-          {% if schema_url %}
-          Using a <a href="/data?url={{ schema_url|urlencode }}">custom schema</a>.
-          {% else %}
-          Using the default schema.
-          {% endif %}
-          <a class="btn btn-default" data-toggle="modal" data-target="#customise">Change schema</a>
-      </p>
+    <p class="alert alert-info alert-dismissable" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+      {% if schema_url %}
+      Using a <a href="/data?url={{ schema_url|urlencode }}">custom schema</a>.
+      {% else %}
+      Using the default schema.
+      {% endif %}
+      <a class="btn btn-default" data-toggle="modal" data-target="#customise">Change schema</a>
+    </p>
 
-      {% if errors == False %}
+    {% if errors == False %}
 
-      <p class="alert alert-danger">Dataset is empty!</p>
+    <p class="alert alert-danger">Dataset is empty!</p>
 
-      {% elif errors %}
+    {% elif errors %}
 
-      {% if detail_hash %}
-      <p class="alert alert-warning">
-        Showing only errors for rule <code>{{ errors[detail_hash][0].message }}</code>
-        (<a href="{{ add_args({'details': None}) }}">back to error summary</a>)
-      </p>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Severity</th>
-            <th>Row</th>
-            <th>Explanation</th>
-            <th>Tag</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for error in errors[detail_hash] %}
-          <tr>
-            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td>
-              {% if error.row %}
-              <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
-              {% else %}
-              <a href="{{ data_url(profile) }}#hashtag-row">Hashtags</a>
+    {% if detail_hash %}
+    <p class="alert alert-warning">
+      Showing only errors for rule <code>{{ errors[detail_hash][0].message }}</code>
+      (<a href="{{ add_args({'details': None}) }}">back to error summary</a>)
+    </p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Row</th>
+          <th>Explanation</th>
+          <th>Tag</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for error in errors[detail_hash] %}
+        <tr>
+          <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
+          <td>
+            {% if error.row %}
+            <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
+            {% else %}
+            <a href="{{ data_url(profile) }}#hashtag-row">Hashtags</a>
+            {% endif %}
+          </td>
+          <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
+          <td>{{ error.rule.tag_pattern|nonone }}</td>
+          <td>{{ error.value|nonone }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <form id="severity-form" class="form" action="" method="GET">
+      <div class="form-group">
+        <label for="severity">Minimum error level to show</label>
+        <select name="severity" class="form-control" onchange="$('#severity-form').submit();">
+          <option value="info"{% if severity == 'info' %} selected="selected"{% endif %}>Info (most verbose)</option>
+          <option value="warning"{% if severity == 'warning' %} selected="selected"{% endif %}>Warnings</option>
+          <option value="error"{% if severity == 'error' %} selected="selected"{% endif %}>Errors (least verbose)</option>
+        </select>
+        <button class="hidden btn btn-default" type="submit">Change</button>
+      </div>
+      {{ params(request.args) }}
+    </form>
+    <p class="alert alert-warning">
+      {{ errors|length }} validation issue(s)
+      {% if profile.args.severity %} (minimum severity: {{ severity }}){% endif %}.
+    </p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Occurrences</th>
+          <th>HXL tag pattern</th>
+          <th>Explanation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rule_id in errors %}
+        {% set error = errors[rule_id][0] %}
+        {% set number = errors[rule_id]|count %}
+        <tr>
+          <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
+          <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} occurrence(s)</a></td>
+          <td>{{ error.rule.tag_pattern|nonone }}</td>
+          <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% else %}
+    <p class="alert alert-success">Validation succeeded with no error.</p>
+    {% endif %}
+    {% else %}
+    <p class="alert alert-default">No data yet to validate</p>
+    {% endif %}
+
+    <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Customise validation</h2>
+
+            <form class="form" action="">
+
+              {% if key %}
+              <p>Temporarilty override the default schema for this profile. To change the default schema, go to the
+              <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
               {% endif %}
-            </td>
-            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
-            <td>{{ error.value|nonone }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <form id="severity-form" class="form" action="" method="GET">
-        <div class="form-group">
-          <label for="severity">Minimum error level to show</label>
-          <select name="severity" class="form-control" onchange="$('#severity-form').submit();">
-            <option value="info"{% if severity == 'info' %} selected="selected"{% endif %}>Info (most verbose)</option>
-            <option value="warning"{% if severity == 'warning' %} selected="selected"{% endif %}>Warnings</option>
-            <option value="error"{% if severity == 'error' %} selected="selected"{% endif %}>Errors (least verbose)</option>
-          </select>
-          <button class="hidden btn btn-default" type="submit">Change</button>
-        </div>
-        {{ params(request.args) }}
-      </form>
-      <p class="alert alert-warning">
-        {{ errors|length }} validation issue(s)
-        {% if profile.args.severity %} (minimum severity: {{ severity }}){% endif %}.
-      </p>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Severity</th>
-            <th>Occurrences</th>
-            <th>HXL tag pattern</th>
-            <th>Explanation</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for rule_id in errors %}
-          {% set error = errors[rule_id][0] %}
-          {% set number = errors[rule_id]|count %}
-          <tr>
-            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} occurrence(s)</a></td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
-            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
-      {% else %}
-      <p class="alert alert-success">Validation succeeded with no error.</p>
-      {% endif %}
-      {% else %}
-      <p class="alert alert-default">No data yet to validate</p>
-      {% endif %}
 
-      <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="modal-title">Customise validation</h2>
+              {% include 'snippets/profile-form.html' %}
 
-              <form class="form" action="">
+              <div class="form-group">
+                <label for="schema_url">Custom HXL schema URL</label>
+                <input name="schema_url" id="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
+                       placeholder="http://example.org/my-hxl-schema.csv" />
+                <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
+                {{ selectors('#schema_url', true) }}
+              </div>
 
-                {% if key %}
-                <p>Temporarilty override the default schema for this profile. To change the default schema, go to the
-                <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
-                {% endif %}
+              {{ params(request.args) }}
 
-                {% include 'snippets/profile-form.html' %}
+              <button class="btn btn-success" type="submit">Update</button>
 
-                <div class="form-group">
-                  <label for="schema_url">Custom HXL schema URL</label>
-                  <input name="schema_url" id="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
-                         placeholder="http://example.org/my-hxl-schema.csv" />
-                  <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
-                  {{ selectors('#schema_url', true) }}
-                </div>
-
-                {{ params(request.args) }}
-
-                <button class="btn btn-success" type="submit">Update</button>
-
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  {% endblock %}
 
-{% endblock %}
 
-
-{% block scripts %}
-{{ super() }}
-    <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-    <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-{% endblock %}
+  {% block scripts %}
+  {{ super() }}
+  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  {% endblock %}
+</div>

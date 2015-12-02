@@ -1,25 +1,26 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
 
-{% set title = 'HXL datasets on HDX' %}
+  {% set title = 'HXL datasets on HDX' %}
 
-{% block title %}{{ title }}{% endblock %}
+  {% block title %}{{ title }}{% endblock %}
 
-{% block head %}
-{{ super() }}
-    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
-{% endblock %}
+  {% block head %}
+  {{ super() }}
+  <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+  {% endblock %}
 
-{% block menu %}
-            <li class="active">
-              <a href="/analysis">
-                <span class="glyphicon glyphicon-plus"></span> new
-              </a>
-            </li>
-{% endblock %}
+  {% block menu %}
+  <li class="active">
+    <a href="/analysis">
+      <span class="glyphicon glyphicon-plus"></span> new
+    </a>
+  </li>
+  {% endblock %}
 
-{% block main %}
-
+  {% block main %}
+  <div>
     <h1>{{ title }}</h1>
 
     <table class="table">
@@ -39,12 +40,13 @@
             {% endfor %}
           </td>
         </tr>
-      {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
+  </div>
+  {% endblock %}
 
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{% endblock %}
+  {% block scripts %}
+  {{ super() }}
+  {% endblock %}
+</div>

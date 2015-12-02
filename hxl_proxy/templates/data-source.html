@@ -1,110 +1,112 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/params.html' import params %}
-{% from 'macros/edittabs.html' import edittabs %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
+  {% from 'macros/params.html' import params %}
+  {% from 'macros/edittabs.html' import edittabs %}
 
-{% set nav_filter='active' %}
+  {% set nav_filter='active' %}
 
-{% block menu %}
-{{ navmenu(profile, key=key, facet='source') }}
-{% endblock %}
+  {% block menu %}
+  {{ navmenu(profile, key=key, facet='source') }}
+  {% endblock %}
 
-{% if key %}
-{% set title='Change your data source' %}
-{% else %}
-{% set title='Choose HXL dataset' %}
-{% endif %}
-
-{% block title %}{{ title }}{% endblock %}
-
-{% block main %}
-<main>
-
-  {% if profile.args.url %}
-  {{ edittabs(profile, key, 'source') }}
+  {% if key %}
+  {% set title='Change your data source' %}
+  {% else %}
+  {% set title='Choose HXL dataset' %}
   {% endif %}
-  
-  <h1>{{ title }}</h1>
 
-  <div class="lead">
-    {% if key %}
-    <p>
-      Pick a different data source.  All of your existing
-      customisation (filters, schema, etc.) will stay the same.  Your
-      existing data source URL appears below.
-    </p>
-    {% else %}
-    <p>
-      Want to make your humanitarian data dance?  Add some <a
-      href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
-      then let's get started &hellip;
-    </p>
+  {% block title %}{{ title }}{% endblock %}
+
+  {% block main %}
+  <div>
+
+    {% if profile.args.url %}
+    {{ edittabs(profile, key, 'source') }}
     {% endif %}
-  </div>
+    
+    <h1>{{ title }}</h1>
 
-  <section id="cloud-services"" class="icons panel panel-default">
-    <div class="panel-heading">
-      <h2 class="panel-title">Option #1: choose your dataset from a cloud service</h2>
-    </div>
-    <div class="panel-body text-center">
-      <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
-        <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
-        <span>HDX</span>
-      </a>
-      <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
-        <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
-        <span>Dropbox</span>
-      </a>
-      <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
-        <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
-        <span>Google Drive</span>
-      </a>
-    </div>
-  </section>
-
-  <p class="h2 text-center" aria-role="separator"><span class="label label-info">or</span></p>
-
-  <section id="manual-entry" class="panel panel-default">
-    <div class="panel-heading">
-      <h2 class="panel-title">Option #2: enter your dataset's URL</h2>
-    </div>
-    {% if key %}
-    {% set method="POST" %}
-    {% set action="/actions/save-profile" %}
-    {% else %}
-    {% set method="GET" %}
-    {% set action="/data/edit" %}
-    {% endif %}
-    <form class="panel-body" action="{{ action }}" method="{{ method }}">
-
-      <div class="input-group required">
-        <input id='dataset-url'
-               class="form-control" 
-               name="url"
-               type="url"
-               required="required"
-               value="{{ profile.args.url }}"
-               placeholder="http://example.org/dataset.csv" />
-        <div class="input-group-btn">
-          <button class="btn btn-success"
-                  type="submit">Next</button>
-        </div>
-      </div>
-
+    <div class="lead">
       {% if key %}
-      {{ params(profile.args) }}
+      <p>
+        Pick a different data source.  All of your existing
+        customisation (filters, schema, etc.) will stay the same.  Your
+        existing data source URL appears below.
+      </p>
+      {% else %}
+      <p>
+        Want to make your humanitarian data dance?  Add some <a
+        href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
+        then let's get started &hellip;
+      </p>
       {% endif %}
-      {{ params(request.args) }}
+    </div>
 
-    </form>
-  </section>
-</main>
-{% endblock %}
+    <section id="cloud-services"" class="icons panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">Option #1: choose your dataset from a cloud service</h2>
+      </div>
+      <div class="panel-body text-center">
+        <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
+          <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
+          <span>HDX</span>
+        </a>
+        <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
+          <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
+          <span>Dropbox</span>
+        </a>
+        <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
+          <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
+          <span>Google Drive</span>
+        </a>
+      </div>
+    </section>
 
-{% block scripts %}
-{{ super() }}
-<script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-<script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-{% endblock %}
+    <p class="h2 text-center" aria-role="separator"><span class="label label-info">or</span></p>
+
+    <section id="manual-entry" class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">Option #2: enter your dataset's URL</h2>
+      </div>
+      {% if key %}
+      {% set method="POST" %}
+      {% set action="/actions/save-profile" %}
+      {% else %}
+      {% set method="GET" %}
+      {% set action="/data/edit" %}
+      {% endif %}
+      <form class="panel-body" action="{{ action }}" method="{{ method }}">
+
+        <div class="input-group required">
+          <input id='dataset-url'
+                 class="form-control" 
+                 name="url"
+                 type="url"
+                 required="required"
+                 value="{{ profile.args.url }}"
+                 placeholder="http://example.org/dataset.csv" />
+          <div class="input-group-btn">
+            <button class="btn btn-success"
+                    type="submit">Next</button>
+          </div>
+        </div>
+
+        {% if key %}
+        {{ params(profile.args) }}
+        {% endif %}
+        {{ params(request.args) }}
+
+      </form>
+    </section>
+  </div>
+  {% endblock %}
+
+  {% block scripts %}
+  {{ super() }}
+  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  {% endblock %}
+</div>

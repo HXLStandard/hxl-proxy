@@ -1,3 +1,4 @@
+<div>
 {% extends "models/page.basic.html" %}
 {% from 'macros/navmenu.html' import navmenu %}
 {% from 'macros/params.html' import params %}
@@ -9,7 +10,7 @@
 {% block title %}{% if label %}{{ label }} in {% endif %}{{ profile.name|default('Filtered HXL data') }} ({{ type }} chart){% endblock %}
 
 {% block main %}
-<main>
+<div>
   <ul class="nav nav-tabs">
     <li role="presentation"{% if type=='pie' %} class="active"{% endif %}><a href="{{ add_args({'type': 'pie'}) }}">Pie</a></li>
     <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
@@ -83,7 +84,7 @@
       </div>
     </div>
   </div>
-</main>
+</div>
 {% endblock %}
 
 {% block scripts %}

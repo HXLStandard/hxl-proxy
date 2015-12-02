@@ -1,30 +1,34 @@
-{% extends "models/page.basic.html" %}
+<div>
+  {% extends "models/page.basic.html" %}
 
-{% block title %}HXL proxy error{% endblock %}
+  {% block title %}HXL proxy error{% endblock %}
 
-{% block main %}
-<div class="panel panel-danger">
-  <div class="panel-heading">
-    <h1 class="panel-title">Something went wrong!</h1>
+  {% block main %}
+  <div>
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <h1 class="panel-title">Something went wrong!</h1>
+      </div>
+      <div class="panel-body">
+        <p class="lead">
+          {% if e.message %}
+          {{ e.message }}
+          {% else %}
+          {{ e }}
+          {% endif %}
+        </p>
+        {% if e.data and e.data.input.raw_input.geturl() %}
+        <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
+          See what was returned
+        </a>
+        {% endif %}
+      </div>
+      <div class="panel-footer small">
+        Help make the HXL Proxy better! Please <a
+        href="https://github.com/HXLStandard/hxl-proxy/issues">report
+        this bug at GitHub</a> (and include the URL).
+      </div>
+    </div>
   </div>
-  <div class="panel-body">
-    <p class="lead">
-      {% if e.message %}
-      {{ e.message }}
-      {% else %}
-      {{ e }}
-      {% endif %}
-    </p>
-    {% if e.data and e.data.input.raw_input.geturl() %}
-    <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
-      See what was returned
-    </a>
-    {% endif %}
-  </div>
-  <div class="panel-footer small">
-    Help make the HXL Proxy better! Please <a
-    href="https://github.com/HXLStandard/hxl-proxy/issues">report
-    this bug at GitHub</a> (and include the URL).
-  </div>
+  {% endblock %}
 </div>
-{% endblock %}

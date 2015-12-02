@@ -1,151 +1,153 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
-{% from 'macros/params.html' import params %}
-{% from 'macros/edittabs.html' import edittabs %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
+  {% from 'macros/params.html' import params %}
+  {% from 'macros/edittabs.html' import edittabs %}
 
-{% set nav_filter='active' %}
-
-{% if key %}
-{% set title=profile.name|nonone + ' (edit filters)' %}
-{% else %}
-{% set title='Transform your data' %}
-{% endif %}
-
-{% block menu %}
-{{ navmenu(profile, key=key, facet='edit') }}
-{% endblock %}
-
-{% block title %}{{ title }}{% endblock %}
-
-{% block main %}
-<main>
-
-  {{ edittabs(profile, key, 'edit') }}
-
-  <h1>{{ title }}</h1>
-
-  <section class="row-fluid">
-
-    {% if key %}
-    <p class="lead">
-      Edit the filters for your dataset, or add new ones.
-    </p>
-    {% else %}
-    <p class="lead">
-      Optionally add filters to transform the data, merge or append
-      multiple datasets, etc.
-    </p>
-    {% endif %}
-
-    {% include "snippets/source.html" %}
-
-  </section>
+  {% set nav_filter='active' %}
 
   {% if key %}
-  {% set method="POST" %}
-  {% set action="/actions/save-profile" %}
+  {% set title=profile.name|nonone + ' (edit filters)' %}
   {% else %}
-  {% set method="GET" %}
-  {% set action="/data/edit" %}
+  {% set title='Transform your data' %}
   {% endif %}
-  <div class="row-fluid">
-    <section class="col-sm-3 col-md-2">
-      <h3>Filters</h3>
-      <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
-        <fieldset class="btn-group btn-group-vertical btn-group-justified" role="group" aria-label="Data filters">
-          {% for n in range(1, filter_count+1) %}
-          <div class="filter">
-            <a class="btn btn-default filter-button" data-toggle="modal" data-target="{{ '#filter-dialog-%02d' % n }}" href="{{ '#filter-dialog-%02d' % n }}">{{ n }}</a>
-            <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h2 class="modal-title">New filter</h2>
-                  </div>
-                  <div class="modal-body">
-                    <fieldset id="{{ 'filter-group%02d' % n }}">
-                      {% include 'snippets/filters/filter-selector.html' %}
+  {% block menu %}
+  {{ navmenu(profile, key=key, facet='edit') }}
+  {% endblock %}
 
-                      {% include 'snippets/filters/add.html' %}
-                      {% include 'snippets/filters/append.html' %}
-                      {% include 'snippets/filters/clean.html' %}
-                      {% include 'snippets/filters/count.html' %}
-                      {% include 'snippets/filters/cut.html' %}
-                      {% include 'snippets/filters/dedup.html' %}
-                      {% include 'snippets/filters/merge.html' %}
-                      {% include 'snippets/filters/rename.html' %}
-                      {% include 'snippets/filters/replace.html' %}
-                      {% include 'snippets/filters/replace-map.html' %}
-                      {% include 'snippets/filters/select.html' %}
-                      {% include 'snippets/filters/sort.html' %}
+  {% block title %}{{ title }}{% endblock %}
 
-                    </fieldset>
+  {% block main %}
+  <div>
 
-                    <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
+    {{ edittabs(profile, key, 'edit') }}
+
+    <h1>{{ title }}</h1>
+
+    <section class="row-fluid">
+
+      {% if key %}
+      <p class="lead">
+        Edit the filters for your dataset, or add new ones.
+      </p>
+      {% else %}
+      <p class="lead">
+        Optionally add filters to transform the data, merge or append
+        multiple datasets, etc.
+      </p>
+      {% endif %}
+
+      {% include "snippets/source.html" %}
+
+    </section>
+
+    {% if key %}
+    {% set method="POST" %}
+    {% set action="/actions/save-profile" %}
+    {% else %}
+    {% set method="GET" %}
+    {% set action="/data/edit" %}
+    {% endif %}
+    <div class="row-fluid">
+      <section class="col-sm-3 col-md-2">
+        <h3>Filters</h3>
+        <form action="{{ action }}" method="{{ method }}" id="filter-form">
+
+          <fieldset class="btn-group btn-group-vertical btn-group-justified" role="group" aria-label="Data filters">
+            {% for n in range(1, filter_count+1) %}
+            <div class="filter">
+              <a class="btn btn-default filter-button" data-toggle="modal" data-target="{{ '#filter-dialog-%02d' % n }}" href="{{ '#filter-dialog-%02d' % n }}">{{ n }}</a>
+              <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h2 class="modal-title">New filter</h2>
+                    </div>
+                    <div class="modal-body">
+                      <fieldset id="{{ 'filter-group%02d' % n }}">
+                        {% include 'snippets/filters/filter-selector.html' %}
+
+                        {% include 'snippets/filters/add.html' %}
+                        {% include 'snippets/filters/append.html' %}
+                        {% include 'snippets/filters/clean.html' %}
+                        {% include 'snippets/filters/count.html' %}
+                        {% include 'snippets/filters/cut.html' %}
+                        {% include 'snippets/filters/dedup.html' %}
+                        {% include 'snippets/filters/merge.html' %}
+                        {% include 'snippets/filters/rename.html' %}
+                        {% include 'snippets/filters/replace.html' %}
+                        {% include 'snippets/filters/replace-map.html' %}
+                        {% include 'snippets/filters/select.html' %}
+                        {% include 'snippets/filters/sort.html' %}
+
+                      </fieldset>
+
+                      <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          {% endfor %}
-        </fieldset>
-        <fieldset class="panel panel-info">
-          <div class="panel-body">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
-                Strip text headers
-              </label>
+            {% endfor %}
+          </fieldset>
+          <fieldset class="panel panel-info">
+            <div class="panel-body">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+                  Strip text headers
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="force"{% if profile.args['force'] %} checked="checked"{% endif %} />
+                  Never cache
+                </label>
+              </div>
+              <div class="form-input pull-right">
+                <button class="btn btn-info btn-xs">Save prefs</button>
+              </div>
             </div>
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="force"{% if profile.args['force'] %} checked="checked"{% endif %} />
-                Never cache
-              </label>
-            </div>
-            <div class="form-input pull-right">
-              <button class="btn btn-info btn-xs">Save prefs</button>
-            </div>
-          </div>
-        </fieldset>
-        {% if key %}
-        {{ params(profile.args, excludes=['strip-headers', 'force'], hide_filters=True) }}
+          </fieldset>
+          {% if key %}
+          {{ params(profile.args, excludes=['strip-headers', 'force'], hide_filters=True) }}
+          {% endif %}
+          {{ params(request.args, excludes=['strip-headers', 'force'], hide_filters=True) }}
+        </form>
+      </section>
+
+      <section class="col-sm-9 col-md-10">
+        <h3>Preview</h3>
+        <div id="preview-table">
+          {% include 'snippets/hxltable.html' %}
+        </div>
+        {% if source.has_more_rows %}
+        <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
         {% endif %}
-        {{ params(request.args, excludes=['strip-headers', 'force'], hide_filters=True) }}
-      </form>
+      </section>
+    </div>
+
+
+    <section class="row-fluid">
+      <p><a class="btn btn-success pull-right" href="{{ data_url(profile, key) }}">Done filters</a></p>
     </section>
 
-    <section class="col-sm-9 col-md-10">
-      <h3>Preview</h3>
-      <div id="preview-table">
-        {% include 'snippets/hxltable.html' %}
-      </div>
-      {% if source.has_more_rows %}
-      <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
-      {% endif %}
-    </section>
   </div>
+  {% endblock %}
 
-
-  <section class="row-fluid">
-    <p><a class="btn btn-success pull-right" href="{{ data_url(profile, key) }}">Done filters</a></p>
-  </section>
-
-</main>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-<script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-<script>
-  hxl_proxy.setupForm();
-  $(document).ready(function() {
-  // add the preview warning, with total row count
-  $("#preview-warning").insertBefore($(".hxltable"));
-  });
-</script>
-{% endblock %}
+  {% block scripts %}
+  {{ super() }}
+  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  <script>
+    hxl_proxy.setupForm();
+    $(document).ready(function() {
+    // add the preview warning, with total row count
+    $("#preview-warning").insertBefore($(".hxltable"));
+    });
+  </script>
+  {% endblock %}
+</div>

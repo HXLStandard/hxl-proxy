@@ -1,20 +1,22 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
 
-{% block menu %}
-{{ navmenu(profile, key=key, facet='map') }}
-{% endblock %}
+  {% block menu %}
+  {{ navmenu(profile, key=key, facet='map') }}
+  {% endblock %}
 
-{% block title %}{{ profile.name|default('Filtered HXL data') }} (map){% endblock %}
+  {% block title %}{{ profile.name|default('Filtered HXL data') }} (map){% endblock %}
 
-{% block head %}
-{{ super() }}
-    <link rel="stylesheet" type="text/css" href="{{ static('leaflet/leaflet.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster/MarkerCluster.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster//MarkerCluster.Default.css') }}" />
-{% endblock %}
+  {% block head %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/leaflet.css') }}" />
+  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster/MarkerCluster.css') }}" />
+  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster//MarkerCluster.Default.css') }}" />
+  {% endblock %}
 
-{% block main %}
+  {% block main %}
+  <div>
     <h1>
       Map:
       {% if key %}
@@ -36,21 +38,22 @@
         {% endif %}
       </a>
     </p>
+  </div>
+  {% endblock %}
 
-{% endblock %}
-
-{% block scripts %}
-    <script type="text/javascript">
-      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
-      var map_layer_tag = "{{ layer_tag }}";
-    </script>
-    <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
-    <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
-{{ super() }}
-    <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
-    <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
-    <script type="text/javascript" src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-    <script type="text/javascript">
-      hxl_proxy.setupMap();
-    </script>
-{% endblock %}
+  {% block scripts %}
+  <script type="text/javascript">
+    var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
+    var map_layer_tag = "{{ layer_tag }}";
+  </script>
+  <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
+  <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
+  {{ super() }}
+  <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
+  <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
+  <script type="text/javascript" src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript">
+    hxl_proxy.setupMap();
+  </script>
+  {% endblock %}
+</div>

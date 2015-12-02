@@ -1,91 +1,93 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu, hxltable %}
-{% from 'macros/selectors.html' import selectors %}
-{% from 'macros/params.html' import params %}
-{% from 'macros/edittabs.html' import edittabs %}
-
-{% set nav_validate='active' %}
-
-{% block menu %}
-{{ navmenu(profile, key=key, facet='profile') }}
-{% endblock %}
-
-{% if key %}
-{% set title='Update saved profile' %}
-{% else %}
-{% set title='Save a profile' %}
-{% endif %}
-
-{% block title %}{{ title }}{% endblock %}
-
-{% block main %}
 <div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu, hxltable %}
+  {% from 'macros/selectors.html' import selectors %}
+  {% from 'macros/params.html' import params %}
+  {% from 'macros/edittabs.html' import edittabs %}
 
-  <h1>{{ title }}</h1>
+  {% set nav_validate='active' %}
 
-  {% include "snippets/source.html" %}
+  {% block menu %}
+  {{ navmenu(profile, key=key, facet='profile') }}
+  {% endblock %}
 
   {% if key %}
-  <p class="lead">
-    Update your saved profile.  Leave the password blank if you don't want to change it.
-  </p>
+  {% set title='Update saved profile' %}
   {% else %}
-  <p class="lead">
-    Create a saved profile with a special short link. You can edit it
-    in the future using the password that you enter below.
-  </p>
+  {% set title='Save a profile' %}
   {% endif %}
 
-  <form class="form" method="POST" action="/actions/save-profile">
-    <div class="form-group required">
-      <label for="name">Filter name</label>
-      <input name="name" required="required" class="form-control" value="{{ profile.name|nonone }}" />
-    </div>
-    <div class="form-group">
-      <label for="description">Short description</label>
-      <textarea name="description" class="form-control">{{ profile.description|nonone }}</textarea>
-    </div>
-    <div class="form-group">
-      <label for="stub">
-        Basename for download (will add extension
-        like .csv).
-      </label>
-      <input name="stub" class="form-control" value="{{ profile.stub|nonone }}" />
-    </div>
-    <div class="form-group">
-      <label for="schema_url">Default schema URL for validation</label>
-      <input name="schema_url" id="schema_url" class="form-control" value="{{ profile.args.schema_url|nonone }}" />
-      {{ selectors('#schema_url') }}
-    </div>
-    <div class="form-group{% if not key %} required{% endif %}">
-      <label for="password">Editing password</label>
-      <input name="password" type="password"{% if not key %} required="required"{% endif %} class="form-control" />
-    </div>
-    <div class="form-group{% if not key %} required{% endif %}">
-      <label for="password-repeat">Editing password (repeat)</label>
-      <input name="password-repeat" type="password"{% if not key %} required="required"{% endif %} class="form-control" />
-    </div>
-    <div class="checkbox form-group">
-      <label>
-        <input name="cloneable" type="checkbox"{% if profile.cloneable or (not key) %} checked="checked"{% endif %} />
-        Users may clone (will expose original URL)
-      </label>
-    </div>
-    <div class="form-group">
-      <button type="submit" class="btn btn-success">Save this filter</button>
-    </div>
-    {% if key %}
-    <input type="hidden" name="key" value="{{ key }}" />
-    {% endif %}
-    {{ params(request.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
-  </form>
-</div>
-{% endblock %}
+  {% block title %}{{ title }}{% endblock %}
 
-{% block scripts %}
-{{ super() }}
-<script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-<script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-{% endblock %}
+  {% block main %}
+  <div>
+
+    <h1>{{ title }}</h1>
+
+    {% include "snippets/source.html" %}
+
+    {% if key %}
+    <p class="lead">
+      Update your saved profile.  Leave the password blank if you don't want to change it.
+    </p>
+    {% else %}
+    <p class="lead">
+      Create a saved profile with a special short link. You can edit it
+      in the future using the password that you enter below.
+    </p>
+    {% endif %}
+
+    <form class="form" method="POST" action="/actions/save-profile">
+      <div class="form-group required">
+        <label for="name">Filter name</label>
+        <input name="name" required="required" class="form-control" value="{{ profile.name|nonone }}" />
+      </div>
+      <div class="form-group">
+        <label for="description">Short description</label>
+        <textarea name="description" class="form-control">{{ profile.description|nonone }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="stub">
+          Basename for download (will add extension
+          like .csv).
+        </label>
+        <input name="stub" class="form-control" value="{{ profile.stub|nonone }}" />
+      </div>
+      <div class="form-group">
+        <label for="schema_url">Default schema URL for validation</label>
+        <input name="schema_url" id="schema_url" class="form-control" value="{{ profile.args.schema_url|nonone }}" />
+        {{ selectors('#schema_url') }}
+      </div>
+      <div class="form-group{% if not key %} required{% endif %}">
+        <label for="password">Editing password</label>
+        <input name="password" type="password"{% if not key %} required="required"{% endif %} class="form-control" />
+      </div>
+      <div class="form-group{% if not key %} required{% endif %}">
+        <label for="password-repeat">Editing password (repeat)</label>
+        <input name="password-repeat" type="password"{% if not key %} required="required"{% endif %} class="form-control" />
+      </div>
+      <div class="checkbox form-group">
+        <label>
+          <input name="cloneable" type="checkbox"{% if profile.cloneable or (not key) %} checked="checked"{% endif %} />
+          Users may clone (will expose original URL)
+        </label>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-success">Save this filter</button>
+      </div>
+      {% if key %}
+      <input type="hidden" name="key" value="{{ key }}" />
+      {% endif %}
+      {{ params(request.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
+    </form>
+  </div>
+  {% endblock %}
+
+  {% block scripts %}
+  {{ super() }}
+  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+  {% endblock %}
+</div>

@@ -1,54 +1,56 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
-
-{% if key %}
-{% set title=profile.name %}
-{% else %}
-{% set title="Result data" %}
-{% endif %}
-
-{% block title %}{{ title }}{% endblock %}
-
-{% block head %}
-{{ super() }}
-<link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
-{% endblock %}
-
-{% block menu %}
-{{ navmenu(profile=profile, key=key, facet='data') }}
-{% endblock %}
-
-{% block main %}
 <div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
 
-  <span class="icons pull-right">
-    <a href="{{ data_url(profile, key, format='csv') }}">
-      <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
-      <span>CSV</span>
-    </a>
-    <a href="{{ data_url(profile, key, format='json') }}">
-      <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
-      <span>JSON</span>
-    </a>
-  </span>
-
-  <h1>{{ title }}</h1>
-
-  {% if profile.description %}
-  <p>{{ profile.description }}</p>
+  {% if key %}
+  {% set title=profile.name %}
+  {% else %}
+  {% set title="Result data" %}
   {% endif %}
 
-  {% if (not key) or profile.cloneable %}
-  {% include 'snippets/source.html' %}
-  {% endif %}
+  {% block title %}{{ title }}{% endblock %}
 
-  <section id="data" style="clear: both">
-    {% include 'snippets/hxltable.html' %}
-  </section>
+  {% block head %}
+  {{ super() }}
+  <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+  {% endblock %}
 
+  {% block menu %}
+  {{ navmenu(profile=profile, key=key, facet='data') }}
+  {% endblock %}
+
+  {% block main %}
+  <div>
+
+    <span class="icons pull-right">
+      <a href="{{ data_url(profile, key, format='csv') }}">
+        <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
+        <span>CSV</span>
+      </a>
+      <a href="{{ data_url(profile, key, format='json') }}">
+        <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
+        <span>JSON</span>
+      </a>
+    </span>
+
+    <h1>{{ title }}</h1>
+
+    {% if profile.description %}
+    <p>{{ profile.description }}</p>
+    {% endif %}
+
+    {% if (not key) or profile.cloneable %}
+    {% include 'snippets/source.html' %}
+    {% endif %}
+
+    <section id="data" style="clear: both">
+      {% include 'snippets/hxltable.html' %}
+    </section>
+
+  </div>
+  {% endblock %}
+
+  {% block scripts %}
+  {{ super() }}
+  {% endblock %}
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{% endblock %}

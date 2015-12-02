@@ -1,46 +1,47 @@
-{% extends "models/page.basic.html" %}
-{% from 'macros/navmenu.html' import navmenu %}
+<div>
+  {% extends "models/page.basic.html" %}
+  {% from 'macros/navmenu.html' import navmenu %}
 
-{% set title = analysis.title() %}
+  {% set title = analysis.title() %}
 
-{% block title %}{{ title }}{% endblock %}
+  {% block title %}{{ title }}{% endblock %}
 
-{% block head %}
-{{ super() }}
-    <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
-{% endblock %}
+  {% block head %}
+  {{ super() }}
+  <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
+  {% endblock %}
 
-{% block menu %}
-            <li>
-              <a href="/analysis">
-                <span class="glyphicon glyphicon-plus"></span>
-                new
-              </a>
-            </li>
-            <li class="active">
-              <a href="{{ analysis.overview_url() }}">
-                <span class="glyphicon glyphicon-wrench"></span>
-                overview
-              </a>
-            </li>
-            <li>
-              <a href="{{ analysis.data_url() }}">
-                <span class="glyphicon glyphicon-th-list"></span>
-                data
-              </a>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="{{ analysis.data_url(format='csv') }}">download as CSV</a></li>
-                <li><a href="{{ analysis.data_url(format='json') }}">download as JSON</a></li>
-              </ul>
-            </li>
-{% endblock %}
+  {% block menu %}
+  <li>
+    <a href="/analysis">
+      <span class="glyphicon glyphicon-plus"></span>
+      new
+    </a>
+  </li>
+  <li class="active">
+    <a href="{{ analysis.overview_url() }}">
+      <span class="glyphicon glyphicon-wrench"></span>
+      overview
+    </a>
+  </li>
+  <li>
+    <a href="{{ analysis.data_url() }}">
+      <span class="glyphicon glyphicon-th-list"></span>
+      data
+    </a>
+  </li>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle"
+       data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-download-alt"></span> download<span class="caret"></span></a>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="{{ analysis.data_url(format='csv') }}">download as CSV</a></li>
+      <li><a href="{{ analysis.data_url(format='json') }}">download as JSON</a></li>
+    </ul>
+  </li>
+  {% endblock %}
 
-{% block main %}
-
+  {% block main %}
+  <div>
     <ul class="breadcrumb">
       {% if not analysis.filters %}
       <li class="active">3W data</li>
@@ -64,42 +65,42 @@
     <p>Select a link to zoom in on part of the data.</p>
 
     <section class="row">
-    {% for pattern in analysis.patterns %}
-    {% set entries = analysis.get_top_values(pattern[0]) %}
-    {% if entries %}
-    {# hack around variable scope #}
-    {% set _dummy = seen_summary.append(True) %}
-    <section class="col-lg-3 col-md-4 col-sm-6">
-      <div class="panel panel-default">
-      <div class="panel-heading">
-      <h2 class="panel-title">Top {{ pattern[1]|default('values for' + pattern[0]) }} (of {{ entries|count }})</h2>
-      </div>
-      <div class="panel-body">
-      <table class="table">
-        <tbody>
-          {% for entry in entries[:3] %}
-          <tr>
-            <td>
-              <a href="{{ analysis.overview_url(pattern[0], entry.value) }}">
-                <span class="glyphicon glyphicon-zoom-in"></span> 
-                {{ entry.orig }}
-              </a>
-            </td>
-            <td>{{ entry.count }}</td>
-            <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-      <div class="panel-footer">
-        <a class="btn btn-default" href="{{ analysis.tag_url(pattern[0]) }}">Choose from all {{ pattern[1]|default('values for' +
-      pattern[0]) }}</a>
-      </div>
-      </div>
-    </section>
-    {% endif %}
-    {% endfor %}
+      {% for pattern in analysis.patterns %}
+      {% set entries = analysis.get_top_values(pattern[0]) %}
+      {% if entries %}
+      {# hack around variable scope #}
+      {% set _dummy = seen_summary.append(True) %}
+      <section class="col-lg-3 col-md-4 col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h2 class="panel-title">Top {{ pattern[1]|default('values for' + pattern[0]) }} (of {{ entries|count }})</h2>
+          </div>
+          <div class="panel-body">
+            <table class="table">
+              <tbody>
+                {% for entry in entries[:3] %}
+                <tr>
+                  <td>
+                    <a href="{{ analysis.overview_url(pattern[0], entry.value) }}">
+                      <span class="glyphicon glyphicon-zoom-in"></span> 
+                      {{ entry.orig }}
+                    </a>
+                  </td>
+                  <td>{{ entry.count }}</td>
+                  <td>{{ '{0:.1f}%'.format(entry.percentage * 100) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-footer">
+            <a class="btn btn-default" href="{{ analysis.tag_url(pattern[0]) }}">Choose from all {{ pattern[1]|default('values for' +
+            pattern[0]) }}</a>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+      {% endfor %}
     </section>
     {% endif %}
 
@@ -109,9 +110,10 @@
     <p>Nothing left to filter!</p>
     <p><a class="btn btn-success" href="{{ analysis.data_url() }}">See the data</a></p>
     {% endif %}
+  </div>
+  {% endblock %}
 
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{% endblock %}
+  {% block scripts %}
+  {{ super() }}
+  {% endblock %}
+</div>
