@@ -31,7 +31,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">
-            #HXL proxy
+            <b>#HXL</b>
           </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -43,19 +43,21 @@
             {% if session.user %}
             <li>
               <a href="/settings/user">
+                <span class="glyphicon glyphicon-user"></span>
                 {{ session.user.name_given }}
-                {{ session.user.name_family }}
               </a>
             </li>
             <li>
               <a href="/logout">
+                <span class="glyphicon glyphicon-log-out"></span>
                 Logout
               </a>
             </li>
             {% else %}
             <li>
               <a href="/login">
-                Login (Humanitarian.ID)
+                <span class="glyphicon glyphicon-log-in"></span>
+                Login
               </a>
             </li>
             {% endif %}
