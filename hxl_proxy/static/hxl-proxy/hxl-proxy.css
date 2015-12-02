@@ -21,6 +21,10 @@ label {
     content: "* ";
 }
 
+section {
+    margin-top: 2ex;
+}
+
 .panel-title a.collapsed:before {
     content: "+ ";
 }
