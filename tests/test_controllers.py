@@ -12,13 +12,14 @@ import os
 import re
 import tempfile
 
-from . import mock_dataset
-
-from unittest.mock import patch
-MAKE_STREAM_PATCH = 'hxl.io.make_stream'
-
 import hxl_proxy
 from hxl_proxy.profiles import ProfileManager, Profile
+
+#
+# Mock URL access so that tests work offline
+#
+from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
+from unittest.mock import patch
 
 
 class TestEditPage(unittest.TestCase):
@@ -34,9 +35,8 @@ class TestEditPage(unittest.TestCase):
         rv = self.client.get('/data/edit', follow_redirects=True)
         self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data, 'title')
 
-    @patch(MAKE_STREAM_PATCH)
-    def test_url(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_url(self):
         response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
         self.assertTrue(b'<h1>Transform your data</h1>' in response.data)
         assert_basic_dataset(self, response)
@@ -67,16 +67,14 @@ class TestDataPage(unittest.TestCase):
         response = self.client.get('/data?url=/etc/passwd')
         self.assertEqual(403, response.status_code)
 
-    @patch(MAKE_STREAM_PATCH)
-    def test_url(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_url(self):
         response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
         self.assertTrue(b'<h1>Result data</h1>' in response.data)
         assert_basic_dataset(self, response)
 
-    @patch(MAKE_STREAM_PATCH)
-    def test_key(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_key(self):
         response = self.client.get('/data/{}'.format(self.key))
         self.assertTrue(b'<h1>Sample dataset</h1>' in response.data)
         assert_basic_dataset(self, response)
@@ -97,16 +95,14 @@ class TestValidationPage(unittest.TestCase):
         response = self.client.get('/data/validate')
         self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
 
-    @patch(MAKE_STREAM_PATCH)
-    def test_default_schema(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_default_schema(self):
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
         self.assertTrue(b'Using the default schema' in response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
-    @patch(MAKE_STREAM_PATCH)
-    def test_good_schema(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_good_schema(self):
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
         self.assertTrue(b'Validation succeeded' in response.data)
 

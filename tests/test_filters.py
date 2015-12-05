@@ -10,15 +10,17 @@ import unittest
 import sys
 import operator
 
-from unittest.mock import patch
-URLOPEN_PATCH = 'hxl.io.make_stream'
-
-from . import mock_dataset
-
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
 from hxl_proxy.profiles import Profile
+
+#
+# Mock URL access so that tests work offline
+#
+from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
+from unittest.mock import patch
+
 
 DATA = [
     ['#org', '#sector', '#country', '#affected'],
@@ -29,9 +31,8 @@ DATA = [
 
 class TestSetupFilters(unittest.TestCase):
 
-    @patch(URLOPEN_PATCH)
-    def test_filters(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_filters(self):
         args = {
             'url': 'http://example.org/basic-dataset.csv',
             'filter_count': 3,
@@ -116,9 +117,8 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(self.source, filter.source)
         self.assertEqual(['#org', '#adm1', '#adm2+pcode'], [str(p) for p in filter.include_tags])
 
-    @patch(URLOPEN_PATCH)
-    def test_add_merge_filter(self, mock):
-        mock_dataset(mock)
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_add_merge_filter(self):
         args = {
             'merge-keys11': 'adm2_id+pcode',
             'merge-tags11': 'lat_deg,lon_deg',
