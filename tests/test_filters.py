@@ -11,7 +11,7 @@ import sys
 import operator
 
 from unittest.mock import patch
-URLOPEN_PATCH = 'hxl.io.open_url'
+URLOPEN_PATCH = 'hxl.io.make_stream'
 
 from . import mock_dataset
 

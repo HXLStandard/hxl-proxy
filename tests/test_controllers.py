@@ -15,7 +15,7 @@ import tempfile
 from . import mock_dataset
 
 from unittest.mock import patch
-URLOPEN_PATCH = 'hxl.io.open_url'
+URLOPEN_PATCH = 'hxl.io.make_stream'
 
 import hxl_proxy
 from hxl_proxy.profiles import ProfileManager, Profile
@@ -31,15 +31,14 @@ class TestEditPage(unittest.TestCase):
         end_tests(self)
 
     def test_empty_url(self):
-        rv = self.client.get('/data/edit')
-        self.assertTrue(b'New HXL view' in rv.data, 'title')
-        self.assertTrue(b'No data yet' in rv.data, 'no data warning')
+        rv = self.client.get('/data/edit', follow_redirects=True)
+        self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data, 'title')
 
     @patch(URLOPEN_PATCH)
     def test_url(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
-        self.assertTrue(b'<h1>New HXL view</h1>' in response.data)
+        self.assertTrue(b'<h1>Transform your data</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     def test_need_login(self):
@@ -72,7 +71,7 @@ class TestDataPage(unittest.TestCase):
     def test_url(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
-        self.assertTrue(b'<h1>New filter preview</h1>' in response.data)
+        self.assertTrue(b'<h1>Result data</h1>' in response.data)
         assert_basic_dataset(self, response)
 
     @patch(URLOPEN_PATCH)
@@ -98,10 +97,9 @@ class TestValidationPage(unittest.TestCase):
         response = self.client.get('/data/validate')
         self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
 
-    @patch(URLOPEN_PATCH)
-    def test_default_schema(self, mock):
-        mock_dataset(mock)
+    def test_default_schema(self):
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
+        print(response.data)
         self.assertTrue(b'Using the default schema' in response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
@@ -121,6 +119,7 @@ def start_tests(tests):
     with tempfile.NamedTemporaryFile(delete=True) as file:
         tests.filename = file.name
     hxl_proxy.app.config['PROFILE_FILE'] = tests.filename
+    hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
     tests.key = ProfileManager(tests.filename).add_profile(make_profile())
     tests.client = hxl_proxy.app.test_client()
 
