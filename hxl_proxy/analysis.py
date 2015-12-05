@@ -7,7 +7,7 @@ For now, focusses on 3W-type data.
 import urllib
 
 import hxl
-from hxl_proxy.util import norm
+from hxl_proxy.util import strnorm, urlquote
 
 class Analysis:
 
@@ -43,7 +43,7 @@ class Analysis:
         for row in self.source:
             values = row.get_all(pattern)
             for value in values:
-                key = norm(value)
+                key = strnorm(value)
                 if value:
                     total += 1
                     if occurs.get(key):
@@ -59,12 +59,12 @@ class Analysis:
         """Construct a query string"""
         queries = []
         for filter in self.filters:
-            queries.append([urllib.quote(str(filter['pattern'])[1:]), urllib.quote(filter['value'])])
+            queries.append([urlquote(str(filter['pattern'])[1:]), urlquote(filter['value'])])
             if limit is not None and filter == limit:
                 break
         if pattern:
-            queries.append([ urllib.quote(str(pattern)[1:]), urllib.quote(value) ])
-        queries.append([ urllib.quote('url'), urllib.quote(self.args.get('url')) ])
+            queries.append([ urlquote(str(pattern)[1:]), urlquote(value) ])
+        queries.append([ urlquote('url'), urlquote(self.args.get('url')) ])
         return '&'.join(map(lambda item: '='.join(item), queries))
 
     def title(self, tag_pattern=None):
@@ -128,7 +128,7 @@ class Analysis:
         return '/analysis/data{}?{}'.format(format, self.make_query(pattern, value, limit))
 
     def tag_url(self, tag_pattern, pattern=None, value=None, limit=None):
-        return '/analysis/tag/{}?{}'.format(urllib.quote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
+        return '/analysis/tag/{}?{}'.format(urlquote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
 
     @property
     def patterns(self):

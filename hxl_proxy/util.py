@@ -34,9 +34,9 @@ def skip_cache_p ():
     """Test if we should skip the cache."""
     return True if request.args.get('force') else False
     
-def norm (s):
+def strnorm (s):
     """Normalise a string"""
-    return s.strip().lower().replace(r'\s\s+', ' ')
+    return hxl.common.normalise_string(s)
 
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
@@ -46,12 +46,15 @@ def stream_template(template_name, **context):
     rv.enable_buffering(5)
     return rv
 
+def urlquote(value):
+    return urllib.parse.quote_plus(value.encode('utf8'), safe='/')
+
 def urlencode_utf8(params):
     if hasattr(params, 'items'):
         params = list(params.items())
     return '&'.join(
-        (urllib.parse.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.parse.quote_plus(v.encode('utf8'), safe='/')
-            for k, v in params if v))
+            urlquote(k) + '=' + urlquote(v) for k, v in params if v
+    )
 
 def using_tagger_p(profile):
     for name in profile.args:
@@ -118,20 +121,20 @@ def make_data_url(profile, key=None, facet=None, format=None):
     """Construct a data URL for a profile."""
     url = None
     if key:
-        url = '/data/' + urllib.parse.quote(key)
+        url = '/data/' + urlquote(key)
         if facet:
-            url += '/' + urllib.parse.quote(facet)
+            url += '/' + urlquote(facet)
         elif format:
             if hasattr(profile, 'stub') and profile.stub:
-                url += '/download/' + urllib.parse.quote(profile.stub) + '.' + urllib.parse.quote(format)
+                url += '/download/' + urlquote(profile.stub) + '.' + urlquote(format)
             else:
-                url += '.' + urllib.parse.quote(format)
+                url += '.' + urlquote(format)
     else:
         url = '/data'
         if format:
-            url += '.' + urllib.parse.quote(format)
+            url += '.' + urlquote(format)
         elif facet:
-            url += '/' + urllib.parse.quote(facet)
+            url += '/' + urlquote(facet)
         url += '?' + urlencode_utf8(profile.args)
 
     return url
@@ -158,11 +161,11 @@ app.jinja_env.filters['nonone'] = (
     lambda s: '' if s is None else s
 )
 
-app.jinja_env.filters['urlencode'] = (
-    urllib.parse.quote_plus
+app.jinja_env.filters['urlquote'] = (
+    urlquote
 )
 
-app.jinja_env.filters['norm'] = (
+app.jinja_env.filters['strnorm'] = (
     hxl.common.normalise_string
 )
 

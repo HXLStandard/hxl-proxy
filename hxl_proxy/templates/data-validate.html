@@ -35,7 +35,7 @@
     <p class="alert alert-info alert-dismissable" role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
       {% if schema_url %}
-      Using a <a href="/data?url={{ schema_url|urlencode }}">custom schema</a>.
+      Using a <a href="/data?url={{ schema_url|urlquote }}">custom schema</a>.
       {% else %}
       Using the default schema.
       {% endif %}

@@ -36,7 +36,7 @@
           <td>{{ dataset.title }}</td>
           <td>
             {% for resource in dataset.resources %}
-            <p><a href="/analysis/overview?url={{ resource.url|urlencode }}">{{ resource.name }}</a> ({{ resource.format }})</p>
+            <p><a href="/analysis/overview?url={{ resource.url|urlquote }}">{{ resource.name }}</a> ({{ resource.format }})</p>
             {% endfor %}
           </td>
         </tr>

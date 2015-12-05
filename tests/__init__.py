@@ -7,9 +7,9 @@ import hxl
 def mock_dataset(mock, status_code=200):
     """Will open last element of the URL path as a local file under ./files/"""
     def side_effect(url, allow_local=False):
-        print("**URL:** {}".format(url))
         filename = re.sub(r'^.*/([^/]+)$', '\\1', url)
         path = resolve_path('files/' + filename)
+        print("**Path: {}**".format(path))
         return open(path, 'rb')
     mock.side_effect = side_effect
 

@@ -84,7 +84,7 @@
               <td>{{ loop.index }}</td>
               <td>
                 <input class="form-control" name="{{ name + '-header' }}"
-                       value="{{ profile.args[name + '-header'] or value|norm }}"
+                       value="{{ profile.args[name + '-header'] or value|strnorm }}"
                        placeholder="Header text" />
               </td>
               <td>

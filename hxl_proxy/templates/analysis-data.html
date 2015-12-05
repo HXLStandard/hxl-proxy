@@ -44,7 +44,7 @@
       {% if not analysis.filters %}
       <li class="active">3W data</li>
       {% else %}
-      <li><a href="?url={{ analysis.args.url|urlencode }}">3W data</a></li>
+      <li><a href="?url={{ analysis.args.url|urlquote }}">3W data</a></li>
       {% endif %}
       {% for filter in analysis.filters %}
       {% if filter == analysis.filters|last %}

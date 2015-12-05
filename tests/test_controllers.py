@@ -15,7 +15,7 @@ import tempfile
 from . import mock_dataset
 
 from unittest.mock import patch
-URLOPEN_PATCH = 'hxl.io.make_stream'
+MAKE_STREAM_PATCH = 'hxl.io.make_stream'
 
 import hxl_proxy
 from hxl_proxy.profiles import ProfileManager, Profile
@@ -34,7 +34,7 @@ class TestEditPage(unittest.TestCase):
         rv = self.client.get('/data/edit', follow_redirects=True)
         self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data, 'title')
 
-    @patch(URLOPEN_PATCH)
+    @patch(MAKE_STREAM_PATCH)
     def test_url(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
@@ -67,14 +67,14 @@ class TestDataPage(unittest.TestCase):
         response = self.client.get('/data?url=/etc/passwd')
         self.assertEqual(403, response.status_code)
 
-    @patch(URLOPEN_PATCH)
+    @patch(MAKE_STREAM_PATCH)
     def test_url(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
         self.assertTrue(b'<h1>Result data</h1>' in response.data)
         assert_basic_dataset(self, response)
 
-    @patch(URLOPEN_PATCH)
+    @patch(MAKE_STREAM_PATCH)
     def test_key(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data/{}'.format(self.key))
@@ -103,10 +103,11 @@ class TestValidationPage(unittest.TestCase):
         self.assertTrue(b'Using the default schema' in response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
-    @patch(URLOPEN_PATCH)
+    @patch(MAKE_STREAM_PATCH)
     def test_good_schema(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
+        print(response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
 
