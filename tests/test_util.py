@@ -66,3 +66,15 @@ class TestUtil(unittest.TestCase):
             profile = hxl_proxy.util.get_profile()
             self.assertTrue(profile)
             self.assertEqual('count', profile.args.get('filter01'))
+
+    # skip check_auth
+
+    # TODO add_args
+
+    # TODO make_data_url
+
+    # TODO severity_class
+
+    # TODO re_search
+
+# end
