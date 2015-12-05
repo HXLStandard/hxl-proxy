@@ -97,9 +97,10 @@ class TestValidationPage(unittest.TestCase):
         response = self.client.get('/data/validate')
         self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
 
-    def test_default_schema(self):
+    @patch(MAKE_STREAM_PATCH)
+    def test_default_schema(self, mock):
+        mock_dataset(mock)
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
-        print(response.data)
         self.assertTrue(b'Using the default schema' in response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
@@ -107,7 +108,6 @@ class TestValidationPage(unittest.TestCase):
     def test_good_schema(self, mock):
         mock_dataset(mock)
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
-        print(response.data)
         self.assertTrue(b'Validation succeeded' in response.data)
 
 
