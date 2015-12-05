@@ -64,7 +64,7 @@ def using_tagger_p(profile):
 
 PROFILE_OVERRIDES = ['url', 'schema_url']
 
-def get_profile(key, auth=False, args=None):
+def get_profile(key=None, auth=False, args=None):
     """Load a profile or create from args."""
 
     if args is None:
