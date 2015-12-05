@@ -13,12 +13,15 @@
   {% block title %}Add HXL tags{% endblock %}
 
   {% block main %}
-  <div>
+  <div class="container-fluid">
 
     {% if using_tagger_p(profile) %}
     {{ edittabs(profile, key, 'tagger') }}
     {% endif %}
-    
+
+    {% if not header_row %}
+
+    <section class="col-md-12">
     <h1>Add HXL tags</h1>
 
     {% include "snippets/source.html" %}
@@ -32,9 +35,7 @@
     </p>
     {% endif %}
 
-    {% if not header_row %}
-
-    <p class="lead">First, select the <b>last header row</b> before the data starts.</p>
+    <p>First, select the <b>last header row</b> before the data starts.</p>
 
     <table class="table">
       {% for row in preview %}
@@ -56,10 +57,27 @@
       {% endfor %}
     </table>
 
+    </section>
+
     {% else %}
 
-    <p class="lead">Pick HXL tags for some or all of your headers.</p>
+    <section class="col-sm-8">
 
+    <h1>Add HXL tags</h1>
+
+    {% include "snippets/source.html" %}
+
+    {% if not using_tagger_p(profile) %}
+    <p class="alert alert-warning">
+      We can't find any <a href="http://hxlstandard.org">HXL
+      hashtags</a> in your data, but all is not lost!  You can define
+      tags to go with your headers below, and the HXL Proxy will add
+      them automatically.
+    </p>
+    {% endif %}
+
+    <p >Pick HXL tags for some or all of your headers.</p>
+    
     <form class="panel-body" action="/data/edit" method="GET">
 
       <div class="panel-body">
@@ -108,6 +126,11 @@
       {{ params(request.args) }}
 
     </form>
+    </section>
+
+    <section class="col-sm-4" id="postcard">
+      {% include "snippets/postcards.html" %}
+    </section>
     {% endif %}
   </div>
   {% endblock %}

@@ -21,6 +21,28 @@ from hxl_proxy.profiles import ProfileManager, Profile
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
+class TestDataSource(unittest.TestCase):
+
+    def setUp(self):
+        start_tests(self)
+
+    def tearDown(self):
+        end_tests(self)
+
+    def test_title(self):
+        rv = self.client.get('/data/source')
+        self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data)
+
+    def test_redirect_from_data(self):
+        rv = self.client.get('/data/edit')
+        self.assertEquals(302, rv.status_code)
+        self.assertTrue(rv.location.endswith('/data/source'))
+
+    def test_prepopulate(self):
+        """When a URL is available, it should be prepopulated."""
+        rv = self.client.get('/data/source?url=http://example.org/data.csv')
+        self.assertTrue(b'value="http://example.org/data.csv"' in rv.data)
+
 
 class TestEditPage(unittest.TestCase):
     """Test /data/edit and /data/<key>/edit"""

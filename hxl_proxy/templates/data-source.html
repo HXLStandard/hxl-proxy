@@ -19,86 +19,95 @@
   {% block title %}{{ title }}{% endblock %}
 
   {% block main %}
-  <div>
+  <div class="container-fluid">
 
     {% if profile.args.url %}
     {{ edittabs(profile, key, 'source') }}
     {% endif %}
-    
+
+    <section id="source" class="col-sm-8">
+
     <h1>{{ title }}</h1>
 
-    <div class="lead">
-      {% if key %}
-      <p>
-        Pick a different data source.  All of your existing
-        customisation (filters, schema, etc.) will stay the same.  Your
-        existing data source URL appears below.
-      </p>
-      {% else %}
-      <p>
-        Want to make your humanitarian data dance?  Add some <a
-        href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
-        then let's get started &hellip;
-      </p>
-      {% endif %}
-    </div>
-
-    <section id="cloud-services"" class="icons panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Option #1: choose your dataset from a cloud service</h2>
-      </div>
-      <div class="panel-body text-center">
-        <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
-          <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
-          <span>HDX</span>
-        </a>
-        <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
-          <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
-          <span>Dropbox</span>
-        </a>
-        <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
-          <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
-          <span>Google Drive</span>
-        </a>
-      </div>
-    </section>
-
-    <p class="h3 text-center" aria-role="separator">&hellip;or&hellip;</span></p>
-
-    <section id="manual-entry" class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Option #2: enter your dataset's URL</h2>
-      </div>
-      {% if key %}
-      {% set method="POST" %}
-      {% set action="/actions/save-profile" %}
-      {% else %}
-      {% set method="GET" %}
-      {% set action="/data/edit" %}
-      {% endif %}
-      <form class="panel-body" action="{{ action }}" method="{{ method }}">
-
-        <div class="input-group required">
-          <input id='dataset-url'
-                 class="form-control" 
-                 name="url"
-                 type="url"
-                 required="required"
-                 value="{{ profile.args.url }}"
-                 placeholder="http://example.org/dataset.csv" />
-          <div class="input-group-btn">
-            <button class="btn btn-success"
-                    type="submit">Next</button>
-          </div>
-        </div>
-
+      <div class="lead">
         {% if key %}
-        {{ params(profile.args) }}
+        <p>
+          Pick a different data source.  All of your existing
+          customisation (filters, schema, etc.) will stay the same.  Your
+          existing data source URL appears below.
+        </p>
+        {% else %}
+        <p>
+          Want to make your humanitarian data dance?  Add some <a
+          href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
+          then let's get started &hellip;
+        </p>
         {% endif %}
-        {{ params(request.args) }}
+      </div>
 
-      </form>
+      <section id="manual-entry" class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">Option #1: enter your dataset's URL</h2>
+        </div>
+        {% if key %}
+        {% set method="POST" %}
+        {% set action="/actions/save-profile" %}
+        {% else %}
+        {% set method="GET" %}
+        {% set action="/data/edit" %}
+        {% endif %}
+        <form class="panel-body" action="{{ action }}" method="{{ method }}">
+
+          <div class="input-group required">
+            <input id='dataset-url'
+                   class="form-control" 
+                   name="url"
+                   type="url"
+                   required="required"
+                   value="{{ profile.args.url }}"
+                   placeholder="http://example.org/dataset.csv" />
+            <div class="input-group-btn">
+              <button class="btn btn-success"
+                      type="submit">Next</button>
+            </div>
+          </div>
+
+          {% if key %}
+          {{ params(profile.args) }}
+          {% endif %}
+          {{ params(request.args) }}
+
+        </form>
+      </section>
+
+      <p class="h3 text-center" aria-role="separator">&hellip;or&hellip;</p>
+
+      <section id="cloud-services" class="icons panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">Option #2: choose your dataset from a cloud service</h2>
+        </div>
+        <div class="panel-body text-center">
+          <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
+            <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
+            <span>HDX</span>
+          </a>
+          <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
+            <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
+            <span>Dropbox</span>
+          </a>
+          <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
+            <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
+            <span>Google Drive</span>
+          </a>
+        </div>
+      </section>
+
     </section>
+
+    <section id="postcard" class="col-sm-4 hidden-xs">
+      {% include "snippets/postcards.html" %}
+    </section>
+
   </div>
   {% endblock %}
 

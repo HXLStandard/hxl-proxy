@@ -23,9 +23,20 @@
 
     {{ edittabs(profile, key, 'edit') }}
 
-    <h1>{{ title }}</h1>
+    <section class="container-fluid">
 
-    <section class="row-fluid">
+    </section>
+
+    {% if key %}
+    {% set method="POST" %}
+    {% set action="/actions/save-profile" %}
+    {% else %}
+    {% set method="GET" %}
+    {% set action="/data/edit" %}
+    {% endif %}
+    <div class="container-fluid">
+      <div class="col-sm-8">
+      <h1>{{ title }}</h1>
 
       {% if key %}
       <p class="lead">
@@ -40,17 +51,7 @@
 
       {% include "snippets/source.html" %}
 
-    </section>
-
-    {% if key %}
-    {% set method="POST" %}
-    {% set action="/actions/save-profile" %}
-    {% else %}
-    {% set method="GET" %}
-    {% set action="/data/edit" %}
-    {% endif %}
-    <div class="row-fluid">
-      <section class="col-sm-3 col-md-2">
+      <section id="filters">
         <h3>Filters</h3>
         <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
@@ -93,20 +94,27 @@
           </fieldset>
           <fieldset class="panel panel-info">
             <div class="panel-body">
+              <div class="container-fluid">
+                <div class="col-sm-6">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
                   Strip text headers
                 </label>
               </div>
+                </div>
+              <div class="col-sm-6">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="force"{% if profile.args['force'] %} checked="checked"{% endif %} />
                   Never cache
                 </label>
               </div>
-              <div class="form-input pull-right">
-                <button class="btn btn-info btn-xs">Save prefs</button>
+              </div>
+              </div>
+              <div class="form-input">
+                <button class="btn btn-info btn-xs">Update preferences</button>
+                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(profile, key) }}">Done filters</a>
               </div>
             </div>
           </fieldset>
@@ -115,9 +123,10 @@
           {% endif %}
           {{ params(request.args, excludes=['strip-headers', 'force'], hide_filters=True) }}
         </form>
+        <p></p>
       </section>
 
-      <section class="col-sm-9 col-md-10">
+      <section class="">
         <h3>Preview</h3>
         <div id="preview-table">
           {% include 'snippets/hxltable.html' %}
@@ -126,12 +135,13 @@
         <p id="preview-warning" class="alert alert-warning hxltable-warning">Previewing the first {{ "{:,}".format(source.max_rows) }} of {{ "{:,}".format(source.total_rows) }} data rows.</p>
         {% endif %}
       </section>
+      </div>
+
+      <div class="col-sm-4 hidden-xs" id="postcard">
+        {% include "snippets/postcards.html" %}
+      </div>
+        
     </div>
-
-
-    <section class="row-fluid">
-      <p><a class="btn btn-success pull-right" href="{{ data_url(profile, key) }}">Done filters</a></p>
-    </section>
 
   </div>
   {% endblock %}

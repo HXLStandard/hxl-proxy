@@ -130,3 +130,23 @@ td>.content {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#filters {
+    max-width: 40rem;
+}
+
+.postcards {
+    font-size: 80%;
+    font-style: italic;
+}
+
+.postcards h2 {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.postcards img {
+    width: 95%;
+    border: solid 1px #aaaaaa;
+    margin: 1ex 0;
+}
