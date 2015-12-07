@@ -19,119 +19,118 @@
     {{ edittabs(profile, key, 'tagger') }}
     {% endif %}
 
-    {% if not header_row %}
-
-    <section class="col-md-12">
     <h1>Add HXL tags</h1>
 
-    {% include "snippets/source.html" %}
+    {% if not header_row %}
 
-    {% if not using_tagger_p(profile) %}
-    <p class="alert alert-warning">
-      We can't find any <a href="http://hxlstandard.org">HXL
-      hashtags</a> in your data, but all is not lost!  You can define
-      tags to go with your headers below, and the HXL Proxy will add
-      them automatically.
-    </p>
-    {% endif %}
+    <section class="col-sm-12">
+      {% include "snippets/source.html" %}
 
-    <p>First, select the <b>last header row</b> before the data starts.</p>
+      {% if not using_tagger_p(profile) %}
+      <p class="alert alert-warning">
+        We can't find any <a href="http://hxlstandard.org">HXL
+        hashtags</a> in your data, but all is not lost!  You can define
+        tags to go with your headers below, and the HXL Proxy will add
+        them automatically.
+      </p>
+      {% endif %}
 
-    <table class="table">
-      {% for row in preview %}
-      <tr>
-        <td>
-          <form method="GET" action="">
-            <input type="hidden" name="header-row" value="{{ loop.index }}" />
-            {% if key %}
-            {{ params(profile.args) }}
-            {% endif %}
-            {{ params(request.args) }}
-            <button class="btn btn-default">Row {{ loop.index }}</button>
-          </form>
-        </td>
-        {% for value in row %}
-        <td>{{ value }}</td>
+      <p>First, select the <b>last header row</b> before the data starts.</p>
+
+      <table class="table">
+        {% for row in preview %}
+        <tr>
+          <td>
+            <form method="GET" action="">
+              <input type="hidden" name="header-row" value="{{ loop.index }}" />
+              {% if key %}
+              {{ params(profile.args) }}
+              {% endif %}
+              {{ params(request.args) }}
+              <button class="btn btn-default">Row {{ loop.index }}</button>
+            </form>
+          </td>
+          {% for value in row %}
+          <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
         {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
+      </table>
 
     </section>
 
     {% else %}
 
-    <section class="col-sm-8">
+    <section class="col-sm-9 col-md-10">
 
-    <h1>Add HXL tags</h1>
+      {% include "snippets/source.html" %}
 
-    {% include "snippets/source.html" %}
-
-    {% if not using_tagger_p(profile) %}
-    <p class="alert alert-warning">
-      We can't find any <a href="http://hxlstandard.org">HXL
-      hashtags</a> in your data, but all is not lost!  You can define
-      tags to go with your headers below, and the HXL Proxy will add
-      them automatically.
-    </p>
-    {% endif %}
-
-    <p >Pick HXL tags for some or all of your headers.</p>
-    
-    <form class="panel-body" action="/data/edit" method="GET">
-
-      <div class="panel-body">
-        {% import 'snippets/filters/filter-variables.j2' as vars %}
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Header (sub)string</th>
-              <th>HXL hashtag</th>
-            </tr>
-            <tr>
-              <td><i>E.g.</i></td>
-              <td><code>Province</code></td>
-              <td><code>#adm1</code></td>
-            </tr>
-          </thead>
-          <tbody>
-            {% for value in preview[header_row-1] %}
-            {% set name='tagger-%02d' % loop.index %}
-            <tr>
-              <td>{{ loop.index }}</td>
-              <td>
-                <input class="form-control" name="{{ name + '-header' }}"
-                       value="{{ profile.args[name + '-header'] or value|strnorm }}"
-                       placeholder="Header text" />
-              </td>
-              <td>
-                <input class="form-control" name="{{ name + '-tag' }}"
-                       value="{{ profile.args[name + '-tag'] }}"
-                       pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
-                       placeholder="{{ vars.tag_placeholder }}" />
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-success" type="submit">Next</button>
-      </div>
-
-      {% if key %}
-      {{ params(profile.args) }}
+      {% if not using_tagger_p(profile) %}
+      <p class="alert alert-warning">
+        We can't find any <a href="http://hxlstandard.org">HXL
+        hashtags</a> in your data, but all is not lost!  You can define
+        tags to go with your headers below, and the HXL Proxy will add
+        them automatically.
+      </p>
       {% endif %}
-      {{ params(request.args) }}
 
-    </form>
+      <p >Pick HXL tags for some or all of your headers.</p>
+      
+      <form class="panel-body" action="/data/edit" method="GET">
+
+        <div class="panel-body">
+          {% import 'snippets/filters/filter-variables.j2' as vars %}
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Header (sub)string</th>
+                <th>HXL hashtag</th>
+              </tr>
+              <tr>
+                <td><i>E.g.</i></td>
+                <td><code>Province</code></td>
+                <td><code>#adm1</code></td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for value in preview[header_row-1] %}
+              {% set name='tagger-%02d' % loop.index %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                  <input class="form-control" name="{{ name + '-header' }}"
+                         value="{{ profile.args[name + '-header'] or value|strnorm }}"
+                         placeholder="Header text" />
+                </td>
+                <td>
+                  <input class="form-control" name="{{ name + '-tag' }}"
+                         value="{{ profile.args[name + '-tag'] }}"
+                         pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
+                         placeholder="{{ vars.tag_placeholder }}" />
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-success" type="submit">Next</button>
+        </div>
+
+        {% if key %}
+        {{ params(profile.args) }}
+        {% endif %}
+        {{ params(request.args) }}
+
+      </form>
     </section>
 
-    <section class="col-sm-4" id="postcard">
+    <section class="col-sm-3 col-md-2" id="postcard">
       {% include "snippets/postcards.html" %}
     </section>
     {% endif %}
+
   </div>
   {% endblock %}
 

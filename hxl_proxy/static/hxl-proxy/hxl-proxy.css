@@ -136,6 +136,9 @@ td>.content {
 }
 
 .postcards {
+    padding: 1rem;
+    border: solid 1px #dddddd;
+    border-radius: 0.5rem;
     font-size: 80%;
     font-style: italic;
 }
@@ -143,6 +146,7 @@ td>.content {
 .postcards h2 {
     font-size: 100%;
     font-weight: bold;
+    margin-top: 1rem;
 }
 
 .postcards img {
