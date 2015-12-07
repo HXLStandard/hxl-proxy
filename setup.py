@@ -14,6 +14,7 @@ setup(
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
     include_package_data = True,
+    zip_safe = False,
     install_requires=['flask-cache', 'libhxl>=1.1', 'ckanapi', 'flask'],
     test_suite = "tests",
     tests_require = ['mock']
