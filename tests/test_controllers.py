@@ -89,6 +89,24 @@ class TestTagPage(unittest.TestCase):
         assert b'value="sector"' in response.data
         assert b'value="country"' in response.data
         
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_tagger_output(self):
+        """Test that the page accepts auto-tagged output."""
+        response = self.client.get('/data/edit', query_string={
+            'url': 'http://example.org/untagged-dataset.csv',
+            'header-row': '1',
+            'tagger-01-header': 'organisation',
+            'tagger-01-tag': 'org',
+            'tagger-02-header': 'sector',
+            'tagger-02-tag': 'sector',
+            'tagger-03-header': 'country',
+            'tagger-03-tag': 'country'
+        })
+        assert b'<h3>Preview</h3>' in response.data
+        assert b'<th>#org</th>' in response.data
+        assert b'<th>#sector</th>' in response.data
+        assert b'<th>#country</th>' in response.data
+        
 class TestEditPage(unittest.TestCase):
     """Test /data/edit and /data/<key>/edit"""
 
