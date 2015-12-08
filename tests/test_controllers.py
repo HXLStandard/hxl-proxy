@@ -30,20 +30,65 @@ class TestDataSource(unittest.TestCase):
         end_tests(self)
 
     def test_title(self):
-        rv = self.client.get('/data/source')
-        self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data)
-
-    def test_redirect_from_data(self):
-        rv = self.client.get('/data/edit')
-        self.assertEquals(302, rv.status_code)
-        self.assertTrue(rv.location.endswith('/data/source'))
+        response = self.client.get('/data/source')
+        assert b'<h1>Choose a dataset</h1>' in response.data
 
     def test_prepopulate(self):
         """When a URL is available, it should be prepopulated."""
-        rv = self.client.get('/data/source?url=http://example.org/data.csv')
-        self.assertTrue(b'value="http://example.org/data.csv"' in rv.data)
+        response = self.client.get('/data/source', query_string={
+            'url': 'http://example.org/data.csv'
+        })
+        assert b'value="http://example.org/data.csv"' in response.data
 
+    def test_cloud_icons(self):
+        """Test that the cloud icons are present."""
+        response = self.client.get('/data/source')
+        assert b'<span>HDX</span>' in response.data
+        assert b'<span>Dropbox</span>' in response.data
+        assert b'<span>Google Drive</span>' in response.data
 
+    def test_sidebar(self):
+        response = self.client.get('/data/source')
+        assert b'HXL on a postcard' in response.data
+
+class TestTagPage(unittest.TestCase):
+
+    def setUp(self):
+        start_tests(self)
+
+    def tearDown(self):
+        end_tests(self)
+
+    def test_redirect(self):
+        """With no URL, the app should redirect to /data/source automatically."""
+        response = self.client.get('/data/tagger')
+        self.assertEquals(302, response.status_code)
+        assert response.location.endswith('/data/source')
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_choose_row(self):
+        """Row not yet chosen."""
+        response = self.client.get('/data/tagger', query_string={
+            'url': 'http://example.org/untagged-dataset.csv'
+        })
+        assert b'<h1>Add HXL tags</h1>' in response.data
+        assert b'<b>last header row</b>' in response.data
+        assert b'<td>Organisation</td>' in response.data
+        assert b'<td>Myanmar</td>' in response.data
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_choose_tags(self):
+        """Row chosen."""
+        response = self.client.get('/data/tagger', query_string={
+            'url': 'http://example.org/untagged-dataset.csv',
+            'header-row': '1'
+        })
+        assert b'<h1>Add HXL tags</h1>' in response.data
+        assert b'<th>HXL hashtag</th>' in response.data
+        assert b'value="organisation"' in response.data
+        assert b'value="sector"' in response.data
+        assert b'value="country"' in response.data
+        
 class TestEditPage(unittest.TestCase):
     """Test /data/edit and /data/<key>/edit"""
 
@@ -53,9 +98,21 @@ class TestEditPage(unittest.TestCase):
     def tearDown(self):
         end_tests(self)
 
-    def test_empty_url(self):
-        rv = self.client.get('/data/edit', follow_redirects=True)
-        self.assertTrue(b'<h1>Choose HXL dataset</h1>' in rv.data, 'title')
+    def test_redirect_no_url(self):
+        """With no URL, the app should redirect to /data/source automatically."""
+        response = self.client.get('/data/edit')
+        self.assertEquals(302, response.status_code)
+        self.assertTrue(response.location.endswith('/data/source'))
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_redirect_no_tags(self):
+        """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
+        response = self.client.get('/data/edit', query_string={
+            'url': 'http://example.org/untagged-dataset.csv'
+        })
+        self.assertEquals(302, response.status_code)
+        assert '/data/tagger' in response.location
+        assert 'untagged-dataset.csv' in response.location
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
