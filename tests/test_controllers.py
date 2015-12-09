@@ -1,84 +1,44 @@
 """
-Unit tests for actual web pages
+Unit tests for HXL Proxy controllers.
 David Megginson
 March 2015
 
+Check the rendered content of web pages.
+
 License: Public Domain
 """
-
-import unittest
-import sys
-import os
-import re
-import tempfile
-
-import hxl_proxy
-from hxl_proxy.profiles import ProfileManager, Profile
 
 # Mock URL access so that tests work offline
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-
-class BaseControllerTest(unittest.TestCase):
-    """Base class for controller tests."""
-    
-    def setUp(self):
-        """Set up a test object with a temporary profile database"""
-        with tempfile.NamedTemporaryFile(delete=True) as file:
-            self.filename = file.name
-        hxl_proxy.app.config['PROFILE_FILE'] = self.filename
-        hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
-        self.key = ProfileManager(self.filename).add_profile(self.make_profile())
-        self.client = hxl_proxy.app.test_client()
-
-    def tearDown(self):
-        """Remove the temporary profile database"""
-        os.remove(self.filename)
-
-    def assertBasicDataset(self, response=None):
-        """Check that we're looking at the basic dataset"""
-        if response is None:
-            response = self.response
-        self.assertEqual(200, response.status_code)
-        assert b'Country' in response.data
-        assert b'#country' in response.data
-        assert b'Org A' in response.data
-        assert b'Education' in response.data
-        assert b'Myanmar' in response.data
-
-    @staticmethod
-    def make_profile():
-        profile = Profile({
-            'url': 'http://example.org/basic-dataset.csv'
-        })
-        profile.name = 'Sample dataset'
-        return profile
+# Use a common base class
+from .base import BaseControllerTest
 
 
 class TestDataSource(BaseControllerTest):
     """Unit tests for /data/source"""
 
     def test_title(self):
-        response = self.client.get('/data/source')
+        response = self.get('/data/source')
         assert b'<h1>Choose a dataset</h1>' in response.data
 
     def test_prepopulate(self):
         """When a URL is available, it should be prepopulated."""
-        response = self.client.get('/data/source', query_string={
+        response = self.get('/data/source', {
             'url': 'http://example.org/data.csv'
         })
         assert b'value="http://example.org/data.csv"' in response.data
 
     def test_cloud_icons(self):
         """Test that the cloud icons are present."""
-        response = self.client.get('/data/source')
+        response = self.get('/data/source')
         assert b'<span>HDX</span>' in response.data
         assert b'<span>Dropbox</span>' in response.data
         assert b'<span>Google Drive</span>' in response.data
 
     def test_sidebar(self):
-        response = self.client.get('/data/source')
+        response = self.get('/data/source')
         assert b'HXL on a postcard' in response.data
 
 
@@ -87,14 +47,14 @@ class TestTaggerPage(BaseControllerTest):
 
     def test_redirect(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.client.get('/data/tagger')
+        response = self.get('/data/tagger')
         self.assertEquals(302, response.status_code)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
         """Row not yet chosen."""
-        response = self.client.get('/data/tagger', query_string={
+        response = self.get('/data/tagger', {
             'url': 'http://example.org/untagged-dataset.csv'
         })
         assert b'<h1>Add HXL tags</h1>' in response.data
@@ -105,7 +65,7 @@ class TestTaggerPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_tags(self):
         """Row chosen."""
-        response = self.client.get('/data/tagger', query_string={
+        response = self.get('/data/tagger', {
             'url': 'http://example.org/untagged-dataset.csv',
             'header-row': '1'
         })
@@ -118,7 +78,7 @@ class TestTaggerPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_tagger_output(self):
         """Test that the page accepts auto-tagged output."""
-        response = self.client.get('/data/edit', query_string={
+        response = self.get('/data/edit', {
             'url': 'http://example.org/untagged-dataset.csv',
             'header-row': '1',
             'tagger-01-header': 'organisation',
@@ -139,14 +99,14 @@ class TestEditPage(BaseControllerTest):
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.client.get('/data/edit')
+        response = self.get('/data/edit')
         self.assertEquals(302, response.status_code)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
-        response = self.client.get('/data/edit', query_string={
+        response = self.get('/data/edit', {
             'url': 'http://example.org/untagged-dataset.csv'
         })
         self.assertEquals(302, response.status_code)
@@ -155,12 +115,14 @@ class TestEditPage(BaseControllerTest):
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
-        response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
+        response = self.get('/data/edit', {
+            'url': 'http://example.org/basic-dataset.csv'
+        })
         assert b'<h1>Transform your data</h1>' in response.data
         self.assertBasicDataset(response)
 
     def test_need_login(self):
-        response = self.client.get('/data/{}/edit'.format(self.key))
+        response = self.get('/data/{}/edit'.format(self.key))
         self.assertEqual(302, response.status_code)
         assert '/data/{}/login'.format(self.key) in response.headers['Location']
 
@@ -173,22 +135,24 @@ class TestDataPage(BaseControllerTest):
     """Test /data and /data/<key>"""
 
     def test_empty_url(self):
-        response = self.client.get('/data')
+        response = self.get('/data')
         self.assertEqual(303, response.status_code, "/data with no URL redirects to /data/edit")
 
     def test_local_file(self):
-        response = self.client.get('/data?url=/etc/passwd')
+        response = self.get('/data?url=/etc/passwd')
         self.assertEqual(403, response.status_code)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
-        response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
+        response = self.get('/data', {
+            'url': 'http://example.org/basic-dataset.csv'
+        })
         assert b'<h1>Result data</h1>' in response.data
         self.assertBasicDataset(response)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_key(self):
-        response = self.client.get('/data/{}'.format(self.key))
+        response = self.get('/data/{}'.format(self.key))
         assert b'<h1>Sample dataset</h1>' in response.data
         self.assertBasicDataset(response)
 
@@ -199,18 +163,23 @@ class TestValidationPage(BaseControllerTest):
     """Test /data/validate and /data/key/validate"""
 
     def test_empty_url(self):
-        response = self.client.get('/data/validate')
-        self.assertEqual(303, response.status_code, "/data/validate with no URL redirects to /data/edit")
+        response = self.get('/data/validate')
+        self.assertEqual(303, response.status_code)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
+        response = self.get('/data/validate', {
+            'url': 'http://example.org/basic-dataset.csv'
+        })
         assert b'Using the default schema' in response.data
         assert b'Validation succeeded' in response.data
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_good_schema(self):
-        response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
+        response = self.get('/data/validate', {
+            'url': 'http://example.org/basic-dataset.csv',
+            'schema_url': 'http://example.org/good-schema.csv'
+        })
         assert b'Validation succeeded' in response.data
 
 # end
