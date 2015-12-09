@@ -17,44 +17,46 @@ from .base import BaseControllerTest
 
 
 class TestDataSource(BaseControllerTest):
-    """Unit tests for /data/source"""
+
+    path = '/data/source'
 
     def test_title(self):
-        response = self.get('/data/source')
+        response = self.get(self.path)
         assert b'<h1>Choose a dataset</h1>' in response.data
 
     def test_prepopulate(self):
         """When a URL is available, it should be prepopulated."""
-        response = self.get('/data/source', {
+        response = self.get(self.path, {
             'url': 'http://example.org/data.csv'
         })
         assert b'value="http://example.org/data.csv"' in response.data
 
     def test_cloud_icons(self):
         """Test that the cloud icons are present."""
-        response = self.get('/data/source')
+        response = self.get(self.path)
         assert b'<span>HDX</span>' in response.data
         assert b'<span>Dropbox</span>' in response.data
         assert b'<span>Google Drive</span>' in response.data
 
     def test_sidebar(self):
-        response = self.get('/data/source')
+        response = self.get(self.path)
         assert b'HXL on a postcard' in response.data
 
 
 class TestTaggerPage(BaseControllerTest):
-    """Unit tests for /data/tagger"""
+
+    path = '/data/tagger'
 
     def test_redirect(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.get('/data/tagger')
+        response = self.get(self.path)
         self.assertEquals(302, response.status_code)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
         """Row not yet chosen."""
-        response = self.get('/data/tagger', {
+        response = self.get(self.path, {
             'url': 'http://example.org/untagged-dataset.csv'
         })
         assert b'<h1>Add HXL tags</h1>' in response.data
@@ -65,7 +67,7 @@ class TestTaggerPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_tags(self):
         """Row chosen."""
-        response = self.get('/data/tagger', {
+        response = self.get(self.path, {
             'url': 'http://example.org/untagged-dataset.csv',
             'header-row': '1'
         })
@@ -95,7 +97,7 @@ class TestTaggerPage(BaseControllerTest):
 
 
 class TestEditPage(BaseControllerTest):
-    """Test /data/edit and /data/<key>/edit"""
+    """Test /data/edit and /data/{key}/edit"""
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
@@ -132,7 +134,7 @@ class TestEditPage(BaseControllerTest):
 
 
 class TestDataPage(BaseControllerTest):
-    """Test /data and /data/<key>"""
+    """Test /data and /data/{key}"""
 
     def test_empty_url(self):
         response = self.get('/data')
@@ -160,7 +162,7 @@ class TestDataPage(BaseControllerTest):
 
 
 class TestValidationPage(BaseControllerTest):
-    """Test /data/validate and /data/key/validate"""
+    """Test /data/validate and /data/{key}/validate"""
 
     def test_empty_url(self):
         response = self.get('/data/validate')
