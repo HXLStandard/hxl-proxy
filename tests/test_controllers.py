@@ -15,6 +15,8 @@ from unittest.mock import patch
 # Use a common base class
 from .base import BaseControllerTest
 
+DATASET_URL = 'http://example.org/basic-dataset.csv'
+
 
 class TestDataSource(BaseControllerTest):
 
@@ -118,7 +120,7 @@ class TestEditPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.get('/data/edit', {
-            'url': 'http://example.org/basic-dataset.csv'
+            'url': DATASET_URL
         })
         assert b'<h1>Transform your data</h1>' in response.data
         self.assertBasicDataset(response)
@@ -147,7 +149,7 @@ class TestDataPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.get('/data', {
-            'url': 'http://example.org/basic-dataset.csv'
+            'url': DATASET_URL
         })
         assert b'<h1>Result data</h1>' in response.data
         self.assertBasicDataset(response)
@@ -171,7 +173,7 @@ class TestValidationPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
         response = self.get('/data/validate', {
-            'url': 'http://example.org/basic-dataset.csv'
+            'url': DATASET_URL
         })
         assert b'Using the default schema' in response.data
         assert b'Validation succeeded' in response.data
@@ -179,9 +181,52 @@ class TestValidationPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_good_schema(self):
         response = self.get('/data/validate', {
-            'url': 'http://example.org/basic-dataset.csv',
+            'url': DATASET_URL,
             'schema_url': 'http://example.org/good-schema.csv'
         })
         assert b'Validation succeeded' in response.data
+
+
+class TestAnalysisRoot(BaseControllerTest):
+
+    path = '/analysis'
+
+    def test_empty_url(self):
+        response = self.get(self.path)
+        # TODO should redirect to /data/source
+        assert b'New HXL analysis' in response.data
+
+
+class TestAnalysisOverview(BaseControllerTest):
+
+    path = '/analysis/overview'
+
+    def test_redirect(self):
+        # redirects to /analysis if no URL is present
+        response = self.get(self.path)
+        self.assertEqual(302, response.status_code)
+        assert response.location.endswith('/analysis')
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_root(self):
+        response = self.get(self.path, {
+            'url': DATASET_URL
+        })
+        print(response.data)
+        assert b'<h1>Who is doing what, where?</h1>' in response.data
+
+
+class TestAnalysisTag(BaseControllerTest):
+
+    path = '/analysis/tag/org'
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_tag(self):
+        response = self.get(self.path, {
+            'url': DATASET_URL
+        })
+        assert b'<h1>List of #org</h1>' in response.data
+        assert b'Org A' in response.data
+        assert b'Org B' in response.data
 
 # end

@@ -278,7 +278,7 @@ def show_analysis_overview():
         analysis = Analysis(args=request.args)
         return render_template('analysis-overview.html', analysis=analysis)
     else:
-        return redirect("/analysis", 301)
+        return redirect("/analysis", 302)
 
 @app.route('/analysis/data')
 @app.route('/analysis/data.<format>')
