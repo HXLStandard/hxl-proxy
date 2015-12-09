@@ -15,19 +15,49 @@ import tempfile
 import hxl_proxy
 from hxl_proxy.profiles import ProfileManager, Profile
 
-#
 # Mock URL access so that tests work offline
-#
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-class TestDataSource(unittest.TestCase):
 
+class BaseControllerTest(unittest.TestCase):
+    """Base class for controller tests."""
+    
     def setUp(self):
-        start_tests(self)
+        """Set up a test object with a temporary profile database"""
+        with tempfile.NamedTemporaryFile(delete=True) as file:
+            self.filename = file.name
+        hxl_proxy.app.config['PROFILE_FILE'] = self.filename
+        hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
+        self.key = ProfileManager(self.filename).add_profile(self.make_profile())
+        self.client = hxl_proxy.app.test_client()
 
     def tearDown(self):
-        end_tests(self)
+        """Remove the temporary profile database"""
+        os.remove(self.filename)
+
+    def assertBasicDataset(self, response=None):
+        """Check that we're looking at the basic dataset"""
+        if response is None:
+            response = self.response
+        self.assertEqual(200, response.status_code)
+        assert b'Country' in response.data
+        assert b'#country' in response.data
+        assert b'Org A' in response.data
+        assert b'Education' in response.data
+        assert b'Myanmar' in response.data
+
+    @staticmethod
+    def make_profile():
+        profile = Profile({
+            'url': 'http://example.org/basic-dataset.csv'
+        })
+        profile.name = 'Sample dataset'
+        return profile
+
+
+class TestDataSource(BaseControllerTest):
+    """Unit tests for /data/source"""
 
     def test_title(self):
         response = self.client.get('/data/source')
@@ -51,13 +81,9 @@ class TestDataSource(unittest.TestCase):
         response = self.client.get('/data/source')
         assert b'HXL on a postcard' in response.data
 
-class TestTagPage(unittest.TestCase):
 
-    def setUp(self):
-        start_tests(self)
-
-    def tearDown(self):
-        end_tests(self)
+class TestTaggerPage(BaseControllerTest):
+    """Unit tests for /data/tagger"""
 
     def test_redirect(self):
         """With no URL, the app should redirect to /data/source automatically."""
@@ -106,21 +132,16 @@ class TestTagPage(unittest.TestCase):
         assert b'<th>#org</th>' in response.data
         assert b'<th>#sector</th>' in response.data
         assert b'<th>#country</th>' in response.data
-        
-class TestEditPage(unittest.TestCase):
+
+
+class TestEditPage(BaseControllerTest):
     """Test /data/edit and /data/<key>/edit"""
-
-    def setUp(self):
-        start_tests(self)
-
-    def tearDown(self):
-        end_tests(self)
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
         response = self.client.get('/data/edit')
         self.assertEquals(302, response.status_code)
-        self.assertTrue(response.location.endswith('/data/source'))
+        assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
@@ -135,26 +156,21 @@ class TestEditPage(unittest.TestCase):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.client.get('/data/edit?url=http://example.org/basic-dataset.csv')
-        self.assertTrue(b'<h1>Transform your data</h1>' in response.data)
-        assert_basic_dataset(self, response)
+        assert b'<h1>Transform your data</h1>' in response.data
+        self.assertBasicDataset(response)
 
     def test_need_login(self):
         response = self.client.get('/data/{}/edit'.format(self.key))
         self.assertEqual(302, response.status_code)
-        self.assertTrue('/data/{}/login'.format(self.key) in response.headers['Location'], 'redirect to login')
+        assert '/data/{}/login'.format(self.key) in response.headers['Location']
 
     # TODO test logging in (good and bad passwords)
 
     # TODO test changing profile
 
-class TestDataPage(unittest.TestCase):
+
+class TestDataPage(BaseControllerTest):
     """Test /data and /data/<key>"""
-
-    def setUp(self):
-        start_tests(self)
-
-    def tearDown(self):
-        end_tests(self)
 
     def test_empty_url(self):
         response = self.client.get('/data')
@@ -167,26 +183,20 @@ class TestDataPage(unittest.TestCase):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.client.get('/data?url=http://example.org/basic-dataset.csv')
-        self.assertTrue(b'<h1>Result data</h1>' in response.data)
-        assert_basic_dataset(self, response)
+        assert b'<h1>Result data</h1>' in response.data
+        self.assertBasicDataset(response)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_key(self):
         response = self.client.get('/data/{}'.format(self.key))
-        self.assertTrue(b'<h1>Sample dataset</h1>' in response.data)
-        assert_basic_dataset(self, response)
+        assert b'<h1>Sample dataset</h1>' in response.data
+        self.assertBasicDataset(response)
 
     # TODO test that filters work
 
 
-class TestValidationPage(unittest.TestCase):
+class TestValidationPage(BaseControllerTest):
     """Test /data/validate and /data/key/validate"""
-
-    def setUp(self):
-        start_tests(self)
-
-    def tearDown(self):
-        end_tests(self)
 
     def test_empty_url(self):
         response = self.client.get('/data/validate')
@@ -195,46 +205,12 @@ class TestValidationPage(unittest.TestCase):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv')
-        self.assertTrue(b'Using the default schema' in response.data)
-        self.assertTrue(b'Validation succeeded' in response.data)
+        assert b'Using the default schema' in response.data
+        assert b'Validation succeeded' in response.data
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_good_schema(self):
         response = self.client.get('/data/validate?url=http://example.org/basic-dataset.csv&schema_url=http://example.org/good-schema.csv')
-        self.assertTrue(b'Validation succeeded' in response.data)
-
-
-#
-# Utility functions
-#
-
-def start_tests(tests):
-    """Set up a test object with a temporary profile database"""
-    with tempfile.NamedTemporaryFile(delete=True) as file:
-        tests.filename = file.name
-    hxl_proxy.app.config['PROFILE_FILE'] = tests.filename
-    hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
-    tests.key = ProfileManager(tests.filename).add_profile(make_profile())
-    tests.client = hxl_proxy.app.test_client()
-
-def end_tests(tests):
-    """Remove the temporary profile database"""
-    os.remove(tests.filename)
-
-def make_profile():
-    profile = Profile({
-        'url': 'http://example.org/basic-dataset.csv'
-    })
-    profile.name = 'Sample dataset'
-    return profile
-
-def assert_basic_dataset(test, response):
-    """Check that we're looking at the basic dataset"""
-    test.assertEqual(200, response.status_code)
-    test.assertTrue(b'Country' in response.data, "header from dataset on page")
-    test.assertTrue(b'#country' in response.data, "hashtag from dataset on page")
-    test.assertTrue(b'Org A' in response.data, "org from dataset on page")
-    test.assertTrue(b'Education' in response.data, "sector from dataset on page")
-    test.assertTrue(b'Myanmar' in response.data, "country from dataset on page")
+        assert b'Validation succeeded' in response.data
 
 # end
