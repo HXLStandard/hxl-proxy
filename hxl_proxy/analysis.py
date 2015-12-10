@@ -194,7 +194,10 @@ class Analysis:
 
     def _get_original_values(self):
         """Get an original spelling of the filter value, for display."""
-        row = next(iter(self.source))
+        try:
+            row = next(iter(self.source))
+        except StopIteration:
+            row = hxl.Row([])
         for filter in self.filters:
             filter['orig'] = row.get(filter['pattern'], default=filter['value'])
 

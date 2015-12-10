@@ -215,6 +215,13 @@ class TestAnalysisOverview(BaseControllerTest):
             'country': 'Colombia'
         })
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_bad_filter(self):
+        response = self.get(self.path, {
+            'url': DATASET_URL,
+            'country': 'XXX'
+        })
+
 
 class TestAnalysisTag(BaseControllerTest):
 
