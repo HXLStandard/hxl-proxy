@@ -112,6 +112,7 @@ class Analysis:
 
     @property
     def who(self):
+        """Return the name for 'who'."""
         for filter in self.filters:
             if filter['pattern'].tag == '#org':
                 return filter['orig']
@@ -119,6 +120,7 @@ class Analysis:
 
     @property
     def what(self):
+        """Return the name for 'what'."""
         for filter in self.filters:
             if filter['pattern'].tag in ('#sector', '#subsector'):
                 return filter['orig']
@@ -126,20 +128,24 @@ class Analysis:
 
     @property
     def where(self):
+        """Return the name for 'where'."""
         for filter in self.filters:
             if filter['pattern'].tag in ('#region', '#country', '#adm1', '#adm2', '#adm3', '#adm4', '#adm5', '#loc'):
                 return filter['orig']
         return None
 
     def overview_url(self, pattern=None, value=None, limit=None):
+        """Make the URL for a filtered overview."""
         return '/analysis/overview?{}'.format(self.make_query(pattern, value, limit))
 
     def data_url(self, pattern=None, value=None, limit=None, format=''):
+        """Make the URL for a data view."""
         if format:
             format = '.' + format
         return '/analysis/data{}?{}'.format(format, self.make_query(pattern, value, limit))
 
     def tag_url(self, tag_pattern, pattern=None, value=None, limit=None):
+        """Make a URL path for a specific tag."""
         return '/analysis/tag/{}?{}'.format(urlquote(str(tag_pattern)[1:]), self.make_query(pattern, value, limit))
 
     @property
@@ -169,7 +175,7 @@ class Analysis:
                     continue
                 filters.append({
                     'pattern': hxl.TagPattern.parse(pattern),
-                    'value': self.args.get(pattern).encode('utf8')
+                    'value': self.args.get(pattern)
                 })
             self._saved_filters = filters
         return self._saved_filters
