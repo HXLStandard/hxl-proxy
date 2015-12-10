@@ -51,8 +51,7 @@ class TestTaggerPage(BaseControllerTest):
 
     def test_redirect(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.get(self.path)
-        self.assertEquals(302, response.status_code)
+        response = self.get(self.path, status=302)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -103,8 +102,7 @@ class TestEditPage(BaseControllerTest):
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.get('/data/edit')
-        self.assertEquals(302, response.status_code)
+        response = self.get('/data/edit', status=302)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -112,8 +110,7 @@ class TestEditPage(BaseControllerTest):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
         response = self.get('/data/edit', {
             'url': 'http://example.org/untagged-dataset.csv'
-        })
-        self.assertEquals(302, response.status_code)
+        }, status=302)
         assert '/data/tagger' in response.location
         assert 'untagged-dataset.csv' in response.location
 
@@ -126,8 +123,7 @@ class TestEditPage(BaseControllerTest):
         self.assertBasicDataset(response)
 
     def test_need_login(self):
-        response = self.get('/data/{}/edit'.format(self.key))
-        self.assertEqual(302, response.status_code)
+        response = self.get('/data/{}/edit'.format(self.key), status=302)
         assert '/data/{}/login'.format(self.key) in response.headers['Location']
 
     # TODO test logging in (good and bad passwords)
@@ -139,12 +135,11 @@ class TestDataPage(BaseControllerTest):
     """Test /data and /data/{key}"""
 
     def test_empty_url(self):
-        response = self.get('/data')
-        self.assertEqual(303, response.status_code, "/data with no URL redirects to /data/edit")
+        response = self.get('/data', status=303)
+        assert response.location.endswith('/data/source')
 
     def test_local_file(self):
-        response = self.get('/data?url=/etc/passwd')
-        self.assertEqual(403, response.status_code)
+        response = self.get('/data?url=/etc/passwd', status=403)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
@@ -167,8 +162,8 @@ class TestValidationPage(BaseControllerTest):
     """Test /data/validate and /data/{key}/validate"""
 
     def test_empty_url(self):
-        response = self.get('/data/validate')
-        self.assertEqual(303, response.status_code)
+        response = self.get('/data/validate', status=303)
+        assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
@@ -203,8 +198,7 @@ class TestAnalysisOverview(BaseControllerTest):
 
     def test_redirect(self):
         # redirects to /analysis if no URL is present
-        response = self.get(self.path)
-        self.assertEqual(302, response.status_code)
+        response = self.get(self.path, status=303)
         assert response.location.endswith('/analysis')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -212,8 +206,14 @@ class TestAnalysisOverview(BaseControllerTest):
         response = self.get(self.path, {
             'url': DATASET_URL
         })
-        print(response.data)
         assert b'<h1>Who is doing what, where?</h1>' in response.data
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_filtered(self):
+        response = self.get(self.path, {
+            'url': DATASET_URL,
+            'country': 'Colombia'
+        })
 
 
 class TestAnalysisTag(BaseControllerTest):

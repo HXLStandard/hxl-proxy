@@ -47,7 +47,7 @@ def stream_template(template_name, **context):
     return rv
 
 def urlquote(value):
-    return urllib.parse.quote_plus(value.encode('utf8'), safe='/')
+    return urllib.parse.quote_plus(value, safe='/')
 
 def urlencode_utf8(params):
     if hasattr(params, 'items'):

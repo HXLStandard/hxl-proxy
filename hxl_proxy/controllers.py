@@ -165,7 +165,7 @@ def show_data_profile(key=None):
         return redirect(make_data_url(None, key=key, facet='login'))
 
     if not profile or not profile.args.get('url'):
-        return redirect('/data/edit', 303)
+        return redirect('/data/source', 303)
 
     return render_template('data-profile.html', key=key, profile=profile)
 
@@ -175,7 +175,7 @@ def show_data_chart(key=None):
     """Show a chart visualisation for the data."""
     profile = get_profile(key)
     if not profile or not profile.args.get('url'):
-        return redirect('/data/edit', 303)
+        return redirect('/data/source', 303)
 
     source = setup_filters(profile)
     tag = request.args.get('tag')
@@ -193,7 +193,7 @@ def show_data_map(key=None):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
     if not profile or not profile.args.get('url'):
-        return redirect('/data/edit', 303)
+        return redirect('/data/source', 303)
     layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('data-map.html', key=key, profile=profile, layer_tag=layer_tag)
 
@@ -205,7 +205,7 @@ def show_validate(key=None):
     # Get the profile
     profile = get_profile(key)
     if not profile or not profile.args.get('url'):
-        return redirect('/data/edit', 303)
+        return redirect('/data/source', 303)
 
     # Get the parameters
     url = profile.args.get('url')
@@ -235,7 +235,7 @@ def show_data(key=None, format="html", stub=None):
     def get_result (key, format):
         profile = get_profile(key, auth=False)
         if not profile or not profile.args.get('url'):
-            return redirect('/data/edit', 303)
+            return redirect('/data/source', 303)
 
         source = setup_filters(profile)
         show_headers = (profile.args.get('strip-headers') != 'on')
@@ -278,7 +278,7 @@ def show_analysis_overview():
         analysis = Analysis(args=request.args)
         return render_template('analysis-overview.html', analysis=analysis)
     else:
-        return redirect("/analysis", 302)
+        return redirect("/analysis", 303)
 
 @app.route('/analysis/data')
 @app.route('/analysis/data.<format>')

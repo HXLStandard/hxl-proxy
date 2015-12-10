@@ -30,9 +30,16 @@ class BaseControllerTest(unittest.TestCase):
         """Remove the temporary profile database"""
         os.remove(self.filename)
 
-    def get(self, path, query_string=None):
-        """Send a request to the test client and hang onto the result."""
-        self.response = self.client.get(path, query_string=query_string)
+    def get(self, path, params=None, status=200):
+        """
+        Send a request to the test client and hang onto the result.
+        @param path the path to request
+        @param params (optional) a dict of get parameters
+        @param status (optional) the expected HTTP status (defaults to 200)
+        @return a Response object
+        """
+        self.response = self.client.get(path, query_string=params)
+        self.assertEqual(status, self.response.status_code)
         return self.response
 
     def assertBasicDataset(self, response=None):

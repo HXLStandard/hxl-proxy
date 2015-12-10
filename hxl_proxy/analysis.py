@@ -4,33 +4,37 @@ Analysis logic
 For now, focusses on 3W-type data.
 """
 
-import urllib
-
 import hxl
 from hxl_proxy.util import strnorm, urlquote
 
 class Analysis:
+    """Business logic for analysing a dataset."""
 
+    # Default tags to analyse
     TAGS = [
         [
-            ('#org-code-type', 'organisations')
+            ('#org', 'organisations')
         ],
         [
-            ('#sector-code', 'sectors'),
-            ('#subsector-code', 'subsectors')
+            ('#sector', 'sectors'),
+            ('#subsector', 'subsectors')
         ],
         [
-            ('#region-code', 'geographical regions'),
-            ('#country-code', 'countries'),
-            ('#adm1-code', 'level one subdivisions'),
-            ('#adm2-code', 'level two subdivisions'),
-            ('#adm3-code', 'level three subdivisions'),
-            ('#adm4-code', 'level four subdivisions'),
-            ('#adm5-code', 'level five subdivisions')
+            ('#region', 'geographical regions'),
+            ('#country', 'countries'),
+            ('#adm1', 'level one subdivisions'),
+            ('#adm2', 'level two subdivisions'),
+            ('#adm3', 'level three subdivisions'),
+            ('#adm4', 'level four subdivisions'),
+            ('#adm5', 'level five subdivisions')
         ]
     ]
 
     def __init__(self, args):
+        """
+        Constructor
+        @param args the GET parameters
+        """
         self.args = args
         self._saved_source = None
         self._saved_filters = None
@@ -50,7 +54,15 @@ class Analysis:
                         occurs[key]['count'] += 1
                     else:
                         occurs[key] = { 'count': 1, 'orig': value }
-        return [ { 'value': key, 'orig': occurs[key]['orig'], 'count': occurs[key]['count'], 'percentage': float(occurs[key]['count']) / total } for key in occurs ]
+        return [
+            {
+                'value': key,
+                'orig': occurs[key]['orig'],
+                'count': occurs[key]['count'],
+                'percentage': float(occurs[key]['count']) / total
+            }
+            for key in occurs
+        ]
 
     def get_top_values(self, pattern):
         return sorted(self.get_value_counts(pattern), key = lambda entry: entry['count'], reverse=True)
@@ -132,20 +144,27 @@ class Analysis:
 
     @property
     def patterns(self):
+        """Return a list of tag patterns in use."""
         patterns = []
         for tag_list in self.TAGS:
             for tag_info in tag_list:
                 pattern = hxl.TagPattern.parse(tag_info[0])
-                if (pattern.tag not in [filter['pattern'].tag for filter in self.filters]) and (pattern.tag in [column.tag for column in self.source.columns]):
+                if (
+                        pattern.tag not in [filter['pattern'].tag for filter in self.filters]
+                ) and (
+                    pattern.tag in [column.tag for column in self.source.columns]
+                ):
                     patterns.append(tag_info)
                     break
         return patterns
 
     @property
     def filters(self):
+        """Construct a dict of filter values for the analysis."""
         if self._saved_filters is None:
             filters = []
             for pattern in self.args.to_dict():
+                # Use every parameter except "url" as a tag name
                 if pattern == 'url':
                     continue
                 filters.append({
@@ -159,6 +178,7 @@ class Analysis:
     def source(self):
         """Open the input on initial request."""
         if not self._saved_source:
+            # Cache the whole source in memory
             source = hxl.data(self.args.get('url')).cache()
             for filter_data in self.filters:
                 query = '{}={}'.format(filter_data['pattern'], filter_data['value'])
@@ -167,6 +187,7 @@ class Analysis:
         return self._saved_source
 
     def _get_original_values(self):
+        """Get an original spelling of the filter value, for display."""
         row = next(iter(self.source))
         for filter in self.filters:
             filter['orig'] = row.get(filter['pattern'], default=filter['value'])
