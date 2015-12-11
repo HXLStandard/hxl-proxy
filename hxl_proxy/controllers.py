@@ -374,7 +374,7 @@ def do_login():
 
 @app.route('/logout')
 def do_logout():
-    session['user'] = None
+    session.clear()
     flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return redirect('/')
 
