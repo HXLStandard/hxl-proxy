@@ -21,8 +21,13 @@ class BaseControllerTest(unittest.TestCase):
         """Set up a test object with a temporary profile database"""
         with tempfile.NamedTemporaryFile(delete=True) as file:
             self.filename = file.name
+        hxl_proxy.app.config['DEBUG'] = False
         hxl_proxy.app.config['PROFILE_FILE'] = self.filename
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
+        hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
+        hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
+        hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
+        
         self.key = ProfileManager(self.filename).add_profile(self.make_profile())
         self.client = hxl_proxy.app.test_client()
 

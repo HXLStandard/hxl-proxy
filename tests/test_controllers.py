@@ -17,18 +17,27 @@ from .base import BaseControllerTest
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
 
+class TestLogin(BaseControllerTest):
+
+    path = '/login'
+
+    def test_redirect(self):
+        response = self.get(self.path, status=302)
+        assert b'/oauth/authorize' in response.data
+
+
 class TestLogout(BaseControllerTest):
 
     path = '/logout'
 
     def test_redirect(self):
         response = self.get(self.path, status=302)
-        print('XXX', response.location)
-        self.assertEquals('http://localhost/', response.location)
+        self.assertEqual('http://localhost/', response.location)
 
     def test_session(self):
         """Test that logout clears the session."""
         import flask
+        # Extra cruft for setting a session cookie
         with self.client as client:
             with client.session_transaction() as session:
                 session['user'] = 'abc'
@@ -36,6 +45,7 @@ class TestLogout(BaseControllerTest):
             assert 'user' in flask.session
             response = self.get(self.path, status=302)
             assert 'user' not in flask.session
+
 
 class TestDataSource(BaseControllerTest):
 
