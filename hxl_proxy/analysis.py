@@ -71,11 +71,13 @@ class Analysis:
         """Construct a query string"""
         queries = []
         for filter in self.filters:
-            queries.append([urlquote(str(filter['pattern'])[1:]), urlquote(filter['value'])])
+            arg = 'f:{}'.format(str(filter['pattern'])[1:])
+            queries.append([urlquote(arg), urlquote(filter['value'])])
             if limit is not None and filter == limit:
                 break
         if pattern:
-            queries.append([ urlquote(str(pattern)[1:]), urlquote(value) ])
+            arg = 'f:{}'.format(str(pattern)[1:])
+            queries.append([ urlquote(arg), urlquote(value) ])
         queries.append([ urlquote('url'), urlquote(self.args.get('url')) ])
         return '&'.join(map(lambda item: '='.join(item), queries))
 
@@ -166,17 +168,19 @@ class Analysis:
 
     @property
     def filters(self):
-        """Construct a dict of filter values for the analysis."""
+        """
+        Construct a dict of filter values for the analysis.
+        Filters are all parameters starting with f:
+        """
         if self._saved_filters is None:
             filters = []
-            for pattern in self.args.to_dict():
+            for arg in self.args.to_dict():
                 # Use every parameter except "url" as a tag name
-                if pattern == 'url':
-                    continue
-                filters.append({
-                    'pattern': hxl.TagPattern.parse(pattern),
-                    'value': self.args.get(pattern)
-                })
+                if arg.startswith('f:'):
+                    filters.append({
+                        'pattern': hxl.TagPattern.parse(arg[2:]),
+                        'value': self.args.get(arg)
+                    })
             self._saved_filters = filters
         return self._saved_filters
 
