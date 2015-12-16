@@ -62,6 +62,15 @@ def using_tagger_p(profile):
             return True
     return False
 
+def get_gravatar(email, size=40):
+    import hashlib
+    hash = hashlib.md5(email.encode('utf8').lower()).hexdigest()
+    url = "http://www.gravatar.com/avatar/{hash}?s={size}".format(
+        hash=hash,
+        size=size
+    )
+    return url
+
 PROFILE_OVERRIDES = ['url', 'schema_url']
 
 def get_profile(key=None, auth=False, args=None):
@@ -191,5 +200,9 @@ app.jinja_env.globals['severity_class'] = (
 
 app.jinja_env.globals['re_search'] = (
     re_search
+)
+
+app.jinja_env.globals['get_gravatar'] = (
+    get_gravatar
 )
 

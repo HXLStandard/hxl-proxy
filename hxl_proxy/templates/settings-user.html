@@ -12,7 +12,9 @@
 
   {% block main %}
   <div>
-    <h1>{{ title }}</h1>
+    <h1>
+      {{ title }}
+    </h1>
 
     <p>
       The HXL Proxy will soon allow you to save data recipes and
@@ -21,31 +23,43 @@
       will simply show you what we know about you through H.ID:
     </p>
 
-    <dl class="dl-horizontal">
+    <div class="container-fluid">
 
-      <dt>Active H.ID user?</dt>
-      <dd>{% if member.hid_active %}yes{% else %}no{% endif %}</dd>
+      <div class="col-sm-4">
+        <img class="img-responsive" src="{{ get_gravatar(member.hid_email, size=800) }}" alt="User gravatar" />
+      </div>
 
-      <dt>Family name</dt>
-      <dd>{{ member.hid_name_family }}</dd>
+      <div class="col-sm-8">
 
-      <dt>Given name</dt>
-      <dd>{{ member.hid_name_given }}</dd>
+        <dl class="dl-horizontal">
 
-      <dt>Email (not public)</dt>
-      <dd>{{ member.hid_email }}</dd>
+          <dt>Active H.ID user?</dt>
+          <dd>{% if member.hid_active %}yes{% else %}no{% endif %}</dd>
 
-      <dt>H.ID user id (not public)</dt>
-      <dd>{{ member.hid_id }}</dd>
+          <dt>Family name</dt>
+          <dd>{{ member.hid_name_family }}</dd>
 
-    </dl>
+          <dt>Given name</dt>
+          <dd>{{ member.hid_name_given }}</dd>
 
-    <p>
-      To make changes or to logout of <em>all</em> H.ID-linked
-      applications, please visit <a
-      href="https://auth.humanitarian.id">auth.humanitarian.id</a>
-    </p>
-    
+          <dt>Email (not public)</dt>
+          <dd>{{ member.hid_email }}</dd>
+
+          <dt>H.ID user id (not public)</dt>
+          <dd>{{ member.hid_id }}</dd>
+
+        </dl>
+
+        <p>
+          To make changes or to logout of <em>all</em> H.ID-linked
+          applications, please visit <a
+          href="https://auth.humanitarian.id">auth.humanitarian.id</a>
+        </p>
+        
+      </div>
+
+    </div>
+
   </div>
   {% endblock %}
 
