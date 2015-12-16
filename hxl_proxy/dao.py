@@ -22,7 +22,7 @@ def create_member(member):
             cursor.execute('insert into Members '
                            '(hid_id, hid_name_family, hid_name_given, hid_email, hid_active)'
                            'values (%(hid_id)s, %(hid_name_family)s, %(hid_name_given)s, %(hid_email)s, %(hid_active)s)'
-                           'returning id',
+                           'returning member',
                            member)
             return cursor.fetchone()[0] # return the new id
 

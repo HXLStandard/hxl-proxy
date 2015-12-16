@@ -410,12 +410,12 @@ def do_hid_authorisation():
     else:
         # TODO show a welcome/setup page for the first visit
         # TODO this logic belongs somewhere else
-        member_id = hxl_proxy.dao.create_member({
-            'hid_id': user.get('user_id'),
-            'hid_name_family': user.get('name_family'),
-            'hid_name_given': user.get('name_given'),
-            'hid_email': user.get('email'),
-            'hid_active': True if user.get('active') else False
+        member_id = dao.create_member({
+            'hid_id': user_info.get('user_id'),
+            'hid_name_family': user_info.get('name_family'),
+            'hid_name_given': user_info.get('name_given'),
+            'hid_email': user_info.get('email'),
+            'hid_active': True if user_info.get('active') else False
         })
         session['member_id'] = member_id
     flash("Connected to your Humanitarian.ID account.")
