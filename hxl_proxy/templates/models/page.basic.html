@@ -40,11 +40,11 @@
             {% endblock %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            {% if session.user %}
+            {% if g.member %}
             <li>
               <a href="/settings/user">
                 <span class="glyphicon glyphicon-user"></span>
-                {{ session.user.name_given }}
+                {{ g.member.hid_name_given }}
               </a>
             </li>
             <li>

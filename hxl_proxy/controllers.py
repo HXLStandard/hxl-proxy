@@ -14,6 +14,7 @@ import base64
 import urllib
 import tempfile
 
+import werkzeug
 from werkzeug import secure_filename
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -29,7 +30,8 @@ from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
-import hxl_proxy.dao
+from hxl_proxy.profiles import ProfileManager
+from hxl_proxy import dao
 
 #
 # Error handling
@@ -48,19 +50,20 @@ if not app.config.get('DEBUG'):
     # Register only if not in DEBUG mode
     app.register_error_handler(BaseException, error)
 
+
+#
+# Meta handlers
+#
+
 @app.before_request
-def get_member():
-    user = session.get('user')
-    if user:
-        member = hxl_proxy.dao.get_member(hid_id=user.get('user_id'))
-        if member is None:
-            hxl_proxy.dao.create_member({
-                'hid_id': user.get('user_id'),
-                'hid_name_family': user.get('name_family'),
-                'hid_name_given': user.get('name_given'),
-                'hid_email': user.get('email'),
-                'hid_active': True if user.get('active') else False
-            })
+def before_request():
+    """Code to run immediately before the request"""
+    app.secret_key = app.config['SECRET_KEY']
+    request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
+    g.profiles = ProfileManager(app.config['PROFILE_FILE'])
+    if session.get('member_id'):
+        g.member = dao.get_member(id=session.get('member_id'))
+
 
 #
 # Redirects for deprecated URL patterns
@@ -375,10 +378,9 @@ def do_data_save():
     return redirect(make_data_url(profile, key=key), 303)
 
 @app.route('/settings/user')
-def do_user():
-    user = session.get('user')
-    if user:
-        return render_template('settings-user.html', user=user)
+def do_user_settings():
+    if g.member:
+        return render_template('settings-user.html', member=g.member)
     else:
         return redirect('/login')
 
@@ -402,7 +404,20 @@ def do_hid_authorisation():
     else:
         session['state'] = None
     user_info = get_hid_user(code)
-    session['user'] = user_info
+    member = dao.get_member(hid_id=user_info['user_id'])
+    if member:
+        session['member_id'] = member[0]
+    else:
+        # TODO show a welcome/setup page for the first visit
+        # TODO this logic belongs somewhere else
+        member_id = hxl_proxy.dao.create_member({
+            'hid_id': user.get('user_id'),
+            'hid_name_family': user.get('name_family'),
+            'hid_name_given': user.get('name_given'),
+            'hid_email': user.get('email'),
+            'hid_active': True if user.get('active') else False
+        })
+        session['member_id'] = member_id
     flash("Connected to your Humanitarian.ID account.")
     return redirect('/')
 
