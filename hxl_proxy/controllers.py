@@ -29,6 +29,7 @@ from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
+import hxl_proxy.dao
 
 #
 # Error handling
@@ -47,6 +48,19 @@ if not app.config.get('DEBUG'):
     # Register only if not in DEBUG mode
     app.register_error_handler(BaseException, error)
 
+@app.before_request
+def get_member():
+    user = session.get('user')
+    if user:
+        member = hxl_proxy.dao.get_member(hid_id=user.get('user_id'))
+        if member is None:
+            hxl_proxy.dao.create_member({
+                'hid_id': user.get('user_id'),
+                'hid_name_family': user.get('name_family'),
+                'hid_name_given': user.get('name_given'),
+                'hid_email': user.get('email'),
+                'hid_active': True if user.get('active') else False
+            })
 
 #
 # Redirects for deprecated URL patterns
