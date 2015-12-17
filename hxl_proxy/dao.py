@@ -11,6 +11,7 @@ from hxl_proxy import app
 # Set up the connection
 connection = psycopg2.connect("host='{host}' dbname='{dbname}' user='{user}' password='{password}'".format(
     host=app.config.get('DB_HOSTNAME', 'localhost'),
+    port=app.config.get('DB_PORT', '5432'),
     dbname=app.config.get('DB_DATABASE', 'proxy'),
     user=app.config.get('DB_USERNAME'),
     password=app.config.get('DB_PASSWORD')

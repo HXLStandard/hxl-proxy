@@ -28,6 +28,7 @@ SECRET_KEY='<secret key>'
 # Database connection parameters
 #
 DB_HOSTNAME = 'localhost' # change if needed
+DB_PORT = '5432' # change if needed
 DB_DATABASE = 'hxl_proxy' # change if needed
 DB_USERNAME = '<username>'
 DB_PASSWORD = '<password>'
