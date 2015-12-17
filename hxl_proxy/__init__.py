@@ -21,6 +21,8 @@ app = Flask(__name__)
 app.config.from_object('hxl_proxy.default_config')
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 # Set up cache
 cache = Cache(app,config={

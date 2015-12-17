@@ -44,7 +44,7 @@ def error(e):
         status = 403
     else:
         status = 500
-    return render_template('error.html', e=e), status
+    return render_template('error.html', e=e, category=type(e)), status
 
 if not app.config.get('DEBUG'):
     # Register only if not in DEBUG mode
@@ -62,7 +62,11 @@ def before_request():
     request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     g.profiles = ProfileManager(app.config['PROFILE_FILE'])
     if session.get('member_id'):
-        g.member = dao.get_member(id=session.get('member_id'))
+        try:
+            g.member = dao.get_member(id=session.get('member_id'))
+        except:
+            # TODO some kind of error message
+            pass
 
 
 #
