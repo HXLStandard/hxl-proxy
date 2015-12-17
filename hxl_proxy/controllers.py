@@ -61,13 +61,13 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     g.profiles = ProfileManager(app.config['PROFILE_FILE'])
+    g.member = None
     if session.get('member_id'):
         try:
             g.member = dao.get_member(id=session.get('member_id'))
         except:
             # TODO some kind of error message
             pass
-
 
 #
 # Redirects for deprecated URL patterns
