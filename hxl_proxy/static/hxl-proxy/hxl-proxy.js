@@ -36,7 +36,9 @@ hxl_proxy.config = {
 hxl_proxy.doHDX = function(elementId, submit) {
     //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
     hdx.choose(function (resource) {
-        $(elementId).val(resource.url);
+        //var url = resource.url
+        var url = 'https://data.hdx.rwlabs.org/dataset/' + resource.package_id + '/resource/' + resource.id
+        $(elementId).val(url);
         if (submit) {
             $(elementId).closest('form').submit();
         }
