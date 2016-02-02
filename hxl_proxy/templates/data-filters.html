@@ -7,9 +7,9 @@
   {% set nav_filter='active' %}
 
   {% if key %}
-  {% set title=profile.name|nonone + ' (edit filters)' %}
+  {% set title=profile.name|nonone + ' (edit recipe)' %}
   {% else %}
-  {% set title='Transform your data' %}
+  {% set title='Data recipe' %}
   {% endif %}
 
   {% block menu %}
@@ -36,12 +36,11 @@
 
         {% if key %}
         <p class="lead">
-          Edit the filters for your dataset, or add new ones.
+          Update your data recipe.
         </p>
         {% else %}
         <p class="lead">
-          Optionally add filters to transform the data, merge or append
-          multiple datasets, etc.
+          Design a recipe to transform your data.
         </p>
         {% endif %}
 

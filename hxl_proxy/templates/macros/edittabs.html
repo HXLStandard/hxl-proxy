@@ -14,8 +14,15 @@
   {% endif %}
   <li class="{% if facet=='edit' %}active{% endif %}">
     <a href="{{ data_url(profile, key, 'edit') }}">
-      Transform
+      Recipe
     </a>
   </li>
+  {% if key %}
+  <li class="{% if facet=='profile' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'profile') }}">
+      Metadata
+    </a>
+  </li>
+  {% endif %}
 </ul>
 {% endmacro %}

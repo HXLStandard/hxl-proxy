@@ -12,9 +12,9 @@
   {% endblock %}
 
   {% if key %}
-  {% set title='Update saved profile' %}
+  {% set title='Update metadata' %}
   {% else %}
-  {% set title='Save a profile' %}
+  {% set title='Save a recipe' %}
   {% endif %}
 
   {% block title %}{{ title }}{% endblock %}
@@ -22,13 +22,15 @@
   {% block main %}
   <div>
 
+    {{ edittabs(profile, key, 'profile') }}
+
     <h1>{{ title }}</h1>
 
     {% include "snippets/source.html" %}
 
     {% if key %}
     <p class="lead">
-      Update your saved profile.  Leave the password blank if you don't want to change it.
+      Update the metadata for your saved recipe.  Leave the password blank if you don't want to change it.
     </p>
     {% else %}
     <p class="lead">
@@ -78,7 +80,7 @@
       {% if key %}
       <input type="hidden" name="key" value="{{ key }}" />
       {% endif %}
-      {{ params(profile.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
+      {{ params(profile.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable', 'key']) }}
     </form>
   </div>
   {% endblock %}

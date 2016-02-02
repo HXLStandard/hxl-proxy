@@ -14,7 +14,7 @@ import copy
 VERSION = 1.0
 
 # Properties not to be saved or exposed in args
-BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub']
+BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub', 'key']
 
 class Profile(object):
     """Profile for a filter pipeline."""

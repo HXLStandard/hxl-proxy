@@ -22,13 +22,17 @@ from hxl_proxy.profiles import Profile
 
 CACHE_KEY_EXCLUDES = ['force']
 
-def make_cache_key ():
+def make_cache_key (path = None, args_in=None):
     """Make a key for a caching request, based on the full path."""
-    args = {}
-    for name in request.args:
+    if path is None:
+        path = request.path
+    if args_in is None:
+        args_in = request.args
+    args_out = {}
+    for name in args_in:
         if name not in CACHE_KEY_EXCLUDES:
-            args[name] = request.args.get(name)
-    return request.path + pickle.dumps(args).decode('latin1')
+            args_out[name] = args_in[name]
+    return path + pickle.dumps(args_out).decode('latin1')
 
 def skip_cache_p ():
     """Test if we should skip the cache."""

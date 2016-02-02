@@ -384,6 +384,9 @@ def do_data_save():
         # FIXME other auth information is in __init__.py
         session['passhash'] = profile.passhash
 
+    # TODO be more specific about what we clear
+    cache.clear()
+
     return redirect(make_data_url(profile, key=key), 303)
 
 @app.route('/settings/user')
