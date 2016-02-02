@@ -78,7 +78,7 @@
       {% if key %}
       <input type="hidden" name="key" value="{{ key }}" />
       {% endif %}
-      {{ params(request.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
+      {{ params(profile.args, excludes=['name', 'description', 'schema_url', 'password', 'password-repeat', 'cloneable']) }}
     </form>
   </div>
   {% endblock %}

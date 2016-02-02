@@ -30,7 +30,7 @@ from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
-from hxl_proxy.profiles import ProfileManager
+from hxl_proxy.profiles import ProfileManager, BLACKLIST
 from hxl_proxy import dao
 
 #
@@ -150,6 +150,7 @@ def show_data_edit(key=None):
         profile = get_profile(key, auth=True)
     except Forbidden as e:
         return redirect(make_data_url(None, key=key, facet='login'))
+
 
     if profile.args.get('url'):
         # show only a short preview
@@ -340,26 +341,30 @@ def do_data_save():
 
     # We will have a key if we're updating an existing pipeline
     key = request.form.get('key')
-    if key:
-        try:
-            profile = get_profile(key, auth=True)
-        except Forbidden as e:
-            return redirect(make_data_url(None, key=key, facet='login'))
-    else:
+    try:
         profile = get_profile(key, auth=True, args=request.form)
+    except Forbidden as e:
+        return redirect(make_data_url(None, key=key, facet='login'))
 
-    name = request.form.get('name')
-    description = request.form.get('description')
+    # Update profile metadata
+    if 'name' in request.form:
+        profile.name = request.form['name']
+    if 'description' in request.form:
+        profile.description = request.form['description']
+    if 'cloneable' in request.form:
+        profile.cloneable = (request.form['cloneable'] == 'on')
+    if 'stub' in request.form:
+        profile.stub = request.form['stub']
+
+    # merge args
+    profile.args = {}
+    for name in request.form:
+        if request.form.get(name) and name not in BLACKLIST:
+            profile.args[name] = request.form.get(name)
+
+    # check for a password change
     password = request.form.get('password')
     password_repeat = request.form.get('password-repeat')
-    stub = request.form.get('stub')
-    cloneable = (request.form.get('cloneable') == 'on')
-
-    # Update profile information
-    profile.name = name
-    profile.description = description
-    profile.cloneable = cloneable
-    profile.stub = stub
 
     if key:
         # Updating an existing profile.
