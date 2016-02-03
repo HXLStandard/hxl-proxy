@@ -1,54 +1,28 @@
-<div>
-  {% extends "models/page.basic.html" %}
-  {% from 'macros/navmenu.html' import navmenu %}
-  {% from 'macros/params.html' import params %}
-  {% from 'macros/edittabs.html' import edittabs %}
-
-  {% set nav_filter='active' %}
-
-  {% block menu %}
-  {{ navmenu(profile, key=key, facet='source') }}
-  {% endblock %}
-
-  {% if key %}
-  {% set title='Change your source dataset' %}
-  {% else %}
-  {% set title='Choose a dataset' %}
-  {% endif %}
-
-  {% block title %}{{ title }}{% endblock %}
-
-  {% block main %}
-  <div class="container-fluid">
-
-    {% if profile.args.url %}
-    {{ edittabs(profile, key, 'source') }}
-    {% endif %}
-
-    <h1>{{ title }}</h1>
-
-    <section id="source" class="col-sm-9 col-md-10">
-
-      <div class="lead">
-        {% if key %}
-        <p>
-          Pick a different data source.  All of your existing
-          customisation (filters, schema, etc.) will stay the same.  Your
-          existing data source URL appears below.
-        </p>
-        {% else %}
-        <p>
-          Want to make your humanitarian data dance?  Add some <a
-          href="http://hxlstandard.org" target="_blank">HXL hashtags</a>,
-          then let's get started &hellip;
-        </p>
-        {% endif %}
-      </div>
-
-      <section id="manual-entry" class="panel panel-default">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Data source @ HXL Proxy</title>
+    {% include "snippets/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "snippets/navbar.html" %}
+    <header class="col-sm-12">
+      {% with facet='source' %}
+      {% include "snippets/edittabs.html" %}
+      {% endwith %}
+      <h1>
+        Choose your HXL data source
+      </h1>
+    </header>
+    <main class="col-sm-9 col-md-10">
+      <section id="url" class="panel panel-primary">
         <div class="panel-heading">
-          <h2 class="panel-title">Option #1: enter your dataset's URL</h2>
+          <h2 class="panel-title">
+            <b>Option 1:</b>
+            enter a URL
+          </h2>
         </div>
+        <div class="panel-body">
         {% if key %}
         {% set method="POST" %}
         {% set action="/actions/save-profile" %}
@@ -56,37 +30,38 @@
         {% set method="GET" %}
         {% set action="/data/edit" %}
         {% endif %}
-        <form class="panel-body" action="{{ action }}" method="{{ method }}">
-
-          <div class="input-group required">
-            <input id='dataset-url'
-                   class="form-control" 
-                   name="url"
-                   type="url"
-                   required="required"
-                   value="{{ profile.args.url }}"
-                   placeholder="http://example.org/dataset.csv" />
-            <div class="input-group-btn">
-              <button class="btn btn-success"
-                      type="submit">Next</button>
+          <form action="{{ action }}" method="{{ method }}">
+            <div class="input-group required">
+              <input id='dataset-url'
+                     class="form-control" 
+                     name="url"
+                     type="url"
+                     required="required"
+                     value="{{ profile.args.url }}"
+                     placeholder="http://example.org/dataset.csv" />
+              <div class="input-group-btn">
+                <button class="btn btn-success"
+                        type="submit">Next</button>
+              </div>
             </div>
-          </div>
 
-          {% if key %}
-          {{ params(profile.args) }}
-          {% endif %}
-          {{ params(request.args) }}
+            <p class="help-block small">
+              Type or paste the URL of an online spreadsheet or API containing <a
+              href="http://hxlstandard.org/">HXL hashtags</a>.
+            </p>
+            {% include "snippets/params.html" %}
 
-        </form>
-      </section>
-
-      <p class="h3 text-center" aria-role="separator">&hellip;or&hellip;</p>
-
-      <section id="cloud-services" class="icons panel panel-default">
-        <div class="panel-heading">
-          <h2 class="panel-title">Option #2: choose your dataset from a cloud service</h2>
+          </form>
         </div>
-        <div class="panel-body text-center">
+      </section>
+      <section id="cloud" class="panel panel-primary icons">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <b>Option 2:</b>
+            choose from the cloud
+          </h2>
+        </div>
+        <div class="panel-body" id="cloud-body">
           <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
             <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
             <span>HDX</span>
@@ -101,21 +76,17 @@
           </a>
         </div>
       </section>
-
-    </section>
-
-    <section id="postcard" class="col-sm-3 col-md-2 hidden-xs">
-      {% include "snippets/postcards.html" %}
-    </section>
-
-  </div>
-  {% endblock %}
-
-  {% block scripts %}
-  {{ super() }}
-  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-  {% endblock %}
-</div>
+    </main>
+    {% include "snippets/sidebar.html" %}
+    {% include "snippets/scripts.html" %}
+    <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
+    <script>
+      if (typeof Dropbox == 'undefined') {
+          $('#cloud-body').prepend('<p class="alert alert-danger">Dropbox chooser unavailable (you may need to disable any ad blockers).</p>');
+      }
+    </script>
+    <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+  </body>
+</html>

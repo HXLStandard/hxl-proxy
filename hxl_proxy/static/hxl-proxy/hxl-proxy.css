@@ -2,9 +2,16 @@
     width: 100%;
 }
 
-main {
+body {
     padding-top: 50px;
+}
+
+main {
     overflow: auto;
+}
+
+.messages {
+    margin-top: 1rem;
 }
 
 label {
@@ -135,26 +142,21 @@ td>.content {
     max-width: 40rem;
 }
 
-.postcards {
-    padding: 1rem;
-    border: solid 1px #dddddd;
-    border-radius: 0.5rem;
-    font-size: 80%;
-    font-style: italic;
-}
-
-.postcards h2 {
+aside h2 {
     font-size: 100%;
     font-weight: bold;
     margin-top: 1rem;
 }
 
-.postcards img {
-    width: 95%;
+aside img {
     border: solid 1px #aaaaaa;
     margin: 1ex 0;
 }
 
 .nav-tabs {
     margin-top: 1rem;
+}
+
+p {
+    margin: 1rem 0;
 }
