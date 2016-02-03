@@ -1,0 +1,45 @@
+<nav role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/">
+        <img class="navbar-brand" src="{{ static('images/hxl-logo-white.png') }}" alt="#HXL" />
+      </a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        {% block menu %}
+        {% endblock %}
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if g.member %}
+        <li>
+          <a href="/settings/user">
+            <span class="glyphicon glyphicon-user"></span>
+            {{ g.member.hid_name_given }}
+          </a>
+        </li>
+        <li>
+          <a href="/logout">
+            <span class="glyphicon glyphicon-log-out"></span>
+            Logout
+          </a>
+        </li>
+        {% else %}
+        <li>
+          <a href="/login">
+            <span class="glyphicon glyphicon-log-in"></span>
+            Login
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+{% include "snippets/messages.html" %}

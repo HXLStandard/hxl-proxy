@@ -1,0 +1,30 @@
+<ul class="nav nav-tabs"> 
+  <li class="{% if facet=='source' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'source') }}">
+      Source
+    </a>
+  </li>
+  {% if profile.args.url %}
+  {% if using_tagger_p(profile) %}
+  <li class="{% if facet=='tagger' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'tagger') }}">
+      Tags
+    </a>
+  </li>
+  {% endif %}
+  <li class="{% if facet=='edit' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'edit') }}">
+      Recipe
+    </a>
+  </li>
+  <li class="{% if facet=='profile' %}active{% endif %}">
+    <a href="{{ data_url(profile, key, 'profile') }}">
+      {% if key %}
+      Update metadata
+      {% else %}
+      Save
+      {% endif %}
+    </a>
+  </li>
+  {% endif %}
+</ul>
