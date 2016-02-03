@@ -32,7 +32,7 @@
           </a>
         </li>
         {% if profile.args.url and not profile.key %}
-        <li class="{% if facet in ['source', 'tagger', 'edit'] %}active{% endif %}">
+        <li class="{% if facet in ['source', 'tagger', 'edit', 'profile'] %}active{% endif %}">
           <a href="{{ data_url(profile, key, 'edit') }}">
             <span class="glyphicon glyphicon-pencil"></span>
             edit
