@@ -5,7 +5,7 @@
     </a>
   </li>
   {% if profile.args.url %}
-  {% if using_tagger_p(profile) %}
+  {% if using_tagger_p(profile) or facet=='tagger' %}
   <li class="{% if facet=='tagger' %}active{% endif %}">
     <a href="{{ data_url(profile, key, 'tagger') }}">
       Tags
@@ -14,7 +14,7 @@
   {% endif %}
   <li class="{% if facet=='edit' %}active{% endif %}">
     <a href="{{ data_url(profile, key, 'edit') }}">
-      Recipe
+      Filters
     </a>
   </li>
   <li class="{% if facet=='profile' %}active{% endif %}">
