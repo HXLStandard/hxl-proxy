@@ -9,9 +9,11 @@
     {% include "snippets/navbar.html" %}
     {% endwith %}
     <header class="col-sm-12">
+      {% if profile.args.url %}
       {% with facet='source' %}
       {% include "snippets/edittabs.html" %}
       {% endwith %}
+      {% endif %}
       <h1>
         Choose your HXL data source
       </h1>
