@@ -2,7 +2,7 @@
   {% extends "models/page.basic.html" %}
   {% from 'macros/navmenu.html' import navmenu %}
 
-  {% set title="Settings for {} {}".format(member.hid_name_given, member.hid_name_family) %}
+  {% set title="Settings for {} {}".format(member.name_given, member.name_family) %}
 
   {% block title %}{{ title }}{% endblock %}
 
@@ -26,7 +26,7 @@
     <div class="container-fluid">
 
       <div class="col-sm-3">
-        <img class="img-responsive" src="{{ get_gravatar(member.hid_email, size=800) }}" alt="User gravatar" />
+        <img class="img-responsive" src="{{ get_gravatar(member.email, size=800) }}" alt="User gravatar" />
       </div>
 
       <div class="col-sm-9">
@@ -34,19 +34,19 @@
         <dl class="dl-horizontal">
 
           <dt>Active H.ID user?</dt>
-          <dd>{% if member.hid_active %}yes{% else %}no{% endif %}</dd>
+          <dd>{% if member.active %}yes{% else %}no{% endif %}</dd>
 
           <dt>Family name</dt>
-          <dd>{{ member.hid_name_family }}</dd>
+          <dd>{{ member.name_family }}</dd>
 
           <dt>Given name</dt>
-          <dd>{{ member.hid_name_given }}</dd>
+          <dd>{{ member.name_given }}</dd>
 
           <dt>Email (not public)</dt>
-          <dd>{{ member.hid_email }}</dd>
+          <dd>{{ member.email }}</dd>
 
           <dt>H.ID user id (not public)</dt>
-          <dd>{{ member.hid_id }}</dd>
+          <dd>{{ member.id }}</dd>
 
         </dl>
 

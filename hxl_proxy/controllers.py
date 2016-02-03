@@ -68,6 +68,8 @@ def before_request():
         except:
             # TODO some kind of error message
             pass
+        g.member = session.get('member_info')
+        app.logger.debug(g.member)
 
 #
 # Redirects for deprecated URL patterns
@@ -417,6 +419,7 @@ def do_hid_authorisation():
         session['state'] = None
     user_info = get_hid_user(code)
     member = dao.get_member(hid_id=user_info['user_id'])
+    session['member_info'] = user_info
     if member:
         session['member_id'] = member[0]
     else:
@@ -430,7 +433,7 @@ def do_hid_authorisation():
             'hid_active': True if user_info.get('active') else False
         })
         session['member_id'] = member_id
-    flash("Connected to your Humanitarian.ID account.")
+    flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
     return redirect('/')
 
 # end

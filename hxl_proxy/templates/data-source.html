@@ -5,7 +5,9 @@
     {% include "snippets/headers.html" %}
   </head>
   <body class="container-fluid">
+    {% with facet='source' %}
     {% include "snippets/navbar.html" %}
+    {% endwith %}
     <header class="col-sm-12">
       {% with facet='source' %}
       {% include "snippets/edittabs.html" %}
