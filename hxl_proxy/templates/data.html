@@ -1,58 +1,49 @@
-<div>
-  {% extends "models/page.basic.html" %}
-  {% from 'macros/navmenu.html' import navmenu %}
-
-  {% if key %}
-  {% set title=profile.name %}
-  {% else %}
-  {% set title="Result data" %}
-  {% endif %}
-
-  {% block title %}{{ title }}{% endblock %}
-
-  {% block head %}
-  {{ super() }}
-  <link href="{{ static('dataTables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet" />
-  {% endblock %}
-
-  {% block menu %}
-  {{ navmenu(profile=profile, key=key, facet='data') }}
-  {% endblock %}
-
-  {% block main %}
-  <div>
-
-    <small>
-      <span class="icons small pull-right">
-        <a href="{{ data_url(profile, key, format='csv') }}">
-          <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
-          <span>CSV</span>
-        </a>
-        <a href="{{ data_url(profile, key, format='json') }}">
-          <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
-          <span>JSON</span>
-        </a>
-      </span>
-    </small>
-
-    <h1>{{ title }}</h1>
-
-    {% if profile.description %}
-    <p>{{ profile.description }}</p>
-    {% endif %}
-
-    {% if (not key) or profile.cloneable %}
-    {% include 'snippets/source.html' %}
-    {% endif %}
-
-    <section id="data" style="clear: both">
-      {% include 'snippets/hxltable.html' %}
-    </section>
-
-  </div>
-  {% endblock %}
-
-  {% block scripts %}
-  {{ super() }}
-  {% endblock %}
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  {% set facet='data' %}
+  <head>
+    <title>
+      {% if profile.title %}
+      {{ profile.title }} @ HXL Proxy
+      {% else %}
+      View data @ HXL Proxy
+      {% endif %}
+    </title>
+    {% include "snippets/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "snippets/navbar.html" %}
+    <header class="row">
+      <h1 class="col-xs-6 col-sm-8 col-md-10">
+        {% if profile.title %}
+        {{ profile.title }}
+        {% else %}
+        View Data
+        {% endif %}
+      </h1>
+      <p class="col-xs-6 col-sm-4 col-md-2 small">
+        <span class="icons small pull-right">
+          <a href="{{ data_url(profile, key, format='csv') }}">
+            <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
+            <span>CSV</span>
+          </a>
+          <a href="{{ data_url(profile, key, format='json') }}">
+            <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
+            <span>JSON</span>
+          </a>
+        </span>
+      </p>
+    </header>
+    <main class="row">
+      <section id="metadata" class="col-xs-12">
+        {% include "snippets/source.html" %}
+        {% if profile.description %}
+        <p>{{ profile.description }}</p>
+        {% endif %}
+      </section>
+      <section id="data" class="col-xs-12">
+        {% include 'snippets/hxltable.html' %}
+      </section>
+    </main>
+  </body>
+</html>
