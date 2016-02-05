@@ -1,10 +1,8 @@
 {% if not key or profile.cloneable %}
-<p class="source-url">
-  <div>
-    <b>Original data:</b>
-    <a target="_blank" href="{{ profile.args.url}}">
-      {{ profile.args.url }}
-    </a>
-  </div>
-</p>
+<div>
+  <b>Original data:</b>
+  <a target="_blank" href="{{ profile.args.url}}">
+    {{ profile.args.url }}
+  </a>
+</div>
 {% endif %}

@@ -11,16 +11,16 @@
     {% set facet="chart" %}
     {% include "includes/navbar.html" %}
     <header>
-      <h1>
-        Chart{% if profile.name %} of {{ profile.name }}{% endif %}
-      </h1>
-    </header>
-    <main>
       <ul class="nav nav-tabs">
         <li role="presentation"{% if type=='pie' %} class="active"{% endif %}><a href="{{ add_args({'type': 'pie'}) }}">Pie</a></li>
         <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
         <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
       </ul>
+      <h1>
+        Chart{% if profile.name %} of {{ profile.name }}{% endif %}
+      </h1>
+    </header>
+    <main>
 
       <p class="text-right">
         <a type="button" class="btn btn-info btn-xs"

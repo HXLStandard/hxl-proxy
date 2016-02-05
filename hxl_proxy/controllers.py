@@ -130,7 +130,7 @@ def show_data_tag(key=None):
         if row:
             preview.append(row)
         
-    return render_template('data-tag.html', key=key, profile=profile, preview=preview, header_row=header_row)
+    return render_template('data-tagger.html', key=key, profile=profile, preview=preview, header_row=header_row)
 
 
 @app.route("/data/edit")
@@ -166,7 +166,7 @@ def show_data_edit(key=None):
 
     show_headers = (profile.args.get('strip-headers') != 'on')
 
-    return render_template('data-filters.html', key=key, profile=profile, source=source, show_headers=show_headers, filter_count=filter_count)
+    return render_template('data-recipe.html', key=key, profile=profile, source=source, show_headers=show_headers, filter_count=filter_count)
 
 @app.route("/data/profile")
 @app.route("/data/<key>/profile")
@@ -181,7 +181,7 @@ def show_data_profile(key=None):
     if not profile or not profile.args.get('url'):
         return redirect('/data/source', 303)
 
-    return render_template('data-profile.html', key=key, profile=profile)
+    return render_template('data-about.html', key=key, profile=profile)
 
 @app.route('/data/<key>/chart')
 @app.route('/data/chart')
@@ -199,7 +199,7 @@ def show_data_chart(key=None):
     if label:
         label = hxl.TagPattern.parse(label);
     type = request.args.get('type', 'bar')
-    return render_template('data-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type, source=source)
+    return render_template('visualise-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type, source=source)
 
 @app.route('/data/<key>/map')
 @app.route('/data/map')
@@ -209,7 +209,7 @@ def show_data_map(key=None):
     if not profile or not profile.args.get('url'):
         return redirect('/data/source', 303)
     layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
-    return render_template('data-map.html', key=key, profile=profile, layer_tag=layer_tag)
+    return render_template('visualise-map.html', key=key, profile=profile, layer_tag=layer_tag)
 
 @app.route("/data/validate")
 @app.route("/data/<key>/validate")
@@ -236,7 +236,7 @@ def show_validate(key=None):
     if url:
         errors = do_validate(setup_filters(profile), schema_url, severity_level)
 
-    return render_template('data-validate.html', key=key, profile=profile, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
+    return render_template('validate-summary.html', key=key, profile=profile, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
 
 @app.route("/data/<key>.<format>")
 @app.route("/data/<key>/download/<stub>.<format>")
@@ -255,7 +255,7 @@ def show_data(key=None, format="html", stub=None):
         show_headers = (profile.args.get('strip-headers') != 'on')
 
         if format == 'html':
-            return render_template('data.html', source=source, profile=profile, key=key, show_headers=show_headers)
+            return render_template('data-view.html', source=source, profile=profile, key=key, show_headers=show_headers)
         elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'

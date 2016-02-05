@@ -13,72 +13,39 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        <li class="{% if facet=='source' and not profile.args.url %}active{% endif %}">
+          <a href="/data/source">
+            <span class="glyphicon glyphicon-plus"></span>
+            New
+          </a>
+        </li>
         {% if profile and profile.args.url %}
-        <li class="{% if facet=='data' %}active{% endif %}">
+        <li class="{% if facet in ['source', 'tagger', 'edit', 'view'] %}active{% endif %}">
           <a href="{{ data_url(profile, key) }}">
             <span class="glyphicon glyphicon-th-list"></span>
-            view data
+            Data
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
           <a href="{{ data_url(profile, key, 'validate') }}">
             <span class="glyphicon glyphicon-ok"></span>
-            validate
+            Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
           <a href="{{ data_url(profile, key, 'chart') }}">
-            <span class="glyphicon glyphicon-signal"></span> visualise
+            <span class="glyphicon glyphicon-signal"></span>
+            Visualise
           </a>
         </li>
-        {% if profile.args.url and not profile.key %}
-        <li class="{% if facet in ['source', 'tagger', 'edit', 'profile'] %}active{% endif %}">
-          <a href="{{ data_url(profile, key, 'edit') }}">
-            <span class="glyphicon glyphicon-pencil"></span>
-            edit
+        {% if key and profile.cloneable %}
+        <li>
+          <a href="{{ data_url(profile, None, 'edit') }}">
+            <span class="glyphicon glyphicon-copy"></span>
+            Clone
           </a>
         </li>
         {% endif %}
-        <li class="dropdown">
-          <a href="#" 
-             class="dropdown-toggle"
-             data-toggle="dropdown"
-             role="button"
-             aria-haspopup="true"
-             aria-expanded="false">
-            <span class="glyphicon glyphicon-edit"></span>
-            actions
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a href="/data/source">
-                <span class="glyphicon glyphicon-plus"></span>
-                start new view
-              </a>
-            </li>
-            {% if key and profile.cloneable %}
-            <li>
-              <a href="{{ data_url(profile, None, 'edit') }}">
-                <span class="glyphicon glyphicon-copy"></span>
-                clone this view
-              </a>
-            </li>
-            {% endif %}
-            {% if profile %}
-            <li class="{% if facet=='profile' %}active{% endif %}">
-              <a href="{{ data_url(profile, key, 'profile') }}">
-                {% if key %}
-                <span class="glyphicon glyphicon-cog"></span>
-                edit settings
-                {% else %}
-                <span class="glyphicon glyphicon-save"></span>
-                save this view
-                {% endif %}
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </li>
         {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">

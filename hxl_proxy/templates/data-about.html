@@ -2,7 +2,7 @@
 <html lang="en">
   {% set facet='profile' %}
   <head>
-    <title>Edit metadata @ HXL Proxy</title>
+    <title>Data settings @ HXL Proxy</title>
     {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
@@ -11,7 +11,7 @@
       {% include "includes/data-tabs.html" %}
       <h1>
         {% if key %}
-        Metadata for {{ profile.title }}
+        {{ profile.name }}: settings
         {% else %}
         Save recipe
         {% endif %}
