@@ -30,7 +30,6 @@ from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
 from hxl_proxy.profiles import ProfileManager, BLACKLIST
-from hxl_proxy import dao
 
 #
 # Error handling
@@ -60,15 +59,7 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     g.profiles = ProfileManager(app.config['PROFILE_FILE'])
-    g.member = None
-    if session.get('member_id'):
-        try:
-            g.member = dao.get_member(id=session.get('member_id'))
-        except:
-            # TODO some kind of error message
-            pass
-        g.member = session.get('member_info')
-        app.logger.debug(g.member)
+    g.member = session.get('member_info')
 
 #
 # Redirects for deprecated URL patterns
@@ -372,21 +363,7 @@ def do_hid_authorisation():
     else:
         session['state'] = None
     user_info = get_hid_user(code)
-    member = dao.get_member(hid_id=user_info['user_id'])
     session['member_info'] = user_info
-    if member:
-        session['member_id'] = member[0]
-    else:
-        # TODO show a welcome/setup page for the first visit
-        # TODO this logic belongs somewhere else
-        member_id = dao.create_member({
-            'hid_id': user_info.get('user_id'),
-            'hid_name_family': user_info.get('name_family'),
-            'hid_name_given': user_info.get('name_given'),
-            'hid_email': user_info.get('email'),
-            'hid_active': True if user_info.get('active') else False
-        })
-        session['member_id'] = member_id
     flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
     return redirect('/')
 
