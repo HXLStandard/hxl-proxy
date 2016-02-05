@@ -1,3 +1,5 @@
 {% for name in profile.args.keys() %}
+{% if not excludes or name not in excludes %}
 <input type="hidden" name="{{ name }}" value="{{ profile.args.get(name) }}" />
+{% endif %}
 {% endfor %}
