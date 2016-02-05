@@ -70,16 +70,6 @@ def redirect_home():
     # home isn't moved permanently
     return redirect("/data/source?" + urllib.parse.urlencode(request.args) , 302)
 
-@app.route("/filters/new") # deprecated
-def redirect_edit():
-    return redirect("/data/source?" + urllib.parse.urlencode(request.args) , 301)
-
-@app.route("/filters/preview") # deprecated
-@app.route("/data/preview")
-def redirect_data():
-    return redirect("/data?" + urllib.parse.urlencode(request.args) , 301)
-
-
 #
 # Primary controllers
 #
@@ -97,7 +87,7 @@ def show_data_source(key=None):
     try:
         profile = get_profile(key, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+        return redirect(make_data_url(None, key=key, facet='login'), 303)
 
     return render_template('data-source.html', key=key, profile=profile)
 
@@ -110,7 +100,7 @@ def show_data_tag(key=None):
     try:
         profile = get_profile(key, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+        return redirect(make_data_url(None, key=key, facet='login'), 303)
 
     header_row = request.args.get('header-row')
     if header_row:
@@ -118,7 +108,7 @@ def show_data_tag(key=None):
 
     if not profile.args.get('url'):
         flash('Please choose a data source first.')
-        return redirect(make_data_url(profile, key, 'source'))
+        return redirect(make_data_url(profile, key, 'source'), 303)
 
     preview = []
     i = 0
@@ -141,7 +131,7 @@ def show_data_edit(key=None):
     try:
         profile = get_profile(key, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+        return redirect(make_data_url(None, key=key, facet='login'), 303)
 
 
     if profile.args.get('url'):
@@ -151,10 +141,10 @@ def show_data_edit(key=None):
             source.columns # force-trigger an exception if not tagged
         except:
             flash('No HXL tags found')
-            return redirect(make_data_url(profile, key, 'tagger'))
+            return redirect(make_data_url(profile, key, 'tagger'), 303)
     else:
         flash('Please choose a data source first.')
-        return redirect(make_data_url(profile, key, 'source'))
+        return redirect(make_data_url(profile, key, 'source'), 303)
 
     # Figure out how many filter forms to show
     filter_count = 0
@@ -176,7 +166,7 @@ def show_data_profile(key=None):
     try:
         profile = get_profile(key, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+        return redirect(make_data_url(None, key=key, facet='login'), 303)
 
     if not profile or not profile.args.get('url'):
         return redirect('/data/source', 303)
@@ -291,7 +281,7 @@ def do_data_save():
     try:
         profile = get_profile(key, auth=True, args=request.form)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'))
+        return redirect(make_data_url(None, key=key, facet='login'), 303)
 
     # Update profile metadata
     if 'name' in request.form:
@@ -341,17 +331,17 @@ def do_user_settings():
     if g.member:
         return render_template('settings-user.html', member=g.member)
     else:
-        return redirect('/login')
+        return redirect('/login', 303)
 
 @app.route('/login')
 def do_login():
-    return redirect(get_hid_login_url())
+    return redirect(get_hid_login_url(), 303)
 
 @app.route('/logout')
 def do_logout():
     session.clear()
     flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
-    return redirect('/')
+    return redirect('/', 303)
 
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
@@ -365,6 +355,6 @@ def do_hid_authorisation():
     user_info = get_hid_user(code)
     session['member_info'] = user_info
     flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
-    return redirect('/')
+    return redirect('/', 303)
 
 # end
