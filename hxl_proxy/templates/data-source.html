@@ -2,16 +2,16 @@
 <html lang="en">
   <head>
     <title>Data source @ HXL Proxy</title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
     {% with facet='source' %}
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     {% endwith %}
     <header class="col-sm-12">
       {% if profile.args.url %}
       {% with facet='source' %}
-      {% include "snippets/edittabs.html" %}
+      {% include "includes/edittabs.html" %}
       {% endwith %}
       {% endif %}
       <h1>
@@ -53,7 +53,7 @@
               Type or paste the URL of an online spreadsheet or API containing <a
               href="http://hxlstandard.org/">HXL hashtags</a>.
             </p>
-            {% include "snippets/params.html" %}
+            {% include "includes/params.html" %}
 
           </form>
         </div>
@@ -81,8 +81,8 @@
         </div>
       </section>
     </main>
-    {% include "snippets/sidebar.html" %}
-    {% include "snippets/scripts.html" %}
-    {% include "snippets/chooser-scripts.html" %}
+    {% include "includes/sidebar.html" %}
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
   </body>
 </html>

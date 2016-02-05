@@ -5,11 +5,11 @@
       Chart{% if profile.name %} of {{ profile.name }}{% endif %}
       @ HXL Proxy
     </title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
     {% set facet="chart" %}
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header>
       <h1>
         Chart{% if profile.name %} of {{ profile.name }}{% endif %}
@@ -30,7 +30,7 @@
 
       <div id="chart_div" style="min-height:480px"></div>
 
-      {% include "snippets/source.html" %}
+      {% include "includes/source.html" %}
     </main>
     
     <div id="customise-modal" class="modal fade" role="dialog">
@@ -65,7 +65,7 @@
                   {% endfor %}
                 </select>
                 {% with excludes=['label', 'tag'] %}
-                {% include "snippets/params.html" %}
+                {% include "includes/params.html" %}
                 {% endwith %}
               </div>
               <button class="btn btn-success" type="submit">OK</button>
@@ -74,7 +74,7 @@
         </div>
       </div>
     </div>
-    {% include "snippets/scripts.html" %}
+    {% include "includes/scripts.html" %}
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>

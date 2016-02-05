@@ -9,10 +9,10 @@
       View data @ HXL Proxy
       {% endif %}
     </title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header class="row">
       <h1 class="col-xs-6 col-sm-8 col-md-10">
         {% if profile.title %}
@@ -36,13 +36,13 @@
     </header>
     <main class="row">
       <section id="metadata" class="col-xs-12">
-        {% include "snippets/source.html" %}
+        {% include "includes/source.html" %}
         {% if profile.description %}
         <p>{{ profile.description }}</p>
         {% endif %}
       </section>
       <section id="data" class="col-xs-12">
-        {% include 'snippets/hxltable.html' %}
+        {% include 'includes/hxltable.html' %}
       </section>
     </main>
   </body>

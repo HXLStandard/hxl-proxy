@@ -2,15 +2,15 @@
 <html lang="en">
   <head>
     <title>Recipe filters @ HXL Proxy</title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
     {% with facet='edit' %}
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     {% endwith %}
     <header>
       {% with facet='edit' %}
-      {% include "snippets/edittabs.html" %}
+      {% include "includes/edittabs.html" %}
       {% endwith %}
       <h1>
         Add filters to your data recipe
@@ -18,7 +18,7 @@
     </header>
     <main class="row">
       <div class="col-sm-12">
-        {% include "snippets/source.html" %}
+        {% include "includes/source.html" %}
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
         <h3>Filters</h3>
@@ -43,20 +43,20 @@
                     </div>
                     <div class="modal-body">
                       <fieldset id="{{ 'filter-group%02d' % n }}">
-                        {% include 'snippets/filters/filter-selector.html' %}
+                        {% include 'includes/filters/filter-selector.html' %}
 
-                        {% include 'snippets/filters/add.html' %}
-                        {% include 'snippets/filters/append.html' %}
-                        {% include 'snippets/filters/clean.html' %}
-                        {% include 'snippets/filters/count.html' %}
-                        {% include 'snippets/filters/cut.html' %}
-                        {% include 'snippets/filters/dedup.html' %}
-                        {% include 'snippets/filters/merge.html' %}
-                        {% include 'snippets/filters/rename.html' %}
-                        {% include 'snippets/filters/replace.html' %}
-                        {% include 'snippets/filters/replace-map.html' %}
-                        {% include 'snippets/filters/select.html' %}
-                        {% include 'snippets/filters/sort.html' %}
+                        {% include 'includes/filters/add.html' %}
+                        {% include 'includes/filters/append.html' %}
+                        {% include 'includes/filters/clean.html' %}
+                        {% include 'includes/filters/count.html' %}
+                        {% include 'includes/filters/cut.html' %}
+                        {% include 'includes/filters/dedup.html' %}
+                        {% include 'includes/filters/merge.html' %}
+                        {% include 'includes/filters/rename.html' %}
+                        {% include 'includes/filters/replace.html' %}
+                        {% include 'includes/filters/replace-map.html' %}
+                        {% include 'includes/filters/select.html' %}
+                        {% include 'includes/filters/sort.html' %}
 
                       </fieldset>
 
@@ -97,14 +97,14 @@
           {% if key %}
           <input type="hidden" name="key" value="{{ key }}"/>
           {% endif %}
-          {% include "snippets/params.html" %}
+          {% include "includes/params.html" %}
         </form>
       </section>
 
       <section class="col-sm-8 col-md-9">
         <h3>Preview</h3>
         <div id="preview-table">
-          {% include 'snippets/hxltable.html' %}
+          {% include 'includes/hxltable.html' %}
         </div>
         {% if source.has_more_rows %}
         <p id="preview-warning" class="alert alert-warning hxltable-warning">
@@ -114,8 +114,8 @@
         {% endif %}
       </section>
     </main>
-    {% include "snippets/scripts.html" %}
-    {% include "snippets/chooser-scripts.html" %}
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
     <script>
       hxl_proxy.setupForm();
       $(document).ready(function() {

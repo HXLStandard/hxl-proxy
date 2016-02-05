@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-  {% from 'macros/selectors.html' import selectors %}
   {% set facet='profile' %}
   <head>
     <title>Edit metadata @ HXL Proxy</title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header>
-      {% include "snippets/edittabs.html" %}
+      {% include "includes/edittabs.html" %}
       <h1>
         {% if key %}
         Metadata for {{ profile.title }}
@@ -20,7 +19,7 @@
     </header>
     <main class="row">
       <div class="col-md-12">
-        {% include "snippets/source.html" %}
+        {% include "includes/source.html" %}
       </div>
       <form class="form" method="POST" action="/actions/save-profile">
         <div class="form-group required col-md-6">
@@ -40,7 +39,7 @@
         <div class="form-group col-md-6">
           <label for="schema_url">Default schema URL for validation</label>
           <input name="schema_url" id="schema_url" class="form-control" value="{{ profile.args.schema_url|nonone }}" />
-          {{ selectors('#schema_url') }}
+          {% with id='#schema_url' %}{% include "includes/selectors.html" %}{% endwith %}
         </div>
         <div class="form-group col-md-6{% if not key %} required{% endif %}">
           <label for="password">Editing password</label>
@@ -62,10 +61,10 @@
         {% if key %}
         <input type="hidden" name="key" value="{{ key }}" />
         {% endif %}
-        {% include "snippets/params.html" %}
+        {% include "includes/params.html" %}
       </form>
     </main>
-    {% include "snippets/scripts.html" %}
-    {% include "snippets/chooser-scripts.html" %}
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
   </body>
 </html>

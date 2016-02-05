@@ -1,9 +1,0 @@
-{% macro params(args, excludes=[], hide_filters=False) %}
-{% for key in args.keys() %}
-{% if not (key in excludes) %}
-{% if (not hide_filters) or not re_search('[0-9][0-9]$', key) %}
-<input type="hidden" name="{{ key }}" value="{{ args.get(key) }}" />
-{% endif %}
-{% endif %}
-{% endfor %}
-{% endmacro %}

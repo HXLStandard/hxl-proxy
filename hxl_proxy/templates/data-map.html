@@ -4,11 +4,11 @@
     <title>
       Map{% if profile.name %}of {{ profile.name}}{% endif %} @ HXL Proxy
     </title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
     {% set facet="chart" %}
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header>
       <h1>
         Map{% if profile.name %}of {{ profile.name}}{% endif %}        
@@ -16,13 +16,13 @@
     </header>
     <main>
       <div id="map-div" style="height: 480px"></div>
-      {% include "snippets/source.html" %}
+      {% include "includes/source.html" %}
     </main>
     <script type="text/javascript">
       var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
       var map_layer_tag = "{{ layer_tag }}";
     </script>
-    {% include "snippets/scripts.html" %}
+    {% include "includes/scripts.html" %}
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>

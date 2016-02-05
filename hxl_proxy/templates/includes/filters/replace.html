@@ -1,10 +1,9 @@
 <div class="fields-replace hideable">
-  {% import 'snippets/filters/filter-variables.j2' as vars %}
-  {% from 'macros/help.html' import help %}
+  {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
     Replace values in the dataset.
-    {{ help('Replace-data-filter') }}
+    {% with key='Replace-data-filter' %}{% include "includes/help.html" %}{% endwith %}
   </p>
 
   {% set name='replace-pattern%02d' % n %}

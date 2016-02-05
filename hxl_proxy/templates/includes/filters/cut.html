@@ -1,10 +1,9 @@
 <div class="fields-cut hideable">
-  {% import 'snippets/filters/filter-variables.j2' as vars %}
-  {% from 'macros/help.html' import help %}
+  {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
     Remove columns from your dataset.
-    {{ help('Cut-columns-filter') }}
+    {% with key='Cut-columns-filter' %}{% include "includes/help.html" %}{% endwith %}
   </p>
 
   {% set name='cut-include-tags%02d' % n %}

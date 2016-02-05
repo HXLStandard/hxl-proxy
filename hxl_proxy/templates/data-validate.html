@@ -9,10 +9,10 @@
       Validate dataset @ HXL Proxy
       {% endif %}
     </title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header class="col-sm-12">
       <h1>
         {% if profile.title %}
@@ -82,7 +82,7 @@
           </select>
           <button class="hidden btn btn-default" type="submit">Change</button>
         </div>
-        {% include "snippets/params.html" %}
+        {% include "includes/params.html" %}
       </form>
       <p class="alert alert-warning">
         {{ errors|length }} validation issue(s)
@@ -128,7 +128,7 @@
                 <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
                 {% endif %}
 
-                {% include 'snippets/profile-form.html' %}
+                {% include 'includes/profile-form.html' %}
 
                 <div class="form-group">
                   <label for="schema_url">Custom HXL schema URL</label>
@@ -136,11 +136,11 @@
                          placeholder="http://example.org/my-hxl-schema.csv" />
                   <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
                   {% with id='#schema_url' %}
-                  {% include "snippets/selectors.html" %}
+                  {% include "includes/selectors.html" %}
                   {% endwith %}
                 </div>
 
-                {% include "snippets/params.html" %}
+                {% include "includes/params.html" %}
 
                 <button class="btn btn-success" type="submit">Update</button>
 
@@ -150,8 +150,8 @@
         </div>
       </div>
     </main>
-    {% include "snippets/sidebar.html" %}
-    {% include "snippets/scripts.html" %}
-    {% include "snippets/chooser-scripts.html" %}
+    {% include "includes/sidebar.html" %}
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
   </body>
 </html>

@@ -3,12 +3,12 @@
   {% set facet='tagger' %}
   <head>
     <title>Add hashtags @ HXL Proxy</title>
-    {% include "snippets/headers.html" %}
+    {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
-    {% include "snippets/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <header class="col-sm-12">
-      {% include "snippets/edittabs.html" %}
+      {% include "includes/edittabs.html" %}
       <h1>
         Tag a non-HXL dataset
       </h1>
@@ -16,7 +16,7 @@
     <main class="col-sm-9">
       {% if not header_row %}
       <section class="col-sm-12">
-        {% include "snippets/source.html" %}
+        {% include "includes/source.html" %}
 
         {% if not using_tagger_p(profile) %}
         <p class="alert alert-warning">
@@ -35,7 +35,7 @@
             <td>
               <form method="GET" action="">
                 <input type="hidden" name="header-row" value="{{ loop.index }}" />
-                {% include "snippets/params.html" %}
+                {% include "includes/params.html" %}
                 <button class="btn btn-default">Row {{ loop.index }}</button>
               </form>
             </td>
@@ -50,7 +50,7 @@
       {% else %}
       <section class="col-sm-9 col-md-10">
 
-        {% include "snippets/source.html" %}
+        {% include "includes/source.html" %}
 
         {% if not using_tagger_p(profile) %}
         <p class="alert alert-warning">
@@ -66,7 +66,7 @@
         <form class="panel-body" action="/data/edit" method="GET">
 
           <div class="panel-body">
-            {% import 'snippets/filters/filter-variables.j2' as vars %}
+            {% import 'includes/filters/filter-variables.j2' as vars %}
             <table>
               <thead>
                 <tr>
@@ -105,13 +105,13 @@
             <button class="btn btn-success" type="submit">Next</button>
           </div>
 
-          {% include "snippets/params.html" %}
+          {% include "includes/params.html" %}
 
         </form>
       </section>
       {% endif %}
     </main>
-    {% include "snippets/sidebar.html" %}
-    {% include "snippets/scripts.html" %}
+    {% include "includes/sidebar.html" %}
+    {% include "includes/scripts.html" %}
   </body>
 </html>

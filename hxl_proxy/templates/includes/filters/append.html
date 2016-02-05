@@ -1,11 +1,9 @@
 <div class="fields-append hideable">
-  {% import 'snippets/filters/filter-variables.j2' as vars %}
-  {% from 'macros/help.html' import help %}
-  {% from 'macros/selectors.html' import selectors %}
+  {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
     Combine multiple HXL datasets.
-    {{help('Append-datasets-filter')}}
+    {% with key='Append-datasets-filter' %}{% include "includes/help.html" %}{% endwith %}
   </p>
 
   {% set name='append-exclude-columns%02d' % n %}
@@ -37,7 +35,9 @@
         type="url"
         placeholder="http://example.org/dataset.csv"
         />
-    {{ selectors('#' + dataset_name + '-field') }}
+    {% with id='#' + dataset_name + '-field' %}
+    {% include "includes/selectors.html" %}
+    {% endwith %}
     {% endfor %}
   </div>
 
