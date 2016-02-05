@@ -83,7 +83,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if g.member %}
-        <li>
+        <li class="{% if facet=='settings' %}active{% endif %}">
           <a href="/settings/user">
             <span class="glyphicon glyphicon-user"></span>
             {{ g.member.name_given }}

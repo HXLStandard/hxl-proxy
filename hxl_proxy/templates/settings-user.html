@@ -1,40 +1,34 @@
-<div>
-  {% extends "models/page.basic.html" %}
-  {% from 'macros/navmenu.html' import navmenu %}
-
-  {% set title="Settings for {} {}".format(member.name_given, member.name_family) %}
-
-  {% block title %}{{ title }}{% endblock %}
-
-  {% block menu %}
-  {{ navmenu(profile=profile, key=key, facet='user') }}
-  {% endblock %}
-
-  {% block main %}
-  <div>
-    <h1>
-      {{ title }}
-    </h1>
-
-    <p>
-      The HXL Proxy will soon allow you to save data recipes and
-      manage private data by logging in via <a
-      href="https://auth.humanitarian.id">Humanitarian ID</a>. For now, we
-      will simply show you what we know about you through H.ID:
-    </p>
-
-    <div class="container-fluid">
-
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>User settings @ HXL Proxy</title>
+    {% include "snippets/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set facet='settings' %}
+    {% include "snippets/navbar.html" %}
+    <header>
+      <h1>
+        User settings
+      </h1>
+    </header>
+    <main>
+      <p class="col-sm-12">
+        The HXL Proxy will soon allow you to save data recipes and
+        manage private data by logging in via <a
+        href="https://auth.humanitarian.id">Humanitarian ID</a>. For
+        now, we will simply show you what we know about you through
+        H.ID:
+      </p>
       <div class="col-sm-3">
         <img class="img-responsive" src="{{ get_gravatar(member.email, size=800) }}" alt="User gravatar" />
       </div>
 
       <div class="col-sm-9">
-
         <dl class="dl-horizontal">
 
-          <dt>Active H.ID user?</dt>
-          <dd>{% if member.active %}yes{% else %}no{% endif %}</dd>
+          <dt>Full name</dt>
+          <dd>{{ member.name }}</dd>
 
           <dt>Family name</dt>
           <dd>{{ member.name_family }}</dd>
@@ -48,6 +42,9 @@
           <dt>H.ID user id (not public)</dt>
           <dd>{{ member.id }}</dd>
 
+          <dt>Active H.ID user?</dt>
+          <dd>{% if member.active %}yes{% else %}no{% endif %}</dd>
+
         </dl>
 
         <p>
@@ -55,21 +52,8 @@
           applications, please visit <a
           href="https://auth.humanitarian.id">auth.humanitarian.id</a>
         </p>
-        
       </div>
-
-    </div>
-
-  </div>
-  {% endblock %}
-
-  {% block scripts %}
-  {{ super() }}
-  <script src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-  <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="sm6okywskgdecv9"></script>
-  <script src="https://davidmegginson.github.io/hdx-chooser/hdx.js"></script>
-  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-  {% endblock %}
-
-</div>
-
+    </main>
+    {% include "snippets/scripts.html" %}
+  </body>
+</html>
