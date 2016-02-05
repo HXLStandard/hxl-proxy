@@ -1,59 +1,34 @@
-<div>
-  {% extends "models/page.basic.html" %}
-  {% from 'macros/navmenu.html' import navmenu %}
-
-  {% block menu %}
-  {{ navmenu(profile, key=key, facet='map') }}
-  {% endblock %}
-
-  {% block title %}{{ profile.name|default('Filtered HXL data') }} (map){% endblock %}
-
-  {% block head %}
-  {{ super() }}
-  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/leaflet.css') }}" />
-  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster/MarkerCluster.css') }}" />
-  <link rel="stylesheet" type="text/css" href="{{ static('leaflet/plugins/markercluster//MarkerCluster.Default.css') }}" />
-  {% endblock %}
-
-  {% block main %}
-  <div>
-    <h1>
-      Map:
-      {% if key %}
-      <cite>{{ profile.name }}</cite>
-      {% else %}
-      HXL data
-      {% endif %}
-    </h1>
-
-    <div id="map-div" style="height: 480px"></div>
-
-    <p class="small">
-      Dataset: 
-      <a href="{{ data_url(profile, key) }}">
-        {% if key %}
-        {{ profile.name }}
-        {% else %}
-        {{ profile.args.url }}
-        {% endif %}
-      </a>
-    </p>
-  </div>
-  {% endblock %}
-
-  {% block scripts %}
-  <script type="text/javascript">
-    var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
-    var map_layer_tag = "{{ layer_tag }}";
-  </script>
-  <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
-  <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
-  {{ super() }}
-  <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
-  <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
-  <script type="text/javascript" src="{{ static('hxl-proxy/hxl-proxy.js') }}"></script>
-  <script type="text/javascript">
-    hxl_proxy.setupMap();
-  </script>
-  {% endblock %}
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      Map{% if profile.name %}of {{ profile.name}}{% endif %} @ HXL Proxy
+    </title>
+    {% include "snippets/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set facet="chart" %}
+    {% include "snippets/navbar.html" %}
+    <header>
+      <h1>
+        Map{% if profile.name %}of {{ profile.name}}{% endif %}        
+      </h1>
+    </header>
+    <main>
+      <div id="map-div" style="height: 480px"></div>
+      {% include "snippets/source.html" %}
+    </main>
+    <script type="text/javascript">
+      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
+      var map_layer_tag = "{{ layer_tag }}";
+    </script>
+    {% include "snippets/scripts.html" %}
+    <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
+    <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
+    <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
+    <script type="text/javascript">
+      hxl_proxy.setupMap();
+    </script>
+  </body>
+</html>

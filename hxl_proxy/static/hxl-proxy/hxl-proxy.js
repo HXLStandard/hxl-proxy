@@ -479,12 +479,12 @@ hxl_proxy.setupMap = function() {
      */
     $.get(csv_url, function(csvString) {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-        var hxl = new HXLDataset(arrayData);
+        var data = hxl.wrap(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
-        if (hxl.hasColumn('#geo+bounds') || hxl.hasColumn('#x_bounds_js')) {
+        if (data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
             draw_polygons(hxl);
-        } else if ((hxl.hasColumn('#geo+lat') || hxl.hasColumn('#lat_deg')) && (hxl.hasColumn('#geo+lon') || hxl.hasColumn('#lon_deg'))) {
-            draw_points(hxl);
+        } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
+            draw_points(data);
         } else {
             alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
         }
