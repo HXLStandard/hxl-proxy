@@ -26,7 +26,6 @@ from hxl_proxy import app, cache
 from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
-from hxl_proxy.analysis import Analysis
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
@@ -285,51 +284,6 @@ def show_data(key=None, format="html", stub=None):
         # Clearing the whole cache for now (heavy-handed)
         cache.set(show_data.make_cache_key(), result)
     return result
-
-@app.route('/analysis')
-def show_analysis_form():
-    url = request.args.get('url')
-    return render_template('analysis-form.html', url=url)
-
-@app.route('/analysis/hdx')
-def show_analysis_hdx():
-    datasets = get_hdx_datasets()
-    return render_template('analysis-hdx.html', datasets=datasets)
-
-@app.route('/analysis/overview')
-def show_analysis_overview():
-    if request.args.get('url'):
-        analysis = Analysis(args=request.args)
-        return render_template('analysis-overview.html', analysis=analysis)
-    else:
-        return redirect("/analysis", 303)
-
-@app.route('/analysis/data')
-@app.route('/analysis/data.<format>')
-def show_analysis_data(format=None):
-    if request.args.get('url'):
-        analysis = Analysis(args=request.args)
-        if format == 'csv':
-            response = Response(gen_csv(analysis.source), mimetype='text/csv')
-            response.headers['Access-Control-Allow-Origin'] = '*'
-            return response
-        elif format == 'json':
-            response = Response(gen_json(analysis.source), mimetype='application/json')
-            response.headers['Access-Control-Allow-Origin'] = '*'
-            return response
-        else:
-            return render_template('analysis-data.html', analysis=analysis)
-    else:
-        return redirect("/analysis", 301)
-
-@app.route('/analysis/tag/<tag_pattern>')
-def show_analysis_tag(tag_pattern):
-    if request.args.get('url'):
-        analysis = Analysis(args=request.args)
-        tag_pattern = hxl.TagPattern.parse(tag_pattern)
-        return render_template('analysis-tag.html', analysis=analysis, tag_pattern=tag_pattern)
-    else:
-        return redirect("/analysis", 301)
 
 @app.route("/actions/save-profile", methods=['POST'])
 def do_data_save():
