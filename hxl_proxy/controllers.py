@@ -18,7 +18,7 @@ import werkzeug
 from werkzeug import secure_filename
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
-from flask import Response, flash, request, render_template, redirect, make_response, session, g
+from flask import Response, flash, request, render_template, redirect, make_response, session, g, url_for
 
 import hxl
 
@@ -335,13 +335,15 @@ def do_user_settings():
 
 @app.route('/login')
 def do_login():
+    session['login_redirect'] = request.args.get('from', '/')
     return redirect(get_hid_login_url(), 303)
 
 @app.route('/logout')
 def do_logout():
+    path = request.args.get('from', '/')
     session.clear()
     flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
-    return redirect('/', 303)
+    return redirect(path, 303)
 
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
@@ -353,8 +355,10 @@ def do_hid_authorisation():
     else:
         session['state'] = None
     user_info = get_hid_user(code)
+    redirect_path = session.get('login_redirect', '/')
+    del session['login_redirect']
     session['member_info'] = user_info
     flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
-    return redirect('/', 303)
+    return redirect(redirect_path, 303)
 
 # end
