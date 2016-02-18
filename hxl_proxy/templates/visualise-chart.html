@@ -2,18 +2,18 @@
 <html lang="en">
   <head>
     <title>
-        Chart:
-        {% if count_tag %}
-        {{ count_tag }}
-        {% else %}
-        {{ tag }}
-        {% endif %}
-        {% if filter_value %}
-        for {{ filter_value }}
-        {% endif %}
-        {% if profile.name %}
-        in {{ profile.name }}
-        {% endif %}
+      Chart:
+      {% if count_tag %}
+      {{ count_tag }}
+      {% else %}
+      {{ tag }}
+      {% endif %}
+      {% if filter_value %}
+      for {{ filter_value }}
+      {% endif %}
+      {% if profile.name %}
+      in {{ profile.name }}
+      {% endif %}
       @ HXL Proxy
     </title>
     {% include "includes/headers.html" %}
@@ -27,6 +27,12 @@
         <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
         <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
       </ul>
+      <p class="text-right">
+        <a type="button" class="btn btn-info btn-xs"
+           data-toggle="modal"
+           data-target="#customise-modal">Customise</a>
+      </p>
+
       <h1>
         Chart:
         {% if count_tag %}
@@ -35,7 +41,7 @@
         {{ tag }}
         {% endif %}
         {% if filter_value %}
-        for {{ filter_value }}
+        for <i>{{ filter_value }}</i>
         {% endif %}
         {% if profile.name %}
         in {{ profile.name }}
@@ -44,31 +50,27 @@
     </header>
     <main>
 
-      <p class="text-right">
-        <a type="button" class="btn btn-info btn-xs"
-           data-toggle="modal"
-           data-target="#customise-modal">Customise</a>
-      </p>
-      
       {% if filter_tag %}
       <p>
         <form method="GET" action="" class="form-inline">
           <div class="form-group">
-            <label for="filter_value">
-              {{ filter_tag }} =
-            </label>
-            <select class="form-control" name="filter_value"
-                    id="filter_value" onchange="this.form.submit()">
-              <option value="">-- show all --</option>
-              {% for value in filter_values %}
-              <option value="{{ value }}"{% if filter_value==value %} selected="selected"{% endif %}>{{ value }}</option>
-              {% endfor %}
-            </select>
+            <div class="input-group">
+              <span class="input-group-addon">{{ filter_tag }}</span>
+              <select class="form-control" name="filter_value"
+                      id="filter_value" onchange="this.form.submit()">
+                <option value="">-- show all --</option>
+                {% for value in filter_values %}
+                <option value="{{ value }}"{% if filter_value==value %} selected="selected"{% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary">Update</button>
+              </span>
+            </div>
           </div>
           {% with excludes=['filter_value'] %}
           {% include "includes/params.html" %}
           {% endwith %}
-          <button type="submit" class="btn btn-default">Update</button>
         </form>
       </p>
       {% endif %}

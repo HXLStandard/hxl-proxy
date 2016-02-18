@@ -1183,7 +1183,7 @@ hxl.classes.RowFilter.prototype._compilePredicates = function(predicates) {
         var operator, expected;
 
         // loose expression (parsing the pattern will verify)
-        var result = s.match(/^\s*([^!=~<>+]+)\s*(!?[=~]|<=?|>=?)(.*)$/);
+        var result = s.match(/^\s*([^!=~<>]+)\s*(!?[=~]|<=?|>=?)(.*)$/);
         if (result) {
             operator = hxl.classes.RowFilter.OPERATORS[result[2]];
             expected = hxl.norm(result[3]);
