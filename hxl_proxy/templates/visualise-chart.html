@@ -6,7 +6,7 @@
       {% if count_tag %}
       {{ count_tag }}
       {% else %}
-      {{ tag }}
+      {{ value_tag }}
       {% endif %}
       {% if filter_value %}
       for {{ filter_value }}
@@ -38,7 +38,7 @@
         {% if count_tag %}
         {{ count_tag }}
         {% else %}
-        {{ tag }}
+        {{ label_tag }}
         {% endif %}
         {% if filter_value %}
         for <i>{{ filter_value }}</i>

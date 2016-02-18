@@ -285,7 +285,7 @@ hxl_proxy.setupChart = function(params) {
             var chartData = [[label_pattern, value_pattern]];
             var iterator = hxlData.iterator();
             while (row = iterator.next()) {
-                var label = row.get(label_pattern);
+                var label = String(row.get(label_pattern));
                 var value = row.get(value_pattern);
                 if (!isNaN(value)) {
                     chartData.push([label, 0 + value]);
