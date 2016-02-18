@@ -225,6 +225,8 @@ hxl_proxy.setupForm = function() {
  * External dependencies: Google Charts, JQuery, HXL
  * @param params.data_url URL to a CSV HXL dataset
  * @param params.type currently "pie", "bar", or "column" (defaults to "pie")
+ * @param params.count_pattern HXL tag pattern to count.
+ * @param params.filter_rule HXL rule for filtering.
  * @param params.label_pattern HXL tag pattern for the column containing labels (defaults to first column)
  * @param params.value_pattern HXL tag pattern for the column containing values (defaults to a numbery column, if present)
  */
@@ -261,6 +263,9 @@ hxl_proxy.setupChart = function(params) {
         $.get(params.data_url, function(csvString) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
             var hxlData = hxl.wrap(rawData);
+            if (params.count_pattern) {
+                hxlData = hxlData.count(params.count_pattern);
+            }
             var label_pattern = get_label_pattern(hxlData);
             var value_pattern = get_value_pattern(hxlData);
             var value_column = hxlData.getMatchingColumns(value_pattern)[0];

@@ -42,32 +42,51 @@
           </div>
           <div class="modal-body">
             <form method="GET" action="">
-              <div class="form-group">
-                <label for="label">
-                  Choose column as label
-                </label>
-                <select name="label" class="form-control">
-                  {% for column in source.columns %}
-                  <option value="{{ column.display_tag }}" {% if label and label.match(column) %}selected="selected"{% endif %}>
-                    {{ column.display_tag }}
-                  </option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="tag">
-                  Choose column with count
-                </label>
-                <select name="tag" class="form-control">
-                  {% for column in source.columns %}
-                  <option value="{{ column.display_tag }}" {% if tag and tag.match(column) %}selected="selected"{% endif %}>
-                  {{ column.display_tag }}</option>
-                  {% endfor %}
-                </select>
-                {% with excludes=['label', 'tag'] %}
-                {% include "includes/params.html" %}
-                {% endwith %}
-              </div>
+              <fieldset>
+                <div class="form-group">
+                  <label for="label">
+                    Choose column as label
+                  </label>
+                  <select name="label" class="form-control">
+                    <option value="">Choose a tag</option>
+                    {% for column in source.columns %}
+                    <option value="{{ column.display_tag }}" {% if label and label.match(column) %}selected="selected"{% endif %}>
+                      {{ column.display_tag }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tag">
+                    Choose tag pattern to count
+                  </label>
+                  <select name="count" class="form-control">
+                    <option value="">Choose a tag</option>
+                    {% for column in source.columns %}
+                    <option value="{{ column.display_tag }}" {% if count and count.match(column) %}selected="selected"{% endif %}>
+                    {{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                  {% with excludes=['label', 'tag'] %}
+                  {% include "includes/params.html" %}
+                  {% endwith %}
+                </div>
+                <div class="form-group">
+                  <label for="tag">
+                    Choose column already containing a count
+                  </label>
+                  <select name="tag" class="form-control">
+                    <option value="">Choose a tag</option>
+                    {% for column in source.columns %}
+                    <option value="{{ column.display_tag }}" {% if tag and tag.match(column) %}selected="selected"{% endif %}>
+                    {{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                  {% with excludes=['label', 'tag'] %}
+                  {% include "includes/params.html" %}
+                  {% endwith %}
+                </div>
+              </fieldset>
               <button class="btn btn-success" type="submit">OK</button>
             </form>
           </div>
@@ -83,7 +102,8 @@
       data_url: "{{ data_url(profile, key, format='csv') | safe }}",
       type: "{{ type|nonone|safe }}",
       value_pattern: "{{ tag|nonone|safe }}",
-      label_pattern: "{{ label|nonone|safe }}"
+      label_pattern: "{{ label|nonone|safe }}",
+      count_pattern: "{{ count|nonone|safe }}"
       });
     </script>
   </body>

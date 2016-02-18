@@ -184,12 +184,15 @@ def show_data_chart(key=None):
     source = setup_filters(profile)
     tag = request.args.get('tag')
     if tag:
-        tag = hxl.TagPattern.parse(tag);
+        tag = hxl.TagPattern.parse(tag)
     label = request.args.get('label')
     if label:
-        label = hxl.TagPattern.parse(label);
+        label = hxl.TagPattern.parse(label)
+    count = request.args.get('count')
+    if count:
+        count = hxl.TagPattern.parse(count)
     type = request.args.get('type', 'bar')
-    return render_template('visualise-chart.html', key=key, profile=profile, tag=tag, label=label, filter=filter, type=type, source=source)
+    return render_template('visualise-chart.html', key=key, profile=profile, tag=tag, label=label, count=count, filter=filter, type=type, source=source)
 
 @app.route('/data/<key>/map')
 @app.route('/data/map')
