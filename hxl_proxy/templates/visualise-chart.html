@@ -9,7 +9,7 @@
       {{ value_tag }}
       {% endif %}
       {% if filter_value %}
-      for {{ filter_value }}
+      for "{{ filter_value }}"
       {% endif %}
       {% if profile.name %}
       in {{ profile.name }}
@@ -41,10 +41,10 @@
         {{ label_tag }}
         {% endif %}
         {% if filter_value %}
-        for <i>{{ filter_value }}</i>
+        for &ldquo;{{ filter_value }}&rdquo;
         {% endif %}
         {% if profile.name %}
-        in {{ profile.name }}
+        in <cite>{{ profile.name }}</cite>
         {% endif %}
       </h1>
     </header>
