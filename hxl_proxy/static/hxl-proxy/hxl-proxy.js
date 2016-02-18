@@ -263,6 +263,9 @@ hxl_proxy.setupChart = function(params) {
         $.get(params.data_url, function(csvString) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
             var hxlData = hxl.wrap(rawData);
+            if (params.filter_pattern && params.filter_value) {
+                hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
+            }
             if (params.count_pattern) {
                 hxlData = hxlData.count(params.count_pattern);
             }

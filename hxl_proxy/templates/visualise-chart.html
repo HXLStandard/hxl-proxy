@@ -2,7 +2,18 @@
 <html lang="en">
   <head>
     <title>
-      Chart{% if profile.name %} of {{ profile.name }}{% endif %}
+        Chart:
+        {% if count_tag %}
+        {{ count_tag }}
+        {% else %}
+        {{ tag }}
+        {% endif %}
+        {% if filter_value %}
+        for {{ filter_value }}
+        {% endif %}
+        {% if profile.name %}
+        in {{ profile.name }}
+        {% endif %}
       @ HXL Proxy
     </title>
     {% include "includes/headers.html" %}
@@ -23,6 +34,9 @@
         {% else %}
         {{ tag }}
         {% endif %}
+        {% if filter_value %}
+        for {{ filter_value }}
+        {% endif %}
         {% if profile.name %}
         in {{ profile.name }}
         {% endif %}
@@ -35,8 +49,28 @@
            data-toggle="modal"
            data-target="#customise-modal">Customise</a>
       </p>
-
+      
       {% if filter_tag %}
+      <p>
+        <form method="GET" action="" class="form-inline">
+          <div class="form-group">
+            <label for="filter_value">
+              {{ filter_tag }} =
+            </label>
+            <select class="form-control" name="filter_value"
+                    id="filter_value" onchange="this.form.submit()">
+              <option value="">-- show all --</option>
+              {% for value in filter_values %}
+              <option value="{{ value }}"{% if filter_value==value %} selected="selected"{% endif %}>{{ value }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% with excludes=['filter_value'] %}
+          {% include "includes/params.html" %}
+          {% endwith %}
+          <button type="submit" class="btn btn-default">Update</button>
+        </form>
+      </p>
       {% endif %}
 
       <div id="chart_div" style="min-height:480px"></div>
@@ -123,7 +157,9 @@
       type: "{{ type|nonone|safe }}",
       value_pattern: "{{ value_tag|nonone|safe }}",
       label_pattern: "{{ label_tag|nonone|safe }}",
-      count_pattern: "{{ count_tag|nonone|safe }}"
+      count_pattern: "{{ count_tag|nonone|safe }}",
+      filter_pattern: "{{ filter_tag|nonone|safe }}",
+      filter_value: "{{ filter_value|nonone|safe }}"
       });
     </script>
   </body>

@@ -14,12 +14,6 @@ main {
     margin-top: 1rem;
 }
 
-label {
-    font-size: 90%;
-    font-weight: normal;
-    font-style: italic;
-}
-
 .required label {
     font-weight: bold;
 }

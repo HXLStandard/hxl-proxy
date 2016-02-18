@@ -192,6 +192,7 @@ def show_data_chart(key=None):
         label_tag = hxl.TagPattern.parse(label_tag)
 
     filter_tag = request.args.get('filter_tag')
+    filter_value = request.args.get('filter_value')
     filter_values = set()
     if filter_tag:
         filter_tag = hxl.TagPattern.parse(filter_tag)
@@ -207,7 +208,7 @@ def show_data_chart(key=None):
         'visualise-chart.html',
         key=key, profile=profile, type=type, source=source,
         value_tag=value_tag, label_tag=label_tag, count_tag=count_tag,
-        filter_tag=filter_tag, filter_values=filter_values
+        filter_tag=filter_tag, filter_values=sorted(filter_values), filter_value=filter_value
     )
 
 @app.route('/data/<key>/map')
