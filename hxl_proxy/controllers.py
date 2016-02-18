@@ -182,17 +182,33 @@ def show_data_chart(key=None):
         return redirect('/data/source', 303)
 
     source = setup_filters(profile)
-    tag = request.args.get('tag')
-    if tag:
-        tag = hxl.TagPattern.parse(tag)
-    label = request.args.get('label')
-    if label:
-        label = hxl.TagPattern.parse(label)
-    count = request.args.get('count')
-    if count:
-        count = hxl.TagPattern.parse(count)
+
+    value_tag = request.args.get('value_tag')
+    if value_tag:
+        value_tag = hxl.TagPattern.parse(value_tag)
+
+    label_tag = request.args.get('label_tag')
+    if label_tag:
+        label_tag = hxl.TagPattern.parse(label_tag)
+
+    filter_tag = request.args.get('filter_tag')
+    filter_values = set()
+    if filter_tag:
+        filter_tag = hxl.TagPattern.parse(filter_tag)
+        filter_values = source.get_value_set(filter_tag)
+
+    count_tag = request.args.get('count_tag')
+    if count_tag:
+        count_tag = hxl.TagPattern.parse(count_tag)
+        
     type = request.args.get('type', 'bar')
-    return render_template('visualise-chart.html', key=key, profile=profile, tag=tag, label=label, count=count, filter=filter, type=type, source=source)
+    
+    return render_template(
+        'visualise-chart.html',
+        key=key, profile=profile, type=type, source=source,
+        value_tag=value_tag, label_tag=label_tag, count_tag=count_tag,
+        filter_tag=filter_tag, filter_values=filter_values
+    )
 
 @app.route('/data/<key>/map')
 @app.route('/data/map')

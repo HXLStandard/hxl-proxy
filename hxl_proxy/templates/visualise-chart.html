@@ -18,8 +18,8 @@
       </ul>
       <h1>
         Chart:
-        {% if count %}
-        {{ count }}
+        {% if count_tag %}
+        {{ count_tag }}
         {% else %}
         {{ tag }}
         {% endif %}
@@ -35,6 +35,9 @@
            data-toggle="modal"
            data-target="#customise-modal">Customise</a>
       </p>
+
+      {% if filter_tag %}
+      {% endif %}
 
       <div id="chart_div" style="min-height:480px"></div>
 
@@ -52,49 +55,58 @@
             <form method="GET" action="">
               <fieldset>
                 <div class="form-group">
-                  <label for="label">
-                    Choose column as label
+                  <label for="filter_tag">
+                    Choose filter column.
                   </label>
-                  <select name="label" class="form-control">
+                  <select name="filter_tag" class="form-control">
                     <option value="">Choose a tag</option>
                     {% for column in source.columns %}
-                    <option value="{{ column.display_tag }}" {% if label and label.match(column) %}selected="selected"{% endif %}>
+                    <option value="{{ column.display_tag }}" {% if filter_tag and filter_tag.match(column) %}selected="selected"{% endif %}>
+                    {{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="count_tag">
+                    Choose tag pattern to count
+                  </label>
+                  <select name="count_tag" class="form-control">
+                    <option value="">Choose a tag</option>
+                    {% for column in source.columns %}
+                    <option value="{{ column.display_tag }}" {% if count_tag and count_tag.match(column) %}selected="selected"{% endif %}>
+                    {{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="label_tag">
+                    Choose column as label
+                  </label>
+                  <select name="label_tag" class="form-control">
+                    <option value="">Choose a tag</option>
+                    {% for column in source.columns %}
+                    <option value="{{ column.display_tag }}" {% if label_tag and label_tag.match(column) %}selected="selected"{% endif %}>
                       {{ column.display_tag }}
                     </option>
                     {% endfor %}
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="tag">
-                    Choose tag pattern to count
-                  </label>
-                  <select name="count" class="form-control">
-                    <option value="">Choose a tag</option>
-                    {% for column in source.columns %}
-                    <option value="{{ column.display_tag }}" {% if count and count.match(column) %}selected="selected"{% endif %}>
-                    {{ column.display_tag }}</option>
-                    {% endfor %}
-                  </select>
-                  {% with excludes=['label', 'tag'] %}
-                  {% include "includes/params.html" %}
-                  {% endwith %}
-                </div>
-                <div class="form-group">
-                  <label for="tag">
+                  <label for="value_tag">
                     Choose column already containing a count
                   </label>
-                  <select name="tag" class="form-control">
+                  <select name="value_tag" class="form-control">
                     <option value="">Choose a tag</option>
                     {% for column in source.columns %}
-                    <option value="{{ column.display_tag }}" {% if tag and tag.match(column) %}selected="selected"{% endif %}>
+                    <option value="{{ column.display_tag }}" {% if value_tag and value_tag.match(column) %}selected="selected"{% endif %}>
                     {{ column.display_tag }}</option>
                     {% endfor %}
                   </select>
-                  {% with excludes=['label', 'tag'] %}
-                  {% include "includes/params.html" %}
-                  {% endwith %}
                 </div>
               </fieldset>
+              {% with excludes=['label_tag', 'value_tag', 'count_tag', 'filter_tag'] %}
+              {% include "includes/params.html" %}
+              {% endwith %}
               <button class="btn btn-success" type="submit">OK</button>
             </form>
           </div>
@@ -109,9 +121,9 @@
       hxl_proxy.setupChart({
       data_url: "{{ data_url(profile, key, format='csv') | safe }}",
       type: "{{ type|nonone|safe }}",
-      value_pattern: "{{ tag|nonone|safe }}",
-      label_pattern: "{{ label|nonone|safe }}",
-      count_pattern: "{{ count|nonone|safe }}"
+      value_pattern: "{{ value_tag|nonone|safe }}",
+      label_pattern: "{{ label_tag|nonone|safe }}",
+      count_pattern: "{{ count_tag|nonone|safe }}"
       });
     </script>
   </body>
