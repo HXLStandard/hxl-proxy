@@ -75,7 +75,7 @@ def get_gravatar(email, size=40):
     )
     return url
 
-PROFILE_OVERRIDES = ['url', 'schema_url']
+PROFILE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
 
 def get_profile(key=None, auth=False, args=None):
     """Load a profile or create from args."""

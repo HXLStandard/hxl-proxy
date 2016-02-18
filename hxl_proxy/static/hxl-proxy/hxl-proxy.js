@@ -246,13 +246,15 @@ hxl_proxy.setupChart = function(params) {
             }
         }
 
-        function get_value_pattern(hxl) {
-            if (params.value_pattern && hxl.hasColumn(params.value_pattern)) {
+        function get_value_pattern(data) {
+            if (params.value_pattern && data.hasColumn(params.value_pattern)) {
                 return params.value_pattern;
             } else {
-                for (i in hxl.columns) {
-                    if (hxl.isNumbery(hxl.columns[i].displayTag)) {
-                        return hxl.columns[i].displayTag;
+                var pattern = hxl.classes.Pattern.parse('#meta+count');
+                for (i in data.columns) {
+                    console.log(data.columns[i]);
+                    if (pattern.match(data.columns[i]) || data.isNumbery(data.columns[i].displayTag)) {
+                        return data.columns[i].displayTag;
                     }
                 }
             }
@@ -265,6 +267,7 @@ hxl_proxy.setupChart = function(params) {
             var hxlData = hxl.wrap(rawData);
             if (params.filter_pattern && params.filter_value) {
                 hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
+                console.log(hxlData.values);
             }
             if (params.count_pattern) {
                 hxlData = hxlData.count(params.count_pattern);
