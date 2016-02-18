@@ -56,8 +56,7 @@
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-addon">{{ filter_tag }}</span>
-              <select class="form-control" name="filter_value"
-                      id="filter_value" onchange="this.form.submit()">
+              <select class="form-control" name="filter_value" id="filter_value" onchange="this.form.submit()">
                 <option value="">-- show all --</option>
                 {% for value in filter_values %}
                 <option value="{{ value }}"{% if filter_value==value %} selected="selected"{% endif %}>{{ value }}</option>
@@ -68,9 +67,17 @@
               </span>
             </div>
           </div>
+          {% if key %}
+          <input type="hidden" name="type" value="{{ type }}"/>
+          <input type="hidden" name="filter_tag" value="{{ filter_tag }}"/>
+          <input type="hidden" name="count_tag" value="{{ count_tag }}"/>
+          <input type="hidden" name="value_tag" value="{{ value_tag }}"/>
+          <input type="hidden" name="label_tag" value="{{ label_tag }}"/>
+          {% else %}
           {% with excludes=['filter_value'] %}
           {% include "includes/params.html" %}
           {% endwith %}
+          {% endif %}
         </form>
       </p>
       {% endif %}
@@ -140,9 +147,13 @@
                   </select>
                 </div>
               </fieldset>
+              {% if key %}
+              <input type="hidden" name="type" value="{{ type }}"/>
+              {% else %}
               {% with excludes=['label_tag', 'value_tag', 'count_tag', 'filter_tag', 'filter_value'] %}
               {% include "includes/params.html" %}
               {% endwith %}
+              {% endif %}
               <button class="btn btn-success" type="submit">OK</button>
             </form>
           </div>

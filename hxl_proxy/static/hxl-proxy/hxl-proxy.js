@@ -252,7 +252,6 @@ hxl_proxy.setupChart = function(params) {
             } else {
                 var pattern = hxl.classes.Pattern.parse('#meta+count');
                 for (i in data.columns) {
-                    console.log(data.columns[i]);
                     if (pattern.match(data.columns[i]) || data.isNumbery(data.columns[i].displayTag)) {
                         return data.columns[i].displayTag;
                     }
@@ -267,7 +266,6 @@ hxl_proxy.setupChart = function(params) {
             var hxlData = hxl.wrap(rawData);
             if (params.filter_pattern && params.filter_value) {
                 hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
-                console.log(hxlData.values);
             }
             if (params.count_pattern) {
                 hxlData = hxlData.count(params.count_pattern);
