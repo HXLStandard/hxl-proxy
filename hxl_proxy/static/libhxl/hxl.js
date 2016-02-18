@@ -1369,7 +1369,7 @@ hxl.classes.ColumnFilter.prototype._compilePatterns = function (patterns) {
  * HXL filter to count and aggregate data.
  *
  * By default, this filter put out a dataset with the selected tags
- * and a new tag #count_num giving the number of times each
+ * and a new tag #meta+count giving the number of times each
  * combination of values appears. If the aggregate tag pattern is
  * present, the filter will also produce a column with the sum,
  * average (mean), minimum, and maximum values for the tag, attaching
@@ -1404,7 +1404,7 @@ hxl.classes.CountFilter.prototype.constructor = hxl.classes.CountFilter;
  * Override hxl.classes.BaseFilter.getColumns to return only the columns for the aggregation report.
  *
  * Will list the tags that match the patterns provided in the
- * constructor, as well as a #count_num tag, and aggregation tags if
+ * constructor, as well as a #meta+count tag, and aggregation tags if
  * the aggregation parameter was included.
  *
  * @return a list of hxl.classes.Column objects
@@ -1423,7 +1423,7 @@ hxl.classes.CountFilter.prototype.getColumns = function() {
                 }
             }
         }
-        cols.push(hxl.classes.Column.parse('#count_num'));
+        cols.push(hxl.classes.Column.parse('#meta+count'));
         if (this.aggregate) {
             tagspec = this.aggregate.tag;
             cols.push(hxl.classes.Column.parse(tagspec + '+sum'));

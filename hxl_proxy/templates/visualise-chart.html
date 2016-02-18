@@ -17,7 +17,15 @@
         <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
       </ul>
       <h1>
-        Chart{% if profile.name %} of {{ profile.name }}{% endif %}
+        Chart:
+        {% if count %}
+        {{ count }}
+        {% else %}
+        {{ tag }}
+        {% endif %}
+        {% if profile.name %}
+        in {{ profile.name }}
+        {% endif %}
       </h1>
     </header>
     <main>
