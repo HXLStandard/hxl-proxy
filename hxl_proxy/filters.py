@@ -63,7 +63,8 @@ def setup_filters(profile):
 def make_tagged_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
-    input = hxl.make_input(url)
+    sheet_index = int(args.get('sheet')) if args.get('sheet') else None
+    input = hxl.io.make_input(url, sheet_index=sheet_index)
 
     # Intercept tagging as a special data input
     specs = []

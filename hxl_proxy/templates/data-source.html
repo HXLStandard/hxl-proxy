@@ -27,32 +27,43 @@
           </h2>
         </div>
         <div class="panel-body">
-        {% if key %}
-        {% set method="POST" %}
-        {% set action="/actions/save-profile" %}
-        {% else %}
-        {% set method="GET" %}
-        {% set action="/data/edit" %}
-        {% endif %}
+          {% if key %}
+          {% set method="POST" %}
+          {% set action="/actions/save-profile" %}
+          {% else %}
+          {% set method="GET" %}
+          {% set action="/data/edit" %}
+          {% endif %}
           <form action="{{ action }}" method="{{ method }}">
-            <div class="input-group required">
-              <input id='dataset-url'
-                     class="form-control" 
-                     name="url"
-                     type="url"
-                     required="required"
-                     value="{{ profile.args.url }}"
-                     placeholder="http://example.org/dataset.csv" />
-              <div class="input-group-btn">
-                <button class="btn btn-success"
-                        type="submit">Next</button>
+            <div class="col-sm-8 col-md-10">
+              <div class="input-group required">
+                <input id='dataset-url'
+                       class="form-control" 
+                       name="url"
+                       type="url"
+                       required="required"
+                       value="{{ profile.args.url }}"
+                       placeholder="http://example.org/dataset.csv" />
+                <div class="input-group-btn">
+                  <button class="btn btn-success"
+                          type="submit">Next</button>
+                </div>
+              </div>
+              <p class="help-block small">
+                Type or paste the URL of an online spreadsheet or API containing <a
+                href="http://hxlstandard.org/">HXL hashtags</a>.
+              </p>
+            </div>
+
+            <div class="col-sm-4 col-md-2">
+              <div class="input-group">
+                <div class="input-group-addon">
+                  Tab #
+                </div>
+                <input name="sheet" value="{{ profile.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
               </div>
             </div>
 
-            <p class="help-block small">
-              Type or paste the URL of an online spreadsheet or API containing <a
-              href="http://hxlstandard.org/">HXL hashtags</a>.
-            </p>
             {% include "includes/params.html" %}
 
           </form>

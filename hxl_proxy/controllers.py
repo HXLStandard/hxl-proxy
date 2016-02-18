@@ -112,7 +112,7 @@ def show_data_tag(key=None):
 
     preview = []
     i = 0
-    for row in hxl.io.make_input(profile.args.get('url')):
+    for row in hxl.io.make_input(profile.args.get('url'), sheet_index=int(profile.args.get('sheet'))):
         if i >= 25:
             break
         else:
