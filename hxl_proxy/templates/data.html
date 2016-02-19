@@ -3,8 +3,8 @@
   {% set facet='view' %}
   <head>
     <title>
-      {% if profile.title %}
-      {{ profile.title }} @ HXL Proxy
+      {% if profile.name %}
+      {{ profile.name }} @ HXL Proxy
       {% else %}
       View data @ HXL Proxy
       {% endif %}
@@ -16,8 +16,8 @@
     <header class="row">
       {% include "includes/data-tabs.html" %}
       <h1 class="col-xs-6 col-sm-8 col-md-10">
-        {% if profile.title %}
-        {{ profile.title }}
+        {% if profile.name %}
+        {{ profile.name }}
         {% else %}
         View Data
         {% endif %}

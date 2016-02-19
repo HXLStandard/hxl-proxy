@@ -3,8 +3,8 @@
   {% set facet='validate' %}
   <head>
     <title>
-      {% if profile.title %}
-      Validate {{ profile.title }} @ HXL Proxy
+      {% if profile.name %}
+      Validate {{ profile.name }} @ HXL Proxy
       {% else %}
       Validate dataset @ HXL Proxy
       {% endif %}
@@ -15,8 +15,8 @@
     {% include "includes/navbar.html" %}
     <header class="col-sm-12">
       <h1>
-        {% if profile.title %}
-        Validate {{ profile.title }}
+        {% if profile.name %}
+        Validate {{ profile.name }}
         {% else %}
         Validate dataset
         {% endif %}

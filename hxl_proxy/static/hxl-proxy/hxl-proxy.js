@@ -289,6 +289,7 @@ hxl_proxy.setupChart = function(params) {
                     chartData.push([label, 0 + value]);
                 }
             }
+            console.log(chartData);
 
             var data = google.visualization.arrayToDataTable(chartData);
 
