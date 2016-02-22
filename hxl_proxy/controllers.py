@@ -110,9 +110,14 @@ def show_data_tag(key=None):
         flash('Please choose a data source first.')
         return redirect(make_data_url(profile, key, 'source'), 303)
 
+    try:
+        sheet_index = int(profile.args.get('sheet', 0))
+    except:
+        sheet_index = 0
+
     preview = []
     i = 0
-    for row in hxl.io.make_input(profile.args.get('url'), sheet_index=int(profile.args.get('sheet'))):
+    for row in hxl.io.make_input(profile.args.get('url'), sheet_index=0):
         if i >= 25:
             break
         else:
