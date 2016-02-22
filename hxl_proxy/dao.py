@@ -46,7 +46,11 @@ def fetchone(statement, params=()):
     if row:
         return dict(row)
     else:
-        return {}
+        return None
+
+def fetchall(statement, params=()):
+    """Fetch multiple rows."""
+    return [dict(row) for row in execute_statement(statement, params, commit=False).fetchall()]
 
 def execute_script(sql_statements, commit=True):
     """Execute a script of statements, and commit if requested."""
@@ -79,7 +83,7 @@ def create_db():
     execute_file(SCHEMA_FILE)
 
 
-class UserDAO(object):
+class user(object):
     """Manage user records in the database."""
 
     @staticmethod
@@ -96,11 +100,10 @@ class UserDAO(object):
     @staticmethod
     def read(user_id):
         """Look up a user by id."""
-        return execute_statement(
+        return fetchone(
             'select * from Users where user_id=?',
-            (user_id,),
-            False
-        ).fetchone()
+            (user_id,)
+        )
 
     @staticmethod
     def update(user):
@@ -122,7 +125,8 @@ class UserDAO(object):
             commit=True
         )
 
-class RecipeDAO(object):
+
+class recipe(object):
     """Manage user records in the database."""
 
     @staticmethod
@@ -140,11 +144,13 @@ class RecipeDAO(object):
     @staticmethod
     def read(recipe_id):
         """Look up a recipe by id."""
-        return execute_statement(
+        recipe = fetchone(
             'select * from Recipes where recipe_id=?',
-            (recipe_id,),
-            False
-        ).fetchone()
+            (recipe_id,)
+        )
+        if recipe:
+            recipe['args'] = json.loads(recipe.get('args'))
+        return recipe
 
     @staticmethod
     def update(recipe):
