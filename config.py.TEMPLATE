@@ -25,13 +25,10 @@ PROFILE_FILE='/tmp/hxl-proxy-profiles'
 SECRET_KEY='<secret key>'
 
 #
-# Database connection parameters
+# SQLite3 database
+# (web server must have write access to directory)
 #
-DB_HOSTNAME = 'localhost' # change if needed
-DB_PORT = '5432' # change if needed
-DB_DATABASE = 'hxl_proxy' # change if needed
-DB_USERNAME = '<username>'
-DB_PASSWORD = '<password>'
+DB_FILE='/tmp/hxl-proxy.db'
 
 #
 # Values for Humanitarian.ID remote login
