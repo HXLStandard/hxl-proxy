@@ -87,7 +87,7 @@ def show_data_source(recipe_id=None):
     try:
         recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
+        return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
     return render_template('data-source.html', recipe_id=recipe_id, recipe=recipe)
 
@@ -100,7 +100,7 @@ def show_data_tag(recipe_id=None):
     try:
         recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
+        return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
     header_row = request.args.get('header-row')
     if header_row:
@@ -108,7 +108,7 @@ def show_data_tag(recipe_id=None):
 
     if not recipe['args'].get('url'):
         flash('Please choose a data source first.')
-        return redirect(make_data_url(recipe, recipe_id, 'source'), 303)
+        return redirect(make_data_url(recipe, facet='source'), 303)
 
     try:
         sheet_index = int(recipe['args'].get('sheet', 0))
@@ -136,7 +136,7 @@ def show_data_edit(recipe_id=None):
     try:
         recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
+        return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
 
     if recipe['args'].get('url'):
@@ -146,10 +146,10 @@ def show_data_edit(recipe_id=None):
             source.columns # force-trigger an exception if not tagged
         except:
             flash('No HXL tags found')
-            return redirect(make_data_url(recipe, recipe_id, 'tagger'), 303)
+            return redirect(make_data_url(recipe, facet='tagger'), 303)
     else:
         flash('Please choose a data source first.')
-        return redirect(make_data_url(recipe, recipe_id, 'source'), 303)
+        return redirect(make_data_url(recipe, facet='source'), 303)
 
     # Figure out how many filter forms to show
     filter_count = 0
@@ -171,7 +171,7 @@ def show_data_recipe(recipe_id=None):
     try:
         recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
+        return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
@@ -315,7 +315,7 @@ def do_data_save():
     try:
         recipe = get_recipe(recipe_id, auth=True, args=request.form)
     except Forbidden as e:
-        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
+        return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
     # Update recipe metadata
     if 'name' in request.form:
@@ -362,7 +362,7 @@ def do_data_save():
     # TODO be more specific about what we clear
     cache.clear()
 
-    return redirect(make_data_url(recipe, recipe_id=recipe_id), 303)
+    return redirect(make_data_url(recipe), 303)
 
 @app.route('/settings/user')
 def do_user_settings():

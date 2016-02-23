@@ -150,16 +150,18 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_data_url(recipe, recipe_id=None, facet=None, format=None):
+def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
     """Construct a data URL for a recipe."""
     url = None
+    if not recipe_id:
+        recipe_id = recipe.get('recipe_id')
     if recipe_id:
         url = '/data/' + urlquote(recipe_id)
         if facet:
             url += '/' + urlquote(facet)
         elif format:
-            if hasattr(recipe, 'stub') and recipe.stub:
-                url += '/download/' + urlquote(recipe.stub) + '.' + urlquote(format)
+            if recipe.get('stub'):
+                url += '/download/' + urlquote(recipe['stub']) + '.' + urlquote(format)
             else:
                 url += '.' + urlquote(format)
     else:
@@ -168,7 +170,8 @@ def make_data_url(recipe, recipe_id=None, facet=None, format=None):
             url += '.' + urlquote(format)
         elif facet:
             url += '/' + urlquote(facet)
-        url += '?' + urlencode_utf8(recipe['args'])
+        if recipe.get('args'):
+            url += '?' + urlencode_utf8(recipe['args'])
 
     return url
 

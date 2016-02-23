@@ -19,7 +19,7 @@
       {% include "includes/source.html" %}
     </main>
     <script type="text/javascript">
-      var csv_url = "{{ data_url(recipe, recipe_id, format='csv') | safe }}";
+      var csv_url = "{{ data_url(recipe, format='csv') | safe }}";
       var map_layer_tag = "{{ layer_tag }}";
     </script>
     {% include "includes/scripts.html" %}

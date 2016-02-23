@@ -125,7 +125,7 @@
 
                 {% if recipe_id %}
                 <p>Temporarilty override the default schema for this recipe. To change the default schema, go to the
-                <a href="{{ data_url(recipe, recipe_id, 'edit') }}">edit page</a>.</p>
+                <a href="{{ data_url(recipe, 'edit') }}">edit page</a>.</p>
                 {% endif %}
 
                 {% include 'includes/recipe-form.html' %}

@@ -21,19 +21,19 @@
         </li>
         {% if recipe and recipe.args.url %}
         <li class="{% if facet in ['source', 'tagger', 'edit', 'view'] %}active{% endif %}">
-          <a href="{{ data_url(recipe, recipe_id) }}">
+          <a href="{{ data_url(recipe) }}">
             <span class="glyphicon glyphicon-th-list"></span>
             Data
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
-          <a href="{{ data_url(recipe, recipe_id, 'validate') }}">
+          <a href="{{ data_url(recipe, 'validate') }}">
             <span class="glyphicon glyphicon-ok"></span>
             Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ data_url(recipe, recipe_id, 'chart') }}">
+          <a href="{{ data_url(recipe, 'chart') }}">
             <span class="glyphicon glyphicon-signal"></span>
             Visualise
           </a>
