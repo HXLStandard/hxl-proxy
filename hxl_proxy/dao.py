@@ -7,29 +7,27 @@ from werkzeug.exceptions import Forbidden, NotFound
 from hxl_proxy import app, util
 
 
+DB_FILE = app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
+"""The filename of the SQLite3 database."""
+
 SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema.sql')
 """The filename of the SQL schema."""
 
 
-_database = None
-"""The persistent database connection."""
-
-
 def get_db(db_file=None):
     """Get the database."""
-    global _database
-    if _database is None:
-        if db_file is None:
-            db_file = app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
-        _database = sqlite3.connect(db_file)
-        _database.row_factory = sqlite3.Row
-    return _database
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DB_FILE)
+        db.row_factory = sqlite3.Row
+    return db
 
 @app.teardown_appcontext
 def close_db(exception):
     """Close the connection at the end of the request."""
-    if _database is not None:
-        _database.close()
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 def execute_statement(statement, params=(), commit=False):
     """Execute a single statement."""
