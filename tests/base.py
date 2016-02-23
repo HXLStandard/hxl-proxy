@@ -31,7 +31,7 @@ class BaseControllerTest(unittest.TestCase):
         hxl_proxy.dao.db.create_db()
         hxl_proxy.dao.db.execute_file(TEST_DATA_FILE)
 
-        self.key = 'AAAAA'
+        self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
 
     def tearDown(self):

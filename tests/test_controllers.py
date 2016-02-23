@@ -127,7 +127,7 @@ class TestTaggerPage(BaseControllerTest):
 
 
 class TestEditPage(BaseControllerTest):
-    """Test /data/edit and /data/{key}/edit"""
+    """Test /data/edit and /data/{recipe_id}/edit"""
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
@@ -152,8 +152,8 @@ class TestEditPage(BaseControllerTest):
         self.assertBasicDataset(response)
 
     def test_need_login(self):
-        response = self.get('/data/{}/edit'.format(self.key), status=303)
-        assert '/data/{}/login'.format(self.key) in response.headers['Location']
+        response = self.get('/data/{}/edit'.format(self.recipe_id), status=303)
+        assert '/data/{}/login'.format(self.recipe_id) in response.headers['Location']
 
     # TODO test logging in (good and bad passwords)
 
@@ -161,7 +161,7 @@ class TestEditPage(BaseControllerTest):
 
 
 class TestDataPage(BaseControllerTest):
-    """Test /data and /data/{key}"""
+    """Test /data and /data/{recipe_id}"""
 
     def test_empty_url(self):
         response = self.get('/data', status=303)
@@ -180,8 +180,8 @@ class TestDataPage(BaseControllerTest):
         self.assertBasicDataset(response)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_key(self):
-        response = self.get('/data/{}'.format(self.key))
+    def test_recipe_id(self):
+        response = self.get('/data/{}'.format(self.recipe_id))
         assert b'Recipe #1' in response.data
         self.assertBasicDataset(response)
 
@@ -189,7 +189,7 @@ class TestDataPage(BaseControllerTest):
 
 
 class TestValidationPage(BaseControllerTest):
-    """Test /data/validate and /data/{key}/validate"""
+    """Test /data/validate and /data/{recipe_id}/validate"""
 
     def test_empty_url(self):
         response = self.get('/data/validate', status=303)

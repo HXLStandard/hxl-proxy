@@ -77,16 +77,16 @@ def get_gravatar(email, size=40):
 
 RECIPE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
 
-def get_recipe(key=None, auth=False, args=None):
+def get_recipe(recipe_id=None, auth=False, args=None):
     """Load a recipe or create from args."""
 
     if args is None:
         args = request.args
 
-    if key:
-        recipe = hxl_proxy.dao.recipes.read(str(key))
+    if recipe_id:
+        recipe = hxl_proxy.dao.recipes.read(str(recipe_id))
         if not recipe:
-            raise NotFound("No saved recipe for " + key)
+            raise NotFound("No saved recipe for " + recipe_id)
         if auth and not check_auth(recipe):
             raise Forbidden("Wrong or missing password.")
     else:
@@ -105,20 +105,20 @@ def make_md5(s):
     """Return an MD5 hash for a string."""
     return hashlib.md5(s.encode('utf-8')).digest()
 
-def gen_key():
+def gen_recipe_id():
     """
-    Generate a pseudo-random, 6-character hash for use as a key.
+    Generate a pseudo-random, 6-character hash for use as a recipe_id.
     """
     salt = str(time.time() * random.random())
     encoded_hash = base64.urlsafe_b64encode(make_md5(salt))
     return encoded_hash[:6].decode('ascii')
 
-def make_key():
-    """Make a unique key for a saved recipe."""
-    key = gen_key()
-    while hxl_proxy.dao.recipes.read(key):
-        key = gen_key()
-    return key
+def make_recipe_id():
+    """Make a unique recipe_id for a saved recipe."""
+    recipe_id = gen_recipe_id()
+    while hxl_proxy.dao.recipes.read(recipe_id):
+        recipe_id = gen_recipe_id()
+    return recipe_id
 
 def check_auth(recipe, password=None):
     """Check authorisation."""
@@ -140,9 +140,7 @@ def check_auth(recipe, password=None):
 
 def add_args(extra_args):
     """Add GET parameters."""
-    args = {}
-    for key in request.args:
-        args[key] = request.args[key]
+    args = {key: request.args.get(key) for key in request.args}
     for key in extra_args:
         if extra_args[key]:
             # add keys with truthy values
@@ -152,11 +150,11 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_data_url(recipe, key=None, facet=None, format=None):
+def make_data_url(recipe, recipe_id=None, facet=None, format=None):
     """Construct a data URL for a recipe."""
     url = None
-    if key:
-        url = '/data/' + urlquote(key)
+    if recipe_id:
+        url = '/data/' + urlquote(recipe_id)
         if facet:
             url += '/' + urlquote(facet)
         elif format:

@@ -22,7 +22,7 @@
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
         <h3>Filters</h3>
-        {% if key %}
+        {% if recipe_id %}
         {% set method="POST" %}
         {% set action="/actions/save-recipe" %}
         {% else %}
@@ -90,12 +90,12 @@
               </div>
               <div class="form-input">
                 <button class="btn btn-info btn-xs">Update preferences</button>
-                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(recipe, key) }}">Done filters</a>
+                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(recipe, recipe_id) }}">Done filters</a>
               </div>
             </div>
           </fieldset>
-          {% if key %}
-          <input type="hidden" name="key" value="{{ key }}"/>
+          {% if recipe_id %}
+          <input type="hidden" name="recipe_id" value="{{ recipe_id }}"/>
           {% endif %}
           {% include "includes/params.html" %}
         </form>

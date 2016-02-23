@@ -67,7 +67,7 @@
               </span>
             </div>
           </div>
-          {% if key %}
+          {% if recipe_id %}
           <input type="hidden" name="type" value="{{ type }}"/>
           <input type="hidden" name="filter_tag" value="{{ filter_tag }}"/>
           <input type="hidden" name="count_tag" value="{{ count_tag }}"/>
@@ -147,7 +147,7 @@
                   </select>
                 </div>
               </fieldset>
-              {% if key %}
+              {% if recipe_id %}
               <input type="hidden" name="type" value="{{ type }}"/>
               {% else %}
               {% with excludes=['label_tag', 'value_tag', 'count_tag', 'filter_tag', 'filter_value'] %}
@@ -166,7 +166,7 @@
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
       hxl_proxy.setupChart({
-      data_url: "{{ data_url(recipe, key, format='csv') | safe }}",
+      data_url: "{{ data_url(recipe, recipe_id, format='csv') | safe }}",
       type: "{{ type|nonone|safe }}",
       value_pattern: "{{ value_tag|nonone|safe }}",
       label_pattern: "{{ label_tag|nonone|safe }}",

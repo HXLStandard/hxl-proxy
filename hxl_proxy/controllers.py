@@ -23,14 +23,14 @@ from flask import Response, flash, request, render_template, redirect, make_resp
 import hxl
 
 from hxl_proxy import app, cache, dao
-from hxl_proxy.util import get_recipe, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5, make_key
+from hxl_proxy.util import get_recipe, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5, make_recipe_id
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
 
-BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub', 'key']
+BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub', 'recipe_id']
 
 #
 # Error handling
@@ -74,33 +74,33 @@ def redirect_home():
 # Primary controllers
 #
 
-@app.route("/data/<key>/login")
-def show_data_login(key):
-    recipe = get_recipe(key)
-    return render_template('data-login.html', key=key, recipe=recipe)
+@app.route("/data/<recipe_id>/login")
+def show_data_login(recipe_id):
+    recipe = get_recipe(recipe_id)
+    return render_template('data-login.html', recipe_id=recipe_id, recipe=recipe)
 
 @app.route("/data/source")
-@app.route("/data/<key>/source")
-def show_data_source(key=None):
+@app.route("/data/<recipe_id>/source")
+def show_data_source(recipe_id=None):
     """Choose a new data source."""
 
     try:
-        recipe = get_recipe(key, auth=True)
+        recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'), 303)
+        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
 
-    return render_template('data-source.html', key=key, recipe=recipe)
+    return render_template('data-source.html', recipe_id=recipe_id, recipe=recipe)
 
 
 @app.route("/data/tagger")
-@app.route("/data/<key>/tagger")
-def show_data_tag(key=None):
+@app.route("/data/<recipe_id>/tagger")
+def show_data_tag(recipe_id=None):
     """Add HXL tags to an untagged dataset."""
 
     try:
-        recipe = get_recipe(key, auth=True)
+        recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'), 303)
+        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
 
     header_row = request.args.get('header-row')
     if header_row:
@@ -108,7 +108,7 @@ def show_data_tag(key=None):
 
     if not recipe['args'].get('url'):
         flash('Please choose a data source first.')
-        return redirect(make_data_url(recipe, key, 'source'), 303)
+        return redirect(make_data_url(recipe, recipe_id, 'source'), 303)
 
     try:
         sheet_index = int(recipe['args'].get('sheet', 0))
@@ -125,18 +125,18 @@ def show_data_tag(key=None):
         if row:
             preview.append(row)
         
-    return render_template('data-tagger.html', key=key, recipe=recipe, preview=preview, header_row=header_row)
+    return render_template('data-tagger.html', recipe_id=recipe_id, recipe=recipe, preview=preview, header_row=header_row)
 
 
 @app.route("/data/edit")
-@app.route("/data/<key>/edit", methods=['GET', 'POST'])
-def show_data_edit(key=None):
+@app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
+def show_data_edit(recipe_id=None):
     """Create or edit a filter pipeline."""
 
     try:
-        recipe = get_recipe(key, auth=True)
+        recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'), 303)
+        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
 
 
     if recipe['args'].get('url'):
@@ -146,10 +146,10 @@ def show_data_edit(key=None):
             source.columns # force-trigger an exception if not tagged
         except:
             flash('No HXL tags found')
-            return redirect(make_data_url(recipe, key, 'tagger'), 303)
+            return redirect(make_data_url(recipe, recipe_id, 'tagger'), 303)
     else:
         flash('Please choose a data source first.')
-        return redirect(make_data_url(recipe, key, 'source'), 303)
+        return redirect(make_data_url(recipe, recipe_id, 'source'), 303)
 
     # Figure out how many filter forms to show
     filter_count = 0
@@ -161,28 +161,28 @@ def show_data_edit(key=None):
 
     show_headers = (recipe['args'].get('strip-headers') != 'on')
 
-    return render_template('data-recipe.html', key=key, recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
+    return render_template('data-recipe.html', recipe_id=recipe_id, recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
 
 @app.route("/data/recipe")
-@app.route("/data/<key>/recipe")
-def show_data_recipe(key=None):
+@app.route("/data/<recipe_id>/recipe")
+def show_data_recipe(recipe_id=None):
     """Show form to save a recipe."""
 
     try:
-        recipe = get_recipe(key, auth=True)
+        recipe = get_recipe(recipe_id, auth=True)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'), 303)
+        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
 
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
 
-    return render_template('data-about.html', key=key, recipe=recipe)
+    return render_template('data-about.html', recipe_id=recipe_id, recipe=recipe)
 
-@app.route('/data/<key>/chart')
+@app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
-def show_data_chart(key=None):
+def show_data_chart(recipe_id=None):
     """Show a chart visualisation for the data."""
-    recipe = get_recipe(key)
+    recipe = get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
 
@@ -211,28 +211,28 @@ def show_data_chart(key=None):
     
     return render_template(
         'visualise-chart.html',
-        key=key, recipe=recipe, type=type, source=source,
+        recipe_id=recipe_id, recipe=recipe, type=type, source=source,
         value_tag=value_tag, label_tag=label_tag, count_tag=count_tag,
         filter_tag=filter_tag, filter_values=sorted(filter_values), filter_value=filter_value
     )
 
-@app.route('/data/<key>/map')
+@app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
-def show_data_map(key=None):
+def show_data_map(recipe_id=None):
     """Show a map visualisation for the data."""
-    recipe = get_recipe(key)
+    recipe = get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
     layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
-    return render_template('visualise-map.html', key=key, recipe=recipe, layer_tag=layer_tag)
+    return render_template('visualise-map.html', recipe_id=recipe_id, recipe=recipe, layer_tag=layer_tag)
 
 @app.route("/data/validate")
-@app.route("/data/<key>/validate")
-def show_validate(key=None):
+@app.route("/data/<recipe_id>/validate")
+def show_validate(recipe_id=None):
     """Validate the data."""
 
     # Get the recipe
-    recipe = get_recipe(key)
+    recipe = get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
 
@@ -251,18 +251,18 @@ def show_validate(key=None):
     if url:
         errors = do_validate(setup_filters(recipe), schema_url, severity_level)
 
-    return render_template('validate-summary.html', key=key, recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
+    return render_template('validate-summary.html', recipe_id=recipe_id, recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
 
-@app.route("/data/<key>.<format>")
-@app.route("/data/<key>/download/<stub>.<format>")
+@app.route("/data/<recipe_id>.<format>")
+@app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data.<format>")
 @app.route("/data")
-@app.route("/data/<key>") # must come last, or it will steal earlier patterns
+@app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=make_cache_key, unless=skip_cache_p)
-def show_data(key=None, format="html", stub=None):
+def show_data(recipe_id=None, format="html", stub=None):
 
-    def get_result (key, format):
-        recipe = get_recipe(key, auth=False)
+    def get_result (recipe_id, format):
+        recipe = get_recipe(recipe_id, auth=False)
         if not recipe or not recipe['args'].get('url'):
             return redirect('/data/source', 303)
 
@@ -270,7 +270,7 @@ def show_data(key=None, format="html", stub=None):
         show_headers = (recipe['args'].get('strip-headers') != 'on')
 
         if format == 'html':
-            return render_template('data-view.html', source=source, recipe=recipe, key=key, show_headers=show_headers)
+            return render_template('data-view.html', source=source, recipe=recipe, recipe_id=recipe_id, show_headers=show_headers)
         elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
@@ -284,7 +284,7 @@ def show_data(key=None, format="html", stub=None):
                 response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe['stub'])
             return response
 
-    result = get_result(key, format)
+    result = get_result(recipe_id, format)
     if skip_cache_p():
         # Want to store the new value, but can't get the key to work
         # Clearing the whole cache for now (heavy-handed)
@@ -310,12 +310,12 @@ def do_data_save():
     for the first time.
     """
 
-    # We will have a key if we're updating an existing pipeline
-    key = request.form.get('key')
+    # We will have a recipe_id if we're updating an existing pipeline
+    recipe_id = request.form.get('recipe_id')
     try:
-        recipe = get_recipe(key, auth=True, args=request.form)
+        recipe = get_recipe(recipe_id, auth=True, args=request.form)
     except Forbidden as e:
-        return redirect(make_data_url(None, key=key, facet='login'), 303)
+        return redirect(make_data_url(None, recipe_id=recipe_id, facet='login'), 303)
 
     # Update recipe metadata
     if 'name' in request.form:
@@ -337,7 +337,7 @@ def do_data_save():
     password = request.form.get('password')
     password_repeat = request.form.get('password-repeat')
 
-    if key:
+    if recipe_id:
         # Updating an existing recipe.
         if password:
             if password == password_repeat:
@@ -353,8 +353,8 @@ def do_data_save():
             session['passhash'] = recipe['passhash']
         else:
             raise BadRequest("Passwords don't match")
-        key = make_key()
-        recipe['recipe_id'] = key
+        recipe_id = make_recipe_id()
+        recipe['recipe_id'] = recipe_id
         dao.recipes.create(recipe)
         # FIXME other auth information is in __init__.py
         session['passhash'] = recipe['passhash']
@@ -362,7 +362,7 @@ def do_data_save():
     # TODO be more specific about what we clear
     cache.clear()
 
-    return redirect(make_data_url(recipe, key=key), 303)
+    return redirect(make_data_url(recipe, recipe_id=recipe_id), 303)
 
 @app.route('/settings/user')
 def do_user_settings():

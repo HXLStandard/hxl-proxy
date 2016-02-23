@@ -61,7 +61,7 @@ class TestUtil(unittest.TestCase):
             self.assertFalse(hxl_proxy.util.using_tagger_p(recipe))
 
     def test_get_recipe(self):
-        # TODO test with key access
+        # TODO test with recipe_id access
         with hxl_proxy.app.test_request_context('/data?url=http://example.org&filter01=count&count-spec01=country'):
             recipe = hxl_proxy.util.get_recipe()
             self.assertTrue(recipe)
