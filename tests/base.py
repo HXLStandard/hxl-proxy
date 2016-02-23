@@ -11,8 +11,8 @@ import os
 import tempfile
 
 import hxl_proxy
-from hxl_proxy.profiles import ProfileManager, Profile
 
+from . import TEST_DATA_FILE
 
 class BaseControllerTest(unittest.TestCase):
     """Base class for controller tests."""
@@ -22,18 +22,20 @@ class BaseControllerTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(delete=True) as file:
             self.filename = file.name
         hxl_proxy.app.config['DEBUG'] = False
-        hxl_proxy.app.config['PROFILE_FILE'] = self.filename
+        hxl_proxy.app.config['DB_FILE'] = ':memory:'
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
         hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
         hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
-        
-        self.key = ProfileManager(self.filename).add_profile(self.make_profile())
+
+        hxl_proxy.dao.db.create_db()
+        hxl_proxy.dao.db.execute_file(TEST_DATA_FILE)
+
+        self.key = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
 
     def tearDown(self):
-        """Remove the temporary profile database"""
-        os.remove(self.filename)
+        pass
 
     def get(self, path, params=None, status=200):
         """

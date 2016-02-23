@@ -8,6 +8,7 @@ License: Public Domain
 
 import unittest, os
 from hxl_proxy import app, dao
+from . import TEST_DATA_FILE
 
 
 class AbstractDBTest(unittest.TestCase):
@@ -16,7 +17,7 @@ class AbstractDBTest(unittest.TestCase):
     def setUp(self):
         # Prime with an in-memory database
         dao.db.create_db()
-        dao.db.execute_file(os.path.join(os.path.dirname(__file__), 'test-data.sql'))
+        dao.db.execute_file(TEST_DATA_FILE)
 
     def assertEquiv(self, model, actual):
         """Test equivalence where everything in model must be the same in actual
@@ -92,7 +93,7 @@ class TestRecipe(AbstractDBTest):
             'description': 'First test recipe',
             'cloneable': 1,
             'stub': 'recipe1',
-            'args': {}
+            'args': {'url':'http://example.org/basic-dataset.csv'}
         }
         self.assertEquiv(recipe, dao.recipes.read(recipe['recipe_id']))
 

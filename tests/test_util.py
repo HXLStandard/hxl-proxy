@@ -65,7 +65,7 @@ class TestUtil(unittest.TestCase):
         with hxl_proxy.app.test_request_context('/data?url=http://example.org&filter01=count&count-spec01=country'):
             profile = hxl_proxy.util.get_profile()
             self.assertTrue(profile)
-            self.assertEqual('count', profile.args.get('filter01'))
+            self.assertEqual('count', profile['args'].get('filter01'))
 
     # skip check_auth
 

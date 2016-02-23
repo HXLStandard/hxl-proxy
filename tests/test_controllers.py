@@ -22,7 +22,7 @@ class TestLogin(BaseControllerTest):
     path = '/login'
 
     def test_redirect(self):
-        response = self.get(self.path, status=302)
+        response = self.get(self.path, status=303)
         assert b'/oauth/authorize' in response.data
 
 
@@ -53,7 +53,7 @@ class TestDataSource(BaseControllerTest):
 
     def test_title(self):
         response = self.get(self.path)
-        assert b'<h1>Choose a dataset</h1>' in response.data
+        assert b'Choose your HXL data source' in response.data
 
     def test_prepopulate(self):
         """When a URL is available, it should be prepopulated."""
@@ -131,7 +131,7 @@ class TestEditPage(BaseControllerTest):
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.get('/data/edit', status=302)
+        response = self.get('/data/edit', status=303)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -139,7 +139,7 @@ class TestEditPage(BaseControllerTest):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
         response = self.get('/data/edit', {
             'url': 'http://example.org/untagged-dataset.csv'
-        }, status=302)
+        }, status=303)
         assert '/data/tagger' in response.location
         assert 'untagged-dataset.csv' in response.location
 
@@ -148,11 +148,11 @@ class TestEditPage(BaseControllerTest):
         response = self.get('/data/edit', {
             'url': DATASET_URL
         })
-        assert b'<h1>Transform your data</h1>' in response.data
+        assert b'Add filters to your data recipe' in response.data
         self.assertBasicDataset(response)
 
     def test_need_login(self):
-        response = self.get('/data/{}/edit'.format(self.key), status=302)
+        response = self.get('/data/{}/edit'.format(self.key), status=303)
         assert '/data/{}/login'.format(self.key) in response.headers['Location']
 
     # TODO test logging in (good and bad passwords)
@@ -168,20 +168,21 @@ class TestDataPage(BaseControllerTest):
         assert response.location.endswith('/data/source')
 
     def test_local_file(self):
-        response = self.get('/data?url=/etc/passwd', status=403)
+        """Make sure we're not leaking local data."""
+        response = self.get('/data?url=/etc/passwd', status=500)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.get('/data', {
             'url': DATASET_URL
         })
-        assert b'<h1>Result data</h1>' in response.data
+        assert b'View data' in response.data
         self.assertBasicDataset(response)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_key(self):
         response = self.get('/data/{}'.format(self.key))
-        assert b'<h1>Sample dataset</h1>' in response.data
+        assert b'Recipe #1' in response.data
         self.assertBasicDataset(response)
 
     # TODO test that filters work

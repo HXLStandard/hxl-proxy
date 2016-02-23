@@ -14,8 +14,6 @@ from flask.ext.cache import Cache
 
 import werkzeug.datastructures
 
-from hxl_proxy.profiles import ProfileManager
-
 # Main application object
 app = Flask(__name__)
 app.config.from_object('hxl_proxy.default_config')

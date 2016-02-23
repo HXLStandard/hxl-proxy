@@ -29,7 +29,8 @@ from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
-from hxl_proxy.profiles import ProfileManager, BLACKLIST
+
+BLACKLIST = ['password', 'password-repeat', 'name', 'description', 'cloneable', 'stub', 'key']
 
 #
 # Error handling
@@ -58,7 +59,6 @@ def before_request():
     """Code to run immediately before the request"""
     app.secret_key = app.config['SECRET_KEY']
     request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
-    g.profiles = ProfileManager(app.config['PROFILE_FILE'])
     g.member = session.get('member_info')
 
 #

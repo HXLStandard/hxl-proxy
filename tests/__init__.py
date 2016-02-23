@@ -5,6 +5,8 @@ import re
 import hxl
 import unittest.mock
 
+TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), 'test-data.sql')
+
 #
 # Mock URL access for local testing
 #

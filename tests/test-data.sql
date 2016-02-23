@@ -5,5 +5,5 @@ values
 
 insert into Recipes (recipe_id, passhash, name, description, cloneable, stub, args, date_created, date_modified)
 values
-('AAAAA', '5f4dcc3b5aa765d61d8327deb882cf99', 'Recipe #1', 'First test recipe', 1, 'recipe1', '{}', '2015-11-11 11:00:00', '2015-11-11 11:00:00'),
+('AAAAA', '5f4dcc3b5aa765d61d8327deb882cf99', 'Recipe #1', 'First test recipe', 1, 'recipe1', '{"url":"http://example.org/basic-dataset.csv"}', '2015-11-11 11:00:00', '2015-11-11 11:00:00'),
 ('BBBBB', '5f4dcc3b5aa765d61d8327deb882cf99', 'Recipe #2', null, 0, null, '{}', '2016-11-11 11:00:00', '2016-11-11 11:00:00');

@@ -14,11 +14,6 @@
 DEBUG=True
 
 #
-# Name of a file for storing saved profile information
-#
-PROFILE_FILE='/tmp/hxl-proxy-profiles'
-
-#
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #
