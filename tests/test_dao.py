@@ -15,8 +15,8 @@ class AbstractDBTest(unittest.TestCase):
     
     def setUp(self):
         # Prime with an in-memory database
-        dao.create_db()
-        dao.execute_file(os.path.join(os.path.dirname(__file__), 'test-data.sql'))
+        dao.db.create_db()
+        dao.db.execute_file(os.path.join(os.path.dirname(__file__), 'test-data.sql'))
 
     def assertEquiv(self, model, actual):
         """Test equivalence where everything in model must be the same in actual

@@ -1,7 +1,7 @@
 """Database access functions and classes."""
 
 import sqlite3, json, os, random, time, base64, hashlib
-from flask import g, request
+from flask import g, request, has_request_context
 from werkzeug.exceptions import Forbidden, NotFound
 
 from hxl_proxy import app, util
@@ -16,13 +16,22 @@ SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema.sql')
 
 class db(object):
 
+    _database = None
+
     @staticmethod
     def get(db_file=None):
         """Get the database."""
-        database = getattr(g, '_database', None)
+        if has_request_context(): #FIXME - this is an ugly dependency
+            database = getattr(g, '_database', None)
+        else:
+            database = db._database
         if database is None:
-            database = g._database = sqlite3.connect(DB_FILE)
-            database.row_factory = sqlite3.Row
+            database = sqlite3.connect(DB_FILE)
+            if has_request_context():
+                g._database = database
+            else:
+                db._database = database
+        database.row_factory = sqlite3.Row
         return database
 
     @app.teardown_appcontext
