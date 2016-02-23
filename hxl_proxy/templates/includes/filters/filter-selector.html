@@ -5,18 +5,18 @@
       {% set name='filter%02d' % n %}
       <select name="{{ name }}" class="form-control">
         <option value="">(none)</option>
-        <option value="add"{% if profile.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
-        <option value="append"{% if profile.args[name]=='append' %} selected="selected"{% endif %}>Append datasets</option>
-        <option value="clean"{% if profile.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
-        <option value="count"{% if profile.args[name]=='count' %} selected="selected"{% endif %}>Count rows</option>
-        <option value="cut"{% if profile.args[name]=='cut' %} selected="selected"{% endif %}>Cut columns</option>
-        <option value="dedup"{% if profile.args[name]=='dedup' %} selected="selected"{% endif %}>Deduplicate rows</option>
-        <option value="merge"{% if profile.args[name]=='merge' %} selected="selected"{% endif %}>Merge columns</option>
-        <option value="rename"{% if profile.args[name]=='rename' %} selected="selected"{% endif %}>Rename columns</option>
-        <option value="replace"{% if profile.args[name]=='replace' %} selected="selected"{% endif %}>Replace data</option>
-        <option value="replace-map"{% if profile.args[name]=='replace-map' %} selected="selected"{% endif %}>Replace data (mapping table)</option>
-        <option value="select"{% if profile.args[name]=='select' %} selected="selected"{% endif %}>Select rows</option>
-        <option value="sort"{% if profile.args[name]=='sort' %} selected="selected"{% endif %}>Sort rows</option>
+        <option value="add"{% if recipe.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
+        <option value="append"{% if recipe.args[name]=='append' %} selected="selected"{% endif %}>Append datasets</option>
+        <option value="clean"{% if recipe.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
+        <option value="count"{% if recipe.args[name]=='count' %} selected="selected"{% endif %}>Count rows</option>
+        <option value="cut"{% if recipe.args[name]=='cut' %} selected="selected"{% endif %}>Cut columns</option>
+        <option value="dedup"{% if recipe.args[name]=='dedup' %} selected="selected"{% endif %}>Deduplicate rows</option>
+        <option value="merge"{% if recipe.args[name]=='merge' %} selected="selected"{% endif %}>Merge columns</option>
+        <option value="rename"{% if recipe.args[name]=='rename' %} selected="selected"{% endif %}>Rename columns</option>
+        <option value="replace"{% if recipe.args[name]=='replace' %} selected="selected"{% endif %}>Replace data</option>
+        <option value="replace-map"{% if recipe.args[name]=='replace-map' %} selected="selected"{% endif %}>Replace data (mapping table)</option>
+        <option value="select"{% if recipe.args[name]=='select' %} selected="selected"{% endif %}>Select rows</option>
+        <option value="sort"{% if recipe.args[name]=='sort' %} selected="selected"{% endif %}>Sort rows</option>
       </select>
     </div>
   </div>

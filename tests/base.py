@@ -18,7 +18,7 @@ class BaseControllerTest(unittest.TestCase):
     """Base class for controller tests."""
     
     def setUp(self):
-        """Set up a test object with a temporary profile database"""
+        """Set up a test object with a temporary recipe database"""
         with tempfile.NamedTemporaryFile(delete=True) as file:
             self.filename = file.name
         hxl_proxy.app.config['DEBUG'] = False
@@ -61,11 +61,11 @@ class BaseControllerTest(unittest.TestCase):
         assert b'Myanmar' in response.data
 
     @staticmethod
-    def make_profile():
-        profile = Profile({
+    def make_recipe():
+        recipe = Recipe({
             'url': 'http://example.org/basic-dataset.csv'
         })
-        profile.name = 'Sample dataset'
-        return profile
+        recipe.name = 'Sample dataset'
+        return recipe
 
 

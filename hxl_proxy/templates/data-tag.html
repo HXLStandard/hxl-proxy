@@ -18,7 +18,7 @@
       <section class="col-sm-12">
         {% include "includes/source.html" %}
 
-        {% if not using_tagger_p(profile) %}
+        {% if not using_tagger_p(recipe) %}
         <p class="alert alert-warning">
           We can't find any <a href="http://hxlstandard.org">HXL
           hashtags</a> in your data, but all is not lost!  You can define
@@ -52,7 +52,7 @@
 
         {% include "includes/source.html" %}
 
-        {% if not using_tagger_p(profile) %}
+        {% if not using_tagger_p(recipe) %}
         <p class="alert alert-warning">
           We can't find any <a href="http://hxlstandard.org">HXL
           hashtags</a> in your data, but all is not lost!  You can define
@@ -87,12 +87,12 @@
                   <td>{{ loop.index }}</td>
                   <td>
                     <input class="form-control" name="{{ name + '-header' }}"
-                           value="{{ profile.args[name + '-header'] or value|strnorm }}"
+                           value="{{ recipe.args[name + '-header'] or value|strnorm }}"
                            placeholder="Header text" />
                   </td>
                   <td>
                     <input class="form-control" name="{{ name + '-tag' }}"
-                           value="{{ profile.args[name + '-tag'] }}"
+                           value="{{ recipe.args[name + '-tag'] }}"
                            pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
                            placeholder="{{ vars.tag_placeholder }}" />
                   </td>

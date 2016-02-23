@@ -5,13 +5,13 @@
   {% set name='sort-tags%02d' % n %}
   <div id="{{ name }}" class="form-group">
     <label for="{{ name }}">Use these tags for sorting.</label>
-    <input class="form-control" name="{{ name }}" value="{{ profile.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.filters_placeholder }}" />
+    <input class="form-control" name="{{ name }}" value="{{ recipe.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.filters_placeholder }}" />
   </div>
   
   {% set name='sort-reverse%02d' % n %}
   <div id="{{ name }}" class="checkbox">
     <label>
-      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
       Reverse order
     </label>
   </div>

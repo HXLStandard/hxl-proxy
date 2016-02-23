@@ -9,7 +9,7 @@
     {% include "includes/navbar.html" %}
     {% endwith %}
     <header class="col-sm-12">
-      {% if profile.args.url %}
+      {% if recipe.args.url %}
       {% with facet='source' %}
       {% include "includes/data-tabs.html" %}
       {% endwith %}
@@ -29,7 +29,7 @@
         <div class="panel-body">
           {% if key %}
           {% set method="POST" %}
-          {% set action="/actions/save-profile" %}
+          {% set action="/actions/save-recipe" %}
           {% else %}
           {% set method="GET" %}
           {% set action="/data/edit" %}
@@ -42,7 +42,7 @@
                        name="url"
                        type="url"
                        required="required"
-                       value="{{ profile.args.url }}"
+                       value="{{ recipe.args.url }}"
                        placeholder="http://example.org/dataset.csv" />
                 <div class="input-group-btn">
                   <button class="btn btn-success"
@@ -60,7 +60,7 @@
                 <div class="input-group-addon">
                   Tab #
                 </div>
-                <input name="sheet" value="{{ profile.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
+                <input name="sheet" value="{{ recipe.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
               </div>
             </div>
 

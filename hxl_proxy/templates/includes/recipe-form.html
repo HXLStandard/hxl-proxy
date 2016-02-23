@@ -1,0 +1,5 @@
+{% if recipe %}
+{% for key in recipe.args %}
+<input type="hidden" name="{{ key }}" value="{{ recipe.args[key] }}" />
+{% endfor %}
+{% endif %}

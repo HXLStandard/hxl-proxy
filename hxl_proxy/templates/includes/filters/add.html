@@ -14,7 +14,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         required="required"
         pattern="^{{ vars.tag_pattern }}$"
         title="{{ vars.tag_help }}"
@@ -30,7 +30,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         placeholder="Fixed value"
         />
   </div>
@@ -43,7 +43,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         placeholder="Header text"
         />
   </div>
@@ -54,7 +54,7 @@
       <input
           type="checkbox"
           name="{{ name }}"
-          {% if profile.args[name] %}
+          {% if recipe.args[name] %}
           checked="checked"
           {% endif %}
           />

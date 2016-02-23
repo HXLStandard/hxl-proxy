@@ -2,7 +2,7 @@
     <div class="table-container hxltable">
     <table class="table">
       <thead>
-        {% if (not profile.args.get('strip-headers')) and source.has_headers %}
+        {% if (not recipe.args.get('strip-headers')) and source.has_headers %}
         <tr class="hxl-headers">
           {% for header in source.headers %}
           <th>{{ header|nonone }}</th>

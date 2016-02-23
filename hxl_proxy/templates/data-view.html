@@ -3,8 +3,8 @@
   {% set facet='view' %}
   <head>
     <title>
-      {% if profile.name %}
-      {{ profile.name }} @ HXL Proxy
+      {% if recipe.name %}
+      {{ recipe.name }} @ HXL Proxy
       {% else %}
       View data @ HXL Proxy
       {% endif %}
@@ -16,19 +16,19 @@
     <header class="row">
       {% include "includes/data-tabs.html" %}
       <h1 class="col-xs-6 col-sm-8 col-md-10">
-        {% if profile.name %}
-        {{ profile.name }}
+        {% if recipe.name %}
+        {{ recipe.name }}
         {% else %}
         View Data
         {% endif %}
       </h1>
       <p class="col-xs-6 col-sm-4 col-md-2 small">
         <span class="icons small pull-right">
-          <a href="{{ data_url(profile, key, format='csv') }}">
+          <a href="{{ data_url(recipe, key, format='csv') }}">
             <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
             <span>CSV</span>
           </a>
-          <a href="{{ data_url(profile, key, format='json') }}">
+          <a href="{{ data_url(recipe, key, format='json') }}">
             <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
             <span>JSON</span>
           </a>
@@ -38,8 +38,8 @@
     <main class="row">
       <div id="metadata" class="col-xs-12">
         {% include "includes/source.html" %}
-        {% if profile.description %}
-        <p>{{ profile.description }}</p>
+        {% if recipe.description %}
+        <p>{{ recipe.description }}</p>
         {% endif %}
       </div>
       <section id="data" class="col-xs-12">

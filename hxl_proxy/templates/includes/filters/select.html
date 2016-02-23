@@ -7,14 +7,14 @@
     <label for="{{ name }}">Queries (e.g. adm1=Bomo)</label>
     {% for n in range(1, 6) %}
     {% set query_name = '%s-%02d' % (name, n) %}
-    <input class="form-control" name="{{ query_name }}" value="{{ profile.args[query_name] }}" pattern="^{{ vars.query_pattern }}$" title="{{ vars.query_help }}" placeholder="#tag=value" />
+    <input class="form-control" name="{{ query_name }}" value="{{ recipe.args[query_name] }}" pattern="^{{ vars.query_pattern }}$" title="{{ vars.query_help }}" placeholder="#tag=value" />
     {% endfor %}
   </div>
 
   {% set name='select-reverse%02d' % n %}
   <div id="{{ name }}" class="checkbox">
     <label>
-      <input type="checkbox" name="{{ name }}"{% if profile.args[name] %} checked="checked"{% endif %} />
+      <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
       Invert query (all rows that <i>don't</i> match it)
     </label>
   </div>

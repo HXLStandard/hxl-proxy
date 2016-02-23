@@ -11,13 +11,13 @@
       <h1>Password required</h1>
     </header>
     <main>
-      <p>You need to enter the correct password to edit <a href="{{ data_url(profile, key) }}">{{ profile.name }}</a></p>
+      <p>You need to enter the correct password to edit <a href="{{ data_url(recipe, key) }}">{{ recipe.name }}</a></p>
       <form class="theme-form" method="POST" action="/actions/login">
         <div class="required form-group">
           <label for="password">Password</label>
           <input name="password" type="password" required="required" class="form-control" />
         </div>
-        <input type="hidden" name="from" value="{{ data_url(profile, key, 'edit') }}"/>
+        <input type="hidden" name="from" value="{{ data_url(recipe, key, 'edit') }}"/>
         <button type="submit">Edit this recipe</button>
       </form>
     </main>

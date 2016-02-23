@@ -157,7 +157,7 @@ class TestEditPage(BaseControllerTest):
 
     # TODO test logging in (good and bad passwords)
 
-    # TODO test changing profile
+    # TODO test changing recipe
 
 
 class TestDataPage(BaseControllerTest):

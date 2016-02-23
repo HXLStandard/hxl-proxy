@@ -60,8 +60,8 @@ def urlencode_utf8(params):
             urlquote(k) + '=' + urlquote(v) for k, v in params if v
     )
 
-def using_tagger_p(profile):
-    for name in profile['args']:
+def using_tagger_p(recipe):
+    for name in recipe['args']:
         if re.match(r'^tagger-', name):
             return True
     return False
@@ -75,30 +75,30 @@ def get_gravatar(email, size=40):
     )
     return url
 
-PROFILE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
+RECIPE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
 
-def get_profile(key=None, auth=False, args=None):
-    """Load a profile or create from args."""
+def get_recipe(key=None, auth=False, args=None):
+    """Load a recipe or create from args."""
 
     if args is None:
         args = request.args
 
     if key:
-        profile = hxl_proxy.dao.recipes.read(str(key))
-        if not profile:
-            raise NotFound("No saved profile for " + key)
-        if auth and not check_auth(profile):
+        recipe = hxl_proxy.dao.recipes.read(str(key))
+        if not recipe:
+            raise NotFound("No saved recipe for " + key)
+        if auth and not check_auth(recipe):
             raise Forbidden("Wrong or missing password.")
     else:
-        profile = {'args': {key: args.get(key) for key in args}}
+        recipe = {'args': {key: args.get(key) for key in args}}
 
     # Allow some values to be overridden from request parameters
-    for key in PROFILE_OVERRIDES:
+    for key in RECIPE_OVERRIDES:
         if args.get(key):
-            profile['overridden'] = True
-            profile['args'][key] = args.get(key)
+            recipe['overridden'] = True
+            recipe['args'][key] = args.get(key)
 
-    return profile
+    return recipe
 
 
 def make_md5(s):
@@ -120,9 +120,9 @@ def make_key():
         key = gen_key()
     return key
 
-def check_auth(profile, password=None):
+def check_auth(recipe, password=None):
     """Check authorisation."""
-    passhash = profile.get('passhash')
+    passhash = recipe.get('passhash')
     if passhash:
         if password:
             session_passhash = make_md5(password)
@@ -152,16 +152,16 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_data_url(profile, key=None, facet=None, format=None):
-    """Construct a data URL for a profile."""
+def make_data_url(recipe, key=None, facet=None, format=None):
+    """Construct a data URL for a recipe."""
     url = None
     if key:
         url = '/data/' + urlquote(key)
         if facet:
             url += '/' + urlquote(facet)
         elif format:
-            if hasattr(profile, 'stub') and profile.stub:
-                url += '/download/' + urlquote(profile.stub) + '.' + urlquote(format)
+            if hasattr(recipe, 'stub') and recipe.stub:
+                url += '/download/' + urlquote(recipe.stub) + '.' + urlquote(format)
             else:
                 url += '.' + urlquote(format)
     else:
@@ -170,7 +170,7 @@ def make_data_url(profile, key=None, facet=None, format=None):
             url += '.' + urlquote(format)
         elif facet:
             url += '/' + urlquote(facet)
-        url += '?' + urlencode_utf8(profile['args'])
+        url += '?' + urlencode_utf8(recipe['args'])
 
     return url
 

@@ -1,5 +1,5 @@
-{% for name in profile.args.keys() %}
+{% for name in recipe.args.keys() %}
 {% if not excludes or name not in excludes %}
-<input type="hidden" name="{{ name }}" value="{{ profile.args.get(name) }}" />
+<input type="hidden" name="{{ name }}" value="{{ recipe.args.get(name) }}" />
 {% endif %}
 {% endfor %}

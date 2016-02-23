@@ -11,8 +11,8 @@
       {% if filter_value %}
       for "{{ filter_value }}"
       {% endif %}
-      {% if profile.name %}
-      in {{ profile.name }}
+      {% if recipe.name %}
+      in {{ recipe.name }}
       {% endif %}
       @ HXL Proxy
     </title>
@@ -43,8 +43,8 @@
         {% if filter_value %}
         for &ldquo;{{ filter_value }}&rdquo;
         {% endif %}
-        {% if profile.name %}
-        <cite>{{ profile.name }}</cite>
+        {% if recipe.name %}
+        <cite>{{ recipe.name }}</cite>
         {% endif %}
       </h1>
     </header>
@@ -166,7 +166,7 @@
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
       hxl_proxy.setupChart({
-      data_url: "{{ data_url(profile, key, format='csv') | safe }}",
+      data_url: "{{ data_url(recipe, key, format='csv') | safe }}",
       type: "{{ type|nonone|safe }}",
       value_pattern: "{{ value_tag|nonone|safe }}",
       label_pattern: "{{ label_tag|nonone|safe }}",

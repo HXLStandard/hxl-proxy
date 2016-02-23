@@ -24,7 +24,7 @@
         <h3>Filters</h3>
         {% if key %}
         {% set method="POST" %}
-        {% set action="/actions/save-profile" %}
+        {% set action="/actions/save-recipe" %}
         {% else %}
         {% set method="GET" %}
         {% set action="/data/edit" %}
@@ -74,7 +74,7 @@
                 <div class="col-md-6">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" name="strip-headers"{% if profile.args['strip-headers'] %} checked="checked"{% endif %} />
+                      <input type="checkbox" name="strip-headers"{% if recipe.args['strip-headers'] %} checked="checked"{% endif %} />
                       Strip text headers
                     </label>
                   </div>
@@ -82,7 +82,7 @@
                 <div class="col-md-6">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" name="force"{% if profile.args['force'] %} checked="checked"{% endif %} />
+                      <input type="checkbox" name="force"{% if recipe.args['force'] %} checked="checked"{% endif %} />
                       Never cache
                     </label>
                   </div>
@@ -90,7 +90,7 @@
               </div>
               <div class="form-input">
                 <button class="btn btn-info btn-xs">Update preferences</button>
-                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(profile, key) }}">Done filters</a>
+                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(recipe, key) }}">Done filters</a>
               </div>
             </div>
           </fieldset>

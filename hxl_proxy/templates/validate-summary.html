@@ -3,8 +3,8 @@
   {% set facet='validate' %}
   <head>
     <title>
-      {% if profile.name %}
-      Validate {{ profile.name }} @ HXL Proxy
+      {% if recipe.name %}
+      Validate {{ recipe.name }} @ HXL Proxy
       {% else %}
       Validate dataset @ HXL Proxy
       {% endif %}
@@ -15,8 +15,8 @@
     {% include "includes/navbar.html" %}
     <header class="col-sm-12">
       <h1>
-        {% if profile.name %}
-        Validate {{ profile.name }}
+        {% if recipe.name %}
+        Validate {{ recipe.name }}
         {% else %}
         Validate dataset
         {% endif %}
@@ -59,9 +59,9 @@
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
             <td>
               {% if error.row %}
-              <a href="{{ data_url(profile) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
+              <a href="{{ data_url(recipe) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
               {% else %}
-              <a href="{{ data_url(profile) }}#hashtag-row">Hashtags</a>
+              <a href="{{ data_url(recipe) }}#hashtag-row">Hashtags</a>
               {% endif %}
             </td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
@@ -86,7 +86,7 @@
       </form>
       <p class="alert alert-warning">
         {{ errors|length }} validation issue(s)
-        {% if profile.args.severity %} (minimum severity: {{ severity }}){% endif %}.
+        {% if recipe.args.severity %} (minimum severity: {{ severity }}){% endif %}.
       </p>
       <table class="table">
         <thead>
@@ -124,15 +124,15 @@
               <form class="form" action="">
 
                 {% if key %}
-                <p>Temporarilty override the default schema for this profile. To change the default schema, go to the
-                <a href="{{ data_url(profile, key, 'edit') }}">edit page</a>.</p>
+                <p>Temporarilty override the default schema for this recipe. To change the default schema, go to the
+                <a href="{{ data_url(recipe, key, 'edit') }}">edit page</a>.</p>
                 {% endif %}
 
-                {% include 'includes/profile-form.html' %}
+                {% include 'includes/recipe-form.html' %}
 
                 <div class="form-group">
                   <label for="schema_url">Custom HXL schema URL</label>
-                  <input name="schema_url" id="schema_url" type="url" value="{{ profile.args.schema_url or '' }}" class="form-control"
+                  <input name="schema_url" id="schema_url" type="url" value="{{ recipe.args.schema_url or '' }}" class="form-control"
                          placeholder="http://example.org/my-hxl-schema.csv" />
                   <p class="help-block">You can choose a custom schema with special rules for your dataset.</p>
                   {% with id='#schema_url' %}

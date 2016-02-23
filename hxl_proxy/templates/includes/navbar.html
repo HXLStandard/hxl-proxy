@@ -13,34 +13,34 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="{% if facet=='source' and not profile.args.url %}active{% endif %}">
+        <li class="{% if facet=='source' and not recipe.args.url %}active{% endif %}">
           <a href="/data/source">
             <span class="glyphicon glyphicon-plus"></span>
             New
           </a>
         </li>
-        {% if profile and profile.args.url %}
+        {% if recipe and recipe.args.url %}
         <li class="{% if facet in ['source', 'tagger', 'edit', 'view'] %}active{% endif %}">
-          <a href="{{ data_url(profile, key) }}">
+          <a href="{{ data_url(recipe, key) }}">
             <span class="glyphicon glyphicon-th-list"></span>
             Data
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
-          <a href="{{ data_url(profile, key, 'validate') }}">
+          <a href="{{ data_url(recipe, key, 'validate') }}">
             <span class="glyphicon glyphicon-ok"></span>
             Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ data_url(profile, key, 'chart') }}">
+          <a href="{{ data_url(recipe, key, 'chart') }}">
             <span class="glyphicon glyphicon-signal"></span>
             Visualise
           </a>
         </li>
-        {% if key and profile.cloneable %}
+        {% if key and recipe.cloneable %}
         <li>
-          <a href="{{ data_url(profile, None, 'edit') }}">
+          <a href="{{ data_url(recipe, None, 'edit') }}">
             <span class="glyphicon glyphicon-copy"></span>
             Clone
           </a>

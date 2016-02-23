@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>
-      Map{% if profile.name %}of {{ profile.name}}{% endif %} @ HXL Proxy
+      Map{% if recipe.name %}of {{ recipe.name}}{% endif %} @ HXL Proxy
     </title>
     {% include "includes/headers.html" %}
   </head>
@@ -11,7 +11,7 @@
     {% include "includes/navbar.html" %}
     <header>
       <h1>
-        Map{% if profile.name %}of {{ profile.name}}{% endif %}        
+        Map{% if recipe.name %}of {{ recipe.name}}{% endif %}        
       </h1>
     </header>
     <main>
@@ -19,7 +19,7 @@
       {% include "includes/source.html" %}
     </main>
     <script type="text/javascript">
-      var csv_url = "{{ data_url(profile, key, format='csv') | safe }}";
+      var csv_url = "{{ data_url(recipe, key, format='csv') | safe }}";
       var map_layer_tag = "{{ layer_tag }}";
     </script>
     {% include "includes/scripts.html" %}

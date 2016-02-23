@@ -13,7 +13,7 @@ import operator
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
-from hxl_proxy.util import get_profile
+from hxl_proxy.util import get_recipe
 
 #
 # Mock URL access so that tests work offline
@@ -43,8 +43,8 @@ class TestSetupFilters(unittest.TestCase):
             'filter03': 'sort',
             'sort-tags02': 'adm1,adm2'
         }
-        profile = get_profile(args=args)
-        source = setup_filters(profile)
+        recipe = get_recipe(args=args)
+        source = setup_filters(recipe)
 
         # check the whole pipeline
         self.assertEqual('SortFilter', source.__class__.__name__, "sort filter is fourth")
@@ -52,12 +52,12 @@ class TestSetupFilters(unittest.TestCase):
         self.assertEqual('CountFilter', source.source.source.__class__.__name__, "count filter is second")
         self.assertEqual('HXLReader', source.source.source.source.__class__.__name__, "reader is first")
 
-    def test_null_profile(self):
+    def test_null_recipe(self):
         self.assertIsNone(setup_filters(None), "ok to pass None to setup_filters")
 
     def test_null_url(self):
-        profile = get_profile(args={})
-        self.assertIsNone(setup_filters(profile), "ok to pass null URL to setup_filters")
+        recipe = get_recipe(args={})
+        self.assertIsNone(setup_filters(recipe), "ok to pass null URL to setup_filters")
 
 
 class TestPipelineFunctions(unittest.TestCase):

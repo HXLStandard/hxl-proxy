@@ -12,7 +12,7 @@
       <input
           type="checkbox"
           name="{{ name }}"
-          {% if profile.args[name] %}
+          {% if recipe.args[name] %}
           checked="checked"
           {% endif %}
           />
@@ -31,7 +31,7 @@
         class="form-control"
         id="{{ dataset_name }}-field"
         name="{{ dataset_name }}"
-        value="{{ profile.args[dataset_name] }}"
+        value="{{ recipe.args[dataset_name] }}"
         type="url"
         placeholder="http://example.org/dataset.csv"
         />

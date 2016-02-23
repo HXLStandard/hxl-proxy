@@ -16,7 +16,7 @@
         id="{{ name }}-field"
         name="{{ name }}"
         type="url"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         required="required"
         placeholder="http://example.org/data-to-merge.csv"
         />
@@ -33,7 +33,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         required="required"
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
@@ -49,7 +49,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         required="required"
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
@@ -63,7 +63,7 @@
       <input
           type="checkbox"
           name="{{ name }}"
-          {% if profile.args[name] %}
+          {% if recipe.args[name] %}
           checked="checked"
           {% endif %}
           />
@@ -77,7 +77,7 @@
       <input
           type="checkbox"
           name="{{ name }}"
-          {% if profile.args[name] %}
+          {% if recipe.args[name] %}
           checked="checked"
           {% endif %}
           />

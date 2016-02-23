@@ -13,7 +13,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         pattern="^{{ vars.filter_pattern }}$"
         title="{{ vars.filter_help }}"
         required="required"
@@ -29,7 +29,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         pattern="^{{ vars.tag_pattern }}$"
         title="{{ vars.tag_help }}"
         required="required"
@@ -45,7 +45,7 @@
     <input
         class="form-control"
         name="{{ name }}"
-        value="{{ profile.args[name] }}"
+        value="{{ recipe.args[name] }}"
         placeholder="New display header"
         />
   </div>

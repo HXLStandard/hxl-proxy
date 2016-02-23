@@ -1,8 +1,8 @@
-{% if not key or profile.cloneable %}
+{% if not key or recipe.cloneable %}
 <div>
   <b>Original data:</b>
-  <a target="_blank" href="{{ profile.args.url}}">
-    {{ profile.args.url }}
+  <a target="_blank" href="{{ recipe.args.url}}">
+    {{ recipe.args.url }}
   </a>
 </div>
 {% endif %}
