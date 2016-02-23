@@ -64,16 +64,12 @@ def execute_file(filename, commit=True):
     with open(filename, 'r') as input:
         return execute_script(input.read(), commit)
 
-def _make_md5(s):
-    """Return an MD5 hash for a string."""
-    return hashlib.md5(s.encode('utf-8')).digest()
-
 def _gen_key():
     """
     Generate a pseudo-random, 6-character hash for use as a key.
     """
     salt = str(time.time() * random.random())
-    encoded_hash = base64.urlsafe_b64encode(_make_md5(salt))
+    encoded_hash = base64.urlsafe_b64encode(util.make_md5(salt))
     return encoded_hash[:6].decode('ascii')
 
 def create_db():

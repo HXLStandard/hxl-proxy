@@ -4,7 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six
+import six, hashlib
 import re
 import urllib
 import datetime
@@ -17,8 +17,8 @@ from flask import url_for, request, flash, session, g
 
 import hxl
 
+import hxl_proxy
 from hxl_proxy import app
-from hxl_proxy.profiles import Profile
 
 CACHE_KEY_EXCLUDES = ['force']
 
@@ -61,7 +61,7 @@ def urlencode_utf8(params):
     )
 
 def using_tagger_p(profile):
-    for name in profile.args:
+    for name in profile['args']:
         if re.match(r'^tagger-', name):
             return True
     return False
@@ -84,37 +84,45 @@ def get_profile(key=None, auth=False, args=None):
         args = request.args
 
     if key:
-        profile = dao.recipes.read(str(key))
+        profile = hxl_proxy.dao.recipes.read(str(key))
         if not profile:
             raise NotFound("No saved profile for " + key)
         if auth and not check_auth(profile):
             raise Forbidden("Wrong or missing password.")
     else:
-        profile = Profile(args)
+        profile = {'args': {key: args.get(key) for key in args}}
 
     # Allow some values to be overridden from request parameters
     for key in PROFILE_OVERRIDES:
         if args.get(key):
-            profile.overridden = True
-            profile.args[key] = args.get(key)
+            profile['overridden'] = True
+            profile['args'][key] = args.get(key)
 
     return profile
 
 
+def make_md5(s):
+    """Return an MD5 hash for a string."""
+    return hashlib.md5(s.encode('utf-8')).digest()
+
 def check_auth(profile):
     """Check authorisation."""
-    passhash = session.get('passhash')
-    if passhash and profile.passhash == passhash:
-        return True
+    passhash = profile.get('passhash')
     password = request.form.get('password')
-    if password:
-        if profile.check_password(password):
-            session['passhash'] = profile.passhash
+    if passhash:
+        if password:
+            session_passhash = make_md5(password)
+            session['passhash'] = session_passhash
+        else:
+            session_passhash = session.get('passhash')
+        if passhash == session_passhash:
             return True
         else:
             session['passhash'] = None
             flash("Wrong password")
-    return False
+            return False
+    else:
+        return True
 
 def add_args(extra_args):
     """Add GET parameters."""
@@ -148,7 +156,7 @@ def make_data_url(profile, key=None, facet=None, format=None):
             url += '.' + urlquote(format)
         elif facet:
             url += '/' + urlquote(facet)
-        url += '?' + urlencode_utf8(profile.args)
+        url += '?' + urlencode_utf8(profile['args'])
 
     return url
 

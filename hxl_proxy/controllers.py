@@ -23,7 +23,7 @@ from flask import Response, flash, request, render_template, redirect, make_resp
 import hxl
 
 from hxl_proxy import app, cache, dao
-from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8
+from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
@@ -106,18 +106,18 @@ def show_data_tag(key=None):
     if header_row:
         header_row = int(header_row)
 
-    if not profile.args.get('url'):
+    if not profile['args'].get('url'):
         flash('Please choose a data source first.')
         return redirect(make_data_url(profile, key, 'source'), 303)
 
     try:
-        sheet_index = int(profile.args.get('sheet', 0))
+        sheet_index = int(profile['args'].get('sheet', 0))
     except:
         sheet_index = 0
 
     preview = []
     i = 0
-    for row in hxl.io.make_input(profile.args.get('url'), sheet_index=0):
+    for row in hxl.io.make_input(profile['args'].get('url'), sheet_index=0):
         if i >= 25:
             break
         else:
@@ -139,7 +139,7 @@ def show_data_edit(key=None):
         return redirect(make_data_url(None, key=key, facet='login'), 303)
 
 
-    if profile.args.get('url'):
+    if profile['args'].get('url'):
         # show only a short preview
         try:
             source = PreviewFilter(setup_filters(profile), max_rows=5)
@@ -154,12 +154,12 @@ def show_data_edit(key=None):
     # Figure out how many filter forms to show
     filter_count = 0
     for n in range(1, MAX_FILTER_COUNT):
-        if profile.args.get('filter%02d' % n):
+        if profile['args'].get('filter%02d' % n):
             filter_count = n
     if filter_count < MAX_FILTER_COUNT:
         filter_count += 1
 
-    show_headers = (profile.args.get('strip-headers') != 'on')
+    show_headers = (profile['args'].get('strip-headers') != 'on')
 
     return render_template('data-recipe.html', key=key, profile=profile, source=source, show_headers=show_headers, filter_count=filter_count)
 
@@ -173,7 +173,7 @@ def show_data_profile(key=None):
     except Forbidden as e:
         return redirect(make_data_url(None, key=key, facet='login'), 303)
 
-    if not profile or not profile.args.get('url'):
+    if not profile or not profile['args'].get('url'):
         return redirect('/data/source', 303)
 
     return render_template('data-about.html', key=key, profile=profile)
@@ -183,7 +183,7 @@ def show_data_profile(key=None):
 def show_data_chart(key=None):
     """Show a chart visualisation for the data."""
     profile = get_profile(key)
-    if not profile or not profile.args.get('url'):
+    if not profile or not profile['args'].get('url'):
         return redirect('/data/source', 303)
 
     source = setup_filters(profile)
@@ -221,7 +221,7 @@ def show_data_chart(key=None):
 def show_data_map(key=None):
     """Show a map visualisation for the data."""
     profile = get_profile(key)
-    if not profile or not profile.args.get('url'):
+    if not profile or not profile['args'].get('url'):
         return redirect('/data/source', 303)
     layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
     return render_template('visualise-map.html', key=key, profile=profile, layer_tag=layer_tag)
@@ -233,15 +233,15 @@ def show_validate(key=None):
 
     # Get the profile
     profile = get_profile(key)
-    if not profile or not profile.args.get('url'):
+    if not profile or not profile['args'].get('url'):
         return redirect('/data/source', 303)
 
     # Get the parameters
-    url = profile.args.get('url')
+    url = profile['args'].get('url')
     if request.args.get('schema_url'):
         schema_url = request.args.get('schema_url', None)
     else:
-        schema_url = profile.args.get('schema_url', None)
+        schema_url = profile['args'].get('schema_url', None)
 
     severity_level = request.args.get('severity', 'info')
 
@@ -263,25 +263,25 @@ def show_data(key=None, format="html", stub=None):
 
     def get_result (key, format):
         profile = get_profile(key, auth=False)
-        if not profile or not profile.args.get('url'):
+        if not profile or not profile['args'].get('url'):
             return redirect('/data/source', 303)
 
         source = setup_filters(profile)
-        show_headers = (profile.args.get('strip-headers') != 'on')
+        show_headers = (profile['args'].get('strip-headers') != 'on')
 
         if format == 'html':
             return render_template('data-view.html', source=source, profile=profile, key=key, show_headers=show_headers)
         elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if hasattr(profile, 'stub') and profile.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(profile.stub)
+            if profile.get('stub'):
+                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(profile['stub'])
             return response
         else:
             response = Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if hasattr(profile, 'stub') and profile.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(profile.stub)
+            if profile.get('stub'):
+                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(profile['stub'])
             return response
 
     result = get_result(key, format)
@@ -310,19 +310,19 @@ def do_data_save():
 
     # Update profile metadata
     if 'name' in request.form:
-        profile.name = request.form['name']
+        profile['name'] = request.form['name']
     if 'description' in request.form:
-        profile.description = request.form['description']
+        profile['description'] = request.form['description']
     if 'cloneable' in request.form:
-        profile.cloneable = (request.form['cloneable'] == 'on')
+        profile['cloneable'] = (request.form['cloneable'] == 'on')
     if 'stub' in request.form:
-        profile.stub = request.form['stub']
+        profile['stub'] = request.form['stub']
 
     # merge args
-    profile.args = {}
+    profile['args'] = {}
     for name in request.form:
         if request.form.get(name) and name not in BLACKLIST:
-            profile.args[name] = request.form.get(name)
+            profile['args'][name] = request.form.get(name)
 
     # check for a password change
     password = request.form.get('password')
@@ -332,19 +332,21 @@ def do_data_save():
         # Updating an existing profile.
         if password:
             if password == password_repeat:
-                profile.set_password(password)
+                profile['passhash'] = make_md5(password)
             else:
                 raise BadRequest("Passwords don't match")
-        g.profiles.update_profile(str(key), profile)
+        dao.recipes.update(profile)
     else:
         # Creating a new profile.
         if password == password_repeat:
-            profile.set_password(password)
+            profile['passhash'] = make_md5(password)
         else:
             raise BadRequest("Passwords don't match")
-        key = g.profiles.add_profile(profile)
+        key = dao._gen_key()
+        profile['recipe_id'] = key
+        dao.recipes.create(profile)
         # FIXME other auth information is in __init__.py
-        session['passhash'] = profile.passhash
+        session['passhash'] = profile['passhash']
 
     # TODO be more specific about what we clear
     cache.clear()
