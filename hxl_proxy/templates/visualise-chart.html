@@ -38,13 +38,13 @@
         {% if count_tag %}
         {{ count_tag }}
         {% else %}
-        {{ label_tag }}
+        {{ label_tag or '' }}
         {% endif %}
         {% if filter_value %}
         for &ldquo;{{ filter_value }}&rdquo;
         {% endif %}
         {% if profile.name %}
-        in <cite>{{ profile.name }}</cite>
+        <cite>{{ profile.name }}</cite>
         {% endif %}
       </h1>
     </header>

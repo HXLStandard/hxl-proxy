@@ -70,7 +70,7 @@ for recipe_id in shelf:
                 (recipe_id, passhash, name, description, cloneable, stub, json.dumps(clean_args(args)),)
             )
         else:
-            print("Skipping {}".format(recipe_id))
+            print("Skipping {} {}".format(recipe_id, profile.args.get('url')))
     
 connection.commit()
 connection.close()
