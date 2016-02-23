@@ -14,67 +14,68 @@ SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema.sql')
 """The filename of the SQL schema."""
 
 
-def get_db(db_file=None):
-    """Get the database."""
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DB_FILE)
-        db.row_factory = sqlite3.Row
-    return db
+class db(object):
 
-@app.teardown_appcontext
-def close_db(exception):
-    """Close the connection at the end of the request."""
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+    @staticmethod
+    def get(db_file=None):
+        """Get the database."""
+        database = getattr(g, '_database', None)
+        if database is None:
+            database = g._database = sqlite3.connect(DB_FILE)
+            database.row_factory = sqlite3.Row
+        return database
 
-def execute_statement(statement, params=(), commit=False):
-    """Execute a single statement."""
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute(statement, params)
-    if commit:
-        db.commit()
-    return cursor
+    @app.teardown_appcontext
+    def close(exception):
+        """Close the connection at the end of the request."""
+        database = getattr(g, '_database', None)
+        if database is not None:
+            database.close()
 
-def fetchone(statement, params=()):
-    """Fetch a single row."""
-    row = execute_statement(statement, params, commit=False).fetchone()
-    if row:
-        return dict(row)
-    else:
-        return None
+    @staticmethod
+    def execute_statement(statement, params=(), commit=False):
+        """Execute a single statement."""
+        database = db.get()
+        cursor = database.cursor()
+        cursor.execute(statement, params)
+        if commit:
+            database.commit()
+        return cursor
 
-def fetchall(statement, params=()):
-    """Fetch multiple rows."""
-    return [dict(row) for row in execute_statement(statement, params, commit=False).fetchall()]
+    @staticmethod
+    def execute_script(sql_statements, commit=True):
+        """Execute a script of statements, and commit if requested."""
+        database = db.get()
+        cursor = database.cursor()
+        cursor.executescript(sql_statements)
+        if commit:
+            database.commit()
+        return cursor
 
-def execute_script(sql_statements, commit=True):
-    """Execute a script of statements, and commit if requested."""
-    db = get_db()
-    cursor = db.cursor()
-    cursor.executescript(sql_statements)
-    if commit:
-        db.commit()
-    return cursor
+    @staticmethod
+    def execute_file(filename, commit=True):
+        """Open a SQL file and execute it as a script."""
+        with open(filename, 'r') as input:
+            return db.execute_script(input.read(), commit)
 
-def execute_file(filename, commit=True):
-    """Open a SQL file and execute it as a script."""
-    with open(filename, 'r') as input:
-        return execute_script(input.read(), commit)
+    @staticmethod
+    def fetchone(statement, params=()):
+        """Fetch a single row."""
+        row = db.execute_statement(statement, params, commit=False).fetchone()
+        if row:
+            return dict(row)
+        else:
+            return None
 
-def _gen_key():
-    """
-    Generate a pseudo-random, 6-character hash for use as a key.
-    """
-    salt = str(time.time() * random.random())
-    encoded_hash = base64.urlsafe_b64encode(util.make_md5(salt))
-    return encoded_hash[:6].decode('ascii')
+    @staticmethod
+    def fetchall(statement, params=()):
+        """Fetch multiple rows."""
+        return [dict(row) for row in db.execute_statement(statement, params, commit=False).fetchall()]
 
-def create_db():
-    """Create a new database, erasing the current one."""
-    execute_file(SCHEMA_FILE)
+    @staticmethod
+    def create_db():
+        """Create a new database, erasing the current one."""
+        db.execute_file(SCHEMA_FILE)
 
 
 class users(object):
@@ -83,7 +84,7 @@ class users(object):
     @staticmethod
     def create(user):
         """Add a new user."""
-        return execute_statement(
+        return db.execute_statement(
             "insert into Users"
             " (user_id, email, name, name_given, name_family, last_login)"
             " values (?, ?, ?, ?, ?, datetime('now'))",
@@ -94,7 +95,7 @@ class users(object):
     @staticmethod
     def read(user_id):
         """Look up a user by id."""
-        return fetchone(
+        return db.fetchone(
             'select * from Users where user_id=?',
             (user_id,)
         )
@@ -102,7 +103,7 @@ class users(object):
     @staticmethod
     def update(user):
         """Update an existing user."""
-        return execute_statement(
+        return db.execute_statement(
             "update Users"
             " set email=?, name=?, name_given=?, name_family=?, last_login=datetime('now')"
             " where user_id=?",
@@ -113,7 +114,7 @@ class users(object):
     @staticmethod
     def delete(user_id):
         """Delete an existing user."""
-        return execute_statement(
+        return db.execute_statement(
             "delete from Users where user_id=?",
             (user_id,),
             commit=True
@@ -126,7 +127,7 @@ class recipes(object):
     @staticmethod
     def create(recipe):
         """Add a new recipe."""
-        return execute_statement(
+        return db.execute_statement(
             "insert into Recipes"
             " (recipe_id, passhash, name, description, cloneable, stub, args, date_created, date_modified)"
             " values (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
@@ -138,7 +139,7 @@ class recipes(object):
     @staticmethod
     def read(recipe_id):
         """Look up a recipe by id."""
-        recipe = fetchone(
+        recipe = db.fetchone(
             'select * from Recipes where recipe_id=?',
             (recipe_id,)
         )
@@ -149,7 +150,7 @@ class recipes(object):
     @staticmethod
     def update(recipe):
         """Update an existing recipe."""
-        return execute_statement(
+        return db.execute_statement(
             "update Recipes"
             " set passhash=?, name=?, description=?, cloneable=?, stub=?, args=?, "
             " date_modified=datetime('now')"
@@ -162,7 +163,7 @@ class recipes(object):
     @staticmethod
     def delete(recipe_id):
         """Delete an existing recipe."""
-        return execute_statement(
+        return db.execute_statement(
             "delete from Recipes where recipe_id=?",
             (recipe_id,),
             commit=True

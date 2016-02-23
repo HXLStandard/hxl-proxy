@@ -23,7 +23,7 @@ from flask import Response, flash, request, render_template, redirect, make_resp
 import hxl
 
 from hxl_proxy import app, cache, dao
-from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5
+from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5, make_key
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
 from hxl_proxy.hdx import get_hdx_datasets
@@ -342,7 +342,7 @@ def do_data_save():
             profile['passhash'] = make_md5(password)
         else:
             raise BadRequest("Passwords don't match")
-        key = dao._gen_key()
+        key = make_key()
         profile['recipe_id'] = key
         dao.recipes.create(profile)
         # FIXME other auth information is in __init__.py

@@ -4,7 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six, hashlib
+import six, hashlib, time, random, base64
 import re
 import urllib
 import datetime
@@ -104,6 +104,21 @@ def get_profile(key=None, auth=False, args=None):
 def make_md5(s):
     """Return an MD5 hash for a string."""
     return hashlib.md5(s.encode('utf-8')).digest()
+
+def gen_key():
+    """
+    Generate a pseudo-random, 6-character hash for use as a key.
+    """
+    salt = str(time.time() * random.random())
+    encoded_hash = base64.urlsafe_b64encode(make_md5(salt))
+    return encoded_hash[:6].decode('ascii')
+
+def make_key():
+    """Make a unique key for a saved recipe."""
+    key = gen_key()
+    while hxl_proxy.dao.recipes.read(key):
+        key = gen_key()
+    return key
 
 def check_auth(profile):
     """Check authorisation."""
