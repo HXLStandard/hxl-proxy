@@ -120,10 +120,9 @@ def make_key():
         key = gen_key()
     return key
 
-def check_auth(profile):
+def check_auth(profile, password=None):
     """Check authorisation."""
     passhash = profile.get('passhash')
-    password = request.form.get('password')
     if passhash:
         if password:
             session_passhash = make_md5(password)

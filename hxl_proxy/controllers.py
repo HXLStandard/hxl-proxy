@@ -291,6 +291,15 @@ def show_data(key=None, format="html", stub=None):
         cache.set(show_data.make_cache_key(), result)
     return result
 
+@app.route("/actions/login", methods=['POST'])
+def do_data_login():
+    destination = request.form.get('from')
+    if not destination:
+        destination = '/data'
+    password = request.form.get('password')
+    session['passhash'] = make_md5(password)
+    return redirect(destination, 303)
+
 @app.route("/actions/save-profile", methods=['POST'])
 def do_data_save():
     """
@@ -333,6 +342,7 @@ def do_data_save():
         if password:
             if password == password_repeat:
                 profile['passhash'] = make_md5(password)
+                session['passhash'] = profile['passhash']
             else:
                 raise BadRequest("Passwords don't match")
         dao.recipes.update(profile)
@@ -340,6 +350,7 @@ def do_data_save():
         # Creating a new profile.
         if password == password_repeat:
             profile['passhash'] = make_md5(password)
+            session['passhash'] = profile['passhash']
         else:
             raise BadRequest("Passwords don't match")
         key = make_key()
