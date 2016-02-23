@@ -83,7 +83,7 @@ def create_db():
     execute_file(SCHEMA_FILE)
 
 
-class user(object):
+class users(object):
     """Manage user records in the database."""
 
     @staticmethod
@@ -126,7 +126,7 @@ class user(object):
         )
 
 
-class recipe(object):
+class recipes(object):
     """Manage user records in the database."""
 
     @staticmethod
@@ -134,10 +134,10 @@ class recipe(object):
         """Add a new recipe."""
         return execute_statement(
             "insert into Recipes"
-            " (recipe_id, user_id, name, description, cloneable, stub, args, date_created, date_modified)"
+            " (recipe_id, passhash, name, description, cloneable, stub, args, date_created, date_modified)"
             " values (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
-            (recipe.get('recipe_id'), recipe.get('user_id'), recipe.get('name'), recipe.get('description'), recipe.get('cloneable'),
-             recipe.get('stub'), json.dumps(recipe.get('args', {})),),
+            (recipe.get('recipe_id'), recipe.get('passhash'), recipe.get('name'), recipe.get('description'),
+             recipe.get('cloneable'), recipe.get('stub'), json.dumps(recipe.get('args', {})),),
             commit=True
         )
 
@@ -157,10 +157,10 @@ class recipe(object):
         """Update an existing recipe."""
         return execute_statement(
             "update Recipes"
-            " set name=?, description=?, cloneable=?, stub=?, args=?, "
+            " set passhash=?, name=?, description=?, cloneable=?, stub=?, args=?, "
             " date_modified=datetime('now')"
             " where recipe_id=?",
-            (recipe.get('name'), recipe.get('description'), recipe.get('cloneable'),
+            (recipe.get('passhash'), recipe.get('name'), recipe.get('description'), recipe.get('cloneable'),
              recipe.get('stub'), json.dumps(recipe.get('args', {})), recipe.get('recipe_id'), ),
             commit=True
         )

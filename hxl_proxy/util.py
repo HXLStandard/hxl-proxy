@@ -84,7 +84,7 @@ def get_profile(key=None, auth=False, args=None):
         args = request.args
 
     if key:
-        profile = g.profiles.get_profile(str(key))
+        profile = dao.recipes.read(str(key))
         if not profile:
             raise NotFound("No saved profile for " + key)
         if auth and not check_auth(profile):

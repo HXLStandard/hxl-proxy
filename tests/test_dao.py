@@ -37,8 +37,8 @@ class TestUser(AbstractDBTest):
     }
 
     def test_create(self):
-        dao.user.create(self.NEW_USER)
-        result = dao.user.read(self.NEW_USER['user_id'])
+        dao.users.create(self.NEW_USER)
+        result = dao.users.read(self.NEW_USER['user_id'])
         self.assertEquiv(self.NEW_USER, result)
         assert result.get('last_login') is not None
 
@@ -50,26 +50,26 @@ class TestUser(AbstractDBTest):
             'name_given': 'User',
             'name_family': 'One'
         }
-        self.assertEquiv(user, dao.user.read('user1'))
+        self.assertEquiv(user, dao.users.read('user1'))
 
     def test_update(self):
         user = dict(self.NEW_USER)
         user['user_id'] = 'user1'
-        dao.user.update(user)
-        self.assertEquiv(user, dao.user.read(user['user_id']))
+        dao.users.update(user)
+        self.assertEquiv(user, dao.users.read(user['user_id']))
 
     def test_delete(self):
-        dao.user.create(self.NEW_USER)
-        assert dao.user.read(self.NEW_USER['user_id']) is not None
-        dao.user.delete(self.NEW_USER['user_id'])
-        assert dao.user.read(self.NEW_USER['user_id']) is None
+        dao.users.create(self.NEW_USER)
+        assert dao.users.read(self.NEW_USER['user_id']) is not None
+        dao.users.delete(self.NEW_USER['user_id'])
+        assert dao.users.read(self.NEW_USER['user_id']) is None
 
 
 class TestRecipe(AbstractDBTest):
 
     NEW_RECIPE = {
         'recipe_id': 'XXXXX',
-        'user_id': 'user1',
+        'passhash': '5f4dcc3b5aa765d61d8327deb882cf99',
         'name': 'Recipe X',
         'description': 'New test recipe',
         'cloneable': 1,
@@ -78,8 +78,8 @@ class TestRecipe(AbstractDBTest):
     }
 
     def test_create(self):
-        dao.recipe.create(self.NEW_RECIPE)
-        result = dao.recipe.read(self.NEW_RECIPE['recipe_id'])
+        dao.recipes.create(self.NEW_RECIPE)
+        result = dao.recipes.read(self.NEW_RECIPE['recipe_id'])
         self.assertEquiv(self.NEW_RECIPE, result)
         assert result['date_created']
         self.assertEqual(result['date_created'], result['date_modified'])
@@ -87,24 +87,24 @@ class TestRecipe(AbstractDBTest):
     def test_read(self):
         recipe = {
             'recipe_id': 'AAAAA',
-            'user_id': 'user1',
+            'passhash': '5f4dcc3b5aa765d61d8327deb882cf99',
             'name': 'Recipe #1',
             'description': 'First test recipe',
             'cloneable': 1,
             'stub': 'recipe1',
             'args': {}
         }
-        self.assertEquiv(recipe, dao.recipe.read(recipe['recipe_id']))
+        self.assertEquiv(recipe, dao.recipes.read(recipe['recipe_id']))
 
     def test_update(self):
         recipe = dict(self.NEW_RECIPE)
         recipe['recipe_id'] = 'AAAAA'
-        dao.recipe.update(recipe)
-        result = dao.recipe.read('AAAAA')
+        dao.recipes.update(recipe)
+        result = dao.recipes.read('AAAAA')
         self.assertEquiv(recipe, result)
         self.assertNotEqual(result['date_created'], result['date_modified'])
 
     def test_delete(self):
-        assert dao.recipe.read('AAAAA') is not None
-        dao.recipe.delete('AAAAA')
-        assert dao.recipe.read('AAAAA') is None
+        assert dao.recipes.read('AAAAA') is not None
+        dao.recipes.delete('AAAAA')
+        assert dao.recipes.read('AAAAA') is None

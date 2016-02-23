@@ -22,7 +22,7 @@ from flask import Response, flash, request, render_template, redirect, make_resp
 
 import hxl
 
-from hxl_proxy import app, cache
+from hxl_proxy import app, cache, dao
 from hxl_proxy.util import get_profile, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
