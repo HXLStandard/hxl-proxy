@@ -67,7 +67,7 @@
               </span>
             </div>
           </div>
-          {% if recipe_id %}
+          {% if recipe.recipe_id %}
           <input type="hidden" name="type" value="{{ type }}"/>
           <input type="hidden" name="filter_tag" value="{{ filter_tag }}"/>
           <input type="hidden" name="count_tag" value="{{ count_tag }}"/>
@@ -147,7 +147,7 @@
                   </select>
                 </div>
               </fieldset>
-              {% if recipe_id %}
+              {% if recipe.recipe_id %}
               <input type="hidden" name="type" value="{{ type }}"/>
               {% else %}
               {% with excludes=['label_tag', 'value_tag', 'count_tag', 'filter_tag', 'filter_value'] %}

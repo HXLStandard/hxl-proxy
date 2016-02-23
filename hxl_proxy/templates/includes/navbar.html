@@ -38,7 +38,7 @@
             Visualise
           </a>
         </li>
-        {% if recipe_id and recipe.cloneable %}
+        {% if recipe.recipe_id and recipe.cloneable %}
         <li>
           <a href="{{ data_url(recipe, None, 'edit') }}">
             <span class="glyphicon glyphicon-copy"></span>

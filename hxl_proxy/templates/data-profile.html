@@ -10,7 +10,7 @@
     <header>
       {% include "includes/data-tabs.html" %}
       <h1>
-        {% if recipe_id %}
+        {% if recipe.recipe_id %}
         Metadata for {{ recipe.name }}
         {% else %}
         Save recipe
@@ -41,25 +41,25 @@
           <input name="schema_url" id="schema_url" class="form-control" value="{{ recipe.args.schema_url|nonone }}" />
           {% with id='#schema_url' %}{% include "includes/selectors.html" %}{% endwith %}
         </div>
-        <div class="form-group col-md-6{% if not recipe_id %} required{% endif %}">
+        <div class="form-group col-md-6{% if not recipe.recipe_id %} required{% endif %}">
           <label for="password">Editing password</label>
-          <input name="password" type="password"{% if not recipe_id %} required="required"{% endif %} class="form-control" />
+          <input name="password" type="password"{% if not recipe.recipe_id %} required="required"{% endif %} class="form-control" />
         </div>
-        <div class="form-group col-md-6{% if not recipe_id %} required{% endif %}">
+        <div class="form-group col-md-6{% if not recipe.recipe_id %} required{% endif %}">
           <label for="password-repeat">Editing password (repeat)</label>
-          <input name="password-repeat" type="password"{% if not recipe_id %} required="required"{% endif %} class="form-control" />
+          <input name="password-repeat" type="password"{% if not recipe.recipe_id %} required="required"{% endif %} class="form-control" />
         </div>
         <div class="checkbox form-group col-md-6">
           <label>
-            <input name="cloneable" type="checkbox"{% if recipe.cloneable or (not recipe_id) %} checked="checked"{% endif %} />
+            <input name="cloneable" type="checkbox"{% if recipe.cloneable or (not recipe.recipe_id) %} checked="checked"{% endif %} />
             Users may clone (will expose original URL)
           </label>
         </div>
         <div class="form-group col-md-6">
           <button type="submit" class="btn btn-success">Save this filter</button>
         </div>
-        {% if recipe_id %}
-        <input type="hidden" name="recipe_id" value="{{ recipe_id }}" />
+        {% if recipe.recipe_id %}
+        <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}" />
         {% endif %}
         {% include "includes/params.html" %}
       </form>

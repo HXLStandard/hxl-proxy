@@ -19,7 +19,7 @@
   </li>
   <li class="{% if facet=='recipe' %}active{% endif %}">
     <a href="{{ data_url(recipe, 'recipe') }}">
-      {% if recipe_id %}
+      {% if recipe.recipe_id %}
       About
       {% else %}
       Save

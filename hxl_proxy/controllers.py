@@ -77,7 +77,7 @@ def redirect_home():
 @app.route("/data/<recipe_id>/login")
 def show_data_login(recipe_id):
     recipe = get_recipe(recipe_id)
-    return render_template('data-login.html', recipe_id=recipe_id, recipe=recipe)
+    return render_template('data-login.html', recipe=recipe)
 
 @app.route("/data/source")
 @app.route("/data/<recipe_id>/source")
@@ -89,7 +89,7 @@ def show_data_source(recipe_id=None):
     except Forbidden as e:
         return redirect(make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
-    return render_template('data-source.html', recipe_id=recipe_id, recipe=recipe)
+    return render_template('data-source.html', recipe=recipe)
 
 
 @app.route("/data/tagger")
@@ -125,7 +125,7 @@ def show_data_tag(recipe_id=None):
         if row:
             preview.append(row)
         
-    return render_template('data-tagger.html', recipe_id=recipe_id, recipe=recipe, preview=preview, header_row=header_row)
+    return render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row)
 
 
 @app.route("/data/edit")
@@ -161,7 +161,7 @@ def show_data_edit(recipe_id=None):
 
     show_headers = (recipe['args'].get('strip-headers') != 'on')
 
-    return render_template('data-recipe.html', recipe_id=recipe_id, recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
+    return render_template('data-recipe.html', recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
 
 @app.route("/data/recipe")
 @app.route("/data/<recipe_id>/recipe")
@@ -176,7 +176,7 @@ def show_data_recipe(recipe_id=None):
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
 
-    return render_template('data-about.html', recipe_id=recipe_id, recipe=recipe)
+    return render_template('data-about.html', recipe=recipe)
 
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
@@ -224,7 +224,7 @@ def show_data_map(recipe_id=None):
     if not recipe or not recipe['args'].get('url'):
         return redirect('/data/source', 303)
     layer_tag = hxl.TagPattern.parse(request.args.get('layer', 'adm1'))
-    return render_template('visualise-map.html', recipe_id=recipe_id, recipe=recipe, layer_tag=layer_tag)
+    return render_template('visualise-map.html', recipe=recipe, layer_tag=layer_tag)
 
 @app.route("/data/validate")
 @app.route("/data/<recipe_id>/validate")
@@ -251,7 +251,7 @@ def show_validate(recipe_id=None):
     if url:
         errors = do_validate(setup_filters(recipe), schema_url, severity_level)
 
-    return render_template('validate-summary.html', recipe_id=recipe_id, recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
+    return render_template('validate-summary.html', recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level)
 
 @app.route("/data/<recipe_id>.<format>")
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
@@ -270,7 +270,7 @@ def show_data(recipe_id=None, format="html", stub=None):
         show_headers = (recipe['args'].get('strip-headers') != 'on')
 
         if format == 'html':
-            return render_template('data-view.html', source=source, recipe=recipe, recipe_id=recipe_id, show_headers=show_headers)
+            return render_template('data-view.html', source=source, recipe=recipe, show_headers=show_headers)
         elif format == 'json':
             response = Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'

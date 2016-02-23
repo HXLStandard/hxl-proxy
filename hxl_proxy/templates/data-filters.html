@@ -22,7 +22,7 @@
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
         <h3>Filters</h3>
-        {% if recipe_id %}
+        {% if recipe.recipe_id %}
         {% set method="POST" %}
         {% set action="/actions/save-recipe" %}
         {% else %}
@@ -94,8 +94,8 @@
               </div>
             </div>
           </fieldset>
-          {% if recipe_id %}
-          <input type="hidden" name="recipe_id" value="{{ recipe_id }}"/>
+          {% if recipe.recipe_id %}
+          <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
           {% endif %}
           {% include "includes/params.html" %}
         </form>
