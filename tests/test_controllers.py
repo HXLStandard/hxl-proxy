@@ -31,7 +31,7 @@ class TestLogout(BaseControllerTest):
     path = '/logout'
 
     def test_redirect(self):
-        response = self.get(self.path, status=302)
+        response = self.get(self.path, status=303)
         self.assertEqual('http://localhost/', response.location)
 
     def test_session(self):
@@ -43,7 +43,7 @@ class TestLogout(BaseControllerTest):
                 session['user'] = 'abc'
             response = self.get('/data/source')
             assert 'user' in flask.session
-            response = self.get(self.path, status=302)
+            response = self.get(self.path, status=303)
             assert 'user' not in flask.session
 
 
@@ -80,7 +80,7 @@ class TestTaggerPage(BaseControllerTest):
 
     def test_redirect(self):
         """With no URL, the app should redirect to /data/source automatically."""
-        response = self.get(self.path, status=302)
+        response = self.get(self.path, status=303)
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -89,7 +89,7 @@ class TestTaggerPage(BaseControllerTest):
         response = self.get(self.path, {
             'url': 'http://example.org/untagged-dataset.csv'
         })
-        assert b'<h1>Add HXL tags</h1>' in response.data
+        assert b'Tag a non-HXL dataset' in response.data
         assert b'<b>last header row</b>' in response.data
         assert b'<td>Organisation</td>' in response.data
         assert b'<td>Myanmar</td>' in response.data
@@ -101,7 +101,7 @@ class TestTaggerPage(BaseControllerTest):
             'url': 'http://example.org/untagged-dataset.csv',
             'header-row': '1'
         })
-        assert b'<h1>Add HXL tags</h1>' in response.data
+        assert b'Tag a non-HXL dataset' in response.data
         assert b'<th>HXL hashtag</th>' in response.data
         assert b'value="organisation"' in response.data
         assert b'value="sector"' in response.data
