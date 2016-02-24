@@ -220,7 +220,7 @@ def show_data_chart(recipe_id=None):
     count_col = None
     if count_tag:
         count_tag = hxl.TagPattern.parse(count_tag)
-        count_col = find_column(count_tag)
+        count_col = find_column(source, count_tag)
         
     type = args.get('type', 'bar')
     

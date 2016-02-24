@@ -264,8 +264,23 @@ hxl_proxy.setupChart = function(params) {
         $.get(params.data_url, function(csvString) {
             var rawData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
             var hxlData = hxl.wrap(rawData);
-            if (params.filter_pattern && params.filter_value) {
-                hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
+
+            if (params.filter_pattern) {
+                // If we have a filter pattern, apply it first
+                if (params.filter_value) {
+                    // If there's a value, use it to filter
+                    hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
+                } else if (!params.count_pattern) {
+                    // If there's no value and we're not counting rows, sum up the results
+                    hxlData = hxlData.count(params.label_pattern, get_value_pattern(hxlData));
+                    for (var i in hxlData.columns) {
+                        column = hxlData.columns[i]
+                        if (column.attributes.indexOf('sum') != -1) {
+                            params.value_pattern = column.displayTag;
+                            break;
+                        }
+                    }
+                }
             }
             if (params.count_pattern) {
                 hxlData = hxlData.count(params.count_pattern);
@@ -289,7 +304,6 @@ hxl_proxy.setupChart = function(params) {
                     chartData.push([label, 0 + value]);
                 }
             }
-            console.log(chartData);
 
             var data = google.visualization.arrayToDataTable(chartData);
 
