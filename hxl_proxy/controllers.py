@@ -180,6 +180,13 @@ def show_data_recipe(recipe_id=None):
 @app.route('/data/chart')
 def show_data_chart(recipe_id=None):
     """Show a chart visualisation for the data."""
+
+    def find_column(source, pattern):
+        for column in source.columns:
+            if pattern.match(column):
+                return column
+        return None
+    
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect('/data/source', 303)
@@ -189,31 +196,42 @@ def show_data_chart(recipe_id=None):
     args = flask.request.args
 
     value_tag = args.get('value_tag')
+    value_col = None
     if value_tag:
         value_tag = hxl.TagPattern.parse(value_tag)
+        value_col = find_column(source, value_tag)
 
     label_tag = args.get('label_tag')
+    label_col = None
     if label_tag:
         label_tag = hxl.TagPattern.parse(label_tag)
+        label_col = find_column(source, label_tag)
 
     filter_tag = args.get('filter_tag')
+    filter_col = None
     filter_value = args.get('filter_value')
     filter_values = set()
     if filter_tag:
         filter_tag = hxl.TagPattern.parse(filter_tag)
+        filter_col = find_column(source, filter_tag)
         filter_values = source.get_value_set(filter_tag)
 
     count_tag = args.get('count_tag')
+    count_col = None
     if count_tag:
         count_tag = hxl.TagPattern.parse(count_tag)
+        count_col = find_column(count_tag)
         
     type = args.get('type', 'bar')
     
     return flask.render_template(
         'visualise-chart.html',
         recipe_id=recipe_id, recipe=recipe, type=type, source=source,
-        value_tag=value_tag, label_tag=label_tag, count_tag=count_tag,
-        filter_tag=filter_tag, filter_values=sorted(filter_values), filter_value=filter_value
+        value_tag=value_tag, value_col=value_col,
+        label_tag=label_tag, label_col=label_col,
+        count_tag=count_tag, count_col=count_col,
+        filter_tag=filter_tag, filter_col=filter_col,
+        filter_values=sorted(filter_values), filter_value=filter_value
     )
 
 @app.route('/data/<recipe_id>/map')

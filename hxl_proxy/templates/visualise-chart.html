@@ -3,16 +3,9 @@
   <head>
     <title>
       Chart:
-      {% if count_tag %}
-      {{ count_tag }}
-      {% else %}
-      {{ value_tag }}
-      {% endif %}
-      {% if filter_value %}
-      for "{{ filter_value }}"
-      {% endif %}
-      {% if recipe.name %}
-      in {{ recipe.name }}
+      {{ recipe.name or 'Dataset' }}
+      {% if label_col %}
+      ({{ label_col.header or label_col.display_tag }})
       {% endif %}
       @ HXL Proxy
     </title>
@@ -27,35 +20,27 @@
         <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>
         <li role="presentation"{% if type=='column' %} class="active"{% endif %}><a href="{{ add_args({'type': 'column'}) }}">Column</a></li>
       </ul>
-      <p class="text-right">
+      <p class="pull-right">
         <a type="button" class="btn btn-info btn-xs"
            data-toggle="modal"
            data-target="#customise-modal">Customise</a>
       </p>
-
       <h1>
         Chart:
-        {% if count_tag %}
-        {{ count_tag }}
-        {% else %}
-        {{ label_tag or '' }}
-        {% endif %}
-        {% if filter_value %}
-        for &ldquo;{{ filter_value }}&rdquo;
-        {% endif %}
-        {% if recipe.name %}
-        <cite>{{ recipe.name }}</cite>
+        {{ recipe.name or 'Dataset' }}
+        {% if label_col %}
+        <span class="text-muted">({{ label_col.header or label_col.display_tag }})</span>
         {% endif %}
       </h1>
     </header>
     <main>
 
-      {% if filter_tag %}
+      {% if filter_col %}
       <p>
         <form method="GET" action="" class="form-inline">
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon">{{ filter_tag }}</span>
+              <span class="input-group-addon">{{ filter_col.header or filter_col.display_tag }}</span>
               <select class="form-control" name="filter_value" id="filter_value" onchange="this.form.submit()">
                 <option value="">-- show all --</option>
                 {% for value in filter_values %}
