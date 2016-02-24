@@ -27,20 +27,20 @@
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
-          <a href="{{ data_url(recipe, 'validate') }}">
+          <a href="{{ data_url(recipe, facet='validate') }}">
             <span class="glyphicon glyphicon-ok"></span>
             Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ data_url(recipe, 'chart') }}">
+          <a href="{{ data_url(recipe, facet='chart') }}">
             <span class="glyphicon glyphicon-signal"></span>
             Visualise
           </a>
         </li>
         {% if recipe.recipe_id and recipe.cloneable %}
         <li>
-          <a href="{{ data_url(recipe, None, 'edit') }}">
+          <a href="{{ data_url(recipe, facet='clone') }}">
             <span class="glyphicon glyphicon-copy"></span>
             Clone
           </a>

@@ -155,7 +155,7 @@ def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
     url = None
     if not recipe_id:
         recipe_id = recipe.get('recipe_id')
-    if recipe_id:
+    if recipe_id and facet != 'clone':
         url = '/data/' + urlquote(recipe_id)
         if facet:
             url += '/' + urlquote(facet)
@@ -168,7 +168,7 @@ def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
         url = '/data'
         if format:
             url += '.' + urlquote(format)
-        elif facet:
+        elif facet and facet != 'clone':
             url += '/' + urlquote(facet)
         if recipe.get('args'):
             url += '?' + urlencode_utf8(recipe['args'])
