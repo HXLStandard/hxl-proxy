@@ -28,7 +28,7 @@ cache = Cache(app,config={
     'CACHE_DEFAULT_TIMEOUT': 3600
 })
 
-# Needed to register annotations in the controllers
+# Needed to register annotations
 import hxl_proxy.controllers
 
 # end

@@ -26,7 +26,6 @@ from hxl_proxy import app, cache, dao
 from hxl_proxy.util import get_recipe, check_auth, make_data_url, make_cache_key, skip_cache_p, urlencode_utf8, make_md5, make_recipe_id
 from hxl_proxy.filters import setup_filters, MAX_FILTER_COUNT
 from hxl_proxy.validate import do_validate
-from hxl_proxy.hdx import get_hdx_datasets
 from hxl_proxy.preview import PreviewFilter
 from hxl_proxy.auth import get_hid_login_url, get_hid_user
 
