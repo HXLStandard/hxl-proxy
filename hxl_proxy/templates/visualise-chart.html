@@ -69,10 +69,10 @@
           </div>
           {% if recipe.recipe_id %}
           <input type="hidden" name="type" value="{{ type }}"/>
-          <input type="hidden" name="filter_tag" value="{{ filter_tag }}"/>
-          <input type="hidden" name="count_tag" value="{{ count_tag }}"/>
-          <input type="hidden" name="value_tag" value="{{ value_tag }}"/>
-          <input type="hidden" name="label_tag" value="{{ label_tag }}"/>
+          <input type="hidden" name="filter_tag" value="{{ filter_tag|nonone }}"/>
+          <input type="hidden" name="count_tag" value="{{ count_tag|nonone }}"/>
+          <input type="hidden" name="value_tag" value="{{ value_tag|nonone }}"/>
+          <input type="hidden" name="label_tag" value="{{ label_tag|nonone }}"/>
           {% else %}
           {% with excludes=['filter_value'] %}
           {% include "includes/params.html" %}
