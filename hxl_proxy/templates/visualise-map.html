@@ -10,6 +10,11 @@
     {% set facet="chart" %}
     {% include "includes/navbar.html" %}
     <header>
+      <p class="pull-right">
+        <a type="button" class="btn btn-info btn-xs"
+           data-toggle="modal"
+           data-target="#customise-modal">Customise</a>
+      </p>
       <h1>
         Map{% if recipe.name %}of {{ recipe.name}}{% endif %}        
       </h1>
@@ -18,9 +23,58 @@
       <div id="map-div" style="height: 480px"></div>
       {% include "includes/source.html" %}
     </main>
+    <div id="customise-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Customise chart</h4>
+          </div>
+          <div class="modal-body">
+            <form method="GET" action="">
+              <fieldset>
+                <div class="form-group">
+                  <label for="field.default_country">
+                    Default country (for pcodes)
+                  </label>
+                  <select id="field.default_country" name="default_country" class="form-control">
+                    <option value="">-- none --</option>
+                    <option value="GIN"{% if default_country=='GIN' %} selected="selected"{% endif %}>Guinea</option>
+                    <option value="MLI"{% if default_country=='MLI' %} selected="selected"{% endif %}>Mali</option>
+                    <option value="NPL"{% if default_country=='NPL' %} selected="selected"{% endif %}>Nepal</option>
+                    <option value="SOM"{% if default_country=='SOM' %} selected="selected"{% endif %}>Somalia</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="pcode">
+                    Choose p-code column
+                  </label>
+                  <select name="pcode_tag" class="form-control">
+                    <option value="">-- none --</option>
+                    {% for column in search_by_attributes(['code', 'p_code'], source.columns) %}
+                    <option value="{{ column.display_tag }}"{% if pcode_tag and pcode_tag.match(column) %} selected="selected"{% endif %}>{{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </fieldset>
+              {% if recipe.recipe_id %}
+              <input type="hidden" name="type" value="{{ type }}"/>
+              {% else %}
+              {% with excludes=['label_tag', 'value_tag', 'count_tag', 'filter_tag', 'filter_value'] %}
+              {% include "includes/params.html" %}
+              {% endwith %}
+              {% endif %}
+              <button class="btn btn-success" type="submit">OK</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="text/javascript">
       var csv_url = "{{ data_url(recipe, format='csv') | safe }}";
-      var map_layer_tag = "{{ layer_tag }}";
+      var map_default_country = "{{ default_country|safe }}";
+      var map_pcode_tag = "{{ pcode_tag|safe }}";
+      var map_layer_tag = "{{ layer_tag|safe }}";
     </script>
     {% include "includes/scripts.html" %}
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>

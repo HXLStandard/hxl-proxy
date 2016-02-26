@@ -188,6 +188,15 @@ def re_search(regex, string):
     """Try matching a regular expression."""
     return re.search(regex, string)
 
+def search_by_attributes(attributes, columns):
+    result_columns = []
+    for column in columns:
+        for attribute in attributes:
+            if attribute in column.attributes:
+                result_columns.append(column)
+                break
+    return result_columns
+
 
 #
 # Declare Jinja2 filters and functions
@@ -227,6 +236,10 @@ app.jinja_env.globals['severity_class'] = (
 
 app.jinja_env.globals['re_search'] = (
     re_search
+)
+
+app.jinja_env.globals['search_by_attributes'] = (
+    search_by_attributes
 )
 
 app.jinja_env.globals['get_gravatar'] = (

@@ -241,8 +241,20 @@ def show_data_map(recipe_id=None):
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect('/data/source', 303)
-    layer_tag = hxl.TagPattern.parse(flask.request.args.get('layer', 'adm1'))
-    return flask.render_template('visualise-map.html', recipe=recipe, layer_tag=layer_tag)
+    source = filters.setup_filters(recipe)
+
+    args = flask.request.args
+    default_country = args.get('default_country')
+    pcode_tag = args.get('pcode_tag')
+    if pcode_tag:
+        pcode_tag = hxl.TagPattern.parse(pcode_tag)
+    layer_tag = args.get('layer')
+    if layer_tag:
+        layer_tag = hxl.TagPattern.parse(layer_tag)
+    return flask.render_template(
+        'visualise-map.html', recipe=recipe,
+        default_country=default_country, pcode_tag=pcode_tag, layer_tag=layer_tag, source=source
+    )
 
 @app.route("/data/validate")
 @app.route("/data/<recipe_id>/validate")

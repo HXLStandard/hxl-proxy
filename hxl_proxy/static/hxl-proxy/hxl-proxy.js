@@ -471,15 +471,19 @@ hxl_proxy.setupMap = function() {
     /**
      * Draw a map of shapes (e.g. a choropleth map)
      */
-    function draw_polygons(hxl) {
+    function draw_polygons(data) {
         var features = L.featureGroup([]);
+        var min_value = data.getMin('#meta+count') || data.getMin('#x_count_num');
+        var max_value = data.getMax('#meta+count') || data.getMax('#x_count_num');
 
-        var min_value = hxl.getMin('#meta+count') || hxl.getMin('#x_count_num');
-        var max_value = hxl.getMax('#meta+count') || hxl.getMax('#x_count_num');
-
-        var iterator = hxl.iterator();
+        var iterator = data.iterator();
         while (row = iterator.next()) {
-            bounds_str = row.get('#geo+bounds') || row.get('#x_bounds_js');
+            var bounds_str = null;
+            if (map_default_country && map_pcode_tag) {
+                console.log("Lookup bounds");
+            } else {
+                bounds_str = row.get('#geo+bounds') || row.get('#x_bounds_js');
+            }
             if (bounds_str) {
                 var geometry = jQuery.parseJSON(bounds_str);
                 var count = row.get('#meta+count') || row.get('#x_count_num');
@@ -505,8 +509,8 @@ hxl_proxy.setupMap = function() {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var data = hxl.wrap(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
-        if (data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
-            draw_polygons(hxl);
+        if (map_pcode_tag || data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
+            draw_polygons(data);
         } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
             draw_points(data);
         } else {
