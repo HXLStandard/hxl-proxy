@@ -467,67 +467,6 @@ hxl_proxy.setupMap = function() {
     }
 
     /**
-     * Draw a map of shapes (e.g. a choropleth map)
-     */
-    function draw_polygons(data) {
-        var features = L.featureGroup([]);
-        var feature_count = 0;
-        var min_value = data.getMin('#meta+count');
-        var max_value = data.getMax('#meta+count');
-
-        var iterator = data.iterator();
-        while (row = iterator.next()) {
-            var bounds_str = null;
-            if (map_default_country && map_pcode_tag) {
-                bounds = get_bounds(map_default_country, row.get(map_pcode_tag));
-            } else {
-                bounds_str = row.get('#geo+bounds');
-                bounds = jQuery.parseJSON(bounds_str);
-            }
-            if (bounds) {
-                feature_count++;
-                var geometry = bounds;
-                var count = row.get('#meta+count');
-                var layer = L.geoJson(geometry, {
-                    style: {
-                        color: make_color(count, min_value, max_value),
-                        opacity: 0.5,
-                        weight: 2
-                    }
-                });
-                layer.bindPopup(make_label(row));
-                features.addLayer(layer);
-            }
-        }
-        if (feature_count) {
-            map.addLayer(features);
-            map.fitBounds(features.getBounds());
-        } else {
-            map.setView(new L.latLng(0, 0), 4);
-        }
-    }
-
-    /**
-     * Download the bounds for a country synchronously.
-     */
-    function get_bounds(country_code, pcode) {
-        if (!bounds_cache[country_code]) {
-            bounds_cache[country_code] = {};
-        }
-        if (!bounds_cache[country_code][pcode]) {
-            var url = 'https://hxlstandard.github.io/p-codes/' + country_code + '/' + pcode + '/shape.json';
-            jQuery.ajax({
-                url: url,
-                success: function (result) {
-                    bounds_cache[country_code][pcode] = result;
-                },
-                async: false
-            });
-        }
-        return bounds_cache[country_code][pcode];
-    }
-
-    /**
      * Load the HXL and draw the map.
      */
     $.get(csv_url, function(csvString) {
@@ -569,8 +508,6 @@ hxl_proxy.setupMap = function() {
                 }
             }
             load_boundaries(iterator);
-        } else if (data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
-            draw_polygons(data);
         } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
             draw_points(data);
         } else {
@@ -587,7 +524,6 @@ hxl_proxy.setupMap = function() {
     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
     map.addLayer(osm);
-    map.setView([0,0], 4);
 };
 
 // end
