@@ -534,7 +534,42 @@ hxl_proxy.setupMap = function() {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var data = hxl.wrap(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
-        if (map_pcode_tag || data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
+        if (map_pcode_tag) {
+            var iterator = data.iterator();
+            var features = L.featureGroup([]);
+            var min_value = data.getMin('#meta+count');
+            var max_value = data.getMax('#meta+count');
+
+            function load_boundaries(iterator) {
+                var row = iterator.next();
+                if (!row) {
+                    map.fitBounds(features.getBounds());
+                    return;
+                }
+                var pcode = row.get(map_pcode_tag);
+                if (pcode) {
+                    var url = 'https://hxlstandard.github.io/p-codes/' + map_default_country + '/' + pcode + '/shape.json';
+                    $.get(url, function (bounds) {
+                        var geometry = bounds;
+                        var count = row.get('#meta+count');
+                        var label = make_label(row);
+                        var layer = L.geoJson(geometry, {
+                            style: {
+                                color: make_color(count, min_value, max_value),
+                                opacity: 0.5,
+                                weight: 2
+                            }
+                        });
+                        layer.bindPopup(label);
+                        features.addLayer(layer);
+                        map.addLayer(features);
+                        // tail recursion
+                        load_boundaries(iterator);
+                    });
+                }
+            }
+            load_boundaries(iterator);
+        } else if (data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
             draw_polygons(data);
         } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
             draw_points(data);
@@ -552,6 +587,7 @@ hxl_proxy.setupMap = function() {
     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
     map.addLayer(osm);
+    map.setView([0,0], 4);
 };
 
 // end
