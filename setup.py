@@ -1,21 +1,25 @@
 #!/usr/bin/python
+"""Install, build, or test the HXL Proxy.
+For details, try
+  python setup.py -h
+"""
 
-from setuptools import setup
-dependency_links=[
-    'git+https://github.com/Toblerity/Shapely.git@maint#egg=Shapely',
-]
+import sys, setuptools
 
-setup(
+if sys.version_info.major != 3:
+    raise SystemExit("The HXL Proxy requires Python 3.x")
+
+setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
-    version = '0.3',
+    version = '0.4',
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
     include_package_data = True,
     zip_safe = False,
-    install_requires=['flask-cache', 'libhxl>=1.1', 'ckanapi', 'flask', 'psycopg2'],
+    install_requires=['flask-cache>=0.13', 'libhxl>=2.6', 'ckanapi>=3.5', 'flask>=0.10'],
     test_suite = "tests",
     tests_require = ['mock']
 )

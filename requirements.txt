@@ -1,4 +1,4 @@
-libhxl>=1.1
-ckapi
-flask
-flask-cache
+libhxl>=2.6
+ckapi>=3.5
+flask>=0.10
+flask-cache>=0.13
