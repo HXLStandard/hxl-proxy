@@ -473,19 +473,22 @@ hxl_proxy.setupMap = function() {
      */
     function draw_polygons(data) {
         var features = L.featureGroup([]);
-        var min_value = data.getMin('#meta+count') || data.getMin('#x_count_num');
-        var max_value = data.getMax('#meta+count') || data.getMax('#x_count_num');
+        console.log(data.getValues('meta'));
+        var min_value = data.getMin('#meta+count');
+        var max_value = data.getMax('#meta+count');
+        console.log(min_value, max_value);
 
         var iterator = data.iterator();
         while (row = iterator.next()) {
             var bounds_str = null;
             if (map_default_country && map_pcode_tag) {
-                console.log("Lookup bounds");
+                bounds = get_bounds(map_default_country, row.get(map_pcode_tag));
             } else {
                 bounds_str = row.get('#geo+bounds') || row.get('#x_bounds_js');
+                bounds = jQuery.parseJSON(bounds_str);
             }
-            if (bounds_str) {
-                var geometry = jQuery.parseJSON(bounds_str);
+            if (bounds) {
+                var geometry = bounds;
                 var count = row.get('#meta+count') || row.get('#x_count_num');
                 var layer = L.geoJson(geometry, {
                     style: {
@@ -518,6 +521,28 @@ hxl_proxy.setupMap = function() {
         }
     });
 
+    /**
+     * Download the bounds for a country synchronously.
+     */
+    function get_bounds(country_code, pcode) {
+        if (!bounds_cache[country_code]) {
+            bounds_cache[country_code] = {};
+        }
+        if (!bounds_cache[country_code][pcode]) {
+            var url = 'https://hxlstandard.github.io/p-codes/' + country_code + '/' + pcode + '/shape.json';
+            jQuery.ajax({
+                url: url,
+                success: function (result) {
+                    bounds_cache[country_code][pcode] = result;
+                },
+                async: false
+            });
+        }
+        return bounds_cache[country_code][pcode];
+    }
+
+    var bounds_cache = {}
+    
     var map = L.map('map-div');
     var map_markers = new L.MarkerClusterGroup();
 

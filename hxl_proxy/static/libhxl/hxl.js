@@ -321,13 +321,19 @@ hxl.classes.Source.prototype.getDisplayTags = function () {
  * @see #getMax
  */
 hxl.classes.Source.prototype.getMin = function(pattern) {
-    var min, row, value;
+    var min = null;
+    var row, value;
     var iterator = this.iterator();
     pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     while (row = iterator.next()) {
         value = row.get(pattern);
-        if (min === null || (value !== null && value < min)) {
-            min = value;
+        if (value !== null) {
+            num = parseFloat(value);
+            if (num !== NaN) {
+                if (min === null || value < min) {
+                    min = value;
+                }
+            }
         }
     }
     return min;
@@ -349,14 +355,19 @@ hxl.classes.Source.prototype.getMin = function(pattern) {
  * @see #getMin
  */
 hxl.classes.Source.prototype.getMax = function(pattern) {
-    var max, row, value;
+    var max = null;
+    var row, value;
     var iterator = this.iterator();
-
     pattern = hxl.classes.Pattern.parse(pattern); // more efficient to precompile
     while (row = iterator.next()) {
         value = row.get(pattern);
-        if (max === null || (value !== null && value > max)) {
-            max = value;
+        if (value !== null) {
+            num = parseFloat(value);
+            if (num !== NaN) {
+                if (max === null || value > max) {
+                    max = value;
+                }
+            }
         }
     }
     return max;
