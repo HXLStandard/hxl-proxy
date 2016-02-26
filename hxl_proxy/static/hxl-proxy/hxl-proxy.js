@@ -473,10 +473,9 @@ hxl_proxy.setupMap = function() {
      */
     function draw_polygons(data) {
         var features = L.featureGroup([]);
-        console.log(data.getValues('meta'));
+        var feature_count = 0;
         var min_value = data.getMin('#meta+count');
         var max_value = data.getMax('#meta+count');
-        console.log(min_value, max_value);
 
         var iterator = data.iterator();
         while (row = iterator.next()) {
@@ -488,6 +487,7 @@ hxl_proxy.setupMap = function() {
                 bounds = jQuery.parseJSON(bounds_str);
             }
             if (bounds) {
+                feature_count++;
                 var geometry = bounds;
                 var count = row.get('#meta+count') || row.get('#x_count_num');
                 var layer = L.geoJson(geometry, {
@@ -500,26 +500,14 @@ hxl_proxy.setupMap = function() {
                 layer.bindPopup(make_label(row));
                 features.addLayer(layer);
             }
+        }
+        if (feature_count) {
             map.addLayer(features);
             map.fitBounds(features.getBounds());
+        } else {
+            map.setView(new L.latLng(0, 0), 4);
         }
     }
-
-    /**
-     * Load the HXL and draw the map.
-     */
-    $.get(csv_url, function(csvString) {
-        var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-        var data = hxl.wrap(arrayData);
-        // FIXME - for now, always prefer the boundary data to lat/lon
-        if (map_pcode_tag || data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
-            draw_polygons(data);
-        } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
-            draw_points(data);
-        } else {
-            alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
-        }
-    });
 
     /**
      * Download the bounds for a country synchronously.
@@ -540,6 +528,22 @@ hxl_proxy.setupMap = function() {
         }
         return bounds_cache[country_code][pcode];
     }
+
+    /**
+     * Load the HXL and draw the map.
+     */
+    $.get(csv_url, function(csvString) {
+        var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+        var data = hxl.wrap(arrayData);
+        // FIXME - for now, always prefer the boundary data to lat/lon
+        if (map_pcode_tag || data.hasColumn('#geo+bounds') || data.hasColumn('#x_bounds_js')) {
+            draw_polygons(data);
+        } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
+            draw_points(data);
+        } else {
+            alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
+        }
+    });
 
     var bounds_cache = {}
     
