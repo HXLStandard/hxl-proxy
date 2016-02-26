@@ -401,22 +401,20 @@ hxl_proxy.setupMap = function() {
                 return text.replace(/[\"&<>]/g, function (a) { return chr[a]; });
             };
         }());
-        var label = "<table class='map-popup'>\n";
+        var label = "<dl class='dl-horizontal'>\n";
         for (i in row.values) {
             column = row.columns[i];
             value = row.values[i];
             if (value && column.tag != '#geo' && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
-                label += "  <tr>\n";
                 if (column.header) {
-                    label += "    <th>" + escapeHTML(column.header) + "</th>\n";
+                    label += "    <dt>" + escapeHTML(column.header) + "</dt>\n";
                 } else {
-                    label += "    <th>" + escapeHTML(column.tag) + "</th>\n";
+                    label += "    <dt>" + escapeHTML(column.tag) + "</dt>\n";
                 }
-                label += "    <td>" + escapeHTML(value) + "</td>\n";
-                label += "  </tr>\n";
+                label += "    <dd>" + escapeHTML(value) + "</dd>\n";
             }
         }
-        label += "</table>";
+        label += "</dl>";
         return label;
     }
 
@@ -483,13 +481,13 @@ hxl_proxy.setupMap = function() {
             if (map_default_country && map_pcode_tag) {
                 bounds = get_bounds(map_default_country, row.get(map_pcode_tag));
             } else {
-                bounds_str = row.get('#geo+bounds') || row.get('#x_bounds_js');
+                bounds_str = row.get('#geo+bounds');
                 bounds = jQuery.parseJSON(bounds_str);
             }
             if (bounds) {
                 feature_count++;
                 var geometry = bounds;
-                var count = row.get('#meta+count') || row.get('#x_count_num');
+                var count = row.get('#meta+count');
                 var layer = L.geoJson(geometry, {
                     style: {
                         color: make_color(count, min_value, max_value),
