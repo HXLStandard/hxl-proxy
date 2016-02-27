@@ -469,6 +469,7 @@ hxl_proxy.setupMap = function() {
     /**
      * Load the HXL and draw the map.
      */
+    $('#map-loading').show();
     $.get(csv_url, function(csvString) {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var data = hxl.wrap(arrayData);
@@ -479,15 +480,22 @@ hxl_proxy.setupMap = function() {
             var min_value = data.getMin('#meta+count');
             var max_value = data.getMax('#meta+count');
 
+            /**
+             * Load boundary object based on pcodes.
+             *
+             * Uses tail recursion to avoid thread-access problems.
+             */
             function load_boundaries(iterator) {
                 var row = iterator.next();
                 if (!row) {
+                    $('#map-loading').hide();
                     map.fitBounds(features.getBounds());
                     return;
                 }
                 var pcode = row.get(map_pcode_tag);
                 if (pcode) {
                     var url = 'https://hxlstandard.github.io/p-codes/' + map_default_country + '/' + pcode + '/shape.json';
+                    $('#map-loading').text('P-code: ' + pcode);
                     jQuery.ajax(url, {
                         success: function (geometry) {
                             var count = row.get('#meta+count');

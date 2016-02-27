@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>
-      Map{% if recipe.name %}of {{ recipe.name}}{% endif %} @ HXL Proxy
+      Map{% if recipe.name %} of {{ recipe.name}}{% endif %} @ HXL Proxy
     </title>
     {% include "includes/headers.html" %}
     <link rel="stylesheet" href="{{ static('leaflet/leaflet.css') }}" />
@@ -17,12 +17,13 @@
            data-target="#customise-modal">Customise</a>
       </p>
       <h1>
-        Map{% if recipe.name %}of {{ recipe.name}}{% endif %}        
+        Map{% if recipe.name %} of {{ recipe.name}}{% endif %}        
       </h1>
     </header>
     <main class="col-xs-12">
-      <div>
+      <div id="map-container">
         <div id="map-div"></div>
+        <div id="map-loading">Loading...</div>
       </div>
     </main>
     <div id="customise-modal" class="modal fade" role="dialog">
