@@ -488,23 +488,31 @@ hxl_proxy.setupMap = function() {
                 var pcode = row.get(map_pcode_tag);
                 if (pcode) {
                     var url = 'https://hxlstandard.github.io/p-codes/' + map_default_country + '/' + pcode + '/shape.json';
-                    $.get(url, function (bounds) {
-                        var geometry = bounds;
-                        var count = row.get('#meta+count');
-                        var label = make_label(row);
-                        var layer = L.geoJson(geometry, {
-                            style: {
-                                color: make_color(count, min_value, max_value),
-                                opacity: 0.5,
-                                weight: 2
-                            }
-                        });
-                        layer.bindPopup(label);
-                        features.addLayer(layer);
-                        map.addLayer(features);
-                        // tail recursion
-                        load_boundaries(iterator);
+                    jQuery.ajax(url, {
+                        success: function (geometry) {
+                            var count = row.get('#meta+count');
+                            var label = make_label(row);
+                            var layer = L.geoJson(geometry, {
+                                style: {
+                                    color: make_color(count, min_value, max_value),
+                                    opacity: 0.5,
+                                    weight: 2
+                                }
+                            });
+                            layer.bindPopup(label);
+                            features.addLayer(layer);
+                            map.addLayer(features);
+                            // tail recursion
+                            load_boundaries(iterator);
+                        },
+                        error: function (xhr, message, exception) {
+                            console.log(pcode, url, message, exception);
+                            load_boundaries(iterator);
+                        }
                     });
+                } else {
+                    // null value, but keep going
+                    load_boundaries(iterator);
                 }
             }
             load_boundaries(iterator);
