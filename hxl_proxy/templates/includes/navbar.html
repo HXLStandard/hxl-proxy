@@ -38,6 +38,12 @@
             Visualise
           </a>
         </li>
+        <li class="{% if facet=='map' %}active{% endif %}">
+          <a href="{{ data_url(recipe, facet='map') }}">
+            <span class="glyphicon glyphicon-globe"></span>
+            Map
+          </a>
+        </li>
         {% if recipe.recipe_id and recipe.cloneable %}
         <li>
           <a href="{{ data_url(recipe, facet='clone') }}">

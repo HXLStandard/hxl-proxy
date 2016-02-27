@@ -270,7 +270,7 @@ hxl_proxy.setupChart = function(params) {
                 if (params.filter_value) {
                     // If there's a value, use it to filter
                     hxlData = hxlData.withRows(params.filter_pattern + '=' + params.filter_value);
-                } else if (!params.count_pattern) {
+                } else if (!params.count_pattern && params.label_pattern) {
                     // If there's no value and we're not counting rows, sum up the results
                     hxlData = hxlData.count(params.label_pattern, get_value_pattern(hxlData));
                     for (var i in hxlData.columns) {
