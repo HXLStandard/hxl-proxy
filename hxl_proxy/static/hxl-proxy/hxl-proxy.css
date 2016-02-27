@@ -13,14 +13,14 @@
     margin: auto;
     position: absolute;
     height: 4em;
-    width: 10em;
+    width: 100%;
     text-align: center;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     color: #333333;
-    font-size: 200%;
+    font-size: 120%;
 }
 
 .btn-group-vertical .btn {

@@ -495,7 +495,7 @@ hxl_proxy.setupMap = function() {
                 var pcode = row.get(map_pcode_tag);
                 if (pcode) {
                     var url = 'https://hxlstandard.github.io/p-codes/' + map_default_country + '/' + pcode + '/shape.json';
-                    $('#map-loading').text('P-code: ' + pcode);
+                    $('#map-loading').text(map_pcode_tag + '=' + pcode);
                     jQuery.ajax(url, {
                         success: function (geometry) {
                             var count = row.get('#meta+count');
