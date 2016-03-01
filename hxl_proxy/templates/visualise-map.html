@@ -73,19 +73,18 @@
         </div>
       </div>
     </div>
-    <script type="text/javascript">
-      var csv_url = "{{ data_url(recipe, format='csv') | safe }}";
-      var map_default_country = "{{ default_country|safe }}";
-      var map_pcode_tag = "{{ pcode_tag|safe }}";
-      var map_layer_tag = "{{ layer_tag|safe }}";
-    </script>
     {% include "includes/scripts.html" %}
     <script type="text/javascript" src="{{ static('leaflet/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ static('leaflet/plugins/markercluster/leaflet.markercluster.js') }}"></script>
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
-      hxl_proxy.setupMap();
+      hxl_proxy.setupMap({
+          csv_url: "{{ data_url(recipe, format='csv') | safe }}",
+          default_country: "{{ default_country|safe }}",
+          pcode_tag: "{{ pcode_tag|safe }}",
+          layer_tag: "{{ layer_tag|safe }}"
+      });
     </script>
   </body>
 </html>

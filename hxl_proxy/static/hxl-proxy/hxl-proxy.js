@@ -366,7 +366,7 @@ hxl_proxy.setupChart = function(params) {
  * Set up a page containing a map.
  * External dependencies: Leaflet, Leaflet marker cluster plugin, JQuery, HXL
  */
-hxl_proxy.setupMap = function() {
+hxl_proxy.setupMap = function(params) {
 
     /**
      * Generate a heat-map colour.
@@ -435,7 +435,7 @@ hxl_proxy.setupMap = function() {
         var seen_latlon = false;
 
         while (row = iterator.next()) {
-            var layer = get_map_layer(row.get(map_layer_tag));
+            var layer = get_map_layer(row.get(params.layer_tag));
             var lat = row.get('#geo+lat') || row.get('#lat_deg');
             var lon = row.get('#geo+lon') || row.get('#lon_deg');
             if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
@@ -470,11 +470,11 @@ hxl_proxy.setupMap = function() {
      * Load the HXL and draw the map.
      */
     $('#map-loading').show();
-    $.get(csv_url, function(csvString) {
+    $.get(params.csv_url, function(csvString) {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var data = hxl.wrap(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
-        if (map_pcode_tag) {
+        if (params.pcode_tag) {
             var iterator = data.iterator();
             var features = L.featureGroup([]);
             var min_value = data.getMin('#meta+count');
@@ -492,10 +492,10 @@ hxl_proxy.setupMap = function() {
                     map.fitBounds(features.getBounds());
                     return;
                 }
-                var pcode = row.get(map_pcode_tag);
+                var pcode = row.get(params.pcode_tag);
                 if (pcode) {
-                    var url = 'https://hxlstandard.github.io/p-codes/' + map_default_country + '/' + pcode + '/shape.json';
-                    $('#map-loading').text(map_pcode_tag + '=' + pcode);
+                    var url = 'https://hxlstandard.github.io/p-codes/' + params.default_country + '/' + pcode + '/shape.json';
+                    $('#map-loading').text(params.pcode_tag + '=' + pcode);
                     jQuery.ajax(url, {
                         success: function (geometry) {
                             var count = row.get('#meta+count');
