@@ -391,7 +391,7 @@ hxl_proxy.ui.map = function(params) {
 
         // Hard-code a green-yellow-red colour map for now
         var colourMap = [
-            { percentage: 0.0, color: { r: 0xff, g: 0xff, b: 0x00 } },
+            { percentage: 0.0, color: { r: 0x00, g: 0xff, b: 0x00 } },
             { percentage: 0.5, color: { r: 0xff, g: 0xff, b: 0x00 } },
             { percentage: 1.0, color: { r: 0xff, g: 0x00, b: 0x00 } }
         ];
@@ -405,7 +405,7 @@ hxl_proxy.ui.map = function(params) {
     /**
      * Generate a label for a map item.
      */
-    function make_label(row) {
+    function makeLabel(row) {
         var escapeHTML = (function () {
             'use strict';
             var chr = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' };
@@ -414,17 +414,17 @@ hxl_proxy.ui.map = function(params) {
                 return text.replace(/[\"&<>]/g, function (a) { return chr[a]; });
             };
         }());
-        var label = "<dl class='dl-horizontal'>\n";
+        var label = "";
         for (i in row.values) {
             column = row.columns[i];
             value = row.values[i];
             if (value && column.tag != '#geo' && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
                 if (column.header) {
-                    label += "    <dt>" + escapeHTML(column.header) + "</dt>\n";
+                    label += "    <b>" + escapeHTML(column.header) + ":</b> ";
                 } else {
-                    label += "    <dt>" + escapeHTML(column.tag) + "</dt>\n";
+                    label += "    <b>" + escapeHTML(column.tag) + ":</b> ";
                 }
-                label += "    <dd>" + escapeHTML(value) + "</dd>\n";
+                label += escapeHTML(value) + "<br/>\n";
             }
         }
         label += "</dl>";
@@ -453,7 +453,7 @@ hxl_proxy.ui.map = function(params) {
             var lon = row.get('#geo+lon') || row.get('#lon_deg');
             if (lat != null && !isNaN(lat) && lon != null && !isNaN(lon)) {
                 var marker = L.marker([lat, lon]);
-                marker.bindPopup(make_label(row));
+                marker.bindPopup(makeLabel(row));
                 layer.addLayer(marker);
                 seen_latlon = true;
             }
@@ -512,7 +512,7 @@ hxl_proxy.ui.map = function(params) {
                     jQuery.ajax(url, {
                         success: function (geometry) {
                             var count = row.get('#meta+count');
-                            var label = make_label(row);
+                            var label = makeLabel(row);
                             var layer = L.geoJson(geometry, {
                                 style: {
                                     color: makeColor(count, min_value, max_value),
