@@ -150,7 +150,7 @@
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
-      hxl_proxy.setupChart({
+      hxl_proxy.ui.chart({
       data_url: "{{ data_url(recipe, format='csv') | safe }}",
       type: "{{ type|nonone|safe }}",
       value_pattern: "{{ value_tag|nonone|safe }}",

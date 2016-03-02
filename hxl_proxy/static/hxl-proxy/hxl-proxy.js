@@ -3,11 +3,6 @@
 //
 // All functions and varibles appear as properties of the hxl_proxy
 // object.
-//
-// Main entry points:
-//   hxl_proxy.setupForm()
-//   hxl_proxy.setupChart(params)
-//   hxl_proxy.setupMap()
 ////////////////////////////////////////////////////////////////////////
 
 
@@ -18,15 +13,19 @@ var hxl_proxy = {
     config: {
         gdriveDeveloperKey: 'UNSPECIFIED',
         gdriveClientId: 'UNSPECIFIED'
-    },
-    choosers: {}
+    }
 };
-
 
 
 //
 // Dataset choosers
 //
+
+
+/**
+ * Dataset-chooser functions
+ */
+hxl_proxy.choosers = {};
 
 /**
  * Select a resource from the Humanitarian Data Exchange
@@ -37,9 +36,7 @@ var hxl_proxy = {
  * @returns always false.
  */
 hxl_proxy.choosers.hdx = function(elementId, submit) {
-    //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
     hdx.choose(function (resource) {
-        //var url = resource.url
         var url = 'https://data.hdx.rwlabs.org/dataset/' + resource.package_id + '/resource/' + resource.id
         $(elementId).val(url);
         if (submit) {
@@ -69,6 +66,17 @@ hxl_proxy.choosers.dropbox = function(elementId, submit) {
     });
     return false;
 };
+
+
+//
+// Functions for setting up the user interface
+//
+
+
+/**
+ * User-interface functions.
+ */
+hxl_proxy.ui = {};
 
 
 /**
@@ -158,7 +166,7 @@ hxl_proxy.choosers.googleDrive = function(elementId, submit) {
  * Set up a page containing a form.
  * External dependencies: none
  */
-hxl_proxy.setupForm = function() {
+hxl_proxy.ui.form = function() {
 
     function setup_fieldset(node, index) {
         filter_name = $(node).find(".field_filter select").val();
@@ -207,7 +215,7 @@ hxl_proxy.setupForm = function() {
  * @param params.label_pattern HXL tag pattern for the column containing labels (defaults to first column)
  * @param params.value_pattern HXL tag pattern for the column containing values (defaults to a numbery column, if present)
  */
-hxl_proxy.setupChart = function(params) {
+hxl_proxy.ui.chart = function(params) {
 
     // Callback that creates and populates a data table,
     // instantiates the pie chart, passes in the data and
@@ -343,7 +351,7 @@ hxl_proxy.setupChart = function(params) {
  * Set up a page containing a map.
  * External dependencies: Leaflet, Leaflet marker cluster plugin, JQuery, HXL
  */
-hxl_proxy.setupMap = function(params) {
+hxl_proxy.ui.map = function(params) {
 
     /**
      * Generate a heat-map colour.

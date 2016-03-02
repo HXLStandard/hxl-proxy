@@ -79,7 +79,7 @@
     <script type="text/javascript" src="{{ static('jquery/jquery.csv.js') }}"></script>
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
-      hxl_proxy.setupMap({
+      hxl_proxy.ui.map({
           csv_url: "{{ data_url(recipe, format='csv') | safe }}",
           default_country: "{{ default_country|safe }}",
           pcode_tag: "{{ pcode_tag|safe }}",
