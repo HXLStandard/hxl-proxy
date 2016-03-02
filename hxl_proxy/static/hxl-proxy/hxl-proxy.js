@@ -362,22 +362,44 @@ hxl_proxy.ui.map = function(params) {
     /**
      * Generate a heat-map colour.
      */
-    function make_color(value, min, max) {
+    function makeColor(value, min, max) {
 
-        function make_hex(n) {
-            var s = n.toString(16);
-            if (s.length < 2) {
-                s = '0' + s;
+        /**
+         * Generate a colour from a gradiant using a colour map.
+         * Adapted from http://stackoverflow.com/posts/7128796/revisions
+         */
+        function genColor(percentage, colorMap) {
+            for (var i = 1; i < colorMap.length - 1; i++) {
+                if (percentage < colorMap[i].percentage) {
+                    break;
+                }
             }
-            return s;
+            var lower = colorMap[i - 1];
+            var upper = colorMap[i];
+            var range = upper.percentage - lower.percentage;
+            var rangePercentage = (percentage - lower.percentage) / range;
+            var percentageLower = 1 - rangePercentage;
+            var percentageUpper = rangePercentage;
+            var color = {
+                r: Math.floor(lower.color.r * percentageLower + upper.color.r * percentageUpper),
+                g: Math.floor(lower.color.g * percentageLower + upper.color.g * percentageUpper),
+                b: Math.floor(lower.color.b * percentageLower + upper.color.b * percentageUpper)
+            };
+            return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+            // or output as hex if preferred
         }
+
+        // Hard-code a green-yellow-red colour map for now
+        var colourMap = [
+            { percentage: 0.0, color: { r: 0xff, g: 0xff, b: 0x00 } },
+            { percentage: 0.5, color: { r: 0xff, g: 0xff, b: 0x00 } },
+            { percentage: 1.0, color: { r: 0xff, g: 0x00, b: 0x00 } }
+        ];
 
         var range = max - min;
         var magnitude = value - min;
         var percentage = magnitude / range;
-        var red = Math.floor(255 * percentage);
-        var green = Math.floor(255 * (1 - percentage));
-        return '#' + make_hex(red) + make_hex(green) + '00';
+        return genColor(percentage, colourMap);
     }
 
     /**
@@ -493,7 +515,7 @@ hxl_proxy.ui.map = function(params) {
                             var label = make_label(row);
                             var layer = L.geoJson(geometry, {
                                 style: {
-                                    color: make_color(count, min_value, max_value),
+                                    color: makeColor(count, min_value, max_value),
                                     opacity: 0.5,
                                     weight: 2
                                 }
