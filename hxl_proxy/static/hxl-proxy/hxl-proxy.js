@@ -9,23 +9,27 @@
 /**
  * Root object for all HXL Proxy functions and variables.
  */
-var hxl_proxy = {
-    config: {
+var hxl_proxy = {};
+
+
+/**
+ * General configuration parameters
+ */
+hxl_proxy.config = {
         gdriveDeveloperKey: 'UNSPECIFIED',
         gdriveClientId: 'UNSPECIFIED'
-    }
 };
 
 
 //
-// Dataset choosers
+// Choosers
 //
-
 
 /**
  * Dataset-chooser functions
  */
 hxl_proxy.choosers = {};
+
 
 /**
  * Select a resource from the Humanitarian Data Exchange
@@ -69,9 +73,8 @@ hxl_proxy.choosers.dropbox = function(elementId, submit) {
 
 
 //
-// Functions for setting up the user interface
+// UI
 //
-
 
 /**
  * User-interface functions.
@@ -335,6 +338,9 @@ hxl_proxy.ui.chart = function(params) {
             }
 
             chart.draw(data, options);
+        }).fail(function () {
+            alert("Failed to load dataset " + params.data_url);
+            throw "Failed to load dataset " + params.data_url;
         });
     }
 
@@ -514,6 +520,9 @@ hxl_proxy.ui.map = function(params) {
         } else {
             alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
         }
+    }).fail(function () {
+        alert("Failed to load dataset " + params.data_url);
+        throw "Failed to load dataset " + params.data_url;
     });
 
     var bounds_cache = {}
