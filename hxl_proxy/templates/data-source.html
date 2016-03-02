@@ -77,15 +77,15 @@
           </h2>
         </div>
         <div class="panel-body" id="cloud-body">
-          <a href="#" onclick="return hxl_proxy.doHDX('#dataset-url', true);">
+          <a href="#" onclick="return hxl_proxy.choosers.hdx('#dataset-url', true);">
             <img src="{{ static('images/hdx-logo.png') }}" alt="Humanitarian Data Exchange logo" />
             <span>HDX</span>
           </a>
-          <a href="#" onclick="return hxl_proxy.doDropbox('#dataset-url', true);">
+          <a href="#" onclick="return hxl_proxy.choosers.dropbox('#dataset-url', true);">
             <img src="{{ static('images/dropbox-logo.png') }}" alt="Dropbox logo" />
             <span>Dropbox</span>
           </a>
-          <a href="#" onclick="return hxl_proxy.doGDrive('#dataset-url', true);">
+          <a href="#" onclick="return hxl_proxy.choosers.googleDrive('#dataset-url', true);">
             <img src="{{ static('images/google-drive-logo.png') }}" alt="Google Drive logo" />
             <span>Google Drive</span>
           </a>

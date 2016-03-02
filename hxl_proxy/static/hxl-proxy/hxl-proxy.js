@@ -14,26 +14,29 @@
 /**
  * Root object for all HXL Proxy functions and variables.
  */
-var hxl_proxy = {};
-
-
-/**
- * Configuration properties
- */
-hxl_proxy.config = {
-    gdriveDeveloperKey: 'UNSPECIFIED',
-    gdriveClientId: 'UNSPECIFIED'
+var hxl_proxy = {
+    config: {
+        gdriveDeveloperKey: 'UNSPECIFIED',
+        gdriveClientId: 'UNSPECIFIED'
+    },
+    choosers: {}
 };
 
 
+
+//
+// Dataset choosers
+//
+
 /**
- * Select a file from HDX.
+ * Select a resource from the Humanitarian Data Exchange
  *
  * @param elementId the HTML id of the form input element where
  * the URL should appear.
+ * @param submit if true, submit the form on success (default: false)
  * @returns always false.
  */
-hxl_proxy.doHDX = function(elementId, submit) {
+hxl_proxy.choosers.hdx = function(elementId, submit) {
     //hdx.chooserURL = '/static/hdx-chooser/hdx-chooser.html';
     hdx.choose(function (resource) {
         //var url = resource.url
@@ -52,9 +55,10 @@ hxl_proxy.doHDX = function(elementId, submit) {
  *
  * @param elementId the HTML id of the form input element where
  * the URL should appear.
+ * @param submit if true, submit the form on success (default: false)
  * @returns always false.
  */
-hxl_proxy.doDropbox = function(elementId, submit) {
+hxl_proxy.choosers.dropbox = function(elementId, submit) {
     Dropbox.choose({
         success: function(files) {
             $(elementId).val(files[0].link)
@@ -68,7 +72,7 @@ hxl_proxy.doDropbox = function(elementId, submit) {
 
 
 /**
- * Select a file from Google Drive
+ * Select a spreadsheet from Google Drive
  *
  * Relies on the hxl_proxy.config.gdriveDeveloperKey and the
  * hxl_proxy.config.gdriveClientId properties.
@@ -77,9 +81,10 @@ hxl_proxy.doDropbox = function(elementId, submit) {
  *
  * @param elementId the HTML id of the form input element where
  * the URL should appear.
+ * @param submit if true, submit the form on success (default: false)
  * @returns always false.
  */
-hxl_proxy.doGDrive = function(elementId, submit) {
+hxl_proxy.choosers.googleDrive = function(elementId, submit) {
 
     // We want to see only spreadsheets
     var scope = ['https://www.googleapis.com/auth/drive.readonly'];
@@ -148,34 +153,6 @@ hxl_proxy.doGDrive = function(elementId, submit) {
     return false;
 };
 
-
-/**
- * Renumber filters in sequence.
- */
-hxl_proxy.renumberFilters = function() {
-
-    // Adjust the first numeric value in an attribute.
-    function adjustAttr(node, attrName, index) {
-        value = $(node).attr(attrName);
-        if (value) {
-            value = value.replace(/[0-9][0-9]/, index);
-            $(node).attr(attrName, value);
-        }
-    }
-
-    // look through all descendants of each filter
-    $('.filter').each(function (index, node) {
-        $(node).find('*').each(function (i, child) {
-            n = '00' + (index + 1);
-            n = n.substr(n.length - 2);
-            adjustAttr(child, 'id', n);
-            adjustAttr(child, 'name', n);
-            adjustAttr(child, 'for', n);
-            adjustAttr(child, 'data-target', n);
-            adjustAttr(child, 'href', n);
-        });
-    });
-}
 
 /**
  * Set up a page containing a form.
