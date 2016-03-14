@@ -1,4 +1,4 @@
 libhxl>=2.6
-ckapi>=3.5
+ckanapi>=3.5
 flask>=0.10
 flask-cache>=0.13
