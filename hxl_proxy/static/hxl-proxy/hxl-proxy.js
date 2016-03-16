@@ -558,4 +558,67 @@ hxl_proxy.ui.map = function(params) {
     map.addLayer(osm);
 };
 
+hxl_proxy.pad2 = function (num) {
+    return ('00' + num).substr(-2);
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+};
+
+
+/**
+ * Parse the name of a sequentially-numbered field
+ */
+hxl_proxy.parseFieldName = function (name) {
+
+    // try double numbering first
+    var result = /^(.+)([0-9][0-9])-([0-9][0-9])$/.exec(name);
+    if (result) {
+        return [result[1], parseInt(result[2]), parseInt(result[3])]
+    }
+
+    // now try single numbering
+    result = /^(.+)([0-9][0-9])$/.exec(name);
+    if (result) {
+        return [result[1], parseInt(result[2])];
+    }
+
+    // field is not numbered
+    return [name];
+};
+
+
+/**
+ * Construct a sequential field name from its parts.
+ */
+hxl_proxy.makeFieldName = function (parts) {
+    var name = parts[0];
+
+    if (parts[1]) {
+        name += ('00' + parts[1]).substr(-2);
+    }
+
+    if (parts[2]) {
+        name += '-' + ('00' + parts[2]).substr(-2);
+    }
+
+    return name;
+};
+
+
+/**
+ * Add a field in a list.
+ */
+hxl_proxy.addField = function (contextNode) {
+    var lastInputNode = $(contextNode).siblings('input').last();
+    var newInputNode = $(lastInputNode).clone();
+    var parts = hxl_proxy.parseFieldName($(lastInputNode).attr('name'));
+    console.log(parts);
+    if (parts[2]) {
+        parts[2]++;
+        var name = hxl_proxy.makeFieldName(parts);
+        $(newInputNode).attr('name', name).attr('value', '').insertAfter(lastInputNode);
+    }
+};
+
 // end
