@@ -11,6 +11,7 @@
         <option value="count"{% if recipe.args[name]=='count' %} selected="selected"{% endif %}>Count rows</option>
         <option value="cut"{% if recipe.args[name]=='cut' %} selected="selected"{% endif %}>Cut columns</option>
         <option value="dedup"{% if recipe.args[name]=='dedup' %} selected="selected"{% endif %}>Deduplicate rows</option>
+        <option value="expand"{% if recipe.args[name]=='expand' %} selected="selected"{% endif %}>Expand data</option>
         <option value="merge"{% if recipe.args[name]=='merge' %} selected="selected"{% endif %}>Merge columns</option>
         <option value="rename"{% if recipe.args[name]=='rename' %} selected="selected"{% endif %}>Rename columns</option>
         <option value="replace"{% if recipe.args[name]=='replace' %} selected="selected"{% endif %}>Replace data</option>

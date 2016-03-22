@@ -1,0 +1,39 @@
+<div class="fields-expand hideable">
+  {% import 'includes/filters/filter-variables.j2' as vars %}
+
+  <p class="doc">
+    Expand wide, series data using the headers as labels.
+    {% with key='Expand-labels-filter' %}{% include "includes/help.html" %}{% endwith %}
+  </p>
+
+  {% set name='expand-header-att%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Attribute for former header text.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] or 'header' }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+  </div>
+
+  {% set name='expand-value-att%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Attribute for original value.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] or 'header' }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+  </div>
+
+</div>
