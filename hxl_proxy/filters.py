@@ -41,8 +41,8 @@ def setup_filters(recipe):
             source = add_column_filter(source, recipe['args'], index)
         elif filter == 'dedup':
             source = add_dedup_filter(source, recipe['args'], index)
-        elif filter == 'expand':
-            source = add_expand_filter(source, recipe['args'], index)
+        elif filter == 'explode':
+            source = add_explode_filter(source, recipe['args'], index)
         elif filter == 'merge':
             source = add_merge_filter(source, recipe['args'], index)
         elif filter == 'rename':
@@ -133,8 +133,11 @@ def add_column_filter(source, args, index):
 def add_dedup_filter(source, args, index):
     return source.dedup(args.get('dedup-tags%02d' % index, []))
 
-def add_expand_filter(source, args, index):
-    return source.expand_labels()
+def add_explode_filter(source, args, index):
+    return source.explode(
+        args.get('explode-header-att%02d' % index, 'header'),
+        args.get('explode-value-att%02d' % index, 'value')
+    )
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""

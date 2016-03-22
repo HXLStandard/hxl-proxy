@@ -1,12 +1,12 @@
-<div class="fields-expand hideable">
+<div class="fields-explode hideable">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Expand wide, series data using the headers as labels.
-    {% with key='Expand-labels-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Explode wide, series data using the headers as labels.
+    {% with key='Explode-labels-filter' %}{% include "includes/help.html" %}{% endwith %}
   </p>
 
-  {% set name='expand-header-att%02d' % n %}
+  {% set name='explode-header-att%02d' % n %}
   <div id="{{ name }}" class="form-group">
     <label for="{{ name }}">
       Attribute for former header text.
@@ -21,7 +21,7 @@
         />
   </div>
 
-  {% set name='expand-value-att%02d' % n %}
+  {% set name='explode-value-att%02d' % n %}
   <div id="{{ name }}" class="form-group">
     <label for="{{ name }}">
       Attribute for original value.
