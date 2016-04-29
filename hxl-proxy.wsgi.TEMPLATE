@@ -37,4 +37,17 @@ os.environ['HXL_PROXY_CONFIG'] = '/path/config.py'
 
 from hxl_proxy import app as application
 
+# run it under a different url path than /
+# 1. configure nginx
+# location ^~ /myprefix {
+#     proxy_pass       http://<hxl_proxy_ip>:<hxl_proxy_port>;
+#     proxy_set_header Host $host;
+#     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#     proxy_set_header X-Scheme $scheme;
+#     proxy_set_header X-Script-Name /myprefix;
+# }
+# 2. uncomment the 2 lines below
+#from <path_to_reverse_proxied.py> import reverse_proxied as rp
+#application.wsgi_app = rp.ReverseProxied(application.wsgi_app)
+
 # end
