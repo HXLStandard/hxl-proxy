@@ -20,10 +20,23 @@ DEBUG=True
 SECRET_KEY='<secret key>'
 
 #
+# File cache directory
+#
+CACHE_DIR = '/tmp'
+CACHE_MAX_ITEMS = 1000
+CACHE_DEFAULT_TIMEOUT_SECONDS = 3600 # 1 hour
+
+#
 # SQLite3 database
 # (web server must have write access to directory)
 #
 DB_FILE='/tmp/hxl-proxy.db'
+
+#
+# Values for Google Drive access
+#
+GOOGLE_CLIENT_ID = '<client id>'
+GOOGLE_OAUTH_ID = '<oauth id>'
 
 #
 # Values for Humanitarian.ID remote login

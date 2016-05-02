@@ -24,8 +24,10 @@ app.jinja_env.lstrip_blocks = True
 
 # Set up cache
 cache = Cache(app,config={
-    'CACHE_TYPE': 'simple',
-    'CACHE_DEFAULT_TIMEOUT': 3600
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': app.config.get('CACHE_DIR', '/tmp/'),
+    'CACHE_THRESHOLD': app.config.get('CACHE_MAX_ITEMS', 1000),
+    'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600)
 })
 
 # Needed to register annotations
