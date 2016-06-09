@@ -42,9 +42,14 @@
                   </label>
                   <select id="field.default_country" name="default_country" class="form-control">
                     <option value="">-- none --</option>
+                    <option value="BDI"{% if default_country=='BDI' %} selected="selected"{% endif %}>Burundi</option>
+                    <option value="CMR"{% if default_country=='CMR' %} selected="selected"{% endif %}>Cameroon</option>
+                    <option value="TCD"{% if default_country=='TCD' %} selected="selected"{% endif %}>Chad</option>
                     <option value="GIN"{% if default_country=='GIN' %} selected="selected"{% endif %}>Guinea</option>
                     <option value="MLI"{% if default_country=='MLI' %} selected="selected"{% endif %}>Mali</option>
                     <option value="NPL"{% if default_country=='NPL' %} selected="selected"{% endif %}>Nepal</option>
+                    <option value="NER"{% if default_country=='NER' %} selected="selected"{% endif %}>Niger</option>
+                    <option value="NGA"{% if default_country=='NGA' %} selected="selected"{% endif %}>Nigeria</option>
                     <option value="SOM"{% if default_country=='SOM' %} selected="selected"{% endif %}>Somalia</option>
                   </select>
                 </div>
