@@ -710,7 +710,7 @@ hxl.classes.Dataset.prototype.getColumns = function() {
                 if (tags_index > 0) {
                     header = this._rawData[tags_index-1][i];
                 }
-                if (tagspec.match(/^\s*#.*/)) {
+                if (tagspec && tagspec.match(/^\s*#.*/)) {
                     cols.push(hxl.classes.Column.parse(tagspec, header));
                 } else {
                     cols.push(null);
@@ -911,7 +911,7 @@ hxl.classes.Pattern.prototype.match = function(column) {
     var attribute, i;
 
     // tags must match
-    if (this.tag != column.tag) {
+    if (column && this.tag != column.tag) {
         return false;
     }
 

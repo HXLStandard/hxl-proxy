@@ -418,7 +418,7 @@ hxl_proxy.ui.map = function(params) {
         for (i in row.values) {
             column = row.columns[i];
             value = row.values[i];
-            if (value && column.tag != '#geo' && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
+            if (value && column && column.tag != '#geo' && column.tag != '#lat_deg' && column.tag != '#lon_deg' && column.tag != '#x_bounds_js') {
                 if (column.header) {
                     label += "    <b>" + escapeHTML(column.header) + ":</b> ";
                 } else {
