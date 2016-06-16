@@ -54,13 +54,26 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="pcode">
+                  <label for="pcode_tag">
                     Choose p-code column
                   </label>
                   <select name="pcode_tag" class="form-control">
                     <option value="">-- none --</option>
                     {% for column in search_by_attributes(['code', 'p_code'], source.columns) %}
                     <option value="{{ column.display_tag }}"{% if pcode_tag and pcode_tag.match(column) %} selected="selected"{% endif %}>{{ column.display_tag }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="value_tag">
+                    Choose column containing a value.
+                  </label>
+                  <select name="value_tag" class="form-control">
+                    <option value="">-- none --</option>
+                    {% for column in source.columns %}
+                    {% if column.display_tag %}
+                    <option value="{{ column.display_tag }}"{% if value_tag and value_tag.match(column) %} selected="selected"{% endif %}>{{ column.display_tag }}</option>
+                    {% endif %}
                     {% endfor %}
                   </select>
                 </div>
@@ -88,7 +101,8 @@
           csv_url: "{{ data_url(recipe, format='csv') | safe }}",
           default_country: "{{ default_country|safe }}",
           pcode_tag: "{{ pcode_tag|safe }}",
-          layer_tag: "{{ layer_tag|safe }}"
+          layer_tag: "{{ layer_tag|safe }}",
+          value_tag: "{{ value_tag|safe }}"
       });
     </script>
   </body>

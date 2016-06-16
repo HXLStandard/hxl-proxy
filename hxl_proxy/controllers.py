@@ -248,12 +248,15 @@ def show_data_map(recipe_id=None):
     pcode_tag = args.get('pcode_tag')
     if pcode_tag:
         pcode_tag = hxl.TagPattern.parse(pcode_tag)
+    value_tag = args.get('value_tag')
+    if value_tag:
+        value_tag = hxl.TagPattern.parse(value_tag)
     layer_tag = args.get('layer')
     if layer_tag:
         layer_tag = hxl.TagPattern.parse(layer_tag)
     return flask.render_template(
         'visualise-map.html', recipe=recipe,
-        default_country=default_country, pcode_tag=pcode_tag, layer_tag=layer_tag, source=source
+        default_country=default_country, pcode_tag=pcode_tag, layer_tag=layer_tag, value_tag=value_tag, source=source
     )
 
 @app.route("/data/validate")

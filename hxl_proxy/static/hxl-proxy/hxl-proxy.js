@@ -487,11 +487,14 @@ hxl_proxy.ui.map = function(params) {
         var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
         var data = hxl.wrap(arrayData);
         // FIXME - for now, always prefer the boundary data to lat/lon
+        if (!params.value_tag) {
+            params.value_tag = "#meta+count";
+        }
         if (params.pcode_tag) {
             var iterator = data.iterator();
             var features = L.featureGroup([]);
-            var min_value = data.getMin('#meta+count');
-            var max_value = data.getMax('#meta+count');
+            var min_value = data.getMin(params.value_tag);
+            var max_value = data.getMax(params.value_tag);
 
             /**
              * Load boundary object based on pcodes.
@@ -511,7 +514,7 @@ hxl_proxy.ui.map = function(params) {
                     $('#map-loading').text(params.pcode_tag + '=' + pcode);
                     jQuery.ajax(url, {
                         success: function (geometry) {
-                            var count = row.get('#meta+count');
+                            var count = row.get(params.value_tag);
                             var label = makeLabel(row);
                             var layer = L.geoJson(geometry, {
                                 style: {
