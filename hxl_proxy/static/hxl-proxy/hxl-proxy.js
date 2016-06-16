@@ -510,7 +510,7 @@ hxl_proxy.ui.map = function(params) {
                 }
                 var pcode = row.get(params.pcode_tag);
                 if (pcode) {
-                    var url = 'https://hxlstandard.github.io/p-codes/' + params.default_country + '/' + pcode + '/shape.json';
+                    var url = params.pcode_base_url + '/' + params.default_country + '/' + pcode + '/shape.json';
                     $('#map-loading').text(params.pcode_tag + '=' + pcode);
                     jQuery.ajax(url, {
                         success: function (geometry) {

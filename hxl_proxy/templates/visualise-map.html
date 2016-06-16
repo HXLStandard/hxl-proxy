@@ -98,6 +98,7 @@
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
       hxl_proxy.ui.map({
+          pcode_base_url: "{{ config.get('PCODE_BASE_URL')|safe }}",
           csv_url: "{{ data_url(recipe, format='csv') | safe }}",
           default_country: "{{ default_country|safe }}",
           pcode_tag: "{{ pcode_tag|safe }}",

@@ -46,4 +46,9 @@ HID_CLIENT_SECRET = '<client secret>'
 HID_REDIRECT_URI = '<redirect URI>'
 HID_BASE_URL = 'https://auth.humanitarian.id' # change to http://auth.dev.humanitarian.id for dev testing
 
+#
+# Where to find shapes, etc. for p-codes. Usually leave as-is.
+#
+PCODE_BASE_URL = 'https://hxlstandard.github.io/p-codes/'
+
 # end
