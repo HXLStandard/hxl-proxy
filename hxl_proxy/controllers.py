@@ -248,13 +248,22 @@ def show_data_map(recipe_id=None):
 
     # TODO choose smart defaults
 
-    pcode_tag = args.get('pcode_tag')
-    if pcode_tag:
-        pcode_tag = hxl.TagPattern.parse(pcode_tag)
+    def find_column(pattern, attributes):
+        if pattern:
+            pattern = hxl.TagPattern.parse(pattern)
+            for column in source.columns:
+                if pattern.match(column):
+                    return pattern
+        if attributes:
+            for column in source.columns:
+                for attribute in attributes:
+                    if attribute in column.attributes:
+                        return hxl.TagPattern.parse(column.display_tag)
 
-    value_tag = args.get('value_tag')
-    if value_tag:
-        value_tag = hxl.TagPattern.parse(value_tag)
+        return None
+
+    pcode_tag = find_column(args.get('pcode_tag'), ['code'])
+    value_tag = find_column(args.get('value_tag'), ['num', 'count'])
 
     layer_tag = args.get('layer')
     if layer_tag:
