@@ -176,17 +176,12 @@ def show_data_recipe(recipe_id=None):
 
     return flask.render_template('data-about.html', recipe=recipe)
 
+
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
 def show_data_chart(recipe_id=None):
     """Show a chart visualisation for the data."""
 
-    def find_column(source, pattern):
-        for column in source.columns:
-            if pattern.match(column):
-                return column
-        return None
-    
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect('/data/source', 303)
@@ -199,13 +194,13 @@ def show_data_chart(recipe_id=None):
     value_col = None
     if value_tag:
         value_tag = hxl.TagPattern.parse(value_tag)
-        value_col = find_column(source, value_tag)
+        value_col = util.find_column(source, value_tag)
 
     label_tag = args.get('label_tag')
     label_col = None
     if label_tag:
         label_tag = hxl.TagPattern.parse(label_tag)
-        label_col = find_column(source, label_tag)
+        label_col = util.find_column(source, label_tag)
 
     filter_tag = args.get('filter_tag')
     filter_col = None
@@ -213,14 +208,14 @@ def show_data_chart(recipe_id=None):
     filter_values = set()
     if filter_tag:
         filter_tag = hxl.TagPattern.parse(filter_tag)
-        filter_col = find_column(source, filter_tag)
+        filter_col = util.find_column(source, filter_tag)
         filter_values = source.get_value_set(filter_tag)
 
     count_tag = args.get('count_tag')
     count_col = None
     if count_tag:
         count_tag = hxl.TagPattern.parse(count_tag)
-        count_col = find_column(source, count_tag)
+        count_col = util.find_column(source, args.get('count_tag'), ['num', 'count'])
         
     type = args.get('type', 'bar')
     
@@ -234,50 +229,38 @@ def show_data_chart(recipe_id=None):
         filter_values=sorted(filter_values), filter_value=filter_value
     )
 
+
 @app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
-def show_data_map(recipe_id=None):
+def show_visualise_map(recipe_id=None):
     """Show a map visualisation for the data."""
+
+    # Set up the data source
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect('/data/source', 303)
     source = filters.setup_filters(recipe)
 
+    # Get arguments to control map display.
     args = flask.request.args
     default_country = args.get('default_country')
-
-    # TODO choose smart defaults
-
-    def find_column(pattern, attributes):
-        if pattern:
-            pattern = hxl.TagPattern.parse(pattern)
-            for column in source.columns:
-                if pattern.match(column):
-                    return pattern
-        if attributes:
-            for column in source.columns:
-                for attribute in attributes:
-                    if attribute in column.attributes:
-                        return hxl.TagPattern.parse(column.display_tag)
-
-        return None
-
-    pcode_tag = find_column(args.get('pcode_tag'), ['code'])
-    value_tag = find_column(args.get('value_tag'), ['num', 'count'])
-
+    pcode_tag = util.find_column(source, args.get('pcode_tag'), ['code'])
+    value_tag = util.find_column(source, args.get('value_tag'), ['num', 'count'])
     layer_tag = args.get('layer')
     if layer_tag:
         layer_tag = hxl.TagPattern.parse(layer_tag)
 
+    # Show the map.
     return flask.render_template(
         'visualise-map.html', recipe=recipe,
         default_country=default_country, pcode_tag=pcode_tag, layer_tag=layer_tag, value_tag=value_tag, source=source
     )
 
+
 @app.route("/data/validate")
 @app.route("/data/<recipe_id>/validate")
 def show_validate(recipe_id=None):
-    """Validate the data."""
+    """Run a validation and show the result in a dashboard."""
 
     # Get the recipe
     recipe = util.get_recipe(recipe_id)
@@ -305,6 +288,7 @@ def show_validate(recipe_id=None):
         recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
     )
 
+
 @app.route("/data/<recipe_id>.<format>")
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data.<format>")
@@ -312,15 +296,21 @@ def show_validate(recipe_id=None):
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def show_data(recipe_id=None, format="html", stub=None):
+    """Show full result dataset in HTML, CSV, or JSON (as requested)."""
 
-    def get_result (recipe_id, format):
+    def get_result ():
+        """Closure to generate the output."""
+
+        # Set up the data source from the recipe
         recipe = util.get_recipe(recipe_id, auth=False)
         if not recipe or not recipe['args'].get('url'):
             return flask.redirect('/data/source', 303)
-
         source = filters.setup_filters(recipe)
+
+        # Output parameters
         show_headers = (recipe['args'].get('strip-headers') != 'on')
 
+        # Return a generator based on the format requested
         if format == 'html':
             return flask.render_template('data-view.html', source=source, recipe=recipe, show_headers=show_headers)
         elif format == 'json':
@@ -336,31 +326,43 @@ def show_data(recipe_id=None, format="html", stub=None):
                 response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe['stub'])
             return response
 
-    result = get_result(recipe_id, format)
+    # Get the result and update the cache manually if we're skipping caching.
+    result = get_result()
     if util.skip_cache_p():
-        # Want to store the new value, but can't get the key to work
-        # Clearing the whole cache for now (heavy-handed)
         cache.set(show_data.make_cache_key(), result)
     return result
 
+
+@app.route('/settings/user')
+def do_user_settings():
+    """Show the user settings page (if authorised)."""
+    if flask.g.member:
+        return flask.render_template('settings-user.html', member=flask.g.member)
+    else:
+        # redirect back to the settings page after login
+        return flask.redirect('/login?from=/settings/user', 303)
+
+
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():
+    """POST handler: authenticate for a specific recipe (will disappear soon)."""
+
+    # Note origin page
     destination = flask.request.form.get('from')
     if not destination:
         destination = '/data'
+
+    # Just save the password hash, but don't do anything with it
     password = flask.request.form.get('password')
     flask.session['passhash'] = util.make_md5(password)
+
+    # Try opening the original page again, with auth token in the cookie.
     return flask.redirect(destination, 303)
+
 
 @app.route("/actions/save-recipe", methods=['POST'])
 def do_data_save():
-    """
-    Start a new saved pipeline, or update an existing one.
-
-    Can be called from the full pipeline-edit form, or from
-    the mini popup for a pipeline that the user is saving
-    for the first time.
-    """
+    """POST handler: start a new saved recipe, or update an existing one."""
 
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
@@ -416,39 +418,43 @@ def do_data_save():
 
     return flask.redirect(util.make_data_url(recipe), 303)
 
-@app.route('/settings/user')
-def do_user_settings():
-    if flask.g.member:
-        return flask.render_template('settings-user.html', member=flask.g.member)
-    else:
-        return flask.redirect('/login', 303)
 
 @app.route('/login')
 def do_login():
+    """Log the user using OAuth2 via the IdP (Humanitarian.ID), and set a cookie."""
     flask.session['login_redirect'] = flask.request.args.get('from', '/')
     return flask.redirect(auth.get_hid_login_url(), 303)
 
+
 @app.route('/logout')
 def do_logout():
-    path = flask.request.args.get('from', '/')
+    """Kill the login cookie (and any others)."""
+    path = flask.request.args.get('from', '/') # original path where user choose to log out
     flask.session.clear()
     flask.flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return flask.redirect(path, 303)
 
+
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
-    # now needs to submit the access token to H.ID to get more info
+    """Handle OAuth2 token sent back from IdP (Humanitarian.ID) after remote authentication."""
+
+    # Check if we really sent the request, and save the auth token
     code = flask.request.args.get('code')
     state = flask.request.args.get('state')
     if state != flask.session.get('state'):
         raise Exception("Security violation: inconsistent state returned from humanitarian.id login request")
     else:
         flask.session['state'] = None
-    user_info = auth.get_hid_user(code)
-    redirect_path = flask.session.get('login_redirect', '/')
-    del flask.session['login_redirect']
+
+    # Look up extra info from Humanitarian.ID
+    user_info = auth.get_hid_user(code) # look up user info from Humanitarian.ID
     flask.session['member_info'] = user_info
     flask.flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
+
+    # Try to bring the user back where s/he started.
+    redirect_path = flask.session.get('login_redirect', '/')
+    del flask.session['login_redirect']
     return flask.redirect(redirect_path, 303)
 
 # end
