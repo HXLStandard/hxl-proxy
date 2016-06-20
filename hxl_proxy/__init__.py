@@ -10,7 +10,7 @@ Documentation: http://hxlstandard.org
 import os
 
 from flask import Flask, g, request
-from flask.ext.cache import Cache
+from flask_cache import Cache
 
 import werkzeug.datastructures
 
