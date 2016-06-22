@@ -193,39 +193,39 @@ def show_data_chart(recipe_id=None):
     value_tag = args.get('value_tag')
     value_col = None
     if value_tag:
-        value_tag = hxl.TagPattern.parse(value_tag)
-        value_col = util.find_column(source, value_tag)
+        value_pattern = hxl.TagPattern.parse(value_tag)
+        value_col = value_pattern.find_column(source.columns)
 
-    label_tag = args.get('label_tag')
+    label_pattern = args.get('label_tag')
     label_col = None
-    if label_tag:
-        label_tag = hxl.TagPattern.parse(label_tag)
-        label_col = util.find_column(source, label_tag)
+    if label_pattern:
+        label_pattern = hxl.TagPattern.parse(label_pattern)
+        label_col = label_pattern.find_column(source.columns)
 
-    filter_tag = args.get('filter_tag')
+    filter_pattern = args.get('filter_tag')
     filter_col = None
     filter_value = args.get('filter_value')
     filter_values = set()
-    if filter_tag:
-        filter_tag = hxl.TagPattern.parse(filter_tag)
-        filter_col = util.find_column(source, filter_tag)
-        filter_values = source.get_value_set(filter_tag)
+    if filter_pattern:
+        filter_pattern = hxl.TagPattern.parse(filter_pattern)
+        filter_col = filter_pattern.find_column(source.columns)
+        filter_values = source.get_value_set(filter_pattern)
 
-    count_tag = args.get('count_tag')
+    count_pattern = args.get('count_tag')
     count_col = None
-    if count_tag:
-        count_tag = hxl.TagPattern.parse(count_tag)
-        count_col = util.find_column(source, args.get('count_tag'), ['num', 'count'])
+    if count_pattern:
+        count_pattern = hxl.TagPattern.parse(count_pattern)
+        count_col = count_pattern.find_column(source.columns)
         
     type = args.get('type', 'bar')
     
     return flask.render_template(
         'visualise-chart.html',
         recipe_id=recipe_id, recipe=recipe, type=type, source=source,
-        value_tag=value_tag, value_col=value_col,
-        label_tag=label_tag, label_col=label_col,
-        count_tag=count_tag, count_col=count_col,
-        filter_tag=filter_tag, filter_col=filter_col,
+        value_tag=value_pattern, value_col=value_col,
+        label_tag=label_pattern, label_col=label_col,
+        count_tag=count_pattern, count_col=count_col,
+        filter_tag=filter_pattern, filter_col=filter_col,
         filter_values=sorted(filter_values), filter_value=filter_value
     )
 
@@ -244,16 +244,26 @@ def show_visualise_map(recipe_id=None):
     # Get arguments to control map display.
     args = flask.request.args
     default_country = args.get('default_country')
-    pcode_tag = util.find_column(source, args.get('pcode_tag'), ['code'])
-    value_tag = util.find_column(source, args.get('value_tag'), ['num', 'count'])
-    layer_tag = args.get('layer')
-    if layer_tag:
-        layer_tag = hxl.TagPattern.parse(layer_tag)
+
+    pcode_pattern = args.get('pcode_tag')
+    if pcode_pattern:
+        pcode_pattern = hxl.TagPattern.parse(pcode_pattern)
+        pcode_col = pcode_pattern.find_column(source.columns)
+
+    value_pattern = args.get('value_tag')
+    if value_pattern:
+        value_pattern = hxl.TagPattern.parse(value_pattern)
+        value_col = value_pattern.find_column(source.columns)
+
+    layer_pattern = args.get('layer_tag')
+    if layer_pattern:
+        layer_pattern = hxl.TagPattern.parse(layer_pattern)
+        layer_col = layer_pattern.find_column(source.columns)
 
     # Show the map.
     return flask.render_template(
         'visualise-map.html', recipe=recipe,
-        default_country=default_country, pcode_tag=pcode_tag, layer_tag=layer_tag, value_tag=value_tag, source=source
+        default_country=default_country, pcode_tag=pcode_col, layer_tag=layer_col, value_tag=value_col, source=source
     )
 
 
