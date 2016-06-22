@@ -23,10 +23,10 @@ from unittest.mock import patch
 
 
 DATA = [
-    ['#org', '#sector', '#country', '#affected'],
-    ['Org A', 'WASH', 'Country A', '200'],
-    ['Org B', 'Health', 'Country B', '50'],
-    ['Org C', 'Protection', 'Country A', '100']
+    ['#org', '#sector', '#country', '#affected', '#date'],
+    ['Org A', 'WASH', '    Country   A', '200.0', 'June 1 2010'],
+    ['Org B', 'Health', 'Country B', '50', '13/1/10'],
+    ['Org C', 'Protection', 'Country A', '1.0E2', '11 May 2016']
 ]
 
 class TestSetupFilters(unittest.TestCase):
@@ -82,20 +82,26 @@ class TestPipelineFunctions(unittest.TestCase):
 
     def test_add_clean_filter(self):
         args = {
-            'clean-whitespace-tags07': 'adm1,sector-cluster',
-            'clean-toupper-tags07': 'adm1_id,sector_id',
-            'clean-tolower-tags07': 'org_id,agesex_id',
-            'clean-date-tags07': 'from_date,to_date',
-            'clean-number-tags07': 'aff_num+idp,targeted_num'
+            'clean-whitespace-tags07': 'country,adm1',
+            'clean-toupper-tags07': 'sector',
+            'clean-tolower-tags07': 'org',
+            'clean-date-tags07': 'date',
+            'clean-number-tags07': 'affected'
         }
+        expected_values = [
+            ['org a', 'WASH', 'Country A', '200', '2010-06-01'],
+            ['org b', 'HEALTH', 'Country B', '50', '2010-01-13'],
+            ['org c', 'PROTECTION', 'Country A', '100', '2016-05-11']
+        ]
         filter = add_clean_filter(self.source, args, 7)
         self.assertEqual('CleanDataFilter', filter.__class__.__name__)
         self.assertEqual(self.source, filter.source, "source ok")
-        self.assertEqual(['#adm1', '#sector-cluster'], [str(p) for p in filter.whitespace], "whitespace ok")
-        self.assertEqual(['#adm1_id', '#sector_id'], [str(p) for p in filter.upper], "upper ok")
-        self.assertEqual(['#org_id', '#agesex_id'], [str(p) for p in filter.lower], "lower ok")
-        self.assertEqual(['#from_date', '#to_date'], [str(p) for p in filter.date], "date ok")
-        self.assertEqual(['#aff_num+idp', '#targeted_num'], [str(p) for p in filter.number], "number ok")
+        self.assertEqual(['#country', '#adm1'], [str(p) for p in filter.whitespace], "whitespace ok")
+        self.assertEqual(['#sector'], [str(p) for p in filter.upper], "upper ok")
+        self.assertEqual(['#org'], [str(p) for p in filter.lower], "lower ok")
+        self.assertEqual(['#date'], [str(p) for p in filter.date], "date ok")
+        self.assertEqual(['#affected'], [str(p) for p in filter.number], "number ok")
+        self.assertEqual(expected_values, filter.values)
 
     def test_add_count_filter(self):
         args = {
