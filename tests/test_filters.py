@@ -86,7 +86,7 @@ class TestPipelineFunctions(unittest.TestCase):
             'clean-toupper-tags07': 'sector',
             'clean-tolower-tags07': 'org',
             'clean-date-tags07': 'date',
-            'clean-number-tags07': 'affected'
+            'clean-num-tags07': 'affected'
         }
         expected_values = [
             ['org a', 'WASH', 'Country A', '200', '2010-06-01'],

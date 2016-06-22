@@ -190,7 +190,7 @@ def show_data_chart(recipe_id=None):
 
     args = flask.request.args
 
-    value_tag = args.get('value_tag')
+    value_pattern = args.get('value_tag')
     value_col = None
     if value_tag:
         value_pattern = hxl.TagPattern.parse(value_tag)
