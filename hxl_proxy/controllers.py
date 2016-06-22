@@ -192,8 +192,8 @@ def show_data_chart(recipe_id=None):
 
     value_pattern = args.get('value_tag')
     value_col = None
-    if value_tag:
-        value_pattern = hxl.TagPattern.parse(value_tag)
+    if value_pattern:
+        value_pattern = hxl.TagPattern.parse(value_pattern)
         value_col = value_pattern.find_column(source.columns)
 
     label_pattern = args.get('label_tag')
