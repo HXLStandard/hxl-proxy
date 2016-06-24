@@ -65,8 +65,31 @@
         
         <form class="panel-body" action="/data/edit" method="GET">
 
-          <div class="panel-body">
-            {% import 'includes/filters/filter-variables.j2' as vars %}
+          {% import 'includes/filters/filter-variables.j2' as vars %}
+
+          <div class="col-md-4">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="tagger-match-all"{% if
+                  recipe.args['tagger-match-all'] %}
+                  checked="checked"{% endif %}/>
+                Match full header text?
+              </label>
+            </div>
+            <div class="form-field">
+              <label for="tagger-default-tag">
+                Default HXL hashtag
+              </label>
+              <input class="form-control"
+                     name="tagger-default-tag"
+                     value="{{recipe.args['tagger-default-tag']}}"
+                     pattern="^{{vars.tag_pattern}}$"
+                     title="{{ vars.tag_help }}"
+                     placeholder="#tag"/>
+            </div>
+          </div>
+
+          <div class="col-md-8">
             <table>
               <thead>
                 <tr>
