@@ -543,7 +543,7 @@ hxl_proxy.ui.map = function(params) {
         } else if ((data.hasColumn('#geo+lat') || data.hasColumn('#lat_deg')) && (data.hasColumn('#geo+lon') || data.hasColumn('#lon_deg'))) {
             draw_points(data);
         } else {
-            alert("Either #geo+bounds or #geo+lat and #geo+lon needed for a map.");
+            alert("Please use the customise button to set up the map.");
         }
     }).fail(function () {
         alert("Failed to load dataset " + params.data_url);

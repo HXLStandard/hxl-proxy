@@ -263,7 +263,7 @@ def show_visualise_map(recipe_id=None):
     # Show the map.
     return flask.render_template(
         'visualise-map.html', recipe=recipe,
-        default_country=default_country, pcode_tag=pcode_col, layer_tag=layer_col, value_tag=value_col, source=source
+        default_country=default_country, pcode_tag=pcode_pattern, layer_tag=layer_pattern, value_tag=value_pattern, source=source
     )
 
 

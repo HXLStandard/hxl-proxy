@@ -98,12 +98,12 @@
     <script type="text/javascript" src="{{ static('libhxl/hxl.js') }}"></script>
     <script type="text/javascript">
       hxl_proxy.ui.map({
-          pcode_base_url: "{{ config.get('PCODE_BASE_URL')|safe }}",
-          csv_url: "{{ data_url(recipe, format='csv') | safe }}",
-          default_country: "{{ default_country|safe }}",
-          pcode_tag: "{{ pcode_tag|safe }}",
-          layer_tag: "{{ layer_tag|safe }}",
-          value_tag: "{{ value_tag|safe }}"
+          pcode_base_url: "{{ config.get('PCODE_BASE_URL')|nonone|safe }}",
+          csv_url: "{{ data_url(recipe, format='csv')|nonone|safe }}",
+          default_country: "{{ default_country|nonone|safe }}",
+          pcode_tag: "{{ pcode_tag|nonone|safe }}",
+          layer_tag: "{{ layer_tag|nonone|safe }}",
+          value_tag: "{{ value_tag|nonone|safe }}"
       });
     </script>
   </body>
