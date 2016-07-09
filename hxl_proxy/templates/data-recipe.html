@@ -31,10 +31,15 @@
         {% endif %}
         <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
-          <fieldset class="btn-group btn-group-vertical btn-group-justified" role="group" aria-label="Data filters">
+          <ol class="filter-list" role="group" aria-label="Data filters">
             {% for n in range(1, filter_count+1) %}
-            <div class="filter">
-              <a class="btn btn-default filter-button" data-toggle="modal" data-target="{{ '#filter-dialog-%02d' % n }}" href="{{ '#filter-dialog-%02d' % n }}">{{ n }}</a>
+            <li class="filter">
+              <span class="glyphicon glyphicon-move"></span>
+              <a class="filter-button"
+                 data-toggle="modal"
+                 data-target="{{'#filter-dialog-%02d' % n }}" href="{{'#filter-dialog-%02d' % n}}">
+                {{ n }}
+              </a>
               <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -66,9 +71,9 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </li>
             {% endfor %}
-          </fieldset>
+          </ol>
           <fieldset class="panel panel-info">
             <div class="panel-body">
               <div class="row">
@@ -117,6 +122,14 @@
     </main>
     {% include "includes/scripts.html" %}
     {% include "includes/chooser-scripts.html" %}
+    <script src="{{ static('jquery-sortable/jquery-sortable.js')}}"></script>
+    <script>
+      $(function  () {
+        $("ol.filter-list").sortable({
+          handle: ".glyphicon-move"
+        });
+      });      
+    </script>
     <script>
       hxl_proxy.ui.form();
       $(document).ready(function() {

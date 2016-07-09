@@ -23,10 +23,6 @@
     font-size: 120%;
 }
 
-.btn-group-vertical .btn {
-    width: 100%;
-}
-
 body {
     padding-top: 50px;
 }
@@ -178,4 +174,33 @@ aside img {
 
 p {
     margin: 1rem 0;
+}
+
+/* jquery-sortable */
+
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+ol.filter-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+ol.filter-list li.placeholder {
+    position: relative;
+    margin-bottom: 2ex;
+  /** More li styles **/
+}
+
+ol.filter-list li.placeholder:before {
+    position: absolute;
+    content: "\21D2";
+    margin-left: -1em;
 }

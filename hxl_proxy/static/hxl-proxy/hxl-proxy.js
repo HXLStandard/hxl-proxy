@@ -198,7 +198,7 @@ hxl_proxy.ui.form = function() {
 
     hxl_proxy.field_types = "input,select"
     $(".hideable").hide();
-    $("#filter-form div.filter").each(function (index) {
+    $("#filter-form .filter").each(function (index) {
         var filter_node = this;
         setup_fieldset(filter_node, index);
         $(filter_node).find(".field_filter select").on("change", function () {
