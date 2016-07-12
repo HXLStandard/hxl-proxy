@@ -49,6 +49,22 @@ HID_BASE_URL = 'https://auth.humanitarian.id' # change to http://auth.dev.humani
 #
 # Where to find shapes, etc. for p-codes. Usually leave as-is.
 #
-PCODE_BASE_URL = 'https://hxlstandard.github.io/p-codes/'
+PCODE_BASE_URL = 'https://hxlstandard.github.io/p-codes'
+
+#
+# Countries available for mapping (update as needed).
+#
+PCODE_COUNTRY_MAP = {
+    'Burundi': 'BDI',
+    'Cameroon': 'CMR',
+    'Chad': 'TCD',
+    'Ecuador': 'ECU',
+    'Guinea': 'GIN',
+    'Mali': 'MLI',
+    'Nepal': 'NPL',
+    'Niger': 'NER',
+    'Nigeria': 'NGA',
+    'Somalia': 'SOM',
+}
 
 # end

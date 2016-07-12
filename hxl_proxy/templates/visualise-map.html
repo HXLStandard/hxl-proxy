@@ -42,15 +42,9 @@
                   </label>
                   <select id="field.default_country" name="default_country" class="form-control">
                     <option value="">-- none --</option>
-                    <option value="BDI"{% if default_country=='BDI' %} selected="selected"{% endif %}>Burundi</option>
-                    <option value="CMR"{% if default_country=='CMR' %} selected="selected"{% endif %}>Cameroon</option>
-                    <option value="TCD"{% if default_country=='TCD' %} selected="selected"{% endif %}>Chad</option>
-                    <option value="GIN"{% if default_country=='GIN' %} selected="selected"{% endif %}>Guinea</option>
-                    <option value="MLI"{% if default_country=='MLI' %} selected="selected"{% endif %}>Mali</option>
-                    <option value="NPL"{% if default_country=='NPL' %} selected="selected"{% endif %}>Nepal</option>
-                    <option value="NER"{% if default_country=='NER' %} selected="selected"{% endif %}>Niger</option>
-                    <option value="NGA"{% if default_country=='NGA' %} selected="selected"{% endif %}>Nigeria</option>
-                    <option value="SOM"{% if default_country=='SOM' %} selected="selected"{% endif %}>Somalia</option>
+                    {% for name, code in config.get('PCODE_COUNTRY_MAP').items()|sort() %}
+                    <option value="{{ code }}"{% if default_country==code %} selected="selected"{% endif %}>{{ name }}</option>
+                    {% endfor %}
                   </select>
                 </div>
                 <div class="form-group">
@@ -59,7 +53,7 @@
                   </label>
                   <select name="pcode_tag" class="form-control">
                     <option value="">-- none --</option>
-                    {% for column in search_by_attributes(['code', 'p_code'], source.columns) %}
+                    {% for column in source.columns %}
                     <option value="{{ column.display_tag }}"{% if pcode_tag and pcode_tag.match(column) %} selected="selected"{% endif %}>{{ column.display_tag }}</option>
                     {% endfor %}
                   </select>
