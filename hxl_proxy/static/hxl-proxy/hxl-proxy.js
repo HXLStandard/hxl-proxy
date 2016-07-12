@@ -609,6 +609,49 @@ hxl_proxy.makeFieldName = function (parts) {
 };
 
 
+  $(function() {
+    $("form.autotrim").submit(function() {
+      $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+      return true; // ensure form still submits
+    });
+  });
+
+/**
+ * Trim empty fields from a form before submitting.
+ * TODO: needs to be able to handle failed validation.
+ */
+hxl_proxy.trimForm = function (contextNode) {
+    console.log("trimForm");
+    $(contextNode).find(":input").filter(function () {
+        return !this.value;
+    }).attr("disabled", "disabled");
+    return true; // ensure form still submits
+};
+
+
+// apply trimForm to all forms.
+$(function() {
+    $("form").submit(function() { hxl_proxy.trimForm(this); });
+});
+
+hxl_proxy.trimTagger = function (formNode) {
+    console.log("trimTagger");
+    for (var i = 1; i < 100; i++) {
+        var baseName = "tagger-" + hxl_proxy.pad2(i);
+        var headerNode = $(formNode).find("input[name='" + baseName + "-header']");
+        var tagNode = $(formNode).find("input[name='" + baseName + "-tag']");
+        if (!tagNode.val()) {
+            headerNode.attr("disabled", "disabled");
+            tagNode.attr("disabled", "disabled");
+        }
+    }
+    return true;
+};
+
+$(function() {
+    $("form.tagger").submit(function () { hxl_proxy.trimTagger(this); });
+});
+
 /**
  * Add a field in a list.
  */
