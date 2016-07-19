@@ -8,7 +8,7 @@
     {% with facet='source' %}
     {% include "includes/navbar.html" %}
     {% endwith %}
-    <header class="col-sm-12">
+    <header>
       {% if recipe.args.url %}
       {% with facet='source' %}
       {% include "includes/data-tabs.html" %}
@@ -18,7 +18,7 @@
         Choose your HXL data source
       </h1>
     </header>
-    <main class="col-sm-9 col-md-10">
+    <main>
       <section id="url" class="panel panel-primary">
         <div class="panel-heading">
           <h2 class="panel-title">
@@ -92,7 +92,6 @@
         </div>
       </section>
     </main>
-    {% include "includes/sidebar.html" %}
     {% include "includes/scripts.html" %}
     {% include "includes/chooser-scripts.html" %}
   </body>

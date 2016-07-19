@@ -13,7 +13,7 @@
   </head>
   <body class="container-fluid">
     {% include "includes/navbar.html" %}
-    <header class="col-sm-12">
+    <header>
       <h1>
         {% if recipe.name %}
         Validate {{ recipe.name }}
@@ -22,7 +22,7 @@
         {% endif %}
       </h1>
     </header>
-    <main class="col-sm-9">
+    <main>
       <p class="alert alert-info alert-dismissable" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
         {% if schema_url %}
@@ -150,7 +150,6 @@
         </div>
       </div>
     </main>
-    {% include "includes/sidebar.html" %}
     {% include "includes/scripts.html" %}
     {% include "includes/chooser-scripts.html" %}
   </body>

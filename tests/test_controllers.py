@@ -69,11 +69,6 @@ class TestDataSource(BaseControllerTest):
         assert b'<span>Dropbox</span>' in response.data
         assert b'<span>Google Drive</span>' in response.data
 
-    def test_sidebar(self):
-        response = self.get(self.path)
-        assert b'HXL on a postcard' in response.data
-
-
 class TestTaggerPage(BaseControllerTest):
 
     path = '/data/tagger'
