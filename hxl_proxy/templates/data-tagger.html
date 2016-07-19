@@ -12,8 +12,19 @@
       <h1>
         Tag a non-HXL dataset
       </h1>
+      {% include "includes/source.html" %}
+
+      {% if not using_tagger_p(recipe) %}
+      <p class="alert alert-warning">
+        We can't find any <a href="http://hxlstandard.org">HXL
+        hashtags</a> in your data, but all is not lost!  You can define
+        tags to go with your headers below, and the HXL Proxy will add
+        them automatically.
+      </p>
+      {% endif %}
+
     </header>
-    <main class="col-sm-9">
+    <main id="tagger" class="col-md-6 col-lg-5">
       {% if not header_row %}
       <section class="col-sm-12">
         {% include "includes/source.html" %}
@@ -48,49 +59,52 @@
 
       </section>
       {% else %}
-      <section class="col-sm-9 col-md-10">
+      <section>
 
-        {% include "includes/source.html" %}
-
-        {% if not using_tagger_p(recipe) %}
-        <p class="alert alert-warning">
-          We can't find any <a href="http://hxlstandard.org">HXL
-          hashtags</a> in your data, but all is not lost!  You can define
-          tags to go with your headers below, and the HXL Proxy will add
-          them automatically.
-        </p>
-        {% endif %}
-
-        <p class="alert alert-info">Pick HXL tags for some or all of your headers.</p>
-        
-        <form class="panel-body tagger" action="/data/edit" method="GET">
+        <form class="tagger" action="/data/edit" method="GET">
 
           {% import 'includes/filters/filter-variables.j2' as vars %}
 
-          <div class="col-md-4">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="tagger-match-all"{% if
-                  recipe.args['tagger-match-all'] %}
-                  checked="checked"{% endif %}/>
-                Match full header text?
-              </label>
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h2 class="panel-title">Tagger settings</h2>
             </div>
-            <div class="form-field">
-              <label for="tagger-default-tag">
-                Default HXL hashtag
-              </label>
-              <input class="form-control"
-                     name="tagger-default-tag"
-                     value="{{recipe.args['tagger-default-tag']}}"
-                     pattern="^{{vars.tag_pattern}}$"
-                     title="{{ vars.tag_help }}"
-                     placeholder="#tag"/>
+            <div class="form-group row panel-body">
+
+              <div class="checkbox col-sm-6">
+                <label>
+                  <input type="checkbox" name="tagger-match-all"{% if
+                    recipe.args['tagger-match-all'] %}
+                    checked="checked"{% endif %}/>
+                    Match full header text?
+                </label>
+              </div>
+
+              <div class="form-field col-sm-6">
+                <label for="tagger-default-tag">
+                  Default HXL hashtag
+                </label>
+                <input class="form-control"
+                       name="tagger-default-tag"
+                       value="{{recipe.args['tagger-default-tag']}}"
+                       pattern="^{{vars.tag_pattern}}$"
+                       title="{{ vars.tag_help }}"
+                       placeholder="#tag"/>
+              </div>
+
             </div>
           </div>
 
-          <div class="col-md-8">
-            <table>
+          <p class="alert alert-info">
+            Pick HXL tags for some or all of your headers.
+          </p>
+
+          <p class="visible-xs visible-sm">
+            (<a href="#preview">jump to raw source data preview</a>)
+          </p>
+
+          <div class="form-group">
+            <table class="table">
               <thead>
                 <tr>
                   <th></th>
@@ -134,7 +148,21 @@
       </section>
       {% endif %}
     </main>
-    {% include "includes/sidebar.html" %}
+    <aside id="preview" class="preview col-md-6 col-lg-7">
+      <h2>Raw source data (preview)</h2>
+      <p class="visible-xs visible-sm">
+        (<a href="#tagger">jump to tagger</a>)
+      </p>
+      <table class="table">
+        {% for row in preview %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </aside>
     {% include "includes/scripts.html" %}
   </body>
 </html>

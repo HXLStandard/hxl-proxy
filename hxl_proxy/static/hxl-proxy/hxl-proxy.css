@@ -59,6 +59,15 @@ section {
     overflow-x: auto;
 }
 
+aside.preview {
+    background: #eeeeee;
+    overflow: scroll;
+}
+
+.side-preview table {
+    font-size: 83.333333%;
+}
+
 td>.content {
     display: block;
     max-height: 10ex;
