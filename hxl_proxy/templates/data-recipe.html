@@ -124,17 +124,17 @@
     {% include "includes/chooser-scripts.html" %}
     <script src="{{ static('jquery-sortable/jquery-sortable.js')}}"></script>
     <script>
-      $(function  () {
-        $("ol.filter-list").sortable({
-          handle: ".glyphicon-move"
-        });
-      });      
+      //$(function  () {
+      //  $("ol.filter-list").sortable({
+      //    handle: ".glyphicon-move"
+      //  });
+      //});      
     </script>
     <script>
       hxl_proxy.ui.form();
       $(document).ready(function() {
-      // add the preview warning, with total row count
-      $("#preview-warning").insertBefore($(".hxltable"));
+        // add the preview warning, with total row count
+        $("#preview-warning").insertBefore($(".hxltable"));
       });
     </script>
   </body>
