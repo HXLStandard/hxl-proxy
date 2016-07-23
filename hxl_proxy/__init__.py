@@ -9,6 +9,7 @@ Documentation: http://hxlstandard.org
 
 import os
 
+import requests_cache
 from flask import Flask, g, request
 from flask_cache import Cache
 
@@ -29,6 +30,8 @@ cache = Cache(app,config={
     'CACHE_THRESHOLD': app.config.get('CACHE_MAX_ITEMS', 1000),
     'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600)
 })
+
+requests_cache.install_cache('/tmp/hxl_proxy_requests')
 
 # Needed to register annotations
 import hxl_proxy.controllers
