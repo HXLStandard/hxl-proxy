@@ -33,7 +33,7 @@ def resolve_path(filename):
     return os.path.join(os.path.dirname(__file__), filename)
 
 # Target function to replace for mocking URL access.
-URL_MOCK_TARGET = 'hxl.io.make_stream'
+URL_MOCK_TARGET = 'hxl.io.open_url_or_file'
 
 # Mock object to replace hxl.io.make_stream
 URL_MOCK_OBJECT = unittest.mock.Mock()
