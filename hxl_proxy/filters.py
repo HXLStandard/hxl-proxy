@@ -77,7 +77,7 @@ def make_tagged_input(args):
             specs.append((header, tag))
     if len(specs) > 0:
         match_all = (True if args.get('tagger-match-all') else False)
-        default_tag = args.get('tagger-default-tag')
+        default_tag = _parse_tagspec(args.get('tagger-default-tag'))
         if not default_tag:
             default_tag = None
         input = Tagger(input, specs, default_tag=default_tag, match_all=match_all)

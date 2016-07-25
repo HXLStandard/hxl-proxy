@@ -142,7 +142,9 @@
             <button class="btn btn-success" type="submit">Next</button>
           </div>
 
+          {% with exclude_prefix='tagger-' %}
           {% include "includes/params.html" %}
+          {% endwith %}
 
         </form>
       </section>
