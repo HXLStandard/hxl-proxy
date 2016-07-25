@@ -27,6 +27,12 @@ CACHE_MAX_ITEMS = 1000
 CACHE_DEFAULT_TIMEOUT_SECONDS = 3600 # 1 hour
 
 #
+# Request cache
+#
+REQUEST_CACHE = '/tmp/hxl_proxy_requests''
+REQUEST_CACHE_TIMEOUT_SECONDS = 3600
+
+#
 # SQLite3 database
 # (web server must have write access to directory)
 #

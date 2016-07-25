@@ -23,7 +23,7 @@ if os.environ.get('HXL_PROXY_CONFIG'):
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
-# Set up cache
+# Set up output cache
 cache = Cache(app,config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': app.config.get('CACHE_DIR', '/tmp/'),
@@ -31,7 +31,11 @@ cache = Cache(app,config={
     'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600)
 })
 
-requests_cache.install_cache('/tmp/hxl_proxy_requests', expire_after=3600)
+# Set up input cache
+requests_cache.install_cache(
+    app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
+    expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+)
 
 # Needed to register annotations
 import hxl_proxy.controllers
