@@ -8,8 +8,10 @@ hxl.filter objects from them and build a pipeline.
 """
 
 import hxl
+from hxl_proxy import exceptions, util
 import hxl.filters # why do we have to import this???
 from hxl.converters import Tagger
+
 
 # Maximum number of filters to check
 MAX_FILTER_COUNT = 99
@@ -27,6 +29,12 @@ def setup_filters(recipe):
 
     # Basic input source
     source = hxl.data(make_tagged_input(recipe['args']))
+
+    # Intercept missing hashtags here
+    try:
+        source.columns
+    except hxl.io.HXLTagsNotFoundException:
+        raise exceptions.RedirectException(util.make_data_url(recipe, facet='tagger'), 303, 'No HXL hashtags found')
 
     # Create the filter pipeline from the source
     for index in range(1, MAX_FILTER_COUNT):

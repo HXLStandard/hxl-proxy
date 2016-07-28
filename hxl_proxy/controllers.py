@@ -9,7 +9,7 @@ Documentation: http://hxlstandard.org
 
 import flask, hxl, urllib, werkzeug
 
-from . import app, auth, cache, dao, filters, preview, util, validate
+from . import app, auth, cache, dao, filters, preview, util, validate, exceptions
 
 
 # FIXME - move somewhere else
@@ -32,7 +32,7 @@ RECIPE_ARG_BLACKLIST = [
 # Error handling
 #
 
-def error(e):
+def handle_exception(e):
     """Default error page."""
     if isinstance(e, IOError):
         # probably tried to open an inappropriate URL
@@ -41,9 +41,18 @@ def error(e):
         status = 500
     return flask.render_template('error.html', e=e, category=type(e)), status
 
-if not app.config.get('DEBUG'):
-    # Register only if not in DEBUG mode
-    app.register_error_handler(BaseException, error)
+app.register_error_handler(Exception, handle_exception)
+
+#
+# Redirects
+#
+def handle_redirect_exception(e):
+    if e.message:
+        flask.flash(e.message)
+    return flask.redirect(e.target_url, e.http_code)
+
+app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
+    
 
 
 #
@@ -139,12 +148,7 @@ def show_data_edit(recipe_id=None):
 
     if recipe['args'].get('url'):
         # show only a short preview
-        try:
-            source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=5)
-            source.columns # force-trigger an exception if not tagged
-        except:
-            flask.flash('No HXL tags found')
-            return flask.redirect(util.make_data_url(recipe, facet='tagger'), 303)
+        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=5)
     else:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.make_data_url(recipe, facet='source'), 303)
