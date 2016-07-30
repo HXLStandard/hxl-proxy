@@ -122,13 +122,14 @@
     </main>
     {% include "includes/scripts.html" %}
     {% include "includes/chooser-scripts.html" %}
-    <script src="{{ static('jquery-sortable/jquery-sortable.js')}}"></script>
+    <script src="{{ static('jquery/jquery-ui.min.js')}}"></script>
     <script>
-      //$(function  () {
-      //  $("ol.filter-list").sortable({
-      //    handle: ".glyphicon-move"
-      //  });
-      //});      
+      $(function  () {
+        $("ol.filter-list").sortable({
+          handle: ".glyphicon-move",
+          update: function (event, ui) { console.log('update'); }
+        });
+      });      
     </script>
     <script>
       hxl_proxy.ui.form();
