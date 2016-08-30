@@ -1,0 +1,14 @@
+2016-08-30 Release 0.6
+	- Add support for requests-cache, so that different views of the same
+	  dataset won't require constant redownloading.
+	- Add support for a local copy of the p-code GeoJSON shapes tree, for
+	  offline demos (or other purposes).
+	- Make the list of countries presented in the mapping dropdown menu
+	  configurable.
+	- Fix exception handling around a missing data source, to avoid
+	  unpredictable behaviour (and incorrect claims of missing HXL hashtags
+	  on first load from Google Drive).
+	- Start adding scaffolding for jquery-sortable to rearrange filters, but
+	  not supported yet in the backend.
+	- Remove the sidebar (very slow to download the PNGs in a field
+	  environment).
