@@ -11,7 +11,7 @@ TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), 'test-data.sql')
 # Mock URL access for local testing
 #
 
-def mock_open_url(url, allow_local=False):
+def mock_open_url(url, allow_local=False, timeout=None):
     """
     Open local files instead of URLs.
     If it's a local file path, leave it alone; otherwise,
