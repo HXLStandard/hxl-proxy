@@ -31,11 +31,7 @@ cache = Cache(app,config={
     'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600)
 })
 
-# Set up input cache
-requests_cache.install_cache(
-    app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
-    expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
-)
+# (Setting up requests cache dynamically in controllers.py)
 
 # Needed to register annotations
 import hxl_proxy.controllers

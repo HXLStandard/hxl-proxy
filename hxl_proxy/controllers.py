@@ -319,7 +319,16 @@ def show_data(recipe_id=None, format="html", stub=None):
         recipe = util.get_recipe(recipe_id, auth=False)
         if not recipe or not recipe['args'].get('url'):
             return flask.redirect('/data/source', 303)
-        source = filters.setup_filters(recipe)
+
+        # Use caching if requested
+        if util.skip_cache_p():
+            source = filters.setup_filters(recipe)
+        else:
+            with requests_cache.enabled(
+                    app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
+                    expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+            ):
+                source = filters.setup_filters(recipe)
 
         # Output parameters
         show_headers = (recipe['args'].get('strip-headers') != 'on')
