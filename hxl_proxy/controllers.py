@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, urllib, werkzeug
+import flask, hxl, requests_cache, urllib, werkzeug
 
 from . import app, auth, cache, dao, filters, preview, util, validate, exceptions
 
