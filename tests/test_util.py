@@ -15,7 +15,7 @@ class TestUtil(unittest.TestCase):
     def test_make_cache_key(self):
         """Test making a cache key for a set of arguments."""
         import pickle
-        with hxl_proxy.app.test_request_context('/data?a=aa&b=bb&force=1'):
+        with hxl_proxy.app.test_request_context('/data?a=aa&b=bb&force=on'):
             # force should be skipped
             args_out = {'a': 'aa', 'b': 'bb'}
             # this could fail in the future because key ordering isn't predictable

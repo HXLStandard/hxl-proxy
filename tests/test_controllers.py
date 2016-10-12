@@ -141,7 +141,8 @@ class TestEditPage(BaseControllerTest):
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.get('/data/edit', {
-            'url': DATASET_URL
+            'url': DATASET_URL,
+            'force': 'on'
         })
         assert b'Add filters to your data recipe' in response.data
         self.assertBasicDataset(response)
@@ -164,19 +165,20 @@ class TestDataPage(BaseControllerTest):
 
     def test_local_file(self):
         """Make sure we're not leaking local data."""
-        response = self.get('/data?url=/etc/passwd', status=403)
+        response = self.get('/data?url=/etc/passwd&force=on', status=403)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
         response = self.get('/data', {
-            'url': DATASET_URL
+            'url': DATASET_URL,
+            'force': 'on'
         })
         assert b'View data' in response.data
         self.assertBasicDataset(response)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_recipe_id(self):
-        response = self.get('/data/{}'.format(self.recipe_id))
+        response = self.get('/data/{}?force=on'.format(self.recipe_id))
         assert b'Recipe #1' in response.data
         self.assertBasicDataset(response)
 
