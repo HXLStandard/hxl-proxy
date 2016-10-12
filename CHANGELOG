@@ -1,3 +1,5 @@
+	- &force=on works for input as well as output
+
 2016-08-30 Release 0.6
 	- Add support for requests-cache, so that different views of the same
 	  dataset won't require constant redownloading.
