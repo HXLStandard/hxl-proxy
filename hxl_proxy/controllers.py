@@ -335,7 +335,7 @@ def show_data(recipe_id=None, format="html", stub=None):
 
         # Return a generator based on the format requested
         if format == 'html':
-            return flask.render_template('data-view.html', source=source, recipe=recipe, show_headers=show_headers)
+            return flask.render_template('data-view.html', source=preview.PreviewFilter(source, max_rows=5000), recipe=recipe, show_headers=show_headers)
         elif format == 'json':
             response = flask.Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'

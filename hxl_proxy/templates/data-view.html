@@ -43,9 +43,25 @@
         {% endif %}
       </div>
       <section id="data" class="col-xs-12">
-        {% include 'includes/hxltable.html' %}
+        <div id="preview-table">
+          {% include 'includes/hxltable.html' %}
+        </div>
+        {% if source.has_more_rows %}
+        <div id="preview-warning" class="alert alert-warning">
+          <strong>Note:</strong> Showing only the first {{
+          "{:,}".format(source.max_rows) }} of {{
+          "{:,}".format(source.total_rows) }} data rows. Download the
+          CSV or JSON for the full dataset.
+        </div>
+        {% endif %}
       </section>
     </main>
     {% include "includes/scripts.html" %}
+    <script>
+      $(document).ready(function() {
+        // add the preview warning, with total row count
+        $("#preview-warning").insertBefore($(".hxltable"));
+      });
+    </script>
   </body>
 </html>
