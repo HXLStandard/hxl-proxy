@@ -49,8 +49,12 @@
         {% if source.has_more_rows %}
         <div id="preview-warning" class="alert alert-warning">
           <strong>Note:</strong> Showing only the first {{
-          "{:,}".format(source.max_rows) }} of {{
-          "{:,}".format(source.total_rows) }} data rows. Download the
+          "{:,}".format(source.max_rows) }} data rows. Download the
+          CSV or JSON for the full dataset.
+        </div>
+        <div id="post-preview-warning" class="alert alert-warning">
+          <strong>Note:</strong> Showing only the first {{
+          "{:,}".format(source.max_rows) }} data rows. Download the
           CSV or JSON for the full dataset.
         </div>
         {% endif %}

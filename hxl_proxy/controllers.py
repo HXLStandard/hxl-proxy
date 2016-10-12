@@ -148,7 +148,7 @@ def show_data_edit(recipe_id=None):
 
     if recipe['args'].get('url'):
         # show only a short preview
-        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=5)
+        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=25)
     else:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.make_data_url(recipe, facet='source'), 303)
