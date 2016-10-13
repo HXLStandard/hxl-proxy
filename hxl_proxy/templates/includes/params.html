@@ -1,16 +1,5 @@
-<div class="saved-params">
-  {#
-    Dump all of the current recipe args as hidden fields
-
-    If "excludes" is set, don't dump any fields with names in the
-    sequence.
-
-    If "exclude_prefix" is set, don't set any name that matches the
-    prefix (e.g. "tagger-").
-  #}
-  {% for name in recipe.args.keys() %}
-  {% if (not excludes or name not in excludes) and (not exclude_prefix or not name.startswith(exclude_prefix)) %}
-  <input type="hidden" name="{{ name }}" value="{{ recipe.args.get(name) }}" />
-  {% endif %}
-  {% endfor %}
+<div>
+  {% include "includes/metadata-params.html" %}
+  {% include "includes/tagger-params.html" %}
+  {% include "includes/recipe-params.html" %}
 </div>

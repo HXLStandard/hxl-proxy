@@ -46,7 +46,7 @@
             <td>
               <form method="GET" action="">
                 <input type="hidden" name="header-row" value="{{ loop.index }}" />
-                {% include "includes/params.html" %}
+                {% include "includes/recipe-params.html" %}
                 <button class="btn btn-default">Row {{ loop.index }}</button>
               </form>
             </td>
@@ -142,9 +142,8 @@
             <button class="btn btn-success" type="submit">Next</button>
           </div>
 
-          {% with exclude_prefix='tagger-' %}
-          {% include "includes/params.html" %}
-          {% endwith %}
+          {% include "includes/metadata-params.html" %}
+          {% include "includes/recipe-params.html" %}
 
         </form>
       </section>

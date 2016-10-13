@@ -64,7 +64,9 @@
               </div>
             </div>
 
+            {% with excludes=['url'] %}
             {% include "includes/params.html" %}
+            {% endwith %}
 
           </form>
         </div>

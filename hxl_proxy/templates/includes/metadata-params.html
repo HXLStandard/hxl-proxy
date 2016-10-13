@@ -1,0 +1,8 @@
+<div>
+  <!-- Saved metadata parameters -->
+  {% for name in ['url', 'name', 'description', 'stub', 'schema_url'] %}
+  {% if recipe.args.get(name) and (not excludes or name not in excludes) %}
+  <input type="hidden" name="{{ name }}" value="{{ recipe.args.get(name) }}"/>
+  {% endif %}
+  {% endfor %}
+</div>
