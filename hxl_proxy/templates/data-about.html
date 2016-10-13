@@ -61,8 +61,9 @@
         {% if recipe.recipe_id %}
         <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}" />
         {% endif %}
-        {% include "includes/tagger-params.html" %}
-        {% include "includes/recipe-params.html" %}
+        {% with excludes=['name', 'description', 'schema_url', 'stub', 'cloneable' ] %}
+        {% include "includes/params.html" %}
+        {% endwith %}
       </form>
     </main>
     {% include "includes/scripts.html" %}

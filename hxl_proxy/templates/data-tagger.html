@@ -46,6 +46,7 @@
             <td>
               <form method="GET" action="">
                 <input type="hidden" name="header-row" value="{{ loop.index }}" />
+                {% include "includes/metadata-params.html" %}
                 {% include "includes/recipe-params.html" %}
                 <button class="btn btn-default">Row {{ loop.index }}</button>
               </form>
