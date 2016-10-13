@@ -2,7 +2,9 @@
   <!-- Saved autotagger parameters -->
   {% for name in recipe.args.keys() %}
   {% if (name.startswith('tagger-') or name=='header-row') and recipe.args.get(name) %}
+  {% if (not name.endswith('-header')) or recipe.args.get(name[:-7] + '-tag') %}
   <input type="hidden" name="{{ name }}" value="{{ recipe.args.get(name) }}"/>
+  {% endif %}
   {% endif %}
   {% endfor %}
 </div>
