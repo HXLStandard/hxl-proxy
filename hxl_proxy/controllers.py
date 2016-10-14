@@ -124,7 +124,7 @@ def show_data_tag(recipe_id=None):
 
     preview = []
     i = 0
-    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=0):
+    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index):
         if i >= 25:
             break
         else:
