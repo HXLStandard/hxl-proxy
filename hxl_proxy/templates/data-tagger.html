@@ -85,7 +85,7 @@
               <div class="checkbox col-sm-6">
                 <label>
                   <input type="checkbox" name="tagger-match-all"
-                         {% if recipe.args.get('tagger-match-all') or not ('tagger-match-all' in recipe.args) %}
+                         {% if recipe.args.get('tagger-match-all') or not using_tagger_p(recipe) %}
                          checked="checked"
                          {% endif %}/>
                     Match full header text?
