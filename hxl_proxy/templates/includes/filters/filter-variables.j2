@@ -1,7 +1,7 @@
 {% set token_pattern = '[A-Za-z][_0-9A-Za-z]*' %}
 
 {% set tag_pattern = '#?' + token_pattern + '(\s*[+]' + token_pattern + ')*' %}
-{% set tag_help = 'Example: #adm1 +code' %}
+{% set tag_help = 'Example (hash optional): #adm1 +code' %}
 {% set tag_placeholder = '#tag' %}
 
 {% set tags_pattern = '(' + tag_pattern + ')(,' + tag_pattern + ')*' %}
