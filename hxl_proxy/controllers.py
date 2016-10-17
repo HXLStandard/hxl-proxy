@@ -109,7 +109,7 @@ def show_data_tag(recipe_id=None):
     except werkzeug.exceptions.Forbidden as e:
         return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
-    header_row = flask.request.args.get('header-row')
+    header_row = recipe['args'].get('header-row')
     if header_row:
         header_row = int(header_row)
 

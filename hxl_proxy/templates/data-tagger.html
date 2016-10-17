@@ -25,7 +25,7 @@
 
     </header>
     <main id="tagger" class="col-md-6 col-lg-5">
-      {% if not header_row %}
+      {% if (not recipe.recipe_id) and (not header_row) %}
       <section class="col-sm-12">
         {% include "includes/source.html" %}
 
@@ -62,8 +62,18 @@
       {% else %}
       <section>
 
-        <form class="tagger" action="/data/edit" method="GET">
+        {% if recipe.recipe_id %}
+        {% set method="POST" %}
+        {% set action="/actions/save-recipe" %}
+        {% else %}
+        {% set method="GET" %}
+        {% set action="/data/edit" %}
+        {% endif %}
+        <form class="tagger" action="{{ action }}" method="{{ method }}">
 
+          {% if recipe.recipe_id %}
+          <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
+          {% endif %}
           {% import 'includes/filters/filter-variables.j2' as vars %}
 
           <div class="panel panel-primary">
@@ -74,9 +84,10 @@
 
               <div class="checkbox col-sm-6">
                 <label>
-                  <input type="checkbox" name="tagger-match-all"{% if
-                    recipe.args['tagger-match-all'] %}
-                    checked="checked"{% endif %}/>
+                  <input type="checkbox" name="tagger-match-all"
+                         {% if recipe.args.get('tagger-match-all') or not ('tagger-match-all' in recipe.args) %}
+                         checked="checked"
+                         {% endif %}/>
                     Match full header text?
                 </label>
               </div>
