@@ -94,6 +94,15 @@
                   </div>
                 </div>
               </div>
+              <div class="row small">
+                <div class="form-group col-md-12">
+                  <label for="stub">Download filename (without ext)</label>
+                  <input name="stub" required="required" class="form-control" value="{{ recipe.stub|nonone }}" placeholder="data-filename" />
+                </div>
+                <label>
+                  
+                </label>
+              </div>
               <div class="form-input">
                 <button class="btn btn-info btn-xs">Update preferences</button>
                 <a class="btn btn-success btn-xs pull-right" href="{{ data_url(recipe) }}">Done filters</a>

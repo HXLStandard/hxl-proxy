@@ -307,6 +307,7 @@ def show_validate(recipe_id=None):
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data.<format>")
 @app.route("/data")
+@app.route("/data/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def show_data(recipe_id=None, format="html", stub=None):

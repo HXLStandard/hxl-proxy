@@ -91,6 +91,8 @@ def get_recipe(recipe_id=None, auth=False, args=None):
             raise Forbidden("Wrong or missing password.")
     else:
         recipe = {'args': {key: args.get(key) for key in args}}
+        if args.get('stub'):
+            recipe['stub'] = args.get('stub')
 
     # Allow some values to be overridden from request parameters
     for key in RECIPE_OVERRIDES:
@@ -167,7 +169,10 @@ def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
     else:
         url = '/data'
         if format:
-            url += '.' + urlquote(format)
+            if recipe.get('stub'):
+                url += '/download/' + urlquote(recipe['stub']) + '.' + urlquote(format)
+            else:
+                url += '.' + urlquote(format)
         elif facet and facet != 'clone':
             url += '/' + urlquote(facet)
         if recipe.get('args'):
