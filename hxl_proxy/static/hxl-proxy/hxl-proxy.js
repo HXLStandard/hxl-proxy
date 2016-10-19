@@ -667,4 +667,30 @@ hxl_proxy.addField = function (contextNode) {
     }
 };
 
+
+/**
+ * Event handler: renumber HTML markup for a filter list and submit.
+ * Event handler for the sortable JS library.
+ */
+hxl_proxy.resortFilterForms = function (event, ui) {
+    $(event.target.childNodes).filter('.filter').each(hxl_proxy.renumberFilterForm);
+    $(event.target.childNodes).closest('form').submit();
+};
+
+
+/**
+ * Renumber HTML markup for a filter form (including all fields).
+ * @param index The zero-based index in the new order (will be converted to 1-based).
+ * @param filterNode The root node of the tree to renumber.
+ */
+hxl_proxy.renumberFilterForm = function (index, filterNode) {
+    $(filterNode).find('[name]').each(function (i, formNode) {
+        var oldValue = $(formNode).attr('name');
+        var newValue = oldValue.replace(/\d\d/, hxl_proxy.pad2(index + 1));
+        if (oldValue != newValue) {
+            $(formNode).attr('name', newValue);
+        }
+    });
+};
+
 // end
