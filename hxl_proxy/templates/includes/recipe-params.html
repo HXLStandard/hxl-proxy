@@ -3,7 +3,7 @@
   {% for name in recipe.args.keys() %}
   {%
     if not name.startswith('tagger-') and
-       name not in ['url', 'name', 'description', 'stub', 'schema_url'] and
+       name not in ['url', 'name', 'description', 'stub', 'schema_url', 'format'] and
        (not excludes or name not in excludes) and
        recipe.args.get(name)
   %}
