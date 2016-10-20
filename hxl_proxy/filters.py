@@ -96,7 +96,7 @@ def add_add_filter(source, args, index):
     """Add the hxladd filter to the end of the chain."""
     tagspec = _parse_tagspec(args.get('add-tag%02d' % index))
     header = args.get('add-header%02d' % index)
-    value = args.get('add-value%02d' % index)
+    value = args.get('add-value%02d' % index, '')
     before = (args.get('add-before%02d' % index) == 'on')
     values = [(hxl.Column.parse(tagspec, header=header), value)]
     return source.add_columns(specs=values, before=before)
