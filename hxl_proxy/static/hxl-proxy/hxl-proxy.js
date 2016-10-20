@@ -177,19 +177,13 @@ hxl_proxy.ui.form = function() {
         filter_class = ".fields-" + filter_name;
         filter_title = (filter_desc ? filter_desc : '(not set)');
         if (filter_title == '(none)') {
-            filter_title = "Add new filter";
+            filter_title = "(add new step)";
         }
         $(node).find(".modal-title").text(filter_title);
 
         var filter_button = $(node).find(".filter-button");
         filter_button.text(filter_title);
-        if (filter_name) {
-            filter_button.removeClass("btn-default")
-            filter_button.addClass("btn-primary")
-        } else {
-            filter_button.removeClass("btn-primary")
-            filter_button.addClass("btn-default")
-        }
+
         $(node).find(".hideable").hide();
         $(node).find(".hideable").find(hxl_proxy.field_types).prop("disabled", true);
         $(node).find(filter_class).show();
@@ -691,6 +685,19 @@ hxl_proxy.renumberFilterForm = function (index, filterNode) {
             $(formNode).attr('name', newValue);
         }
     });
+};
+
+/**
+ * Remove a filter from the form.
+ */
+hxl_proxy.removeFilter = function (node) {
+    if (confirm("Remove filter?")) {
+        var form = $(node).closest('form');
+        $(node).closest("li").remove();
+        form.find('.filter').each(hxl_proxy.renumberFilterForm);
+        form.submit();
+    }
+    return false;
 };
 
 // end

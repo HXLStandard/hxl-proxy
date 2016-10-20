@@ -1,3 +1,7 @@
+	- use "recipe" and "step" (instead of "filters") on data recipe page
+	- allow sorting filters/steps
+	- allow deleting filters/steps
+	- remove type selector for an already-defined filter/step
 	- &force=on works for input as well as output
 	- limit HTML table display to 5,000 rows to avoid timeouts (full
 	  dataset still available via CSV or JSON download)

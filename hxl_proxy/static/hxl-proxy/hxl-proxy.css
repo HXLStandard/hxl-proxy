@@ -202,14 +202,16 @@ ol.filter-list {
     padding-left: 0;
 }
 
-ol.filter-list li.placeholder {
-    position: relative;
-    margin-bottom: 2ex;
-  /** More li styles **/
+ol.filter-list li.filter {
+    margin-bottom: 1ex;
 }
 
 ol.filter-list li.placeholder:before {
     position: absolute;
     content: "\21D2";
     margin-left: -1em;
+}
+
+ol.filter-list .filter-delete {
+    float: right;
 }

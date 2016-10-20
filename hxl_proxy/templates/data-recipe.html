@@ -13,7 +13,7 @@
       {% include "includes/data-tabs.html" %}
       {% endwith %}
       <h1>
-        Add filters to your data recipe
+        Data transformation recipe
       </h1>
     </header>
     <main class="row">
@@ -21,7 +21,7 @@
         {% include "includes/source.html" %}
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
-        <h3>Filters</h3>
+        <h3>Recipe steps</h3>
         {% if recipe.recipe_id %}
         {% set method="POST" %}
         {% set action="/actions/save-recipe" %}
@@ -33,13 +33,20 @@
 
           <ol class="filter-list" role="group" aria-label="Data filters">
             {% for n in range(1, filter_count+1) %}
-            <li class="filter">
+            <li class="filter{% if n!=filter_count %} sort-item{% endif %}">
+              {% if n != filter_count %}
               <span class="glyphicon glyphicon-move"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-plus"></span>
+              {% endif %}
               <a class="filter-button"
                  data-toggle="modal"
                  data-target="{{'#filter-dialog-%02d' % n }}" href="{{'#filter-dialog-%02d' % n}}">
                 {{ n }}
               </a>
+              {% if n<filter_count %}
+              <span class="filter-delete">[<a onclick="hxl_proxy.removeFilter(this);">x</a>]</span>
+              {% endif %}
               <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -48,7 +55,9 @@
                     </div>
                     <div class="modal-body">
                       <fieldset id="{{ 'filter-group%02d' % n }}">
-                        {% include 'includes/filters/filter-selector.html' %}
+                        <div class="{% if n!=filter_count %}hidden{% endif %}">
+                          {% include 'includes/filters/filter-selector.html' %}
+                        </div>
 
                         {% include 'includes/filters/add.html' %}
                         {% include 'includes/filters/append.html' %}
@@ -63,10 +72,10 @@
                         {% include 'includes/filters/replace-map.html' %}
                         {% include 'includes/filters/select.html' %}
                         {% include 'includes/filters/sort.html' %}
-
                       </fieldset>
 
-                      <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Update</span></button>
+                      <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
+                      <a onclick="hxl_proxy.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove</span></a>
                     </div>
                   </div>
                 </div>
@@ -118,7 +127,7 @@
       </section>
 
       <section class="col-sm-8 col-md-9">
-        <h3>Preview</h3>
+        <h3>Result preview</h3>
         <div id="preview-table">
           {% include 'includes/hxltable.html' %}
         </div>
@@ -136,7 +145,8 @@
       $(function  () {
         $("ol.filter-list").sortable({
           handle: ".glyphicon-move",
-          update: hxl_proxy.resortFilterForms
+          update: hxl_proxy.resortFilterForms,
+          items: '.sort-item'
         });
       });      
     </script>

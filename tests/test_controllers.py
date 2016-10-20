@@ -115,7 +115,7 @@ class TestTaggerPage(BaseControllerTest):
             'tagger-03-header': 'country',
             'tagger-03-tag': 'country'
         })
-        assert b'<h3>Preview</h3>' in response.data
+        assert b'<h3>Result preview</h3>' in response.data
         assert b'<th>#org</th>' in response.data
         assert b'<th>#sector</th>' in response.data
         assert b'<th>#country</th>' in response.data
@@ -144,7 +144,7 @@ class TestEditPage(BaseControllerTest):
             'url': DATASET_URL,
             'force': 'on'
         })
-        assert b'Add filters to your data recipe' in response.data
+        assert b'Data transformation recipe' in response.data
         self.assertBasicDataset(response)
 
     def test_need_login(self):
