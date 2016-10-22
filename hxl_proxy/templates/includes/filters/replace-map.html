@@ -25,4 +25,19 @@
     {% endwith %}
   </div>
 
+  {% set name='replace-map-where%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Replace only in rows matching this query
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
 </div>

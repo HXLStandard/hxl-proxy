@@ -35,8 +35,14 @@ main {
     margin-top: 1rem;
 }
 
+label {
+    font-weight: normal;
+    font-style: italic;
+}
+
 .required label {
     font-weight: bold;
+    font-style: normal;
 }
 
 .required label:before {

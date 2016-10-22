@@ -21,4 +21,19 @@
         placeholder="{{ vars.filters_placeholder }}" />
   </div>
 
+  {% set name='dedup-where%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Deduplicate only rows matching this query
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
 </div>

@@ -50,5 +50,18 @@
         placeholder="#tag" />
   </div>
 
+  {% set name='count-where%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Count only rows that match this query
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="#tag=value" />
+  </div>
 
 </div>

@@ -117,20 +117,16 @@ def add_clean_filter(source, args, index):
     lower_tags = hxl.TagPattern.parse_list(args.get('clean-tolower-tags%02d' % index, ''))
     date_tags = hxl.TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
     number_tags = hxl.TagPattern.parse_list(args.get('clean-num-tags%02d' % index, ''))
-    return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags)
+    row_query = args.get('clean-where%02d' % index, None)
+    return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, number=number_tags, queries=row_query)
 
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
     tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
-    count_spec = args.get('count-spec%02d' % index, None)
-    if not count_spec:
-        count_spec = 'Count#meta+count'
+    count_spec = args.get('count-spec%02d' % index, 'Count#meta+count')
     aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
-    if aggregate_pattern:
-        aggregate_pattern = hxl.TagPattern.parse(aggregate_pattern)
-    else:
-        aggregate_pattern = None
-    return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec)
+    row_query = args.get('count-where%02d' % index, None)
+    return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec, queries=row_query)
 
 def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""
@@ -143,7 +139,9 @@ def add_column_filter(source, args, index):
     return source
 
 def add_dedup_filter(source, args, index):
-    return source.dedup(args.get('dedup-tags%02d' % index, []))
+    tags = args.get('dedup-tags%02d' % index, [])
+    row_query = args.get('dedup-where%02d' % index, '')
+    return source.dedup(tags, queries=row_query)
 
 def add_explode_filter(source, args, index):
     return source.explode(
@@ -175,12 +173,14 @@ def add_replace_filter(source, args, index):
     replacement = args.get('replace-value%02d' % index)
     tags = args.get('replace-tags%02d' % index)
     use_regex = args.get('replace-regex%02d' % index)
-    return source.replace_data(original, replacement, tags, use_regex)
+    row_query = args.get('replace-where%02d' % index)
+    return source.replace_data(original, replacement, tags, use_regex, queries=row_query)
 
 def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
-    return source.replace_data_map(hxl.data(url))
+    row_query = args.get('replace-map-where%02d' % index)
+    return source.replace_data_map(hxl.data(url), queries=row_query)
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""

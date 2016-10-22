@@ -20,6 +20,20 @@
         />
   </div>
 
+  {% set name='replace-regex%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          {% if recipe.args[name] %}
+          checked="checked"
+          {% endif %}
+          />
+      Use a regular expression pattern.
+    </label>
+  </div>
+
   {% set name='replace-value%02d' % n %}
   <div id="{{ name }}" class="form-group required">
     <label for="{{ name }}">
@@ -49,18 +63,19 @@
         />
   </div>
 
-  {% set name='replace-regex%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
-    <label>
-      <input
-          type="checkbox"
-          name="{{ name }}"
-          {% if recipe.args[name] %}
-          checked="checked"
-          {% endif %}
-          />
-      Use a regular expression pattern.
+  {% set name='replace-where%02d' % n %}
+  <div id="{{ name }}" class="form-group">
+    <label for="{{ name }}">
+      Replace only in rows matching this query
     </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
   </div>
 
 </div>
