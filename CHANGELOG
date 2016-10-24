@@ -1,3 +1,5 @@
+	- add row queries for clean, count, deduplicate, replace, and
+	  replace-map filters
 	- use "recipe" and "step" (instead of "filters") on data recipe page
 	- allow sorting filters/steps
 	- allow deleting filters/steps
