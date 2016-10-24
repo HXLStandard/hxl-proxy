@@ -5,7 +5,7 @@
       {% set name='filter%02d' % n %}
       <select name="{{ name }}" class="form-control">
         <option value="">(none)</option>
-        <option value="add"{% if recipe.args[name]=='add' %} selected="selected"{% endif %}>Add columns</option>
+        <option value="add"{% if recipe.args[name]=='add' %} selected="selected"{% endif %}>Add column</option>
         <option value="append"{% if recipe.args[name]=='append' %} selected="selected"{% endif %}>Append datasets</option>
         <option value="clean"{% if recipe.args[name]=='clean' %} selected="selected"{% endif %}>Clean data</option>
         <option value="count"{% if recipe.args[name]=='count' %} selected="selected"{% endif %}>Count rows</option>
