@@ -177,7 +177,7 @@ hxl_proxy.ui.form = function() {
         filter_class = ".fields-" + filter_name;
         filter_title = (filter_desc ? filter_desc : '(not set)');
         if (filter_title == '(none)') {
-            filter_title = "(add new step)";
+            filter_title = "(add new filter)";
         }
         $(node).find(".modal-title").text(filter_title);
 

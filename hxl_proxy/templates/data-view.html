@@ -51,11 +51,19 @@
           <strong>Note:</strong> Showing only the first {{
           "{:,}".format(source.max_rows) }} data rows. Download the
           CSV or JSON for the full dataset.
+          {% if recipe.args.max_rows %}
+          (Limited to maximum {{ recipe.args.max_rows }} row(s) by the
+          <i>max_rows</i> parameter.)
+          {% endif %}
         </div>
         <div id="post-preview-warning" class="alert alert-warning">
           <strong>Note:</strong> Showing only the first {{
           "{:,}".format(source.max_rows) }} data rows. Download the
           CSV or JSON for the full dataset.
+          {% if recipe.args.max_rows %}
+          (Limited to maximum {{ recipe.args.max_rows }} row(s) by the
+          <i>max_rows</i> parameter.)
+          {% endif %}
         </div>
         {% endif %}
       </section>

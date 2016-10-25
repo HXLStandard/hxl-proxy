@@ -21,7 +21,7 @@
         {% include "includes/source.html" %}
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
-        <h3>Recipe steps</h3>
+        <h3>Recipe filters</h3>
         {% if recipe.recipe_id %}
         {% set method="POST" %}
         {% set action="/actions/save-recipe" %}
@@ -103,18 +103,31 @@
                   </div>
                 </div>
               </div>
-              <div class="row small">
-                <div class="form-group col-md-12">
-                  <label for="stub">Download filename (without ext)</label>
-                  <input name="stub" class="form-control" value="{{ recipe.stub|nonone }}" placeholder="data-filename" />
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="stub">Filename (no ext)</label>
+                  <input name="stub"
+                         class="form-control"
+                         value="{{ recipe.stub|nonone }}"
+                         placeholder="data"
+                         title="Base filename for download, without .csv or .json extension"
+                         />
                 </div>
-                <label>
-                  
-                </label>
+                <div class="form-group col-md-6">
+                  <label for="max_rows">Max rows</label>
+                  <input name="max_rows"
+                         type="number"
+                         min="0"
+                         step="1"
+                         class="form-control"
+                         value="{{ recipe.args.max_rows|nonone }}"
+                         placeholder="nnnn"
+                         title="Maximum rows of data to display or download"
+                         />
+                </div>
               </div>
               <div class="form-input">
-                <button class="btn btn-info btn-xs">Update preferences</button>
-                <a class="btn btn-success btn-xs pull-right" href="{{ data_url(recipe) }}">Done filters</a>
+                <button class="btn btn-info btn-sm">Update preferences</button>
               </div>
             </div>
           </fieldset>
