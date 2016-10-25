@@ -145,10 +145,11 @@ def show_data_edit(recipe_id=None):
     except werkzeug.exceptions.Forbidden as e:
         return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
 
-
     if recipe['args'].get('url'):
         # show only a short preview
-        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=25)
+        max_rows = recipe['args'].get('max_rows', None)
+        max_rows = min(int(max_rows), 25) if max_rows is not None else 25
+        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
     else:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.make_data_url(recipe, facet='source'), 303)
@@ -333,11 +334,19 @@ def show_data(recipe_id=None, format="html", stub=None):
 
         # Output parameters
         show_headers = (recipe['args'].get('strip-headers') != 'on')
+        max_rows = recipe['args'].get('max_rows', None)
 
         # Return a generator based on the format requested
         if format == 'html':
-            return flask.render_template('data-view.html', source=preview.PreviewFilter(source, max_rows=5000), recipe=recipe, show_headers=show_headers)
-        elif format == 'json':
+            max_rows = min(int(max_rows), 5000) if max_rows is not None else 5000
+            return flask.render_template('data-view.html', source=preview.PreviewFilter(source, max_rows=max_rows), recipe=recipe, show_headers=show_headers)
+
+        # Data formats from here on ...
+
+        if max_rows is not None:
+            source = preview.PreviewFilter(source, max_rows=int(max_rows))
+            
+        if format == 'json':
             response = flask.Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
             if recipe.get('stub'):

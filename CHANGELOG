@@ -7,6 +7,7 @@
 	- &force=on works for input as well as output
 	- limit HTML table display to 5,000 rows to avoid timeouts (full
 	  dataset still available via CSV or JSON download)
+	- add a max_rows parameter to limit the number of rows returned.
 
 2016-08-30 Release 0.6
 	- Add support for requests-cache, so that different views of the same
