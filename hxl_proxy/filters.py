@@ -30,6 +30,10 @@ def setup_filters(recipe):
     # Basic input source
     source = hxl.data(make_tagged_input(recipe['args']))
 
+    # Do we have a JSON recipe? Load it first.
+    if recipe['args'].get('recipe'):
+        source = source.recipe(recipe['args'].get('recipe'))
+
     # Intercept missing hashtags here
     try:
         source.columns
