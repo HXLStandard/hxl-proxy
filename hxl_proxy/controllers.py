@@ -147,7 +147,7 @@ def show_data_edit(recipe_id=None):
 
     if recipe['args'].get('url'):
         # show only a short preview
-        max_rows = recipe['args'].get('max_rows', None)
+        max_rows = recipe['args'].get('max-rows', None)
         max_rows = min(int(max_rows), 25) if max_rows is not None else 25
         source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
     else:
@@ -334,7 +334,7 @@ def show_data(recipe_id=None, format="html", stub=None):
 
         # Output parameters
         show_headers = (recipe['args'].get('strip-headers') != 'on')
-        max_rows = recipe['args'].get('max_rows', None)
+        max_rows = recipe['args'].get('max-rows', None)
 
         # Return a generator based on the format requested
         if format == 'html':
