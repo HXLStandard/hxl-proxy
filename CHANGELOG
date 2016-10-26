@@ -1,3 +1,4 @@
+	- added support for JSON recipes via a &recipe HTTP parameter
 	- add row queries for clean, count, deduplicate, replace, and
 	  replace-map filters
 	- use "recipe" and "step" (instead of "filters") on data recipe page
