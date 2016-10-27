@@ -303,6 +303,12 @@ def show_validate(recipe_id=None):
         recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
     )
 
+@app.route("/data/<recipe_id>/advanced")
+@app.route("/data/advanced")
+def show_advanced(recipe_id=None):
+    """Advanced form for direct JSON entry."""
+    recipe = util.get_recipe(recipe_id, auth=True)
+    return flask.render_template("data-advanced.html", recipe=recipe)
 
 @app.route("/data/<recipe_id>.<format>")
 @app.route("/data/<recipe_id>/download/<stub>.<format>")

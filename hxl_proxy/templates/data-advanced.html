@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Advanced transformation @ HXL Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% with facet='advanced' %}
+    {% include "includes/navbar.html" %}
+    {% endwith %}
+    <header>
+      {% with facet='advanced' %}
+      {% include "includes/data-tabs.html" %}
+      {% endwith %}
+      <h1>
+        Advanced transformation
+      </h1>
+    </header>
+    <main class="row">
+
+      <p>This page is for developers and other advanced technical users.</p>
+
+      {% if recipe.recipe_id %}
+      {% set method="POST" %}
+      {% set action="/actions/save-recipe" %}
+      {% else %}
+      {% set method="GET" %}
+      {% set action="/data" %}
+      {% endif %}
+      <form action="{{ action }}" method="{{ method }}">
+
+        <div class="form-group required col-sm-12">
+          <label for="url">Data URL</label>
+          <input class="form-control" name="url" required="required" type="url" value="{{ recipe.args.url|nonone }}"/>
+        </div>
+
+        <div class="form-group col-sm-3 col-xs-6">
+          <label for="sheet">Tab number (starting at 0)</label>
+          <input class="form-control"
+                 name="sheet"
+                 type="number"
+                 min="0"
+                 step="1"
+                 value="{{ recipe.args.sheet|nonone }}"/>
+        </div>
+
+        <div class="form-group col-sm-3 col-xs-6">
+          <label for="max-rows">Maximum rows</label>
+          <input class="form-control"
+                 name="max-rows"
+                 type="number"
+                 min="0"
+                 step="1"
+                 value="{{ recipe.args['max-rows']|nonone }}"/>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="strip-headers"{% if recipe.args['strip-headers'] %} checked="checked"{% endif %} />
+              Strip text headers
+            </label>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="force"{% if recipe.args['force'] %} checked="checked"{% endif %} />
+              Never cache
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group col-sm-12">
+          <label for="recipe">JSON recipe</label>
+          <textarea class="form-control" name="recipe" type="json" rows="40">{{ recipe.args.recipe|nonone }}</textarea>
+        </div>
+
+        <div class="col-sm-12">
+          <button class="btn btn-success" type="submit">Update</button>
+        </div>
+      </form>
+    </main>
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
+    <script src="{{ static('jquery/jquery-ui.min.js')}}"></script>
+    <script>
+      $(function  () {
+        $("ol.filter-list").sortable({
+          handle: ".glyphicon-move",
+          update: hxl_proxy.resortFilterForms,
+          items: '.sort-item'
+        });
+      });      
+    </script>
+    <script>
+      hxl_proxy.ui.form();
+      $(document).ready(function() {
+        // add the preview warning, with total row count
+        $("#preview-warning").insertBefore($(".hxltable"));
+      });
+    </script>
+  </body>
+</html>
