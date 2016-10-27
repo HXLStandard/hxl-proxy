@@ -136,6 +136,9 @@
           {% endif %}
           {% include "includes/tagger-params.html" %}
           {% include "includes/metadata-params.html" %}
+          {% if recipe.args['recipe'] %}
+          <input type="hidden" name="recipe" value="{{ recipe.args['recipe'] }}" />
+          {% endif %}
         </form>
       </section>
 
