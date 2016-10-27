@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, requests_cache, urllib, werkzeug
+import flask, hxl, json, requests_cache, urllib, werkzeug
 
 from . import app, auth, cache, dao, filters, preview, util, validate, exceptions
 
@@ -364,6 +364,49 @@ def show_data(recipe_id=None, format="html", stub=None):
     if util.skip_cache_p():
         cache.set(show_data.make_cache_key(), result)
     return result
+
+@app.route("/hxl-test.<format>")
+@app.route("/hxl-test")
+def show_test(format='html'):
+    """Test if a URL points to HXL-tagged data.
+    @param format: the format for rendering the result.
+    """
+
+    url = flask.request.args.get('url')
+    
+    if not url and (format != 'html'):
+        raise ValueError("&url parameter required")
+
+    result = {
+        'status': False,
+        'url': url
+    }
+
+    def record_exception(e):
+        result['exception'] = e.__class__.__name__
+        result['args'] = [str(arg) for arg in e.args]
+
+    if url:
+        try:
+            hxl.data(url).columns
+            result['status'] = True
+            result['message'] = 'Dataset has HXL hashtags'
+        except IOError as e1:
+            result['message'] = 'Cannot load dataset'
+            record_exception(e1)
+        except hxl.io.HXLTagsNotFoundException as e2:
+            result['message'] = 'Dataset does not have HXL hashtags'
+            record_exception(e2)
+        except BaseException as e3:
+            result['message'] = 'Undefined error'
+            record_exception(e3)
+    else:
+        result = None
+
+    if format == 'json':
+        return flask.Response(json.dumps(result), mimetype='application/json')
+    else:
+        return flask.render_template('hxl-test.html', result=result)
 
 
 @app.route('/settings/user')

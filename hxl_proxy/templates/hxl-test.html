@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      HXL dataset test
+    </title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>
+        Is this a HXL dataset?
+      </h1>
+    </header>
+    <main class="row">
+      <form method="get" action="" class="col-sm-12">
+        <label for="url">Try a URL:</label>
+        <div class="input-group required">
+          <input name="url"
+                 class="form-control"
+                 required="required"
+                 placeholder="http://example.org/data.csv"
+                 value="{{ result.url|nonone }}" />
+          <span class="input-group-btn">
+            <button class="btn btn-success">Test</button>
+          </span>
+        </div>
+      </form>
+      {% if result %}
+      <section id="result" class="col-sm-12">
+      <div class="panel {% if result.status %}panel-success{% else %}panel-danger{% endif %}">
+        <div class="panel-heading">
+          {% if result.status %}
+          <h2 class="panel-title">Yes, I found HXL hashtags!</h2>
+          {% else %}
+          <h2 class="panel-title">No, I couldn't read this as HXL :(</h2>
+          {% endif %}
+        </div>
+        <div class="panel-body">
+          <dl>
+            <dt>URL</dt>
+            <dd><p><a href="{{ result.url }}">{{ result.url }}</a></p></dd>
+            <dt>Message</dt>
+            <dd><p>{{ result.message }}</p></dd>
+            {% if not result.status %}
+            <dt>Error type</dt>
+            <dd><p>{{ result.exception }}</p></dd>
+            {% if result.args %}
+            <dt>Details</dt>
+            <dd>
+              <ul>
+                {% for arg in result.args %}
+                <li>{{ arg }}</li>
+                {% endfor %}
+              </ul>
+            </dd>
+            {% endif %}
+            {% endif %}
+          </dl>
+          {% if result.status %}
+          <a class="btn btn-default" href="/data/edit?url={{ result.url|urlencode }}">Open in HXL Proxy</a>
+          {% elif result.exception=='HXLTagsNotFoundException' %}
+          <a class="btn btn-default" href="/data/tagger?url={{ result.url|urlencode }}">Try tagging</a>
+          {% endif %}
+          <a class="btn btn-link pull-right icons small" href="/hxl-test.json?url={{ result.url|urlencode }}">JSON version</a>
+        </div>
+      </div>
+      </section>
+      {% endif %}
+    </main>
+    <footer>
+      <p>Read more about the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL).</p>
+    </footer>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>
