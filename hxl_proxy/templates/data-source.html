@@ -8,6 +8,7 @@
     {% with facet='source' %}
     {% include "includes/navbar.html" %}
     {% endwith %}
+    {% with key='Source-page' %}{% include "includes/help.html" %}{% endwith %}
     <header>
       {% if recipe.args.url %}
       {% with facet='source' %}
