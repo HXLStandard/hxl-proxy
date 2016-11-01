@@ -221,3 +221,7 @@ ol.filter-list li.placeholder:before {
 ol.filter-list .filter-delete {
     float: right;
 }
+
+.help-link {
+    margin-top: 2ex;
+}
