@@ -1,6 +1,9 @@
 <div class="fields-sort hideable">
   {% import 'includes/filters/filter-variables.j2' as vars %}
-  <p class="doc">Sort the records in a HXL dataset (<a target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Sort-rows-filter">help</a>).</p>
+  <p class="doc">
+    Sort the records in a HXL dataset
+    {% with key='Sort-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
+  </p>
 
   {% set name='sort-tags%02d' % n %}
   <div id="{{ name }}" class="form-group">

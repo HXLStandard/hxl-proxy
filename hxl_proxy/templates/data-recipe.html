@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% set facet='edit' %}
   <head>
     <title>Recipe filters @ HXL Proxy</title>
     {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
-    {% with facet='edit' %}
     {% include "includes/navbar.html" %}
-    {% endwith %}
+    {% with key='Recipe-page' %}{% include "includes/help.html" %}{% endwith %}
     <header>
-      {% with facet='edit' %}
       {% include "includes/data-tabs.html" %}
-      {% endwith %}
       <h1>
         Data transformation recipe
       </h1>

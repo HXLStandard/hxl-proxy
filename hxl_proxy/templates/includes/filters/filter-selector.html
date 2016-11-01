@@ -1,7 +1,10 @@
 <div class="panel panel-info">
   <div class="panel-body">
     <div id="{{ 'filter%02d' % n }}" class="field_filter form-group">
-      <label for="{{ name }}">Filter type</label>
+      <label for="{{ name }}">
+        Filter type
+      </label>
+      {% with key='Filters' %}{% include "includes/help.html" %}{% endwith %}
       {% set name='filter%02d' % n %}
       <select name="{{ name }}" class="form-control">
         <option value="">(none)</option>
