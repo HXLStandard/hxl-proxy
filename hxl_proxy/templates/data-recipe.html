@@ -33,9 +33,9 @@
             {% for n in range(1, filter_count+1) %}
             <li class="filter{% if n!=filter_count %} sort-item{% endif %}">
               {% if n != filter_count %}
-              <span class="glyphicon glyphicon-move"></span>
+              <span class="handle glyphicon glyphicon-move"></span>
               {% else %}
-              <span class="glyphicon glyphicon-plus"></span>
+              <span class="handle glyphicon glyphicon-plus"></span>
               {% endif %}
               <a class="filter-button"
                  data-toggle="modal"
