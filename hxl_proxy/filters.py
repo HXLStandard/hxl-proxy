@@ -127,9 +127,16 @@ def add_clean_filter(source, args, index):
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
     tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
-    count_spec = args.get('count-spec%02d' % index, 'Count#meta+count')
-    aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
     row_query = args.get('count-where%02d' % index, None)
+
+    aggregators = []
+
+    # legacy values
+    count_spec = args.get('count-spec%02d' % index, None)
+    
+    
+    aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
+    
     return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec, queries=row_query)
 
 def add_column_filter(source, args, index):

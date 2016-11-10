@@ -1,4 +1,4 @@
-<div class="fields-count hideable">
+<fieldset class="fields-count hideable">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
@@ -7,47 +7,17 @@
   </p>
 
   {% set name='count-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  <div id="{{ name }}" class="form-group">
     <label for="{{ name }}">
-      Count values for these hashtags (comma-separated)
+      Count unique combinations of these hashtags (comma-separated)
     </label>
     <input
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
-        required="required"
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
         placeholder="{{ vars.filters_placeholder }}" />
-  </div>
-
-  {% set name='count-spec%02d' % n %}
-  <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">
-      Name and hashtag for count column (instead of <code>#meta+count</code>)
-    </label>
-    <input
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        title="{{ vars.filters_help }}"
-        placeholder="Header Text#tag+attributes" />
-  </div>
-
-
-  {% set name='count-aggregate-tag%02d' % n %}
-  <div id="{{ name }}" class="form-group">
-    <label for="{{ name }}">
-      Optionally also include aggregate values (sum, average, min, max) for
-      this tag pattern.
-    </label>
-    <input
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filter_pattern }}$"
-        title="{{ vars.filter_help }}"
-        placeholder="#tag" />
   </div>
 
   {% set name='count-where%02d' % n %}
@@ -64,4 +34,92 @@
         placeholder="#tag=value" />
   </div>
 
-</div>
+  <fieldset>
+    <legend>Aggregate values</legend>
+
+    {% for m in range(1, 4) %}
+    <div class="aggregate row">
+      
+      {% set name='count-pattern%02d-%02d' % (n, m,) %}
+      <div id="{{ name }}" class="form-group col-sm-6">
+        <label for="{{ name }}">Hashtag to aggregate</label>
+        <input name="{{ name }}"
+               class="form-control"
+               placeholder="{{ vars.filter_placeholder }}"
+               />
+      </div>
+      
+      {%set name='count-type%02d-%02d' % (n, m,) %}
+      <div id="{{ name }}" class="form-group col-sm-6">
+        <label for="{{ name }}">Aggregation type</label>
+        <select name="{{ name }}" class="form-control">
+          <option value="">--</option>
+          {% if (m == 1 and not recipe[name]) or (recipe[name] == 'count') %}
+          <option value="count" selected="selected">Count</option>
+          {% else %}
+          <option value="count">Row count</option>
+          {% endif %}
+          <option value="sum">Sum</option>
+          <option value="average">Average</option>
+          <option value="min">Minimum</option>
+          <option value="max">Maximum</option>
+        </select>
+      </div>
+      
+      {%set name='count-header%02d-%02d' % (n, m,) %}
+      <div id="{{ name }}" class="form-group col-sm-6">
+        <label for="{{ name }}">Output header</label>
+        <input name="{{ name }}"
+               class="form-control"
+               value="{% if (m==1 and not recipe[name]) %}Count{% else %}{{ recipe[name]|nonone }}{% endif %}"
+               placeholder="Column header"
+               />
+      </div>
+
+      {%set name='count-column%02d-%02d' % (n, m,) %}
+      <div id="{{ name }}" class="form-group col-sm-6">
+        <label for="{{ name }}">Output hashtag</label>
+        <input name="{{ name }}"
+               class="form-control"
+               value="{% if (m==1 and not recipe[name]) %}#meta+count{% else %}{{ recipe[name]|nonone }}{% endif %}"
+               placeholder="{{ vars.tag_placeholder }}"
+               />
+      </div>
+    </div>
+    {% endfor %}
+  </fieldset>
+
+  {% set name='count-spec%02d' % n %}
+  {% if recipe.args[name] %}
+  <div id="{{ name }}" class="form-group deprecated">
+    <label for="{{ name }}">
+      Deprecated: Name and hashtag for count column (instead of <code>#meta+count</code>)
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        title="{{ vars.filters_help }}"
+        placeholder="Header Text#tag+attributes" />
+  </div>
+  {% endif %}
+
+
+  {% set name='count-aggregate-tag%02d' % n %}
+  {% if recipe.args[name] %}
+  <div id="{{ name }}" class="form-group deprecated">
+    <label for="{{ name }}">
+      Deprecated: Optionally also include aggregate values (sum, average, min, max) for
+      this tag pattern.
+    </label>
+    <input
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.filter_pattern }}$"
+        title="{{ vars.filter_help }}"
+        placeholder="#tag" />
+  </div>
+  {% endif %}
+
+</fieldset>

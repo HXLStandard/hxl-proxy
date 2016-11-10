@@ -229,3 +229,15 @@ ol.filter-list .filter-delete {
 .handle {
     margin-right: 1em;
 }
+
+fieldset legend {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.aggregate {
+    padding: 1ex;
+    margin: 0 0 1ex 0;
+    border: 1px solid #aaaaaa;
+    border-radius: 1ex;
+}
