@@ -106,13 +106,24 @@ class TestPipelineFunctions(unittest.TestCase):
     def test_add_count_filter(self):
         args = {
             'count-tags03': 'country,adm1,adm2+ocha',
-            'count-aggregate-tag03': 'targeted_num+f'
+            'count-pattern03-01': 'targeted',
+            'count-type03-01': 'sum',
+            'count-header03-01': 'People targeted',
+            'count-column03-01': 'targeted+total',
         }
         filter = add_count_filter(self.source, args, 3)
         self.assertEqual('CountFilter', filter.__class__.__name__, "count filter from args")
         self.assertEqual(self.source, filter.source, "source ok")
         self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.patterns], "tags ok")
-        self.assertEqual('#targeted_num+f', str(filter.aggregate_pattern), "aggregate tag ok")
+        self.assertEqual('sum', filter.aggregators[0].type)
+        self.assertEqual('#targeted', repr(filter.aggregators[0].pattern))
+        self.assertEqual('People targeted', filter.aggregators[0].column.header)
+        self.assertEqual('#targeted+total', filter.aggregators[0].column.display_tag)
+
+    def test_add_count_filter_legacy(self):
+        #'count-aggregate-tag03': 'targeted_num+f'
+        # TODO
+        pass
     
     def test_add_column_filter(self):
         args = {
