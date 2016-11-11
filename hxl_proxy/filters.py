@@ -137,16 +137,30 @@ def add_count_filter(source, args, index):
             aggregators.append(hxl.filters.Aggregator(
                 type = count_type,
                 pattern = args.get('count-pattern' + suffix),
-                column = hxl.model.Column(
-                    tag = args.get('count-column' + suffix, '#meta+' + count_type),
+                column = hxl.model.Column.parse(
+                    _parse_tagspec(args.get('count-column' + suffix, '#meta+' + count_type)),
                     header = args.get('count-header' + suffix, count_type.title())
                 )
             ))
 
-    # legacy values
-    ## TODO
+    # deprecated parameters
+
     count_spec = args.get('count-spec%02d' % index, None)
+    if count_spec:
+        # deprecated column hashtag for a default count column
+        aggregators.append(hxl.filters.Aggregator(
+            type = 'count',
+            column = hxl.model.Column.parse_spec(count_spec, default_header='Count')
+        ))
+
     aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
+    if aggregate_pattern:
+        for count_type in ['sum', 'average', 'min', 'max']:
+            aggregators.append(hxl.filters.Aggregator(
+                type = count_type,
+                pattern = aggregate_pattern,
+                column = hxl.model.Column("#meta+" + count_type, header=count_type.title())
+            ))
     
     return source.count(patterns=tags, aggregators=aggregators, queries=row_query)
 
