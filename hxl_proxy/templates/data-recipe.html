@@ -43,7 +43,7 @@
                 {{ n }}
               </a>
               {% if n<filter_count %}
-              <span class="filter-delete">[<a onclick="hxl_proxy.removeFilter(this);">x</a>]</span>
+              <span class="filter-delete">[<a onclick="hxl_proxy.ui.removeFilter(this);">x</a>]</span>
               {% endif %}
               <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
@@ -73,7 +73,7 @@
                       </fieldset>
 
                       <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
-                      <a onclick="hxl_proxy.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove</span></a>
+                      <a onclick="hxl_proxy.ui.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove</span></a>
                     </div>
                   </div>
                 </div>
@@ -160,7 +160,7 @@
       $(function  () {
         $("ol.filter-list").sortable({
           handle: ".glyphicon-move",
-          update: hxl_proxy.resortFilterForms,
+          update: hxl_proxy.ui.resortFilterForms,
           items: '.sort-item'
         });
       });      

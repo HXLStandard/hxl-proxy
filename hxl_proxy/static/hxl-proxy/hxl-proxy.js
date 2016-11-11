@@ -16,8 +16,8 @@ var hxl_proxy = {};
  * General configuration parameters
  */
 hxl_proxy.config = {
-        gdriveDeveloperKey: 'UNSPECIFIED',
-        gdriveClientId: 'UNSPECIFIED'
+    gdriveDeveloperKey: 'UNSPECIFIED',
+    gdriveClientId: 'UNSPECIFIED'
 };
 
 
@@ -594,7 +594,7 @@ hxl_proxy.pad2 = function (num) {
 /**
  * Parse the name of a sequentially-numbered field
  */
-hxl_proxy.parseFieldName = function (name) {
+hxl_proxy.ui.parseFieldName = function (name) {
 
     // try double numbering first
     var result = /^(.+)([0-9][0-9])-([0-9][0-9])$/.exec(name);
@@ -616,7 +616,7 @@ hxl_proxy.parseFieldName = function (name) {
 /**
  * Construct a sequential field name from its parts.
  */
-hxl_proxy.makeFieldName = function (parts) {
+hxl_proxy.ui.makeFieldName = function (parts) {
     var name = parts[0];
 
     if (parts[1]) {
@@ -631,18 +631,18 @@ hxl_proxy.makeFieldName = function (parts) {
 };
 
 
-  $(function() {
+$(function() {
     $("form.autotrim").submit(function() {
-      $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
-      return true; // ensure form still submits
+        $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+        return true; // ensure form still submits
     });
-  });
+});
 
 /**
  * Trim empty fields from a form before submitting.
  * TODO: needs to be able to handle failed validation.
  */
-hxl_proxy.trimForm = function (contextNode) {
+hxl_proxy.ui.trimForm = function (contextNode) {
     console.log("trimForm");
     $(contextNode).find(":input").filter(function () {
         return !this.value;
@@ -653,10 +653,13 @@ hxl_proxy.trimForm = function (contextNode) {
 
 // apply trimForm to all forms.
 $(function() {
-    $("form").submit(function() { hxl_proxy.trimForm(this); });
+    $("form").submit(function() { hxl_proxy.ui.trimForm(this); });
 });
 
-hxl_proxy.trimTagger = function (formNode) {
+/**
+ * Trim unused fields from the tagger.
+ */
+hxl_proxy.ui.trimTagger = function (formNode) {
     console.log("trimTagger");
     for (var i = 1; i < 100; i++) {
         var baseName = "tagger-" + hxl_proxy.pad2(i);
@@ -671,20 +674,21 @@ hxl_proxy.trimTagger = function (formNode) {
 };
 
 $(function() {
-    $("form.tagger").submit(function () { hxl_proxy.trimTagger(this); });
+    $("form.tagger").submit(function () { hxl_proxy.ui.trimTagger(this); });
 });
+
 
 /**
  * Add a field in a list.
  */
-hxl_proxy.addField = function (contextNode) {
+hxl_proxy.ui.addField = function (contextNode) {
     var lastInputNode = $(contextNode).siblings('input').last();
     var newInputNode = $(lastInputNode).clone();
-    var parts = hxl_proxy.parseFieldName($(lastInputNode).attr('name'));
+    var parts = hxl_proxy.ui.parseFieldName($(lastInputNode).attr('name'));
     console.log(parts);
     if (parts[2]) {
         parts[2]++;
-        var name = hxl_proxy.makeFieldName(parts);
+        var name = hxl_proxy.ui.makeFieldName(parts);
         $(newInputNode).attr('name', name).attr('value', '').insertAfter(lastInputNode);
     }
 };
@@ -694,8 +698,8 @@ hxl_proxy.addField = function (contextNode) {
  * Event handler: renumber HTML markup for a filter list and submit.
  * Event handler for the sortable JS library.
  */
-hxl_proxy.resortFilterForms = function (event, ui) {
-    $(event.target.childNodes).filter('.filter').each(hxl_proxy.renumberFilterForm);
+hxl_proxy.ui.resortFilterForms = function (event, ui) {
+    $(event.target.childNodes).filter('.filter').each(hxl_proxy.ui.renumberFilterForm);
     $(event.target.childNodes).closest('form').submit();
 };
 
@@ -705,7 +709,7 @@ hxl_proxy.resortFilterForms = function (event, ui) {
  * @param index The zero-based index in the new order (will be converted to 1-based).
  * @param filterNode The root node of the tree to renumber.
  */
-hxl_proxy.renumberFilterForm = function (index, filterNode) {
+hxl_proxy.ui.renumberFilterForm = function (index, filterNode) {
     $(filterNode).find('[name]').each(function (i, formNode) {
         var oldValue = $(formNode).attr('name');
         var newValue = oldValue.replace(/\d\d/, hxl_proxy.pad2(index + 1));
@@ -718,11 +722,11 @@ hxl_proxy.renumberFilterForm = function (index, filterNode) {
 /**
  * Remove a filter from the form.
  */
-hxl_proxy.removeFilter = function (node) {
+hxl_proxy.ui.removeFilter = function (node) {
     if (confirm("Remove filter?")) {
         var form = $(node).closest('form');
         $(node).closest("li").remove();
-        form.find('.filter').each(hxl_proxy.renumberFilterForm);
+        form.find('.filter').each(hxl_proxy.ui.renumberFilterForm);
         form.submit();
     }
     return false;

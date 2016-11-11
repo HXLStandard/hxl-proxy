@@ -17,7 +17,7 @@
       <input class="form-control" name="{{ query_name }}" value="{{ recipe.args[query_name] }}" pattern="^{{ vars.query_pattern }}$" title="{{ vars.query_help }}" placeholder="#tag=value" />
       {% endif %}
       {% endfor %}
-      <a onclick="hxl_proxy.addField(this)"><span class="glyphicon glyphicon-plus-sign"></span></a>
+      <a onclick="hxl_proxy.ui.addField(this)"><span class="glyphicon glyphicon-plus-sign"></span></a>
     </div>
 
     {% set name='select-reverse%02d' % n %}
