@@ -130,14 +130,25 @@ def add_count_filter(source, args, index):
     row_query = args.get('count-where%02d' % index, None)
 
     aggregators = []
+    for n in range(1, 25):
+        suffix = '%02d-%02d' % (index, n,)
+        count_type = args.get('count-type' + suffix)
+        if count_type:
+            aggregators.append(hxl.filters.Aggregator(
+                type = count_type,
+                pattern = args.get('count-pattern' + suffix),
+                column = hxl.model.Column(
+                    tag = args.get('count-column' + suffix, '#meta+' + count_type),
+                    header = args.get('count-header' + suffix, count_type.title())
+                )
+            ))
 
     # legacy values
+    ## TODO
     count_spec = args.get('count-spec%02d' % index, None)
-    
-    
     aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
     
-    return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec, queries=row_query)
+    return source.count(patterns=tags, aggregators=aggregators, queries=row_query)
 
 def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""

@@ -40,48 +40,66 @@
     {% for m in range(1, 4) %}
     <div class="aggregate row">
       
-      {% set name='count-pattern%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6">
-        <label for="{{ name }}">Hashtag to aggregate</label>
-        <input name="{{ name }}"
-               class="form-control"
-               placeholder="{{ vars.filter_placeholder }}"
-               />
-      </div>
-      
       {%set name='count-type%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6">
+      <div id="{{ name }}" class="form-group col-sm-6 aggregate-type required">
         <label for="{{ name }}">Aggregation type</label>
         <select name="{{ name }}" class="form-control">
           <option value="">--</option>
-          {% if (m == 1 and not recipe[name]) or (recipe[name] == 'count') %}
+          {% if ((m == 1) and (not recipe[args])) or (recipe.args[name] == 'count') %}
           <option value="count" selected="selected">Count</option>
           {% else %}
           <option value="count">Row count</option>
           {% endif %}
+          {% if recipe.args[name] == 'sum' %}
+          <option value="sum" selected="selected">Sum</option>
+          {% else %}
           <option value="sum">Sum</option>
+          {% endif %}
+          {% if recipe.args[name] == 'average' %}
+          <option value="average" selected="selected">Average</option>
+          {% else %}
           <option value="average">Average</option>
+          {% endif %}
+          {% if recipe.args[name] == 'min' %}
+          <option value="min" selected="selected">Minimum</option>
+          {% else %}
           <option value="min">Minimum</option>
+          {% endif %}
+          {% if recipe.args[name] == 'max' %}
+          <option value="max" selected="selected">Maximum</option>
+          {% else %}
           <option value="max">Maximum</option>
+          {% endif %}
         </select>
       </div>
       
+      {% set name='count-pattern%02d-%02d' % (n, m,) %}
+      <div id="{{ name }}" class="form-group col-sm-6 aggregate-pattern required">
+        <label for="{{ name }}">Hashtag to aggregate</label>
+        <input name="{{ name }}"
+               class="form-control"
+               placeholder="{{ vars.filter_placeholder }}"
+               value="{{ recipe.args[name] }}"
+               />
+      </div>
+      
       {%set name='count-header%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6">
+      <div id="{{ name }}" class="form-group col-sm-6 aggregate-header">
         <label for="{{ name }}">Output header</label>
         <input name="{{ name }}"
                class="form-control"
-               value="{% if (m==1 and not recipe[name]) %}Count{% else %}{{ recipe[name]|nonone }}{% endif %}"
+               value="{% if (m==1 and not recipe.args[name]) %}Count{% else %}{{ recipe.args[name]|nonone }}{% endif %}"
                placeholder="Column header"
                />
       </div>
 
       {%set name='count-column%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6">
+      <div id="{{ name }}" class="form-group col-sm-6 aggregate-column
+                                  required">
         <label for="{{ name }}">Output hashtag</label>
         <input name="{{ name }}"
                class="form-control"
-               value="{% if (m==1 and not recipe[name]) %}#meta+count{% else %}{{ recipe[name]|nonone }}{% endif %}"
+               value="{% if (m==1 and not recipe.args[name]) %}#meta+count{% else %}{{ recipe.args[name]|nonone }}{% endif %}"
                placeholder="{{ vars.tag_placeholder }}"
                />
       </div>

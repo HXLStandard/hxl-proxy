@@ -199,6 +199,34 @@ hxl_proxy.ui.form = function() {
             setup_fieldset(filter_node, index);
         })
     });
+
+    $("#filter-form .aggregate").each(function (index) {
+        
+        /**
+         * Set up the aggregator fields, based on the type.
+         */
+        function setup (container_node, select_node) {
+            if (!select_node.val()) {
+                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false);
+                container_node.find('.aggregate-header').hide();
+                container_node.find('.aggregate-column').hide().find('input').attr('required', false);
+            } else if (select_node.val() == 'count') {
+                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false);
+                container_node.find('.aggregate-header').show();
+                container_node.find('.aggregate-column').show().find('input').attr('required', true);
+            } else {
+                container_node.find('.aggregate-pattern').show().find('input').attr('required', true);
+                container_node.find('.aggregate-header').show();
+                container_node.find('.aggregate-column').show().find('input').attr('required', true);
+            }
+        }
+        var container_node = $(this);
+        var select_node = container_node.find('select');
+        setup(container_node, select_node);
+        select_node.on("change", function (event) {
+            setup(container_node, select_node);
+        });
+    });
 };
 
 
