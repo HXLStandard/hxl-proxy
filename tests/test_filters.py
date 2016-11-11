@@ -139,6 +139,16 @@ class TestPipelineFunctions(unittest.TestCase):
             self.assertEqual('#targeted+f', repr(filter.aggregators[n+1].pattern))
             self.assertEqual('#meta+' + aggregate_type, filter.aggregators[n+1].column.display_tag)
             self.assertEqual(aggregate_type.title(), filter.aggregators[n+1].column.header)
+
+        # Check spec with hash omitted
+        args = {
+            'count-tags03': 'country,adm1,adm2+ocha',
+            'count-spec03': 'targeted+count'
+        }
+        filter = add_count_filter(self.source, args, 3)
+        self.assertEqual('count', filter.aggregators[0].type)
+        self.assertEqual('#targeted+count', filter.aggregators[0].column.display_tag)
+        self.assertEqual('Count', filter.aggregators[0].column.header)
             
     def test_add_column_filter(self):
         args = {
