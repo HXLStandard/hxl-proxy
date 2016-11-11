@@ -155,11 +155,16 @@ def add_count_filter(source, args, index):
 
     aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
     if aggregate_pattern:
+        if not count_spec:
+            aggregators.append(hxl.filters.Aggregator(
+                type='count',
+                column = hxl.model.Column.parse('#meta+count', header='Count')
+            ))
         for count_type in ['sum', 'average', 'min', 'max']:
             aggregators.append(hxl.filters.Aggregator(
                 type = count_type,
                 pattern = aggregate_pattern,
-                column = hxl.model.Column("#meta+" + count_type, header=count_type.title())
+                column = hxl.model.Column.parse("#meta+" + count_type, header=count_type.title())
             ))
     
     return source.count(patterns=tags, aggregators=aggregators, queries=row_query)
