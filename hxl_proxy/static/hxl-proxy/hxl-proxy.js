@@ -21,13 +21,12 @@ hxl_proxy.config = {
 };
 
 
+////////////////////////////////////////////////////////////////////////
+// File choosers for cloud services.
 //
-// Choosers
-//
+// Callbacks for choosing a file from an external service.
+////////////////////////////////////////////////////////////////////////
 
-/**
- * Dataset-chooser functions
- */
 hxl_proxy.choosers = {};
 
 
@@ -70,16 +69,6 @@ hxl_proxy.choosers.dropbox = function(elementId, submit) {
     });
     return false;
 };
-
-
-//
-// UI
-//
-
-/**
- * User-interface functions.
- */
-hxl_proxy.ui = {};
 
 
 /**
@@ -165,46 +154,60 @@ hxl_proxy.choosers.googleDrive = function(elementId, submit) {
 };
 
 
-/**
- * Set up a page containing a form.
- * External dependencies: none
- */
-hxl_proxy.ui.form = function() {
+////////////////////////////////////////////////////////////////////////
+// User-interface functions.
+//
+// Functions for manipulating the DOM or responding to user actions.
+////////////////////////////////////////////////////////////////////////
 
-    function setup_fieldset(node, index) {
-        filter_name = $(node).find(".field_filter select").val();
-        filter_desc = $(node).find(".field_filter option:selected").text();
-        filter_class = ".fields-" + filter_name;
-        filter_title = (filter_desc ? filter_desc : '(not set)');
+hxl_proxy.ui = {};
+
+
+/**
+ * Set up the forms for recipe filters.
+ *
+ * @param form_node The node of the <form> element containing the filters.
+ */
+hxl_proxy.ui.setup_filters = function (form_node) {
+
+    function setup_filter_form(node, index) {
+        /**
+         * Set up the form for a single recipe filter.
+         */
+        var field_types = "input,select,textarea"
+
+        // Grab info from the (possibly hidden) select element
+        var filter_name = $(node).find(".field_filter select").val();
+        var filter_desc = $(node).find(".field_filter option:selected").text();
+        var filter_class = ".fields-" + filter_name;
+
+        // Set the title displayed in the menu and modal
+        var filter_title = (filter_desc);
         if (filter_title == '(none)') {
             filter_title = "(add new filter)";
         }
         $(node).find(".modal-title").text(filter_title);
+        $(node).find(".filter-button").text(filter_title);
 
-        var filter_button = $(node).find(".filter-button");
-        filter_button.text(filter_title);
-
+        // Hide all filters, then show the currently-chosen one
         $(node).find(".hideable").hide();
-        $(node).find(".hideable").find(hxl_proxy.field_types).prop("disabled", true);
+        $(node).find(".hideable").find(field_types).prop("disabled", true);
         $(node).find(filter_class).show();
-        $(node).find(filter_class).find(hxl_proxy.field_types).prop("disabled", false);
+        $(node).find(filter_class).find(field_types).prop("disabled", false);
     };
 
-    hxl_proxy.field_types = "input,select"
-    $(".hideable").hide();
-    $("#filter-form .filter").each(function (index) {
+    // Set up each filter form
+    $(form_node).find(".filter").each(function (index) {
         var filter_node = this;
-        setup_fieldset(filter_node, index);
+        setup_filter_form(filter_node, index);
+        // Reconfigure form view when the type selector changes
         $(filter_node).find(".field_filter select").on("change", function () {
-            setup_fieldset(filter_node, index);
+            setup_filter_form(filter_node, index);
         })
     });
 
-    $("#filter-form .aggregate").each(function (index) {
-        
-        /**
-         * Set up the aggregator fields, based on the type.
-         */
+    // Set up aggregate fields for the count filter
+    $(form_node).find(".aggregate").each(function (index) {
         function setup (container_node, select_node) {
             var aggregate_type = select_node.val();
             if (!aggregate_type) {
@@ -645,7 +648,6 @@ $(function() {
  * TODO: needs to be able to handle failed validation.
  */
 hxl_proxy.ui.trimForm = function (contextNode) {
-    console.log("trimForm");
     $(contextNode).find(":input").filter(function () {
         return !this.value;
     }).attr("disabled", "disabled");
