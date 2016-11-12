@@ -182,14 +182,6 @@ hxl_proxy.ui.setup_filters = function (form_node) {
         var filter_desc = $(node).find(".field_filter option:selected").text();
         var filter_class = ".filter-" + filter_name;
 
-        // Set the title displayed in the menu and modal
-        var filter_title = (filter_desc);
-        if (filter_title == '(none)') {
-            filter_title = "(add new filter)";
-        }
-        $(node).find(".modal-title").text(filter_title);
-        $(node).find(".filter-button").text(filter_title);
-
         // Hide all filters, then show the currently-chosen one
         $(node).find(".filter-body").hide();
         $(node).find(".filter-body").find(field_types).prop("disabled", true);
@@ -197,8 +189,8 @@ hxl_proxy.ui.setup_filters = function (form_node) {
         $(node).find(filter_class).find(field_types).prop("disabled", false);
     };
 
-    // Set up each filter form
-    $(form_node).find(".filter").each(function (index) {
+    // Set up the new-filter form on the recipe page
+    $(form_node).find(".filter-new").each(function (index) {
         var filter_node = this;
         setup_filter_form(filter_node, index);
         // Reconfigure form view when the type selector changes
@@ -208,7 +200,7 @@ hxl_proxy.ui.setup_filters = function (form_node) {
     });
 
     // Set up aggregate fields for the count filter
-    $(form_node).find(".aggregate").each(function (index) {
+    $(form_node).find(".filter-count .aggregate").each(function (index) {
         function setup (container_node, select_node) {
             var aggregate_type = select_node.val();
             if (!aggregate_type) {

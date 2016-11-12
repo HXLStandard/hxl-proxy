@@ -30,31 +30,30 @@
         <form action="{{ action }}" method="{{ method }}" id="filter-form">
 
           <ol class="filter-list" role="group" aria-label="Data filters">
+            {# Filter types and names defined in this file: #}
+            {% import 'includes/filters/filter-types.j2' as filter_types %}
             {% set vars = {'last_index': 0 } %}
             {% for n in range(1, 99) %}
             {% set filter_type = recipe.args['filter{0:02}'.format(n)] %}
             {% if filter_type %}
-            {% if vars.update({'last_index': n}) %}{% endif %}
-            <li>{{ last_filter_index }}</li>
+            {% if vars.update({'last_index': n}) %}{% endif %}{# kludge to set var outside scope #}
             <li class="filter{% if n!=filter_count %} sort-item{% endif %}">
               <span class="handle glyphicon glyphicon-move"></span>
               <a class="filter-button"
                  data-toggle="modal"
                  data-target="{{'#filter-dialog-%02d' % n }}" href="{{'#filter-dialog-%02d' % n}}">
-                {{ n }}
+                {{ filter_types.names[filter_type] }}
               </a>
               <span class="filter-delete">[<a onclick="hxl_proxy.ui.removeFilter(this);">x</a>]</span>
               <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h2 class="modal-title">New filter</h2>
+                      <h2 class="modal-title">{{ filter_types.names[filter_type] }}</h2>
                     </div>
                     <div class="modal-body">
                       <fieldset id="{{ 'filter-group%02d' % n }}">
-                        <div class="{% if n!=filter_count %}hidden{% endif %}">
-                          {% include 'includes/filters/filter-selector.html' %}
-                        </div>
+                        <input type="hidden" name="{{ 'filter{0:02}'.format(n) }}" value="{{ filter_type }}"/>
                         {% include 'includes/filters/filter-list.html' %}
                       </fieldset>
 
@@ -68,7 +67,7 @@
             {% endif %}
             {% endfor %}
             {% set n = vars.last_index + 1 %}
-            <li class="filter">
+            <li class="filter filter-new">
               <span class="handle glyphicon glyphicon-plus"></span>
               <a class="filter-button"
                  data-toggle="modal"
@@ -90,7 +89,6 @@
                       </fieldset>
 
                       <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
-                      <a onclick="hxl_proxy.ui.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove</span></a>
                     </div>
                   </div>
                 </div>
