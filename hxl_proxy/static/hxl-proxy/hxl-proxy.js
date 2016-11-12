@@ -160,6 +160,7 @@ hxl_proxy.choosers.googleDrive = function(elementId, submit) {
 // Functions for manipulating the DOM or responding to user actions.
 ////////////////////////////////////////////////////////////////////////
 
+
 hxl_proxy.ui = {};
 
 
@@ -170,16 +171,16 @@ hxl_proxy.ui = {};
  */
 hxl_proxy.ui.setup_filters = function (form_node) {
 
+    /**
+     * Set up the form for a single recipe filter.
+     */
     function setup_filter_form(node, index) {
-        /**
-         * Set up the form for a single recipe filter.
-         */
         var field_types = "input,select,textarea"
 
         // Grab info from the (possibly hidden) select element
         var filter_name = $(node).find(".field_filter select").val();
         var filter_desc = $(node).find(".field_filter option:selected").text();
-        var filter_class = ".fields-" + filter_name;
+        var filter_class = ".filter-" + filter_name;
 
         // Set the title displayed in the menu and modal
         var filter_title = (filter_desc);
@@ -190,8 +191,8 @@ hxl_proxy.ui.setup_filters = function (form_node) {
         $(node).find(".filter-button").text(filter_title);
 
         // Hide all filters, then show the currently-chosen one
-        $(node).find(".hideable").hide();
-        $(node).find(".hideable").find(field_types).prop("disabled", true);
+        $(node).find(".filter-body").hide();
+        $(node).find(".filter-body").find(field_types).prop("disabled", true);
         $(node).find(filter_class).show();
         $(node).find(filter_class).find(field_types).prop("disabled", false);
     };
@@ -588,60 +589,6 @@ hxl_proxy.ui.map = function(params) {
     map.addLayer(osm);
 };
 
-hxl_proxy.pad2 = function (num) {
-    return ('00' + num).substr(-2);
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
-    return s;
-};
-
-
-/**
- * Parse the name of a sequentially-numbered field
- */
-hxl_proxy.ui.parseFieldName = function (name) {
-
-    // try double numbering first
-    var result = /^(.+)([0-9][0-9])-([0-9][0-9])$/.exec(name);
-    if (result) {
-        return [result[1], parseInt(result[2]), parseInt(result[3])]
-    }
-
-    // now try single numbering
-    result = /^(.+)([0-9][0-9])$/.exec(name);
-    if (result) {
-        return [result[1], parseInt(result[2])];
-    }
-
-    // field is not numbered
-    return [name];
-};
-
-
-/**
- * Construct a sequential field name from its parts.
- */
-hxl_proxy.ui.makeFieldName = function (parts) {
-    var name = parts[0];
-
-    if (parts[1]) {
-        name += ('00' + parts[1]).substr(-2);
-    }
-
-    if (parts[2]) {
-        name += '-' + ('00' + parts[2]).substr(-2);
-    }
-
-    return name;
-};
-
-
-$(function() {
-    $("form.autotrim").submit(function() {
-        $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
-        return true; // ensure form still submits
-    });
-});
 
 /**
  * Trim empty fields from a form before submitting.
@@ -655,18 +602,13 @@ hxl_proxy.ui.trimForm = function (contextNode) {
 };
 
 
-// apply trimForm to all forms.
-$(function() {
-    $("form").submit(function() { hxl_proxy.ui.trimForm(this); });
-});
-
 /**
  * Trim unused fields from the tagger.
  */
 hxl_proxy.ui.trimTagger = function (formNode) {
     console.log("trimTagger");
     for (var i = 1; i < 100; i++) {
-        var baseName = "tagger-" + hxl_proxy.pad2(i);
+        var baseName = "tagger-" + hxl_proxy.util.pad2(i);
         var headerNode = $(formNode).find("input[name='" + baseName + "-header']");
         var tagNode = $(formNode).find("input[name='" + baseName + "-tag']");
         if (!tagNode.val()) {
@@ -677,10 +619,6 @@ hxl_proxy.ui.trimTagger = function (formNode) {
     return true;
 };
 
-$(function() {
-    $("form.tagger").submit(function () { hxl_proxy.ui.trimTagger(this); });
-});
-
 
 /**
  * Add a field in a list.
@@ -688,11 +626,10 @@ $(function() {
 hxl_proxy.ui.addField = function (contextNode) {
     var lastInputNode = $(contextNode).siblings('input').last();
     var newInputNode = $(lastInputNode).clone();
-    var parts = hxl_proxy.ui.parseFieldName($(lastInputNode).attr('name'));
-    console.log(parts);
+    var parts = hxl_proxy.util.parseFieldName($(lastInputNode).attr('name'));
     if (parts[2]) {
         parts[2]++;
-        var name = hxl_proxy.ui.makeFieldName(parts);
+        var name = hxl_proxy.util.makeFieldName(parts);
         $(newInputNode).attr('name', name).attr('value', '').insertAfter(lastInputNode);
     }
 };
@@ -714,14 +651,19 @@ hxl_proxy.ui.resortFilterForms = function (event, ui) {
  * @param filterNode The root node of the tree to renumber.
  */
 hxl_proxy.ui.renumberFilterForm = function (index, filterNode) {
-    $(filterNode).find('[name]').each(function (i, formNode) {
-        var oldValue = $(formNode).attr('name');
-        var newValue = oldValue.replace(/\d\d/, hxl_proxy.pad2(index + 1));
-        if (oldValue != newValue) {
-            $(formNode).attr('name', newValue);
-        }
+    $(filterNode).find('*').each(function (i, formNode) {
+        $.each(['name', 'for', 'id'], function (i, name) {
+            var oldValue = $(formNode).attr(name);
+            if (oldValue) {
+                var newValue = oldValue.replace(/\d\d/, hxl_proxy.util.pad2(index + 1));
+                if (oldValue != newValue) {
+                    $(formNode).attr(name, newValue);
+                }
+            }
+        });
     });
 };
+
 
 /**
  * Remove a filter from the form.
@@ -735,5 +677,93 @@ hxl_proxy.ui.removeFilter = function (node) {
     }
     return false;
 };
+
+
+////////////////////////////////////////////////////////////////////////
+// Utility functions.
+////////////////////////////////////////////////////////////////////////
+
+
+hxl_proxy.util = {};
+
+
+/**
+ * Left 0-pad an integer to two places.
+ * @param num The integer to pad.
+ * @return Two-character string representation, zero-padded.
+ */
+hxl_proxy.util.pad2 = function (num) {
+    return ('00' + num).substr(-2);
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+};
+
+
+/**
+ * Parse the name of a sequentially-numbered field
+ */
+hxl_proxy.util.parseFieldName = function (name) {
+
+    // try double numbering first
+    var result = /^(.+)([0-9][0-9])-([0-9][0-9])$/.exec(name);
+    if (result) {
+        return [result[1], parseInt(result[2]), parseInt(result[3])]
+    }
+
+    // now try single numbering
+    result = /^(.+)([0-9][0-9])$/.exec(name);
+    if (result) {
+        return [result[1], parseInt(result[2])];
+    }
+
+    // field is not numbered
+    return [name];
+};
+
+
+/**
+ * Construct a sequential field name from its parts.
+ */
+hxl_proxy.util.makeFieldName = function (parts) {
+    var name = parts[0];
+
+    if (parts[1]) {
+        name += hxl_proxy.util.pad2(parts[1]);
+    }
+
+    if (parts[2]) {
+        name += '-' + hxl_proxy.util.pad2(parts[2]);
+    }
+
+    return name;
+};
+
+
+////////////////////////////////////////////////////////////////////////
+// Run startup code.
+////////////////////////////////////////////////////////////////////////
+
+
+// For all forms with the class "autotrim", disable any fields with empty values
+$(function() {
+    $("form.autotrim").submit(function() {
+        $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+        return true; // ensure form still submits
+    });
+});
+
+
+// Trim empty elements from forms on submission.
+$(function() {
+    $("form").submit(function() { hxl_proxy.ui.trimForm(this); });
+});
+
+
+// Trim unused rows from the tagger form
+$(function() {
+    $("form.tagger").submit(function () { hxl_proxy.ui.trimTagger(this); });
+});
+
 
 // end
