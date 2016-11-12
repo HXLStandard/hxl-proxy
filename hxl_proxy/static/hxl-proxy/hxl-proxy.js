@@ -206,18 +206,20 @@ hxl_proxy.ui.form = function() {
          * Set up the aggregator fields, based on the type.
          */
         function setup (container_node, select_node) {
-            if (!select_node.val()) {
-                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false);
-                container_node.find('.aggregate-header').hide();
-                container_node.find('.aggregate-column').hide().find('input').attr('required', false);
-            } else if (select_node.val() == 'count') {
-                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false);
-                container_node.find('.aggregate-header').show();
-                container_node.find('.aggregate-column').show().find('input').attr('required', true);
+            var aggregate_type = select_node.val();
+            if (!aggregate_type) {
+                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false).attr('value', '');
+                container_node.find('.aggregate-header').hide().find('input').attr('value', '');
+                container_node.find('.aggregate-column').hide().find('input').attr('required', false).attr('value', '');
+            } else if (aggregate_type == 'count') {
+                container_node.find('.aggregate-pattern').hide().find('input').attr('required', false).attr('value', '');
+                container_node.find('.aggregate-header').show().find('input').attr('value', 'Count');
+                container_node.find('.aggregate-column').show().find('input').attr('required', true).attr('value', '#meta+count');
             } else {
+                var title = aggregate_type.slice(0, 1).toUpperCase() + aggregate_type.slice(1);
                 container_node.find('.aggregate-pattern').show().find('input').attr('required', true);
-                container_node.find('.aggregate-header').show();
-                container_node.find('.aggregate-column').show().find('input').attr('required', true);
+                container_node.find('.aggregate-header').show().find('input').attr('value', title);
+                container_node.find('.aggregate-column').show().find('input').attr('required', true).attr('value', '#meta+' + aggregate_type);
             }
         }
         var container_node = $(this);

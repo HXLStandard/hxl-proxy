@@ -45,7 +45,7 @@
         <label for="{{ name }}">Aggregation type</label>
         <select name="{{ name }}" class="form-control">
           <option value="">--</option>
-          {% if ((m == 1) and (not recipe[args])) or (recipe.args[name] == 'count') %}
+          {% if recipe.args[name] == 'count' %}
           <option value="count" selected="selected">Count</option>
           {% else %}
           <option value="count">Row count</option>
@@ -88,7 +88,7 @@
         <label for="{{ name }}">Output column header</label>
         <input name="{{ name }}"
                class="form-control"
-               value="{% if (m==1 and not recipe.args[name]) %}Count{% else %}{{ recipe.args[name]|nonone }}{% endif %}"
+               value="{{ recipe.args[name]|nonone }}"
                placeholder="Column header"
                />
       </div>
@@ -99,7 +99,7 @@
         <label for="{{ name }}">Output column hashtag</label>
         <input name="{{ name }}"
                class="form-control"
-               value="{% if (m==1 and not recipe.args[name]) %}#meta+count{% else %}{{ recipe.args[name]|nonone }}{% endif %}"
+               value="{{ recipe.args[name]|nonone }}"
                placeholder="{{ vars.tag_placeholder }}"
                />
       </div>
