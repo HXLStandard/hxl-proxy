@@ -10,7 +10,7 @@
       {% set name='filter%02d' % n %}
       <select name="{{ name }}" class="form-control">
         <option value="">(none)</option>
-        {% for type in filter_types.names %}
+        {% for type in filter_types.names.keys()|sort %}
         <option value="{{ type }}">{{ filter_types.names[type] }}</option>
         {% endfor %}
       </select>
