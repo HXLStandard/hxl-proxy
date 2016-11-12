@@ -56,20 +56,7 @@
                         <div class="{% if n!=filter_count %}hidden{% endif %}">
                           {% include 'includes/filters/filter-selector.html' %}
                         </div>
-
-                        {% include 'includes/filters/add.html' %}
-                        {% include 'includes/filters/append.html' %}
-                        {% include 'includes/filters/clean.html' %}
-                        {% include 'includes/filters/count.html' %}
-                        {% include 'includes/filters/cut.html' %}
-                        {% include 'includes/filters/dedup.html' %}
-                        {% include 'includes/filters/explode.html' %}
-                        {% include 'includes/filters/merge.html' %}
-                        {% include 'includes/filters/rename.html' %}
-                        {% include 'includes/filters/replace.html' %}
-                        {% include 'includes/filters/replace-map.html' %}
-                        {% include 'includes/filters/select.html' %}
-                        {% include 'includes/filters/sort.html' %}
+                        {% include 'includes/filters/filter-list.html' %}
                       </fieldset>
 
                       <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
