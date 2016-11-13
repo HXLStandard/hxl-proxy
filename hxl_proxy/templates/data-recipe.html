@@ -6,8 +6,8 @@
     {% include "includes/headers.html" %}
   </head>
   <body class="container-fluid">
+    {% set page_help='Recipe-page' %}
     {% include "includes/navbar.html" %}
-    {% with key='Recipe-page' %}{% include "includes/help.html" %}{% endwith %}
     <header>
       {% include "includes/data-tabs.html" %}
       <h1>
@@ -19,7 +19,10 @@
         {% include "includes/source.html" %}
       </div>
       <section id="filters" class="col-sm-4 col-md-3">
-        <h3>Recipe filters</h3>
+        <h3>
+          Recipe filters
+          <small>{% with key='Filters' %}{% include "includes/help.html" %}{% endwith %}</small>
+        </h3>
         {% if recipe.recipe_id %}
         {% set method="POST" %}
         {% set action="/actions/save-recipe" %}
@@ -58,8 +61,8 @@
                       </fieldset>
 
                       <div class="recipe-buttons">
-                        <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
-                        <a onclick="hxl_proxy.ui.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove</span></a>
+                        <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save changes</span></button>
+                        <a onclick="hxl_proxy.ui.removeFilter(this);" class="btn btn-link pull-right" aria-label="Close"><span aria-hidden="true">Remove filter</span></a>
                       </div>
                     </div>
                   </div>
@@ -90,7 +93,7 @@
                         {% include 'includes/filters/filter-list.html' %}
                       </fieldset>
                       <div class="recipe-buttons">
-                        <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Save</span></button>
+                        <button class="btn btn-success" type="submit" aria-label="Close"><span aria-hidden="true">Add filter</span></button>
                       </div>
                     </div>
                   </div>
@@ -121,7 +124,8 @@
               <div class="row">
                 <div class="form-group col-md-6">
                   <label for="stub">Filename (no ext)</label>
-                  <input name="stub"
+                  <input id="stub"
+                         name="stub"
                          class="form-control"
                          value="{{ recipe.stub|nonone }}"
                          placeholder="data"
@@ -130,7 +134,8 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label for="max-rows">Max rows</label>
-                  <input name="max-rows"
+                  <input id="max-rows"
+                         name="max-rows"
                          type="number"
                          min="0"
                          step="1"

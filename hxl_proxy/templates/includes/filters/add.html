@@ -2,8 +2,8 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Add a new column (with a constant value) to the data.
     {% with key='Add-column-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Add a new column (with a constant value) to the data.
   </p>
 
   {% set name='add-tag{0:02}'.format(n) %}

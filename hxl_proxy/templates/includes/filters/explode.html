@@ -2,16 +2,18 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Explode wide, series data using the headers as labels.
     {% with key='Explode-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Explode wide, series data using the headers as labels. This filter
+    uses the special <code>+label</code> attribute to identify columns.
   </p>
 
   {% set name='explode-header-att%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Attribute for former header text.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] or 'header' }}"
@@ -22,11 +24,12 @@
   </div>
 
   {% set name='explode-value-att%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Attribute for original value.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] or 'value' }}"

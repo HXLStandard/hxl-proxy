@@ -2,16 +2,17 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Merge columns from one HXL dataset into another one.
     {% with key='Merge-columns-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Add columns from another dataset, based on common keys.
   </p>
 
   {% set name='merge-url%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  <div class="form-group required">
     <label for="{{ name }}">
       URL of merge dataset (pull extra data from here)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         id="{{ name }}-field"
         name="{{ name }}"
@@ -25,12 +26,13 @@
     {% endwith %}
   </div>
 
-  {% set name='merge-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  {% set name='merge-keys%02d' % n %}
+  <div class="form-group required">
     <label for="{{ name }}">
-      Tags to copy from other dataset
+      Shared keys (values that are the same in both datasets)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -41,12 +43,13 @@
         />
   </div>
 
-  {% set name='merge-keys%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  {% set name='merge-tags%02d' % n %}
+  <div class="form-group required">
     <label for="{{ name }}">
-      Shared keys (values that are the same in both datasets)
+      Tags to copy from other dataset
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -58,7 +61,7 @@
   </div>
 
   {% set name='merge-replace%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
+  <div class="checkbox">
     <label>
       <input
           type="checkbox"
@@ -72,7 +75,7 @@
   </div>
 
   {% set name='merge-overwrite%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
+  <div class="checkbox">
     <label>
       <input
           type="checkbox"

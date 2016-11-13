@@ -2,13 +2,12 @@
   {# Recipe filter-type selector #}
   {% import 'includes/filters/filter-types.j2' as filter_types %}
   <div class="panel-body">
-    <div id="{{ 'filter%02d' % n }}" class="field_filter form-group">
+    <div class="field_filter form-group">
       <label for="{{ name }}">
-        Filter type
+        Choose filter type to add
       </label>
-      {% with key='Filters' %}{% include "includes/help.html" %}{% endwith %}
       {% set name='filter%02d' % n %}
-      <select name="{{ name }}" class="form-control">
+      <select id="{{ name }}" name="{{ name }}" class="form-control">
         <option value="">(none)</option>
         {% for type in filter_types.names.keys()|sort %}
         <option value="{{ type }}">{{ filter_types.names[type] }}</option>

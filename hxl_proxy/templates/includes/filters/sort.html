@@ -1,8 +1,8 @@
 <div class="filter-sort filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
   <p class="doc">
-    Sort the records in a HXL dataset
     {% with key='Sort-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Sort the records in a HXL dataset
   </p>
 
   {% set name='sort-tags{0:02}'.format(n) %}
@@ -19,7 +19,7 @@
   </div>
   
   {% set name='sort-reverse{0:02}'.format(n) %}
-  <div id="{{ name }}" class="checkbox">
+  <div class="checkbox">
     <label>
       <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
       Reverse order

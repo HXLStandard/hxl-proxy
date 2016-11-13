@@ -2,17 +2,18 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Remove duplicate rows from a dataset.
     {% with key='Deduplicate-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Remove duplicate rows from a dataset.
   </p>
 
   {% set name='dedup-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Tags to look at for deduplication (if blank, <i>all</i> columns
       must match for a duplicate).
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -22,11 +23,12 @@
   </div>
 
   {% set name='dedup-where%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Deduplicate only rows matching this query
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"

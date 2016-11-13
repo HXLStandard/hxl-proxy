@@ -2,8 +2,8 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Combine multiple HXL datasets.
     {% with key='Append-datasets-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Combine multiple HXL datasets.
   </p>
 
   {% set name='append-exclude-columns%02d' % n %}
@@ -21,14 +21,14 @@
   </div>
 
   {% set name='append-dataset%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
-    <label for="{{ name }}">
+  <div class="form-group required">
+    <label>
       Datasets to append
     </label>
     {% for n in range(1, 26) %}
     {% set dataset_name = '%s-%02d' % (name, n) %}
     <input
-        class="form-control"
+        class="form-control col-sm-6"
         id="{{ dataset_name }}-field"
         name="{{ dataset_name }}"
         value="{{ recipe.args[dataset_name] }}"

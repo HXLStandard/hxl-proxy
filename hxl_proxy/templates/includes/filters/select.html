@@ -1,15 +1,13 @@
 <div class="filter-select filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
   <p class="doc">
+    {% with key='Select-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
     Include rows that match <strong>any</strong> of the following queries
-    <a class="pull-right" target="_blank" href="https://github.com/HXLStandard/libhxl-python/wiki/Select-rows-filter">
-      <span class="glyphicon glyphicon-question-sign"></span>
-    </a>
   </p>
 
   {% set name='select-query%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
-    <label for="{{ name }}">Queries (e.g. adm1=Bomo)</label>
+  <div class="form-group required">
+    <label>Queries (e.g. adm1=Bomo)</label>
     {% for n in range(1, 25) %}
     {% set query_name = '%s-%02d' % (name, n) %}
     {% if n == 1 or recipe.args[query_name] %}

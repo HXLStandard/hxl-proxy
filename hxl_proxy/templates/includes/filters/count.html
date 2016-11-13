@@ -2,16 +2,17 @@
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Aggregate HXL data to generate reports or protect private data.
     {% with key='Count-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Aggregate HXL data to generate reports or protect private data.
   </p>
 
   {% set name='count-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Count unique combinations of these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -21,11 +22,12 @@
   </div>
 
   {% set name='count-where%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Count only rows that match this query
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -41,9 +43,9 @@
     <div class="aggregate row">
       
       {%set name='count-type%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6 aggregate-type required">
+      <div class="form-group col-sm-6 aggregate-type required">
         <label for="{{ name }}">Aggregation type</label>
-        <select name="{{ name }}" class="form-control">
+        <select id="{{ name }}" name="{{ name }}" class="form-control">
           <option value="">--</option>
           {% if recipe.args[name] == 'count' %}
           <option value="count" selected="selected">Count</option>
@@ -74,9 +76,10 @@
       </div>
       
       {% set name='count-pattern%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6 aggregate-pattern required">
+      <div class="form-group col-sm-6 aggregate-pattern required">
         <label for="{{ name }}">Source column</label>
-        <input name="{{ name }}"
+        <input id="{{ name }}"
+               name="{{ name }}"
                class="form-control"
                placeholder="{{ vars.filter_placeholder }}"
                value="{{ recipe.args[name] }}"
@@ -84,9 +87,10 @@
       </div>
       
       {%set name='count-header%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6 aggregate-header">
+      <div class="form-group col-sm-6 aggregate-header">
         <label for="{{ name }}">Output column header</label>
-        <input name="{{ name }}"
+        <input id="{{ name }}"
+               name="{{ name }}"
                class="form-control"
                value="{{ recipe.args[name]|nonone }}"
                placeholder="Column header"
@@ -94,10 +98,10 @@
       </div>
 
       {%set name='count-column%02d-%02d' % (n, m,) %}
-      <div id="{{ name }}" class="form-group col-sm-6 aggregate-column
-                                  required">
+      <div class="form-group col-sm-6 aggregate-column required">
         <label for="{{ name }}">Output column hashtag</label>
-        <input name="{{ name }}"
+        <input id="{{ name }}"
+               name="{{ name }}"
                class="form-control"
                value="{{ recipe.args[name]|nonone }}"
                placeholder="{{ vars.tag_placeholder }}"
@@ -109,11 +113,12 @@
 
   {% set name='count-spec%02d' % n %}
   {% if recipe.args[name] %}
-  <div id="{{ name }}" class="form-group deprecated">
+  <div class="form-group deprecated">
     <label for="{{ name }}">
       Deprecated: Name and hashtag for count column (instead of <code>#meta+count</code>)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -125,12 +130,13 @@
 
   {% set name='count-aggregate-tag%02d' % n %}
   {% if recipe.args[name] %}
-  <div id="{{ name }}" class="form-group deprecated">
+  <div class="form-group deprecated">
     <label for="{{ name }}">
       Deprecated: Optionally also include aggregate values (sum, average, min, max) for
       this tag pattern.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
