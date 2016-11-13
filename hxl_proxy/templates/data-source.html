@@ -6,9 +6,9 @@
   </head>
   <body class="container-fluid">
     {% with facet='source' %}
+    {% set page_help='Source-page' %}
     {% include "includes/navbar.html" %}
     {% endwith %}
-    {% with key='Source-page' %}{% include "includes/help.html" %}{% endwith %}
     <header>
       {% if recipe.args.url %}
       {% with facet='source' %}
