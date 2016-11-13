@@ -37,12 +37,12 @@ main {
 
 label {
     font-weight: normal;
-    font-style: italic;
+    font-color: #111111;
+    font-variant: small-caps;
 }
 
 .required label {
     font-weight: bold;
-    font-style: normal;
 }
 
 .required label:before {
@@ -154,7 +154,10 @@ td>.content {
 }
 
 .doc {
-    font-style: italic;
+    padding: 2ex;
+    background: #eeeecc;
+    border-radius: 1ex;
+    margin-bottom: 3ex;
 }
 
 .source-url {
@@ -223,7 +226,7 @@ ol.filter-list .filter-delete {
 }
 
 .help-link {
-    margin-top: 2ex;
+    float: right;
 }
 
 .handle {
@@ -240,4 +243,8 @@ fieldset legend {
     margin: 0 0 1ex 0;
     border: 1px solid #aaaaaa;
     border-radius: 1ex;
+}
+
+.recipe-buttons {
+    margin-top: 3ex;
 }

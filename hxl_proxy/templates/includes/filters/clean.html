@@ -1,18 +1,21 @@
-<div class="filter-clean filter-body">
+<div class="filter-clean filter-body row">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
-  <p class="doc">
-    Clean up your dataset by standardising dates and numbers, removing
-    whitespace, etc.
-    {% with key='Clean-data-filter' %}{% include "includes/help.html" %}{% endwith %}
-  </p>
+  <div class="col-sm-12">
+    <p class="doc">
+      {% with key='Clean-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+      Clean up your dataset by standardising dates and numbers, removing
+      whitespace, etc.
+    </p>
+  </div>
 
-  {% set name='clean-whitespace-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-whitespace-tags{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Normalise whitespace for these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -22,12 +25,13 @@
         />
   </div>
 
-  {% set name='clean-toupper-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-toupper-tags{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Convert to uppercase for these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -37,12 +41,13 @@
         />
   </div>
 
-  {% set name='clean-tolower-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-tolower-tags{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Convert to lowercase for these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -52,12 +57,13 @@
         />
   </div>
 
-  {% set name='clean-date-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-date-tags{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Standardise dates for these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -67,12 +73,13 @@
         />
   </div>
 
-  {% set name='clean-num-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-num-tags{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Standardise numbers for these hashtags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -82,12 +89,13 @@
         />
   </div>
 
-  {% set name='clean-where%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='clean-where{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
     <label for="{{ name }}">
       Clean data only in rows matching this query
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
