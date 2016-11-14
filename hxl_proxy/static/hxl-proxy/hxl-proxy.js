@@ -203,19 +203,30 @@ hxl_proxy.ui.setup_filters = function (form_node) {
     $(form_node).find(".filter-count .aggregate").each(function (index) {
         function setup (container_node, select_node) {
             var aggregate_type = select_node.val();
+            var header_node, column_node;
             if (!aggregate_type) {
                 container_node.find('.aggregate-pattern').hide().find('input').attr('required', false).attr('value', '');
-                container_node.find('.aggregate-header').hide().find('input').attr('value', '');
-                container_node.find('.aggregate-column').hide().find('input').attr('required', false).attr('value', '');
+                header_node = container_node.find('.aggregate-header').hide().find('input').attr('value', '');
+                column_node = container_node.find('.aggregate-column').hide().find('input').attr('required', false).attr('value', '');
             } else if (aggregate_type == 'count') {
                 container_node.find('.aggregate-pattern').hide().find('input').attr('required', false).attr('value', '');
-                container_node.find('.aggregate-header').show().find('input').attr('value', 'Count');
-                container_node.find('.aggregate-column').show().find('input').attr('required', true).attr('value', '#meta+count');
+                header_node = container_node.find('.aggregate-header').show().find('input').attr('value', 'Count');
+                column_node = container_node.find('.aggregate-column').show().find('input').attr('required', true).attr('value', '#meta+count');
             } else {
                 var title = aggregate_type.slice(0, 1).toUpperCase() + aggregate_type.slice(1);
                 container_node.find('.aggregate-pattern').show().find('input').attr('required', true);
-                container_node.find('.aggregate-header').show().find('input').attr('value', title);
-                container_node.find('.aggregate-column').show().find('input').attr('required', true).attr('value', '#meta+' + aggregate_type);
+                header_node = container_node.find('.aggregate-header').show().find('input');
+                column_node = container_node.find('.aggregate-column').show().find('input').attr('required', true);
+            }
+            // provide default values, if needed
+            if (aggregate_type) {
+                var title = aggregate_type.slice(0, 1).toUpperCase() + aggregate_type.slice(1);
+                if (!header_node.attr('value')) {
+                    header_node.attr('value', title);
+                }
+                if (!column_node.attr('value')) {
+                    column_node.attr('value', '#meta+' + aggregate_type);
+                }
             }
         }
         var container_node = $(this);
