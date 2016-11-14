@@ -671,6 +671,32 @@ hxl_proxy.ui.removeFilter = function (node) {
 };
 
 
+/**
+ * Make a copy of a DOM subtree and insert it after the original, incrementing counters.
+ */
+hxl_proxy.ui.duplicate = function (node) {
+
+    function renumber (node) {
+        var atts = ['id', 'name', 'for'];
+        for (i in atts) {
+            var name = atts[i];
+            var value = $(node).attr(name);
+            if (value && value.match(/-[0-9][0-9]$/)) {
+                var parts = hxl_proxy.util.parseFieldName(value);
+                $(node).attr(name, hxl_proxy.util.makeFieldName([parts[0], parts[1], parts[2] + 1]));
+            }
+        }
+    }
+
+    var new_node = node.clone();
+    renumber(new_node);
+    $(new_node).find('*').each(function (i, node) {
+        renumber(node);
+    });
+    node.after(new_node);
+};
+
+
 ////////////////////////////////////////////////////////////////////////
 // Utility functions.
 ////////////////////////////////////////////////////////////////////////
