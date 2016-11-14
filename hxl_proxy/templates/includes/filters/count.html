@@ -37,37 +37,37 @@
   </div>
 
   <fieldset>
-    <legend>Aggregate values</legend>
+    <legend>Aggregate values to generate</legend>
 
-    {% for m in range(1, 4) %}
+    {% for m in range(1, 26) %}
+    {% set type='count-type%02d-%02d' % (n, m,) %}
+    {% if (m == 1) or recipe.args[type] %}
     <div class="aggregate row">
-      
-      {%set name='count-type%02d-%02d' % (n, m,) %}
+
       <div class="form-group col-sm-6 aggregate-type required">
-        <label for="{{ name }}">Aggregation type</label>
-        <select id="{{ name }}" name="{{ name }}" class="form-control">
-          <option value="">--</option>
-          {% if recipe.args[name] == 'count' %}
+        <label for="{{ type }}">Aggregation type</label>
+        <select id="{{ type }}" name="{{ type }}" class="form-control">
+          {% if recipe.args[type] == 'count' %}
           <option value="count" selected="selected">Count</option>
           {% else %}
           <option value="count">Row count</option>
           {% endif %}
-          {% if recipe.args[name] == 'sum' %}
+          {% if recipe.args[type] == 'sum' %}
           <option value="sum" selected="selected">Sum</option>
           {% else %}
           <option value="sum">Sum</option>
           {% endif %}
-          {% if recipe.args[name] == 'average' %}
+          {% if recipe.args[type] == 'average' %}
           <option value="average" selected="selected">Average</option>
           {% else %}
           <option value="average">Average</option>
           {% endif %}
-          {% if recipe.args[name] == 'min' %}
+          {% if recipe.args[type] == 'min' %}
           <option value="min" selected="selected">Minimum</option>
           {% else %}
           <option value="min">Minimum</option>
           {% endif %}
-          {% if recipe.args[name] == 'max' %}
+          {% if recipe.args[type] == 'max' %}
           <option value="max" selected="selected">Maximum</option>
           {% else %}
           <option value="max">Maximum</option>
@@ -107,9 +107,16 @@
                placeholder="{{ vars.tag_placeholder }}"
                />
       </div>
+
+      <div class="col-sm-12 text-right">
+        <a onclick="hxl_proxy.ui.delete($(this).closest('.aggregate'), 'fieldset', '.aggregate')">
+          Remove aggregate
+        </a>
+      </div>
     </div>
+    {% endif %}
     {% endfor %}
-    <a onclick="hxl_proxy.ui.duplicate($(this).prev());">Add aggregator</a>
+    <a onclick="hxl_proxy.ui.duplicate($(this).prev('.aggregate'), 'fieldset', '.aggregate');">Add aggregator</a>
   </fieldset>
 
   {% set name='count-spec%02d' % n %}

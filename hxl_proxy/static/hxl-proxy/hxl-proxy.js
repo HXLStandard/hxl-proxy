@@ -617,7 +617,7 @@ hxl_proxy.ui.trimTagger = function (formNode) {
  */
 hxl_proxy.ui.addField = function (contextNode) {
     var lastInputNode = $(contextNode).siblings('input').last();
-    var newInputNode = $(lastInputNode).clone();
+    var newInputNode = $(lastInputNode).clone(true);
     var parts = hxl_proxy.util.parseFieldName($(lastInputNode).attr('name'));
     if (parts[2]) {
         parts[2]++;
@@ -672,28 +672,62 @@ hxl_proxy.ui.removeFilter = function (node) {
 
 
 /**
- * Make a copy of a DOM subtree and insert it after the original, incrementing counters.
+ * Renumber subitems in a form section.
+ * @param container: The container node
+ * @param selector: The selector for the items to renumber.
  */
-hxl_proxy.ui.duplicate = function (node) {
+hxl_proxy.ui.renumberFormItems = function (container, selector) {
+    // Form attributes to be renumbered
+    var atts = ['id', 'name', 'for'];
 
-    function renumber (node) {
-        var atts = ['id', 'name', 'for'];
-        for (i in atts) {
-            var name = atts[i];
-            var value = $(node).attr(name);
-            if (value && value.match(/-[0-9][0-9]$/)) {
-                var parts = hxl_proxy.util.parseFieldName(value);
-                $(node).attr(name, hxl_proxy.util.makeFieldName([parts[0], parts[1], parts[2] + 1]));
+    // Iterate over just the items to get the count
+    $(container).find(selector).each(function (index, item) {
+
+        // Renumber everything inside each item with the item number (+1)
+        $(item).find('*').addBack().each(function (i, node) {
+            for (i in atts) {
+                var name = atts[i];
+                var value = $(node).attr(name);
+                if (value && value.match(/-[0-9][0-9]$/)) {
+                    var parts = hxl_proxy.util.parseFieldName(value);
+                    $(node).attr(name, hxl_proxy.util.makeFieldName([parts[0], parts[1], index + 1]));
+                }
             }
-        }
-    }
-
-    var new_node = node.clone();
-    renumber(new_node);
-    $(new_node).find('*').each(function (i, node) {
-        renumber(node);
+        });
     });
-    node.after(new_node);
+};
+
+
+/**
+ * Duplicate a form item (repeatable field or section).
+ * @param node The node to duplicate (new copy will be right after).
+ * @param container_selector JQuery selector for the container node.
+ * @param item_selector JQuery selector for the repeatable items (usually a class).
+ */
+hxl_proxy.ui.duplicate = function (node, container_selector, item_selector) {
+    var new_node = $(node).clone(true);
+    $(node).after(new_node);
+    hxl_proxy.ui.renumberFormItems($(node).closest(container_selector), item_selector);
+    hxl_proxy.ui.setup_filters($(node).closest('form'));
+};
+
+
+/**
+ * Delete a form item (repeatable field or section).
+ * @param node The node to delete.
+ * @param container_selector JQuery selector for the container node.
+ * @param item_selector JQuery selector for the repeatable items (usually a class)
+ */
+hxl_proxy.ui.delete = function (node, container_selector, item_selector) {
+    var container = $(node).closest(container_selector);
+    if ($(container).find(item_selector).length > 1) {
+        if (confirm("Remove aggregate?")) {
+            $(node).remove();
+            hxl_proxy.ui.renumberFormItems(container, item_selector);
+        }
+    } else {
+        alert("Can't remove last item.");
+    }
 };
 
 
