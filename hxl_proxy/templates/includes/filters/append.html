@@ -16,29 +16,38 @@
           checked="checked"
           {% endif %}
           />
-      Exclude columns not in current dataset.
-    </label>
-  </div>
+          Exclude columns not in original dataset.
+        </label>
+      </div>
 
-  {% set name='append-dataset%02d' % n %}
-  <div class="form-group required">
-    <label>
-      Datasets to append
-    </label>
-    {% for n in range(1, 26) %}
-    {% set dataset_name = '%s-%02d' % (name, n) %}
-    <input
-        class="form-control col-sm-6"
-        id="{{ dataset_name }}-field"
-        name="{{ dataset_name }}"
-        value="{{ recipe.args[dataset_name] }}"
-        type="url"
-        placeholder="http://example.org/dataset.csv"
-        />
-    {% with id='#' + dataset_name + '-field' %}
-    {% include "includes/selectors.html" %}
-    {% endwith %}
-    {% endfor %}
-  </div>
+      {% set name='append-dataset%02d' % n %}
+      <div class="form-group required">
+        <fieldset>
+          {% for n in range(1, 51) %}
+          {% set dataset_name = '%s-%02d' % (name, n) %}
+          {% if n == 1 or recipe.args.get(dataset_name) %}
+          <div class="append-source">
+            <label for="{{ dataset_name }}">URL of additional dataset</label>
+            <input
+                class="form-control col-sm-6"
+                id="{{ dataset_name }}"
+                name="{{ dataset_name }}"
+                value="{{ recipe.args[dataset_name] }}"
+                type="url"
+                placeholder="http://example.org/dataset.csv"
+                />
+            <a class="pull-right small" onclick="hxl_proxy.ui.delete($(this).closest('.append-source'), 'fieldset', '.append-source')">
+              Remove URL
+            </a>
+            {% with id='#' + dataset_name + '-field' %}
+            {% include "includes/selectors.html" %}
+            {% endwith %}
+          </div>
+          {% endif %}
+          {% endfor %}
+          <a
+              onclick="hxl_proxy.ui.duplicate($(this).prev('.append-source'), 'fieldset', '.append-source');">Add another URL</a>
+        </fieldset>
+      </div>
 
-</div>
+    </div>

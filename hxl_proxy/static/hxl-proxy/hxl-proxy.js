@@ -716,7 +716,8 @@ hxl_proxy.ui.renumberFormItems = function (container, selector) {
  * @param item_selector JQuery selector for the repeatable items (usually a class).
  */
 hxl_proxy.ui.duplicate = function (node, container_selector, item_selector) {
-    var new_node = $(node).clone(true);
+    var new_node = $(node).clone();
+    $(new_node).find('[value]').attr('value', '');
     $(node).after(new_node);
     hxl_proxy.ui.renumberFormItems($(node).closest(container_selector), item_selector);
     hxl_proxy.ui.setup_filters($(node).closest('form'));
@@ -732,7 +733,7 @@ hxl_proxy.ui.duplicate = function (node, container_selector, item_selector) {
 hxl_proxy.ui.delete = function (node, container_selector, item_selector) {
     var container = $(node).closest(container_selector);
     if ($(container).find(item_selector).length > 1) {
-        if (confirm("Remove aggregate?")) {
+        if (confirm("Remove item?")) {
             $(node).remove();
             hxl_proxy.ui.renumberFormItems(container, item_selector);
         }

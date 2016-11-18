@@ -108,11 +108,12 @@ def add_add_filter(source, args, index):
 def add_append_filter(source, args, index):
     """Add the hxlappend filter to the end of the chain."""
     exclude_columns = args.get('append-exclude-columns%02d' % index, False)
+    append_sources = []
     for subindex in range(1, 100):
-        dataset_url = args.get('append-dataset%02d-%02d' % (index, subindex))
-        if dataset_url:
-            source = source.append(hxl.data(dataset_url), not exclude_columns)
-    return source
+        append_source = args.get('append-dataset%02d-%02d' % (index, subindex))
+        if append_source:
+            append_sources.append(append_source)
+    return source.append(append_sources=append_sources, add_columns=(not exclude_columns))
 
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""

@@ -10,6 +10,8 @@
 	  dataset still available via CSV or JSON download)
 	- add a max_rows parameter to limit the number of rows returned.
 	- add a /hxl-test page (available in JSON as well)
+	- modify the append-filter form to add URLs on demand
+	- support the new multi-URL append filter from libhxl-python
 
 2016-08-30 Release 0.6
 	- Add support for requests-cache, so that different views of the same
