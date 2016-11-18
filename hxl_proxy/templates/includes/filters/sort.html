@@ -1,18 +1,25 @@
-<div class="fields-sort hideable">
+<div class="filter-sort filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
   <p class="doc">
-    Sort the records in a HXL dataset
     {% with key='Sort-rows-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Sort the records in a HXL dataset
   </p>
 
-  {% set name='sort-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='sort-tags{0:02}'.format(n) %}
+  <div class="form-group">
     <label for="{{ name }}">Use these tags for sorting.</label>
-    <input class="form-control" name="{{ name }}" value="{{ recipe.args[name] }}" pattern="^{{ vars.filters_pattern }}$" title="{{ vars.filters_help }}" placeholder="{{ vars.filters_placeholder }}" />
+    <input
+        id="{{ name }}"
+        class="form-control" name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
   </div>
   
-  {% set name='sort-reverse%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
+  {% set name='sort-reverse{0:02}'.format(n) %}
+  <div class="checkbox">
     <label>
       <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
       Reverse order

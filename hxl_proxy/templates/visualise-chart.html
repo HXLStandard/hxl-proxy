@@ -13,9 +13,9 @@
   </head>
   <body class="container-fluid">
     {% set facet="chart" %}
+    {% set page_help='Chart-page' %}
     {% include "includes/navbar.html" %}
     <header>
-        {% with key='View-page' %}{% include "includes/help.html" %}{% endwith %}
       <ul class="nav nav-tabs">
         <li role="presentation"{% if type=='pie' %} class="active"{% endif %}><a href="{{ add_args({'type': 'pie'}) }}">Pie</a></li>
         <li role="presentation"{% if type=='bar' %} class="active"{% endif %}><a href="{{ add_args({'type': 'bar'}) }}">Bar</a></li>

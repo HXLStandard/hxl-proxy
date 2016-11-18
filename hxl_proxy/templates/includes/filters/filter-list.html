@@ -1,0 +1,19 @@
+<div>
+  {#
+    Display the fields for a filter.
+  
+    Variables n and filter_type passed from the caller
+    data-recipe.html
+
+    If the filter_type is not defined, then include fields for all
+    filter types, and the Javascript will control which ones are
+    visible, based on the selector defined in
+    filter-selector.html. Filter types come from filter-types.j2
+  #}
+  {% import 'includes/filters/filter-types.j2' as filter_types %}
+  {% for type in filter_types.names.keys() %}
+  {% if not filter_type or filter_type == type %}
+  {% include 'includes/filters/{}.html'.format(type) %}
+  {% endif %}
+  {% endfor %}
+</div>

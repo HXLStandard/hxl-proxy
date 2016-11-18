@@ -108,11 +108,12 @@ def add_add_filter(source, args, index):
 def add_append_filter(source, args, index):
     """Add the hxlappend filter to the end of the chain."""
     exclude_columns = args.get('append-exclude-columns%02d' % index, False)
+    append_sources = []
     for subindex in range(1, 100):
-        dataset_url = args.get('append-dataset%02d-%02d' % (index, subindex))
-        if dataset_url:
-            source = source.append(hxl.data(dataset_url), not exclude_columns)
-    return source
+        append_source = args.get('append-dataset%02d-%02d' % (index, subindex))
+        if append_source:
+            append_sources.append(append_source)
+    return source.append(append_sources=append_sources, add_columns=(not exclude_columns))
 
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""
@@ -127,10 +128,47 @@ def add_clean_filter(source, args, index):
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
     tags = hxl.TagPattern.parse_list(args.get('count-tags%02d' % index, ''))
-    count_spec = args.get('count-spec%02d' % index, 'Count#meta+count')
-    aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
     row_query = args.get('count-where%02d' % index, None)
-    return source.count(patterns=tags, aggregate_pattern=aggregate_pattern, count_spec=count_spec, queries=row_query)
+
+    aggregators = []
+    for n in range(1, 25):
+        suffix = '%02d-%02d' % (index, n,)
+        count_type = args.get('count-type' + suffix)
+        if count_type:
+            aggregators.append(hxl.filters.Aggregator(
+                type = count_type,
+                pattern = args.get('count-pattern' + suffix),
+                column = hxl.model.Column.parse(
+                    _parse_tagspec(args.get('count-column' + suffix, '#meta+' + count_type)),
+                    header = args.get('count-header' + suffix, count_type.title())
+                )
+            ))
+
+    # deprecated parameters
+
+    count_spec = args.get('count-spec%02d' % index, None)
+    if count_spec:
+        # deprecated column hashtag for a default count column
+        aggregators.append(hxl.filters.Aggregator(
+            type = 'count',
+            column = hxl.model.Column.parse_spec(count_spec, default_header='Count')
+        ))
+
+    aggregate_pattern = args.get('count-aggregate-tag%02d' % index)
+    if aggregate_pattern:
+        if not count_spec:
+            aggregators.append(hxl.filters.Aggregator(
+                type='count',
+                column = hxl.model.Column.parse('#meta+count', header='Count')
+            ))
+        for count_type in ['sum', 'average', 'min', 'max']:
+            aggregators.append(hxl.filters.Aggregator(
+                type = count_type,
+                pattern = aggregate_pattern,
+                column = hxl.model.Column.parse("#meta+" + count_type, header=count_type.title())
+            ))
+    
+    return source.count(patterns=tags, aggregators=aggregators, queries=row_query)
 
 def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""

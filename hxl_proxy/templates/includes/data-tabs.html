@@ -17,10 +17,10 @@
       Recipe
     </a>
   </li>
-  <li class="{% if facet=='recipe' %}active{% endif %}">
-    <a href="{{ data_url(recipe, 'recipe') }}">
+  <li class="{% if facet=='save' %}active{% endif %}">
+    <a href="{{ data_url(recipe, 'save') }}">
       {% if recipe.recipe_id %}
-      About
+      Update
       {% else %}
       Save
       {% endif %}

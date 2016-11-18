@@ -1,17 +1,18 @@
-<div class="fields-add hideable">
+<div class="filter-add filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Add a new column (with a constant value) to the data.
     {% with key='Add-column-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Add a new column (with a constant value) to the data.
   </p>
 
-  {% set name='add-tag%02d' % n %}
-  <div class="form-group required" id="{{ name }}">
+  {% set name='add-tag{0:02}'.format(n) %}
+  <div class="form-group required">
     <label for="{{ name }}">
       Tag for new column.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -22,12 +23,13 @@
         />
   </div>
 
-  {% set name='add-value%02d' % n %}
-  <div class="form-group required" id="{{ name }}">
+  {% set name='add-value{0:02}'.format(n) %}
+  <div class="form-group required">
     <label for="{{ name }}">
       Fixed value for new column.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -36,12 +38,13 @@
         />
   </div>
 
-  {% set name='add-header%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  {% set name='add-header{0:02}'.format(n) %}
+  <div class="form-group">
     <label for="{{ name }}">
       Display header for new column.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -49,8 +52,8 @@
         />
   </div>
 
-  {% set name='add-before%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
+  {% set name='add-before{0:02}'.format(n) %}
+  <div class="checkbox">
     <label>
       <input
           type="checkbox"

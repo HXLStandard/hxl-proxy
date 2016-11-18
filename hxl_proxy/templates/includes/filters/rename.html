@@ -1,16 +1,17 @@
-<div class="fields-rename hideable">
+<div class="filter-rename filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
   <p class="doc">
-    Rename and retag an existing column.
     {% with key='Rename-column-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Rename and retag an existing column.
   </p>
 
   {% set name='rename-oldtag%02d' % n %}
-  <div class="form-group required" id="{{ name }}">
+  <div class="form-group required">
     <label for="{{ name }}">
-      Original tag or pattern
+      Original hashtag pattern
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -22,11 +23,12 @@
   </div>
 
   {% set name='rename-newtag%02d' % n %}
-  <div class="form-group required" id="{{ name }}">
+  <div class="form-group required">
     <label for="{{ name }}">
-      New tag
+      New hashtag and attributes
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -38,11 +40,12 @@
   </div>
 
   {% set name='rename-header%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
-      New display header.
+      New text header.
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"

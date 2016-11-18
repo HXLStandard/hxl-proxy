@@ -1,17 +1,18 @@
-<div class="fields-replace hideable">
+<div class="filter-replace filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Replace values in the dataset.
     {% with key='Replace-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Replace values in the dataset.
   </p>
 
   {% set name='replace-pattern%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  <div class="form-group required">
     <label for="{{ name }}">
       Text or pattern to replace
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         required="required"
         name="{{ name }}"
@@ -21,7 +22,7 @@
   </div>
 
   {% set name='replace-regex%02d' % n %}
-  <div id="{{ name }}" class="checkbox">
+  <div class="checkbox">
     <label>
       <input
           type="checkbox"
@@ -35,11 +36,12 @@
   </div>
 
   {% set name='replace-value%02d' % n %}
-  <div id="{{ name }}" class="form-group required">
+  <div class="form-group required">
     <label for="{{ name }}">
-      New text
+      Replacement text
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         required="required"
         name="{{ name }}"
@@ -49,11 +51,12 @@
   </div>
 
   {% set name='replace-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Replace only in these columns
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -64,11 +67,12 @@
   </div>
 
   {% set name='replace-where%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Replace only in rows matching this query
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"

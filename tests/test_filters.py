@@ -106,14 +106,50 @@ class TestPipelineFunctions(unittest.TestCase):
     def test_add_count_filter(self):
         args = {
             'count-tags03': 'country,adm1,adm2+ocha',
-            'count-aggregate-tag03': 'targeted_num+f'
+            'count-pattern03-01': 'targeted',
+            'count-type03-01': 'sum',
+            'count-header03-01': 'People targeted',
+            'count-column03-01': 'targeted+total',
         }
         filter = add_count_filter(self.source, args, 3)
         self.assertEqual('CountFilter', filter.__class__.__name__, "count filter from args")
         self.assertEqual(self.source, filter.source, "source ok")
         self.assertEqual(['#country', '#adm1', '#adm2+ocha'], [str(p) for p in filter.patterns], "tags ok")
-        self.assertEqual('#targeted_num+f', str(filter.aggregate_pattern), "aggregate tag ok")
-    
+        self.assertEqual('sum', filter.aggregators[0].type)
+        self.assertEqual('#targeted', repr(filter.aggregators[0].pattern))
+        self.assertEqual('People targeted', filter.aggregators[0].column.header)
+        self.assertEqual('#targeted+total', filter.aggregators[0].column.display_tag)
+
+    def test_add_count_filter_legacy(self):
+        args = {
+            'count-tags03': 'country,adm1,adm2+ocha',
+            'count-aggregate-tag03': 'targeted+f',
+            'count-spec03': 'Total targeted#targeted+count'
+        }
+        filter = add_count_filter(self.source, args, 3)
+
+        # default count filter
+        self.assertEqual('count', filter.aggregators[0].type)
+        self.assertEqual('#targeted+count', filter.aggregators[0].column.display_tag)
+        self.assertEqual('Total targeted', filter.aggregators[0].column.header)
+
+        # default aggregations
+        for n, aggregate_type in enumerate(['sum', 'average', 'min', 'max']):
+            self.assertEqual(aggregate_type, filter.aggregators[n+1].type)
+            self.assertEqual('#targeted+f', repr(filter.aggregators[n+1].pattern))
+            self.assertEqual('#meta+' + aggregate_type, filter.aggregators[n+1].column.display_tag)
+            self.assertEqual(aggregate_type.title(), filter.aggregators[n+1].column.header)
+
+        # Check spec with hash omitted
+        args = {
+            'count-tags03': 'country,adm1,adm2+ocha',
+            'count-spec03': 'targeted+count'
+        }
+        filter = add_count_filter(self.source, args, 3)
+        self.assertEqual('count', filter.aggregators[0].type)
+        self.assertEqual('#targeted+count', filter.aggregators[0].column.display_tag)
+        self.assertEqual('Count', filter.aggregators[0].column.header)
+            
     def test_add_column_filter(self):
         args = {
             'cut-include-tags01': 'org,adm1,adm2+pcode'
@@ -152,7 +188,7 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(self.source, filter.source, "source ok")
         for spec in filter.rename:
             # XXX assuming just one key, or else this will break badly
-            self.assertEqual('#loc-sensitive', str(spec[0]), "original tag pattern ok")
+            self.assertEqual('#loc-sensitive', repr(spec[0]))
             self.assertEqual('#adm1', spec[1].display_tag, "replacement tag pattern ok")
             self.assertEqual('Provincia', spec[1].header, "header ok")
 

@@ -166,8 +166,8 @@ def show_data_edit(recipe_id=None):
 
     return flask.render_template('data-recipe.html', recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
 
-@app.route("/data/recipe")
-@app.route("/data/<recipe_id>/recipe")
+@app.route("/data/save")
+@app.route("/data/<recipe_id>/save")
 def show_data_recipe(recipe_id=None):
     """Show form to save a recipe."""
 
@@ -179,7 +179,7 @@ def show_data_recipe(recipe_id=None):
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect('/data/source', 303)
 
-    return flask.render_template('data-about.html', recipe=recipe)
+    return flask.render_template('data-save.html', recipe=recipe)
 
 
 @app.route('/data/<recipe_id>/chart')

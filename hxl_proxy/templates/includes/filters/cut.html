@@ -1,17 +1,18 @@
-<div class="fields-cut hideable">
+<div class="filter-cut filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    Remove columns from your dataset.
     {% with key='Cut-columns-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Remove columns from your dataset.
   </p>
 
   {% set name='cut-include-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Whitelist: include only these tags (comma-separated)
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
@@ -22,12 +23,13 @@
   </div>
 
   {% set name='cut-exclude-tags%02d' % n %}
-  <div id="{{ name }}" class="form-group">
+  <div class="form-group">
     <label for="{{ name }}">
       Blacklist: include everything <i>but</i> these tags
       (comma-separated).
     </label>
     <input
+        id="{{ name }}"
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
