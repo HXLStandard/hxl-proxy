@@ -82,7 +82,7 @@
                name="{{ name }}"
                class="form-control"
                placeholder="{{ vars.filter_placeholder }}"
-               value="{{ recipe.args[name] }}"
+               value="{{ recipe.args[name]|nonone }}"
                />
       </div>
       
