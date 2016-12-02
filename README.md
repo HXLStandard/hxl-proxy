@@ -5,6 +5,8 @@ Python-/flask-based web proxy for transforming a HXL dataset
 dynamically. Currently runs only in Python 2.7+, but Python 3 support
 is close.
 
+User documentation is available at https://github.com/HXLStandard/hxl-proxy/wiki
+
 # Installation
 
 Installation from PyPi:
