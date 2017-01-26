@@ -75,6 +75,14 @@ def get_gravatar(email, size=40):
     )
     return url
 
+
+def check_verify(args):
+    if args.get('verify') == 'off':
+        return False
+    else:
+        return True
+    
+
 RECIPE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
 
 def get_recipe(recipe_id=None, auth=False, args=None):

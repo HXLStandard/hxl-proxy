@@ -1,3 +1,6 @@
+	- add a verify checkbox to the source page; if unchecked, don't
+	  try to verify SSL certs (checked by default)
+
 2016-12-02 Release 1.0
 	- added support for JSON recipes via a &recipe HTTP parameter
 	- add row queries for clean, count, deduplicate, replace, and

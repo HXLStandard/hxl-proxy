@@ -78,7 +78,7 @@ def make_tagged_input(args):
     """Create the raw input, optionally using the Tagger filter."""
     url = args.get('url')
     sheet_index = int(args.get('sheet')) if args.get('sheet') else None
-    input = hxl.io.make_input(url, sheet_index=sheet_index)
+    input = hxl.io.make_input(url, sheet_index=sheet_index, verify=util.check_verify(args))
 
     # Intercept tagging as a special data input
     specs = []
@@ -198,7 +198,7 @@ def add_merge_filter(source, args, index):
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = hxl.data(url)
+    merge_source = hxl.data(url, util.check_verify(args))
     return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
@@ -222,7 +222,7 @@ def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
     row_query = args.get('replace-map-where%02d' % index)
-    return source.replace_data_map(hxl.data(url), queries=row_query)
+    return source.replace_data_map(hxl.data(url, util.check_verify(args)), queries=row_query)
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""

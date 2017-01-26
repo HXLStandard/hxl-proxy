@@ -124,7 +124,7 @@ def show_data_tag(recipe_id=None):
 
     preview = []
     i = 0
-    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index):
+    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index, verify=util.check_verify(recipe['args'])):
         if i >= 25:
             break
         else:
@@ -394,7 +394,7 @@ def show_test(format='html'):
 
     if url:
         try:
-            hxl.data(url).columns
+            hxl.data(url, verify=util.check_verify(flask.request.args)).columns
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
         except IOError as e1:

@@ -56,12 +56,22 @@
               </p>
             </div>
 
-            <div class="col-sm-4 col-md-2">
-              <div class="input-group">
-                <div class="input-group-addon">
+            <div class="form-group form-inline">
+
+              <div class="col-sm-6">
+                <label for="sheet">
                   Tab #
+                </label>
+                <div class="form-group">
+                  <input name="sheet" value="{{ recipe.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
                 </div>
-                <input name="sheet" value="{{ recipe.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
+              </div>
+
+              <div class="col-sm-6 checkbox">
+                <label>
+                  <input type="checkbox" name="verify" {% if (not recipe.args) or (recipe.args.verify != 'off') %}checked="checked"{% endif %}/>
+                  Verify SSL certs
+                </label>
               </div>
             </div>
 
