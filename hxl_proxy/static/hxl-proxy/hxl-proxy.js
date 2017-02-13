@@ -202,7 +202,6 @@ hxl_proxy.ui.setup_filters = function (form_node) {
     // Set up aggregate fields for the count filter
     $(form_node).find(".filter-count .aggregate").each(function (index) {
         function setup (container_node, select_node) {
-            console.log('setup');
             var aggregate_type = select_node.val();
             var header_node, column_node;
             if (!aggregate_type) {
@@ -235,6 +234,7 @@ hxl_proxy.ui.setup_filters = function (form_node) {
         setup(container_node, select_node);
         select_node.on("change", function (event) {
             setup(container_node, select_node);
+            return true;
         });
     });
 };
@@ -610,7 +610,6 @@ hxl_proxy.ui.trimForm = function (contextNode) {
  * Trim unused fields from the tagger.
  */
 hxl_proxy.ui.trimTagger = function (formNode) {
-    console.log("trimTagger");
     for (var i = 1; i < 100; i++) {
         var baseName = "tagger-" + hxl_proxy.util.pad2(i);
         var headerNode = $(formNode).find("input[name='" + baseName + "-header']");
@@ -718,7 +717,7 @@ hxl_proxy.ui.renumberFormItems = function (container, selector) {
  */
 hxl_proxy.ui.duplicate = function (node, container_selector, item_selector) {
     var new_node = $(node).clone();
-    $(new_node).find('[value]').attr('value', '');
+    $(new_node).find('input[value],textarea[value]').attr('value', '');
     $(node).after(new_node);
     hxl_proxy.ui.renumberFormItems($(node).closest(container_selector), item_selector);
     hxl_proxy.ui.setup_filters($(node).closest('form'));
