@@ -213,7 +213,7 @@ class TestPipelineFunctions(unittest.TestCase):
             "operators ok"
         )
         self.assertEqual(
-            ['WASH', '3', 'UNICEF'],
+            ['wash', '3', 'unicef'],
             [str(q.value) for q in filter.queries],
             "values ok"
         )
