@@ -73,6 +73,21 @@
         />
   </div>
 
+  {%set name='clean-date-format{0:02}'.format(n) %}
+  <div class="form-group col-sm-6">
+    <label for="{{ name }}">
+      Format for cleaned dates (usually safe to leave empty)
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+  </div>
+
   {% set name='clean-num-tags{0:02}'.format(n) %}
   <div class="form-group col-sm-6">
     <label for="{{ name }}">
