@@ -1,5 +1,13 @@
 	- add a verify checkbox to the source page; if unchecked, don't
 	  try to verify SSL certs (checked by default)
+	- added support for new date_format field in clean filter
+	- support reading new JSON-based input (via libhxl-python)
+	- use MIME type and extension where avialable to help choose input
+	  type (via libhxl-python)
+	- use the character encoding specified in the HTTP response when
+	  reading a dataset (via libhxl-python)
+	- more flexible handing of invalid SSL certs (via libhxl-python)
+	- new "is (not)" operator for row queries (via libhxl-python)
 
 2016-12-02 Release 1.0
 	- added support for JSON recipes via a &recipe HTTP parameter
