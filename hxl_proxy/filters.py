@@ -45,6 +45,8 @@ def setup_filters(recipe):
         filter = recipe['args'].get('filter%02d' % index)
         if filter == 'add':
             source = add_add_filter(source, recipe['args'], index)
+        elif filter == 'append':
+            source = add_append_filter(source, recipe['args'], index)
         elif filter == 'clean':
             source = add_clean_filter(source, recipe['args'], index)
         elif filter == 'count':
@@ -55,20 +57,20 @@ def setup_filters(recipe):
             source = add_dedup_filter(source, recipe['args'], index)
         elif filter == 'explode':
             source = add_explode_filter(source, recipe['args'], index)
+        elif filter == 'fill':
+            source = add_fill_filter(source, recipe['args'], index)
         elif filter == 'merge':
             source = add_merge_filter(source, recipe['args'], index)
         elif filter == 'rename':
             source = add_rename_filter(source, recipe['args'], index)
-        elif filter == 'rows' or filter == 'select':
-            source = add_row_filter(source, recipe['args'], index)
-        elif filter == 'sort':
-            source = add_sort_filter(source, recipe['args'], index)
-        elif filter == 'append':
-            source = add_append_filter(source, recipe['args'], index)
         elif filter == 'replace':
             source = add_replace_filter(source, recipe['args'], index)
         elif filter == 'replace-map':
             source = add_replace_map_filter(source, recipe['args'], index)
+        elif filter == 'rows' or filter == 'select':
+            source = add_row_filter(source, recipe['args'], index)
+        elif filter == 'sort':
+            source = add_sort_filter(source, recipe['args'], index)
         elif filter:
             raise Exception("Unknown filter type '{}'".format(filter))
 
@@ -190,6 +192,12 @@ def add_explode_filter(source, args, index):
     return source.explode(
         args.get('explode-header-att%02d' % index, 'header'),
         args.get('explode-value-att%02d' % index, 'value')
+    )
+
+def add_fill_filter(source, args, index):
+    return source.fill_data(
+        pattern=args.get('fill-pattern%02d' % index, None),
+        queries=args.get('fill-where%02d' % index, [])
     )
 
 def add_merge_filter(source, args, index):

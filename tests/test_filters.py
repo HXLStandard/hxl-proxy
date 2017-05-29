@@ -192,6 +192,16 @@ class TestPipelineFunctions(unittest.TestCase):
             self.assertEqual('#adm1', spec[1].display_tag, "replacement tag pattern ok")
             self.assertEqual('Provincia', spec[1].header, "header ok")
 
+    def test_add_fill_filter(self):
+        args = {
+            'fill-pattern03': 'org',
+            'fill-where03': 'sector=wash'
+        }
+        filter = add_fill_filter(self.source, args, 3)
+        self.assertEqual('FillDataFilter', filter.__class__.__name__)
+        self.assertEqual('#org', filter.pattern.tag)
+        self.assertEqual('#sector', filter.queries[0].pattern.tag)
+
     def test_add_row_filter(self):
         args = {
             'select-query09-01': 'sector+cluster=WASH',
