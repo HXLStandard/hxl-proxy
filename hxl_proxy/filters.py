@@ -195,10 +195,9 @@ def add_explode_filter(source, args, index):
     )
 
 def add_fill_filter(source, args, index):
-    return source.fill_data(
-        pattern=args.get('fill-pattern%02d' % index, None),
-        queries=args.get('fill-where%02d' % index, [])
-    )
+    pattern=args.get('fill-pattern%02d' % index, None)
+    queries=args.get('fill-where%02d' % index, None)
+    return source.fill_data(pattern=pattern, queries=queries)
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""

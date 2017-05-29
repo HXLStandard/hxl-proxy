@@ -1,0 +1,41 @@
+<div class="filter-fill filter-body">
+  {% import 'includes/filters/filter-variables.j2' as vars %}
+
+  <p class="doc">
+    {% with key='Fill-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Fill empty cells from previous values in the same column.
+  </p>
+
+  {% set name='fill-pattern%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Tag patterns for filling (blank means fill all).
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+  </div>
+
+  {% set name='fill-where%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Fill only in rows matching this query
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
+</div>
