@@ -77,7 +77,7 @@ def get_gravatar(email, size=40):
 
 
 def check_verify(args):
-    if args.get('verify') == 'off':
+    if args.get('verify_ssl') == 'off' or args.get('verify') == 'off': # "verify" is deprecated
         return False
     else:
         return True
