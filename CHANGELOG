@@ -1,5 +1,6 @@
 	- add a verify checkbox to the source page; if unchecked, don't
 	  try to verify SSL certs (checked by default)
+	- add UI support for the new fill-data filter
 	- added support for new date_format field in clean filter
 	- support reading new JSON-based input (via libhxl-python)
 	- use MIME type and extension where avialable to help choose input
