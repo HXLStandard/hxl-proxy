@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, json, requests_cache, urllib, werkzeug
+import flask, hxl, json, requests, requests_cache, urllib, werkzeug
 
 from . import app, auth, cache, dao, filters, preview, util, validate, exceptions
 
@@ -41,7 +41,7 @@ def handle_exception(e):
         status = 500
     return flask.render_template('error.html', e=e, category=type(e)), status
 
-app.register_error_handler(Exception, handle_exception)
+#app.register_error_handler(Exception, handle_exception)
 
 #
 # Redirects
@@ -52,8 +52,15 @@ def handle_redirect_exception(e):
     return flask.redirect(e.target_url, e.http_code)
 
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
-    
 
+#
+# SSL errors
+#
+def handle_ssl_error(e):
+    flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
+    return flask.redirect(util.make_data_url(recipe=util.get_recipe(), facet='source'), 302)
+
+app.register_error_handler(requests.exceptions.SSLError, handle_ssl_error)
 
 #
 # Meta handlers
@@ -124,7 +131,7 @@ def show_data_tag(recipe_id=None):
 
     preview = []
     i = 0
-    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index, verify_ssl=util.check_verify(recipe['args'])):
+    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index, verify_ssl=util.check_verify_ssl(recipe['args'])):
         if i >= 25:
             break
         else:
@@ -394,7 +401,7 @@ def show_test(format='html'):
 
     if url:
         try:
-            hxl.data(url, verify_ssl=util.check_verify(flask.request.args)).columns
+            hxl.data(url, verify_ssl=util.check_verify_ssl(flask.request.args)).columns
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
         except IOError as e1:

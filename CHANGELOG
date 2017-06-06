@@ -1,3 +1,8 @@
+2017-06-06 Release 1.2
+	- change SSL verification logic to skip verifying SSL
+	- redirect back to source page if any URL fails SSL cert check
+	- function changing changes
+
 2017-06-06 Release 1.1
 	- add a verify checkbox to the source page; if unchecked, don't
 	  try to verify SSL certs (checked by default)

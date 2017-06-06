@@ -69,13 +69,13 @@
 
               <div class="col-sm-6 checkbox">
                 <label>
-                  <input type="checkbox" name="verify_ssl" {% if (not recipe.args) or (recipe.args.verify_ssl != 'off') %}checked="checked"{% endif %}/>
-                  Verify SSL certs
+                  <input type="checkbox" name="skip_verify_ssl" {% if (recipe.args.skip_verify_ssl == 'on') %}checked="checked"{% endif %}/>
+                  Don't verify SSL certificates
                 </label>
               </div>
             </div>
 
-            {% with excludes=['url'] %}
+            {% with excludes=['url', 'skip_verify_ssl', 'sheet'] %}
             {% include "includes/params.html" %}
             {% endwith %}
 
