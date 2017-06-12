@@ -40,7 +40,7 @@ hxl_proxy.choosers = {};
  */
 hxl_proxy.choosers.hdx = function(elementId, submit) {
     hdx.choose(function (resource) {
-        var url = 'https://data.hdx.rwlabs.org/dataset/' + resource.package_id + '/resource/' + resource.id
+        var url = 'https://data.humdata.org/dataset/' + resource.package_id + '/resource/' + resource.id
         $(elementId).val(url);
         if (submit) {
             $(elementId).closest('form').submit();
