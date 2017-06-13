@@ -41,8 +41,7 @@ def handle_exception(e):
         status = 500
     return flask.render_template('error.html', e=e, category=type(e)), status
 
-if not app.config.get('DEBUG'):
-    app.register_error_handler(Exception, handle_exception)
+app.register_error_handler(Exception, handle_exception)
 
 #
 # Redirects
