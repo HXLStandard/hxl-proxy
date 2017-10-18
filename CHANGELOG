@@ -2,7 +2,6 @@
 	- require libhxl-python v4.3 for bug fixes
 	- fixed reference to old HDX URL (leading to SSL error)
 
-
 2017-06-06 Release 1.2
 	- change SSL verification logic to skip verifying SSL
 	- redirect back to source page if any URL fails SSL cert check
