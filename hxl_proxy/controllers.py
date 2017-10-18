@@ -34,12 +34,32 @@ RECIPE_ARG_BLACKLIST = [
 
 def handle_exception(e):
     """Default error page."""
-    if isinstance(e, IOError):
+    if isinstance(e, requests.exceptions.HTTPError):
         # probably tried to open an inappropriate URL
         status = 403
     else:
         status = 500
-    return flask.render_template('error.html', e=e, category=type(e)), status
+    if flask.g.output_format != 'html':
+        # If the user is requesting a machine-readable, format,
+        # give a machine-readable error message with a CORS header.
+        json_error = {
+            'error': e.__class__.__name__
+        }
+        if hasattr(e, 'message'):
+            json_error['message'] = e.message
+        if hasattr(e, 'human'):
+            json_error['human_message'] = e.human
+        if hasattr(e, 'errno') and (e.errno is not None):
+            json_error['errno'] = e.errno
+        if hasattr(e, 'response'):
+            json_error['source_status_code'] = e.response.status_code
+            json_error['source_url'] = e.response.url
+            json_error['source_message'] = e.response.text
+        response = flask.Response(json.dumps(json_error, indent=4, sort_keys=True), mimetype='application/json', status=status)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    else:
+        return flask.render_template('error.html', e=e, category=type(e)), status
 
 app.register_error_handler(Exception, handle_exception)
 
@@ -72,6 +92,7 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     flask.request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     flask.g.member = flask.session.get('member_info')
+    flask.g.output_format = 'html'
 
 
 #
@@ -326,6 +347,9 @@ def show_advanced(recipe_id=None):
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def show_data(recipe_id=None, format="html", stub=None):
     """Show full result dataset in HTML, CSV, or JSON (as requested)."""
+
+    # Save the data format
+    flask.g.output_format = format
 
     def get_result ():
         """Closure to generate the output."""
