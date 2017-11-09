@@ -14,9 +14,15 @@ from flask import Flask, g, request
 from flask_cache import Cache
 
 import werkzeug.datastructures
+from . import reverse_proxied
 
 # Main application object
 app = Flask(__name__)
+
+# Handle subpaths
+app.wsgi_app = reverse_proxied.ReverseProxied(app.wsgi_app)
+
+# Config
 app.config.from_object('hxl_proxy.default_config')
 if os.environ.get('HXL_PROXY_CONFIG'):
     app.config.from_envvar('HXL_PROXY_CONFIG')
