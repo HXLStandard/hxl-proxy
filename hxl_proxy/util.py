@@ -175,11 +175,13 @@ def make_args(recipe={'args': {}}, format=None, recipe_id=None):
     if recipe_id:
         args['recipe_id'] = recipe_id
     if recipe.get('stub'):
-        args['stub'] = stub
+        args['stub'] = recipe['stub']
     return args
 
-def new_url(endpoint, recipe={}):
+def new_url(endpoint, recipe={}, format=None):
     args = make_args(recipe)
+    if format:
+        args['format'] = format
     return url_for(endpoint, **args)
 
 def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
