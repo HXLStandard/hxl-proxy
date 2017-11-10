@@ -28,7 +28,7 @@
         {% set action="/actions/save-recipe" %}
         {% else %}
         {% set method="GET" %}
-        {% set action="/data/edit" %}
+        {% set action=url_for('data_edit') %}
         {% endif %}
         <form action="{{ action }}" method="{{ method }}" id="filter-form">
 

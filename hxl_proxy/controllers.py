@@ -81,7 +81,7 @@ def before_request():
 @app.route("/")
 def redirect_home():
     # home isn't moved permanently
-    return flask.redirect("/data/source?" + urllib.parse.urlencode(flask.request.args) , 302)
+    return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
 
 #
@@ -89,13 +89,13 @@ def redirect_home():
 #
 
 @app.route("/data/<recipe_id>/login")
-def show_data_login(recipe_id):
+def data_login(recipe_id):
     recipe = util.get_recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
 @app.route("/data/source")
 @app.route("/data/<recipe_id>/source")
-def show_data_source(recipe_id=None):
+def data_source(recipe_id=None):
     """Choose a new data source."""
 
     try:
@@ -108,7 +108,7 @@ def show_data_source(recipe_id=None):
 
 @app.route("/data/tagger")
 @app.route("/data/<recipe_id>/tagger")
-def show_data_tag(recipe_id=None):
+def data_tagger(recipe_id=None):
     """Add HXL tags to an untagged dataset."""
 
     try:
@@ -144,7 +144,7 @@ def show_data_tag(recipe_id=None):
 
 @app.route("/data/edit")
 @app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
-def show_data_edit(recipe_id=None):
+def data_edit(recipe_id=None):
     """Create or edit a filter pipeline."""
 
     try:
@@ -175,7 +175,7 @@ def show_data_edit(recipe_id=None):
 
 @app.route("/data/save")
 @app.route("/data/<recipe_id>/save")
-def show_data_recipe(recipe_id=None):
+def data_save(recipe_id=None):
     """Show form to save a recipe."""
 
     try:
@@ -191,7 +191,7 @@ def show_data_recipe(recipe_id=None):
 
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
-def show_data_chart(recipe_id=None):
+def data_chart(recipe_id=None):
     """Show a chart visualisation for the data."""
 
     recipe = util.get_recipe(recipe_id)
@@ -244,7 +244,7 @@ def show_data_chart(recipe_id=None):
 
 @app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
-def show_visualise_map(recipe_id=None):
+def data_map(recipe_id=None):
     """Show a map visualisation for the data."""
 
     # Set up the data source
@@ -281,7 +281,7 @@ def show_visualise_map(recipe_id=None):
 
 @app.route("/data/validate")
 @app.route("/data/<recipe_id>/validate")
-def show_validate(recipe_id=None):
+def data_validate(recipe_id=None):
     """Run a validation and show the result in a dashboard."""
 
     # Get the recipe
@@ -324,7 +324,7 @@ def show_advanced(recipe_id=None):
 @app.route("/data/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
-def show_data(recipe_id=None, format="html", stub=None):
+def data_view(recipe_id=None, format="html", stub=None):
     """Show full result dataset in HTML, CSV, or JSON (as requested)."""
 
     def get_result ():
@@ -380,7 +380,7 @@ def show_data(recipe_id=None, format="html", stub=None):
 
 @app.route("/hxl-test.<format>")
 @app.route("/hxl-test")
-def show_test(format='html'):
+def hxl_test(format='html'):
     """Test if a URL points to HXL-tagged data.
     @param format: the format for rendering the result.
     """

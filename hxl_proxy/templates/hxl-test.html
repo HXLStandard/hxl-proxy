@@ -60,7 +60,7 @@
             {% endif %}
           </dl>
           {% if result.status %}
-          <a class="btn btn-default" href="/data/edit?url={{ result.url|urlencode }}">Open in HXL Proxy</a>
+          <a class="btn btn-default" href="{{ url_for('data_edit', url=result_url) }}">Open in HXL Proxy</a>
           {% elif result.exception=='HXLTagsNotFoundException' %}
           <a class="btn btn-default" href="/data/tagger?url={{ result.url|urlencode }}">Try tagging</a>
           {% endif %}

@@ -163,6 +163,25 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
+def make_args(recipe={'args': {}}, format=None, recipe_id=None):
+    """Construct args for url_for."""
+    args = {}
+    if recipe.get('args'):
+        args = dict.copy(recipe['args'])
+    if format:
+        args['format'] = format
+    if not recipe_id:
+        recipe_id = recipe.get('recipe_id')
+    if recipe_id:
+        args['recipe_id'] = recipe_id
+    if recipe.get('stub'):
+        args['stub'] = stub
+    return args
+
+def new_url(endpoint, recipe):
+    args = make_args(recipe)
+    return url_for(endpoint, **args)
+
 def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
     """Construct a data URL for a recipe."""
     url = None
@@ -240,6 +259,10 @@ app.jinja_env.globals['using_tagger_p'] = (
 
 app.jinja_env.globals['add_args'] = (
     add_args
+)
+
+app.jinja_env.globals['new_url'] = (
+    new_url
 )
 
 app.jinja_env.globals['data_url'] = (
