@@ -79,7 +79,7 @@ def before_request():
 #
 
 @app.route("/")
-def redirect_home():
+def home():
     # home isn't moved permanently
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
@@ -423,7 +423,7 @@ def hxl_test(format='html'):
 
 
 @app.route('/settings/user')
-def do_user_settings():
+def user_settings():
     """Show the user settings page (if authorised)."""
     if flask.g.member:
         return flask.render_template('settings-user.html', member=flask.g.member)
@@ -509,14 +509,14 @@ def do_data_save():
 
 
 @app.route('/login')
-def do_login():
+def hid_login():
     """Log the user using OAuth2 via the IdP (Humanitarian.ID), and set a cookie."""
     flask.session['login_redirect'] = flask.request.args.get('from', '/')
     return flask.redirect(auth.get_hid_login_url(), 303)
 
 
 @app.route('/logout')
-def do_logout():
+def hid_logout():
     """Kill the login cookie (and any others)."""
     path = flask.request.args.get('from', '/') # original path where user choose to log out
     flask.session.clear()

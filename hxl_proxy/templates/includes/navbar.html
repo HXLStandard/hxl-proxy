@@ -7,46 +7,46 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="/">
+      <a href="{{ new_url('home') }}">
         <img class="navbar-brand" src="{{ static('images/hxl-logo-white.png') }}" alt="#HXL" />
       </a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="{% if facet=='source' and not recipe.args.url %}active{% endif %}">
-          <a href="/data/source">
+          <a href="{{ new_url('data_source') }}">
             <span class="glyphicon glyphicon-plus"></span>
             New
           </a>
         </li>
         {% if recipe and recipe.args.url %}
         <li class="{% if facet in ['source', 'tagger', 'edit', 'view'] %}active{% endif %}">
-          <a href="{{ data_url(recipe) }}">
+          <a href="{{ new_url('data_view', recipe) }}">
             <span class="glyphicon glyphicon-th-list"></span>
             Data
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
-          <a href="{{ data_url(recipe, facet='validate') }}">
+          <a href="{{ new_url('data_validate', recipe) }}">
             <span class="glyphicon glyphicon-ok"></span>
             Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ data_url(recipe, facet='chart') }}">
+          <a href="{{ new_url('data_chart', recipe) }}">
             <span class="glyphicon glyphicon-signal"></span>
             Visualise
           </a>
         </li>
         <li class="{% if facet=='map' %}active{% endif %}">
-          <a href="{{ data_url(recipe, facet='map') }}">
+          <a href="{{ new_url('data_map', recipe) }}">
             <span class="glyphicon glyphicon-globe"></span>
             Map
           </a>
         </li>
         {% if recipe.recipe_id and recipe.cloneable %}
         <li>
-          <a href="{{ data_url(recipe, facet='clone') }}">
+          <a href="{{ new_url('data_clone', recipe) }}">
             <span class="glyphicon glyphicon-copy"></span>
             Clone
           </a>
@@ -55,27 +55,30 @@
         {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        {#
+        {* HID stuff commented out for now *}
         {% if g.member %}
         <li class="{% if facet=='settings' %}active{% endif %}">
-          <a href="/settings/user">
+          <a href="{{ url_for('user_settings') }}">
             <span class="glyphicon glyphicon-user"></span>
             {{ g.member.name_given }}
           </a>
         </li>
         <li>
-          <a href="/logout?from={{ request.full_path }}">
+          <a href="{{ url_for('hid_logout', from=request.full_path) }}">
             <span class="glyphicon glyphicon-log-out"></span>
             Logout
           </a>
         </li>
         {% else %}
         <li>
-          <a href="/login?from={{ request.full_path }}">
+          <a href="{{ url_for('hid_login', from=request.full_path) }}">
             <span class="glyphicon glyphicon-log-in"></span>
             Login
           </a>
         </li>
         {% endif %}
+        #}
         {% if page_help %}
         <li>
           <a target="_blank" href="https://github.com/HXLStandard/hxl-proxy/wiki/{{ page_help }}">

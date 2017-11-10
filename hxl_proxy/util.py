@@ -178,7 +178,7 @@ def make_args(recipe={'args': {}}, format=None, recipe_id=None):
         args['stub'] = stub
     return args
 
-def new_url(endpoint, recipe):
+def new_url(endpoint, recipe={}):
     args = make_args(recipe)
     return url_for(endpoint, **args)
 
