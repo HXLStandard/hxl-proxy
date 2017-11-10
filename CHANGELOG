@@ -1,3 +1,11 @@
+
+	- send JSON error messages instead of HTML when the user is trying to download a
+	  JSON or CSV file
+	- add subpath support, so that URLs will be correct when the Proxy
+	  is mounted in a subpath in WSGI
+	- remove H.ID login link for now, since it doesn't do anything,
+	  and is potentially confusing
+
 2017-06-13 Release 1.3
 	- require libhxl-python v4.3 for bug fixes
 	- fixed reference to old HDX URL (leading to SSL error)
