@@ -25,11 +25,11 @@
       </h1>
       <p class="col-xs-6 col-sm-4 col-md-2 small">
         <span class="icons small pull-right">
-          <a href="{{ new_url('data_view', recipe, format='csv') }}">
+          <a href="{{ data_url_for('data_view', recipe, format='csv') }}">
             <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
             <span>CSV</span>
           </a>
-          <a href="{{ new_url('data_view', recipe, format='json') }}">
+          <a href="{{ data_url_for('data_view', recipe, format='json') }}">
             <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
             <span>JSON</span>
           </a>

@@ -94,7 +94,7 @@
     <script type="text/javascript">
       hxl_proxy.ui.map({
           pcode_base_url: "{{ config.get('PCODE_BASE_URL')|nonone|safe }}",
-          csv_url: "{{ data_url(recipe, format='csv')|nonone|safe }}",
+          csv_url: "{{ data_url_for('data_view', recipe, format='csv')|nonone|safe }}",
           default_country: "{{ default_country|nonone|safe }}",
           pcode_tag: "{{ pcode_tag|nonone|safe }}",
           layer_tag: "{{ layer_tag|nonone|safe }}",

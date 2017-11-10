@@ -25,7 +25,7 @@
         </h3>
         {% if recipe.recipe_id %}
         {% set method="POST" %}
-        {% set action="/actions/save-recipe" %}
+        {% set action=url_for('do_data_save') %}
         {% else %}
         {% set method="GET" %}
         {% set action=url_for('data_edit') %}

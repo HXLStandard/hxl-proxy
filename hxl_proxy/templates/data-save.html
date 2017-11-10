@@ -21,7 +21,7 @@
       <div class="col-md-12">
         {% include "includes/source.html" %}
       </div>
-      <form class="form" method="POST" action="/actions/save-recipe">
+      <form class="form" method="POST" action="{{ url_for('do_data_save') }}">
         <div class="form-group required col-md-6">
           <label for="name">Recipe name</label>
           <input name="name" required="required" class="form-control" value="{{ recipe.name|nonone }}" />

@@ -71,8 +71,6 @@ class TestUtil(unittest.TestCase):
 
     # TODO add_args
 
-    # TODO make_data_url
-
     # TODO severity_class
 
     # TODO re_search

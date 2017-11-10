@@ -58,7 +58,7 @@ app.register_error_handler(exceptions.RedirectException, handle_redirect_excepti
 #
 def handle_ssl_error(e):
     flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.make_data_url(recipe=util.get_recipe(), facet='source'), 302)
+    return flask.redirect(util.data_url_for('data_source', recipe=util.get_recipe()), 302)
 
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_error)
 
@@ -81,6 +81,7 @@ def before_request():
 @app.route("/")
 def home():
     # home isn't moved permanently
+    # note: not using data_url_for because this is outside data pages
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
 
@@ -101,7 +102,7 @@ def data_source(recipe_id=None):
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Forbidden as e:
-        return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     return flask.render_template('data-source.html', recipe=recipe)
 
@@ -114,7 +115,7 @@ def data_tagger(recipe_id=None):
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Forbidden as e:
-        return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     header_row = recipe['args'].get('header-row')
     if header_row:
@@ -122,7 +123,7 @@ def data_tagger(recipe_id=None):
 
     if not recipe['args'].get('url'):
         flask.flash('Please choose a data source first.')
-        return flask.redirect(util.make_data_url(recipe, facet='source'), 303)
+        return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     try:
         sheet_index = int(recipe['args'].get('sheet', 0))
@@ -150,7 +151,7 @@ def data_edit(recipe_id=None):
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Forbidden as e:
-        return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     if recipe['args'].get('url'):
         # show only a short preview
@@ -159,7 +160,7 @@ def data_edit(recipe_id=None):
         source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
     else:
         flask.flash('Please choose a data source first.')
-        return flask.redirect(util.make_data_url(recipe, facet='source'), 303)
+        return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Figure out how many filter forms to show
     filter_count = 0
@@ -181,10 +182,10 @@ def data_save(recipe_id=None):
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Forbidden as e:
-        return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     if not recipe or not recipe['args'].get('url'):
-        return flask.redirect('/data/source', 303)
+        return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     return flask.render_template('data-save.html', recipe=recipe)
 
@@ -196,7 +197,7 @@ def data_chart(recipe_id=None):
 
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
-        return flask.redirect('/data/source', 303)
+        return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     source = filters.setup_filters(recipe)
 
@@ -250,7 +251,7 @@ def data_map(recipe_id=None):
     # Set up the data source
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
-        return flask.redirect('/data/source', 303)
+        return flask.redirect(data_url_for('data_source', recipe), 303)
     source = filters.setup_filters(recipe)
 
     # Get arguments to control map display.
@@ -287,7 +288,7 @@ def data_validate(recipe_id=None):
     # Get the recipe
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
-        return flask.redirect('/data/source', 303)
+        return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Get the parameters
     url = recipe['args'].get('url')
@@ -317,11 +318,11 @@ def show_advanced(recipe_id=None):
     recipe = util.get_recipe(recipe_id, auth=True)
     return flask.render_template("data-advanced.html", recipe=recipe)
 
+@app.route("/data")
+@app.route("/data.<format>")
+@app.route("/data/download/<stub>.<format>")
 @app.route("/data/<recipe_id>.<format>")
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
-@app.route("/data.<format>")
-@app.route("/data")
-@app.route("/data/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def data_view(recipe_id=None, format="html", stub=None):
@@ -333,7 +334,7 @@ def data_view(recipe_id=None, format="html", stub=None):
         # Set up the data source from the recipe
         recipe = util.get_recipe(recipe_id, auth=False)
         if not recipe or not recipe['args'].get('url'):
-            return flask.redirect('/data/source', 303)
+            return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
         # Use caching if requested
         if util.skip_cache_p():
@@ -352,7 +353,12 @@ def data_view(recipe_id=None, format="html", stub=None):
         # Return a generator based on the format requested
         if format == 'html':
             max_rows = min(int(max_rows), 5000) if max_rows is not None else 5000
-            return flask.render_template('data-view.html', source=preview.PreviewFilter(source, max_rows=max_rows), recipe=recipe, show_headers=show_headers)
+            return flask.render_template(
+                'data-view.html',
+                source=preview.PreviewFilter(source, max_rows=max_rows),
+                recipe=recipe,
+                show_headers=show_headers
+            )
 
         # Data formats from here on ...
 
@@ -375,7 +381,7 @@ def data_view(recipe_id=None, format="html", stub=None):
     # Get the result and update the cache manually if we're skipping caching.
     result = get_result()
     if util.skip_cache_p():
-        cache.set(show_data.make_cache_key(), result)
+        cache.set(util.make_cache_key(), result)
     return result
 
 @app.route("/hxl-test.<format>")
@@ -429,7 +435,9 @@ def user_settings():
         return flask.render_template('settings-user.html', member=flask.g.member)
     else:
         # redirect back to the settings page after login
-        return flask.redirect('/login?from=/settings/user', 303)
+        # ('from' is reserved, so we need a bit of a workaround)
+        args = { 'from': util.data_url_for('user_settings') }
+        return flask.redirect(url_for('login', **args), 303)
 
 
 @app.route("/actions/login", methods=['POST'])
@@ -439,7 +447,7 @@ def do_data_login():
     # Note origin page
     destination = flask.request.form.get('from')
     if not destination:
-        destination = '/data'
+        destination = util.data_url_for('data_view')
 
     # Just save the password hash, but don't do anything with it
     password = flask.request.form.get('password')
@@ -458,7 +466,7 @@ def do_data_save():
     try:
         recipe = util.get_recipe(recipe_id, auth=True, args=flask.request.form)
     except werkzeug.exceptions.Forbidden as e:
-        return flask.redirect(util.make_data_url(recipe_id=recipe_id, facet='login'), 303)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     # Update recipe metadata
     if 'name' in flask.request.form:
@@ -505,7 +513,7 @@ def do_data_save():
     # TODO be more specific about what we clear
     cache.clear()
 
-    return flask.redirect(util.make_data_url(recipe), 303)
+    return flask.redirect(util.data_url_for('data_view', recipe), 303)
 
 
 @app.route('/login')

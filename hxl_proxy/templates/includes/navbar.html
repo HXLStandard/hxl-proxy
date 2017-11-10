@@ -7,46 +7,46 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="{{ new_url('home') }}">
+      <a href="{{ data_url_for('home') }}">
         <img class="navbar-brand" src="{{ static('images/hxl-logo-white.png') }}" alt="#HXL" />
       </a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="{% if facet=='source' and not recipe.args.url %}active{% endif %}">
-          <a href="{{ new_url('data_source') }}">
+          <a href="{{ data_url_for('data_source') }}">
             <span class="glyphicon glyphicon-plus"></span>
             New
           </a>
         </li>
         {% if recipe and recipe.args.url %}
         <li class="{% if facet in ['source', 'tagger', 'edit', 'view'] %}active{% endif %}">
-          <a href="{{ new_url('data_view', recipe) }}">
+          <a href="{{ data_url_for('data_view', recipe) }}">
             <span class="glyphicon glyphicon-th-list"></span>
             Data
           </a>
         </li>
         <li class="{% if facet=='validate' %}active{% endif %}">
-          <a href="{{ new_url('data_validate', recipe) }}">
+          <a href="{{ data_url_for('data_validate', recipe) }}">
             <span class="glyphicon glyphicon-ok"></span>
             Validate
           </a>
         </li>
         <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ new_url('data_chart', recipe) }}">
+          <a href="{{ data_url_for('data_chart', recipe) }}">
             <span class="glyphicon glyphicon-signal"></span>
             Visualise
           </a>
         </li>
         <li class="{% if facet=='map' %}active{% endif %}">
-          <a href="{{ new_url('data_map', recipe) }}">
+          <a href="{{ data_url_for('data_map', recipe) }}">
             <span class="glyphicon glyphicon-globe"></span>
             Map
           </a>
         </li>
         {% if recipe.recipe_id and recipe.cloneable %}
         <li>
-          <a href="{{ new_url('data_clone', recipe) }}">
+          <a href="{{ data_url_for('data_view', recipe, cloned=True) }}">
             <span class="glyphicon glyphicon-copy"></span>
             Clone
           </a>

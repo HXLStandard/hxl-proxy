@@ -38,7 +38,7 @@ def setup_filters(recipe):
     try:
         source.columns
     except hxl.io.HXLTagsNotFoundException:
-        raise exceptions.RedirectException(util.new_url('data_tagger', recipe), 303, 'No HXL hashtags found')
+        raise exceptions.RedirectException(util.data_url_for('data_tagger', recipe), 303, 'No HXL hashtags found')
 
     # Create the filter pipeline from the source
     for index in range(1, MAX_FILTER_COUNT):

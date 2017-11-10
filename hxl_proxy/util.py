@@ -163,54 +163,32 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_args(recipe={'args': {}}, format=None, recipe_id=None):
+def make_args(recipe={}, format=None, recipe_id=None, cloned=False):
     """Construct args for url_for."""
     args = {}
-    if recipe.get('args'):
+    if recipe.get('args') and (cloned or not recipe_id):
         args = dict.copy(recipe['args'])
     if format:
         args['format'] = format
+        stub = recipe.get('stub')
+        if stub:
+            args['stub'] = stub
     if not recipe_id:
         recipe_id = recipe.get('recipe_id')
-    if recipe_id:
+    if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
-    if recipe.get('stub'):
-        args['stub'] = recipe['stub']
     return args
 
-def new_url(endpoint, recipe={}, format=None):
-    args = make_args(recipe)
-    if format:
-        args['format'] = format
-    return url_for(endpoint, **args)
-
-def make_data_url(recipe={}, facet=None, format=None, recipe_id=None):
-    """Construct a data URL for a recipe."""
-    url = None
+def data_url_for(endpoint, recipe={}, format=None, recipe_id=None, cloned=False):
+    """Generate a URL relative to the subpath (etc)
+    Wrapper around flask.url_for
+    """
     if not recipe_id:
         recipe_id = recipe.get('recipe_id')
-    if recipe_id and facet != 'clone':
-        url = '/data/' + urlquote(recipe_id)
-        if facet:
-            url += '/' + urlquote(facet)
-        elif format:
-            if recipe.get('stub'):
-                url += '/download/' + urlquote(recipe['stub']) + '.' + urlquote(format)
-            else:
-                url += '.' + urlquote(format)
-    else:
-        url = '/data'
-        if format:
-            if recipe.get('stub'):
-                url += '/download/' + urlquote(recipe['stub']) + '.' + urlquote(format)
-            else:
-                url += '.' + urlquote(format)
-        elif facet and facet != 'clone':
-            url += '/' + urlquote(facet)
-        if recipe.get('args'):
-            url += '?' + urlencode_utf8(recipe['args'])
-
-    return url
+    args = make_args(recipe, format=format, recipe_id=recipe_id, cloned=cloned)
+    if recipe_id and not cloned:
+        args['recipe_id'] = recipe_id
+    return url_for(endpoint, **args)
 
 def severity_class(severity):
     """Return a CSS class for a validation error severity"""
@@ -263,12 +241,8 @@ app.jinja_env.globals['add_args'] = (
     add_args
 )
 
-app.jinja_env.globals['new_url'] = (
-    new_url
-)
-
-app.jinja_env.globals['data_url'] = (
-    make_data_url
+app.jinja_env.globals['data_url_for'] = (
+    data_url_for
 )
 
 app.jinja_env.globals['severity_class'] = (

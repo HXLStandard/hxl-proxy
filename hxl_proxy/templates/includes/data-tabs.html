@@ -1,24 +1,24 @@
 <ul class="nav nav-tabs"> 
   <li class="{% if facet=='source' %}active{% endif %}">
-    <a href="{{ new_url('data_source', recipe) }}">
+    <a href="{{ data_url_for('data_source', recipe) }}">
       Source
     </a>
   </li>
   {% if recipe.args.url %}
   {% if using_tagger_p(recipe) or facet=='tagger' %}
   <li class="{% if facet=='tagger' %}active{% endif %}">
-    <a href="{{ new_url('data_tagger', recipe) }}">
+    <a href="{{ data_url_for('data_tagger', recipe) }}">
       Tags
     </a>
   </li>
   {% endif %}
   <li class="{% if facet=='edit' %}active{% endif %}">
-    <a href="{{ new_url('data_edit', recipe) }}">
+    <a href="{{ data_url_for('data_edit', recipe) }}">
       Recipe
     </a>
   </li>
   <li class="{% if facet=='save' %}active{% endif %}">
-    <a href="{{ new_url('data_save', recipe) }}">
+    <a href="{{ data_url_for('data_save', recipe) }}">
       {% if recipe.recipe_id %}
       Update
       {% else %}
@@ -28,7 +28,7 @@
   </li>
   {% endif %}
   <li class="{% if facet=='view' %}active{% endif %}">
-    <a href="{{ new_url('data_view', recipe) }}">
+    <a href="{{ data_url_for('data_view', recipe) }}">
       View
     </a>
   </li>
