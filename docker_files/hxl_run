@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv sh
+
+gunicorn app --chdir /srv/www -c /srv/config/gunicorn.py
