@@ -1,26 +1,12 @@
 FROM alpine:3.6
 
-ARG APPUSER_GID=4000
-ARG APPUSER_UID=4000
 ARG S6_VERSION=1.21.2.1
-# ARG VERSION=1.4
 
 WORKDIR /srv/www
 
 COPY . .
 
-# RUN mkdir -p \
-#         /srv/db \
-#         /srv/config \
-#         /srv/cache \
-#         /srv/output \
-#         /var/log/proxy
-
-# COPY config.py.TEMPLATE hxl_proxy/schema.sql hooks/docker_files/* /srv/config/
-
-RUN addgroup -g $APPUSER_GID -S appuser && \
-    adduser -u $APPUSER_UID -s /sbin/nologin -g 'Docker App User' -h /home/appuser -D -G appuser appuser && \
-    apk update && \
+RUN apk update && \
     apk upgrade && \
     apk add \
         curl \
@@ -31,7 +17,7 @@ RUN addgroup -g $APPUSER_GID -S appuser && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --upgrade pip setuptools && \
     rm -r /root/.cache && \
-    curl -sL https://github.com/just-containers/s6-overlay/releases/download/v1.21.2.1/s6-overlay-amd64.tar.gz -o /tmp/s6.tgz && \
+    curl -sL https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz -o /tmp/s6.tgz && \
     tar xzf /tmp/s6.tgz -C / && \
     rm -f /tmp/s6.tgz && \
     mkdir -p \
