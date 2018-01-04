@@ -39,4 +39,12 @@
         />
   </div>
 
+  {% set name='cut-skip-untagged%02d' %n %}
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
+      Remove columns without HXL hashtags
+    </label>
+  </div>
+
 </div>

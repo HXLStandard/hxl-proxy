@@ -177,10 +177,11 @@ def add_column_filter(source, args, index):
     """Add the hxlcut filter to the end of the pipeline."""
     include_tags = hxl.TagPattern.parse_list(args.get('cut-include-tags%02d' % index, []))
     exclude_tags = hxl.TagPattern.parse_list(args.get('cut-exclude-tags%02d' % index, []))
+    skip_untagged = args.get('cut-skip-untagged%02d' % index, False)
     if include_tags:
         source = source.with_columns(include_tags)
-    if exclude_tags:
-        source = source.without_columns(exclude_tags)
+    if exclude_tags or skip_untagged:
+        source = source.without_columns(exclude_tags, skip_untagged=skip_untagged)
     return source
 
 def add_dedup_filter(source, args, index):
