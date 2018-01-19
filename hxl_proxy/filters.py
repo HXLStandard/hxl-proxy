@@ -125,8 +125,18 @@ def add_clean_filter(source, args, index):
     date_tags = hxl.TagPattern.parse_list(args.get('clean-date-tags%02d' % index, ''))
     date_format = args.get('clean-date-format%02d' % index, None);
     number_tags = hxl.TagPattern.parse_list(args.get('clean-num-tags%02d' % index, ''))
+    number_format = args.get('clean-number-format%02d' % index, None);
     row_query = args.get('clean-where%02d' % index, None)
-    return source.clean_data(whitespace=whitespace_tags, upper=upper_tags, lower=lower_tags, date=date_tags, date_format=date_format, number=number_tags, queries=row_query)
+    return source.clean_data(
+        whitespace=whitespace_tags,
+        upper=upper_tags,
+        lower=lower_tags,
+        date=date_tags,
+        date_format=date_format,
+        number=number_tags,
+        number_format=number_format,
+        queries=row_query
+    )
 
 def add_count_filter(source, args, index):
     """Add the hxlcount filter to the end of the pipeline."""
