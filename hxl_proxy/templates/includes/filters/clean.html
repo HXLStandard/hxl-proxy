@@ -1,123 +1,153 @@
-<div class="filter-clean filter-body row">
+<div class="filter-clean filter-body grid">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
-  <div class="col-sm-12">
-    <p class="doc">
-      {% with key='Clean-data-filter' %}{% include "includes/help.html" %}{% endwith %}
-      Clean up your dataset by standardising dates and numbers, removing
-      whitespace, etc.
-    </p>
+  <div class="row">
+
+    <div class="col-sm-12">
+      <p class="doc">
+        {% with key='Clean-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+        Clean up your dataset by standardising dates and numbers, removing
+        whitespace, etc.
+      </p>
+    </div>
+
+    {% set name='clean-whitespace-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-12">
+      <label for="{{ name }}">
+        Normalise whitespace for these hashtags (comma-separated)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+  </div>
+  <div class="row">
+
+    {% set name='clean-toupper-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Convert to uppercase for these hashtags (comma-separated)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+
+    {% set name='clean-tolower-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Convert to lowercase for these hashtags (comma-separated)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+
   </div>
 
-  {% set name='clean-whitespace-tags{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Normalise whitespace for these hashtags (comma-separated)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
+  <div class="row">
+
+    {% set name='clean-date-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Standardise dates for these hashtags (comma-separated)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+
+    {%set name='clean-date-format{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Format for cleaned dates (usually safe to leave empty)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          title="{{ vars.filters_help }}"
+          />
+    </div>
+
   </div>
 
-  {% set name='clean-toupper-tags{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Convert to uppercase for these hashtags (comma-separated)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
+  <div class="row">
+
+    {% set name='clean-num-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Standardise numbers for these hashtags (comma-separated)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+
+    {%set name='clean-number-format{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Format for cleaned numbers (usually safe to leave empty)
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          title="{{ vars.filters_help }}"
+          />
+    </div>
+
   </div>
 
-  {% set name='clean-tolower-tags{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Convert to lowercase for these hashtags (comma-separated)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
-  </div>
-
-  {% set name='clean-date-tags{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Standardise dates for these hashtags (comma-separated)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
-  </div>
-
-  {%set name='clean-date-format{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Format for cleaned dates (usually safe to leave empty)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
-  </div>
-
-  {% set name='clean-num-tags{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Standardise numbers for these hashtags (comma-separated)
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
-        title="{{ vars.filters_help }}"
-        placeholder="{{ vars.filters_placeholder }}"
-        />
-  </div>
-
-  {% set name='clean-where{0:02}'.format(n) %}
-  <div class="form-group col-sm-6">
-    <label for="{{ name }}">
-      Clean data only in rows matching this query
-    </label>
-    <input
-        id="{{ name }}"
-        class="form-control"
-        name="{{ name }}"
-        value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.query_pattern }}$"
-        title="{{ vars.query_help }}"
-        placeholder="{{ vars.query_placeholder }}"
-        />
+  <div class="row">
+    
+    {% set name='clean-where{0:02}'.format(n) %}
+    <div class="form-group col-sm-12">
+      <label for="{{ name }}">
+        Clean data only in rows matching this query
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.query_pattern }}$"
+          title="{{ vars.query_help }}"
+          placeholder="{{ vars.query_placeholder }}"
+          />
+    </div>
   </div>
 
 </div>
