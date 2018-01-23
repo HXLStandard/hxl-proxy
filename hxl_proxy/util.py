@@ -163,13 +163,14 @@ def add_args(extra_args):
             del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_args(recipe={}, format=None, recipe_id=None, cloned=False):
+def make_args(recipe={}, format=None, flavour=None, recipe_id=None, cloned=False):
     """Construct args for url_for."""
     args = {}
     if recipe.get('args') and (cloned or not recipe_id):
         args = dict.copy(recipe['args'])
     if format:
         args['format'] = format
+        args['flavour'] = flavour
         stub = recipe.get('stub')
         if stub:
             args['stub'] = stub
@@ -179,13 +180,13 @@ def make_args(recipe={}, format=None, recipe_id=None, cloned=False):
         args['recipe_id'] = recipe_id
     return args
 
-def data_url_for(endpoint, recipe={}, format=None, recipe_id=None, cloned=False):
+def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None, cloned=False):
     """Generate a URL relative to the subpath (etc)
     Wrapper around flask.url_for
     """
     if not recipe_id:
         recipe_id = recipe.get('recipe_id')
-    args = make_args(recipe, format=format, recipe_id=recipe_id, cloned=cloned)
+    args = make_args(recipe, format=format, flavour=flavour, recipe_id=recipe_id, cloned=cloned)
     if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
     return url_for(endpoint, **args)

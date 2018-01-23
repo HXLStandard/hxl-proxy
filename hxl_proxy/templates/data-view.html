@@ -16,24 +16,18 @@
     {% include "includes/navbar.html" %}
     <header class="row">
       {% include "includes/data-tabs.html" %}
-      <h1 class="col-xs-6 col-sm-8 col-md-10">
+      <h1 class="col-md-9">
         {% if recipe.name %}
         {{ recipe.name }}
         {% else %}
-        View Data
+        View data
         {% endif %}
       </h1>
-      <p class="col-xs-6 col-sm-4 col-md-2 small">
-        <span class="icons small pull-right">
-          <a href="{{ data_url_for('data_view', recipe, format='csv') }}">
-            <img src="{{ static('images/csv-icon.png') }}" alt="Download as CSV spreadsheet" />
-            <span>CSV</span>
-          </a>
-          <a href="{{ data_url_for('data_view', recipe, format='json') }}">
-            <img src="{{ static('images/json-icon.png') }}" alt="Download as JSON data" />
-            <span>JSON</span>
-          </a>
-        </span>
+      <p class="col-md-3 small">
+        <b>Download as:</b>
+        <a href="{{ data_url_for('data_view', recipe, format='csv') }}">CSV</a>&nbsp;|
+        <a href="{{ data_url_for('data_view', recipe, format='json') }}">JSON&nbsp;lists</a>&nbsp;|
+        <a href="{{ data_url_for('data_view', recipe, flavour='objects', format='json') }}">JSON&nbsp;objects</a>
       </p>
     </header>
     <main class="row">
