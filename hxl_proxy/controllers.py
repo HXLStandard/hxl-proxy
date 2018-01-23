@@ -319,13 +319,17 @@ def show_advanced(recipe_id=None):
     return flask.render_template("data-advanced.html", recipe=recipe)
 
 @app.route("/data")
+@app.route("/data.<flavour>.<format>")
 @app.route("/data.<format>")
+@app.route("/data/download/<stub>.<flavour>.<format>")
 @app.route("/data/download/<stub>.<format>")
+@app.route("/data/<recipe_id>.<flavour>.<format>")
 @app.route("/data/<recipe_id>.<format>")
+@app.route("/data/<recipe_id>/download/<stub>.<flavour>.<format>")
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
-def data_view(recipe_id=None, format="html", stub=None):
+def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """Show full result dataset in HTML, CSV, or JSON (as requested)."""
 
     def get_result ():
@@ -366,7 +370,10 @@ def data_view(recipe_id=None, format="html", stub=None):
             source = preview.PreviewFilter(source, max_rows=int(max_rows))
             
         if format == 'json':
-            response = flask.Response(list(source.gen_json(show_headers=show_headers)), mimetype='application/json')
+            use_objects = False
+            if flavour == 'objects':
+                use_objects = True
+            response = flask.Response(list(source.gen_json(show_headers=show_headers, use_objects=use_objects)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
             if recipe.get('stub'):
                 response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(recipe['stub'])
