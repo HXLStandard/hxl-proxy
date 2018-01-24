@@ -76,6 +76,9 @@
             </div>
 
             {% with excludes=['url', 'skip_verify_ssl', 'sheet'] %}
+            {% if recipe.recipe_id %}
+            <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
+            {% endif %}
             {% include "includes/params.html" %}
             {% endwith %}
 
