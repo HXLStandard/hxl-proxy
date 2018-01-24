@@ -22,17 +22,31 @@
           {% endif %}
           <p>
             <b>In machine-speak:</b>
-            <pre>{% if e.message %}{{ e.message }}{% else %}{{ e }}{% endif %}</pre>
+            <blockquote>
+            <pre>{% if e.message %}{{ e.message }}{% else %}{{ e }}{%
+            endif %}</pre>
+            </blockquote>
           </p>
-          {% if e.data and e.data.input.raw_input.geturl() %}
-          <a class="btn btn-info" href="{{ e.data.input.raw_input.geturl() }}">
-            See what was returned
-          </a>
+          {% if e.data and e.data.source %}
+          <p>
+            Here's the link that the HXL Proxy was actually trying to open:
+            <a class="btn btn-info" href="{{ e.data.munged }}">
+              {{ e.data.munged }}
+            </a>
+          </p>
+          <p>
+            Note that you may still be able to read this in your own
+            browser, if you're logged into Google Drive or another
+            cloud service. Test in an incognito/anonymous tab to check
+            for public permissions—if you get a login window, then the
+            resource probably isn't publicly readable.
+          </p>
           {% endif %}
         </div>
         <div class="panel-footer small">
-          Help make the HXL Proxy better! Please <a
-          href="https://github.com/HXLStandard/hxl-proxy/issues">report
+          If you cannot resolve the problem, please help us make the
+          HXL Proxy better! <a
+          href="https://github.com/HXLStandard/hxl-proxy/issues">Report
           this bug at GitHub</a> (and include the URL).
         </div>
       </div>
