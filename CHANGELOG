@@ -1,6 +1,13 @@
+2018-01-31 Release 1.5
 	- added option to cut-column filter to skip untagged columns
+	- better error report for a private Google Sheet (or other cloud
+	  file)
 	- added files from @teodorescuserban for building a HXL
 	  Proxy Docker image
+	- fixed updating source for a saved recipe (short URL)
+	- support saving data as a JSON list-of-objects (as well as
+	  list-of-lists)
+	- allow users to specify number format for clean filter
 
 2017-11-22 Release 1.4
 	- send JSON error messages instead of HTML when the user is trying to download a
