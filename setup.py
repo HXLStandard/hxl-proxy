@@ -12,14 +12,14 @@ if sys.version_info.major != 3:
 setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
-    version = '1.5',
+    version = '1.5.1',
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
     include_package_data = True,
     zip_safe = False,
-    install_requires=['flask-cache>=0.13', 'libhxl>=4.5', 'ckanapi>=3.5', 'flask>=0.10', 'requests_cache'],
+    install_requires=['flask-cache>=0.13', 'libhxl>=4.5.1', 'ckanapi>=3.5', 'flask>=0.10', 'requests_cache'],
     test_suite = "tests",
     tests_require = ['mock']
 )
