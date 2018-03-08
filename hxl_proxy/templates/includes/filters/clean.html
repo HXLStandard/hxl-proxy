@@ -12,9 +12,9 @@
     </div>
 
     {% set name='clean-whitespace-tags{0:02}'.format(n) %}
-    <div class="form-group col-sm-12">
+    <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Normalise whitespace for these hashtags (comma-separated)
+        Normalise whitespace for these hashtags
       </label>
       <input
           id="{{ name }}"
@@ -26,13 +26,31 @@
           placeholder="{{ vars.filters_placeholder }}"
           />
     </div>
+
+        {% set name='clean-latlon-tags{0:02}'.format(n) %}
+    <div class="form-group col-sm-6">
+      <label for="{{ name }}">
+        Standardise lat/lon for these hashtags
+      </label>
+      <input
+          id="{{ name }}"
+          class="form-control"
+          name="{{ name }}"
+          value="{{ recipe.args[name] }}"
+          pattern="^{{ vars.filters_pattern }}$"
+          title="{{ vars.filters_help }}"
+          placeholder="{{ vars.filters_placeholder }}"
+          />
+    </div>
+
   </div>
+
   <div class="row">
 
     {% set name='clean-toupper-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Convert to uppercase for these hashtags (comma-separated)
+        Convert to uppercase for these hashtags
       </label>
       <input
           id="{{ name }}"
@@ -48,7 +66,7 @@
     {% set name='clean-tolower-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Convert to lowercase for these hashtags (comma-separated)
+        Convert to lowercase for these hashtags
       </label>
       <input
           id="{{ name }}"
@@ -68,7 +86,7 @@
     {% set name='clean-date-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Standardise dates for these hashtags (comma-separated)
+        Standardise dates for these hashtags
       </label>
       <input
           id="{{ name }}"
@@ -84,7 +102,7 @@
     {%set name='clean-date-format{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Format for cleaned dates (usually safe to leave empty)
+        Format for cleaned dates (optional)
       </label>
       <input
           id="{{ name }}"
@@ -102,7 +120,7 @@
     {% set name='clean-num-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Standardise numbers for these hashtags (comma-separated)
+        Standardise numbers for these hashtags
       </label>
       <input
           id="{{ name }}"
@@ -118,7 +136,7 @@
     {%set name='clean-number-format{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
-        Format for cleaned numbers (usually safe to leave empty)
+        Format for cleaned numbers (optional)
       </label>
       <input
           id="{{ name }}"

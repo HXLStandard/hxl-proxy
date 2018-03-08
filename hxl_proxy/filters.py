@@ -126,6 +126,7 @@ def add_clean_filter(source, args, index):
     date_format = args.get('clean-date-format%02d' % index, None);
     number_tags = hxl.TagPattern.parse_list(args.get('clean-num-tags%02d' % index, ''))
     number_format = args.get('clean-number-format%02d' % index, None);
+    latlon_tags = hxl.TagPattern.parse_list(args.get('clean-latlon-tags%02d' % index, ''))
     row_query = args.get('clean-where%02d' % index, None)
     return source.clean_data(
         whitespace=whitespace_tags,
@@ -135,6 +136,7 @@ def add_clean_filter(source, args, index):
         date_format=date_format,
         number=number_tags,
         number_format=number_format,
+        latlon=latlon_tags,
         queries=row_query
     )
 
