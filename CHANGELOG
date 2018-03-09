@@ -1,5 +1,6 @@
 2018-03-31 Release 1.6
 	- add lat/lon to clean-data filter
+	- add purge option to clean-data filter
 
 2018-02-05 Release 1.5.1
 	- bug-fix release: update to libhxl 4.5.1 so to avoid crashes when
