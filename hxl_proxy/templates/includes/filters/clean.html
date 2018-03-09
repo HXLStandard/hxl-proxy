@@ -150,6 +150,16 @@
   </div>
 
   <div class="row">
+    {% set name='clean-purge{0:02}'.format(n) %}
+    <div class="checkbox col-sm-12">
+      <label>
+        <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
+        Purge malformed dates, numbers, and lat/lon during cleaning.
+      </label>
+    </div>
+  </div>
+
+  <div class="row">
     
     {% set name='clean-where{0:02}'.format(n) %}
     <div class="form-group col-sm-12">
