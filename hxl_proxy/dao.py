@@ -62,7 +62,7 @@ class db:
             elif db.type == 'mysql':
                 database = MySQLdb.connect(
                     host=hxl_proxy.app.config.get('DB_HOST', 'localhost'),
-                    port=hxl_proxy.app.config.get('DB_PORT', '3306'),
+                    port=hxl_proxy.app.config.get('DB_PORT', 3306),
                     database=hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy'),
                     user=hxl_proxy.app.config.get('DB_USERNAME'),
                     password=hxl_proxy.app.config.get('DB_PASSWORD'),
