@@ -23,7 +23,7 @@ that file for the properties of each record type).
 
 """
 
-import sqlite3, MySQLdb, MySQLdb.cursors, json, os, random, time, base64, hashlib, flask
+import sqlite3, mysql.connector, json, os, random, time, base64, hashlib, flask
 import hxl_proxy
 
 
@@ -60,13 +60,12 @@ class db:
                 database = sqlite3.dbapi2.connect(file)
                 database.row_factory = sqlite3.Row
             elif db.type == 'mysql':
-                database = MySQLdb.connect(
+                database = mysql.connector.connect(
                     host=hxl_proxy.app.config.get('DB_HOST', 'localhost'),
                     port=hxl_proxy.app.config.get('DB_PORT', 3306),
                     database=hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy'),
                     user=hxl_proxy.app.config.get('DB_USERNAME'),
                     password=hxl_proxy.app.config.get('DB_PASSWORD'),
-                    cursorclass=MySQLdb.cursors.DictCursor
                 )
             else:
                 raise Exception('Unknown database type: {}'.format(db.DB_TYPE))
@@ -84,6 +83,18 @@ class db:
             database.close()
 
     @staticmethod
+    def cursor():
+        database = db.connect()
+        if db.type == 'mysql':
+            return database.cursor(dictionary=True)
+        else:
+            return database.cursor()
+
+    @staticmethod
+    def commit():
+        db.connect().commit()
+        
+    @staticmethod
     def execute_statement(statement, params=(), commit=False):
         """Execute a single SQL statement, and optionally commit.
 
@@ -92,11 +103,10 @@ class db:
         @param commit: if True, autocommit at the end of the statement (default: False)
         @return: a SQLite3 cursor object.
         """
-        database = db.connect()
-        cursor = database.cursor()
+        cursor = db.cursor()
         cursor.execute(db.fix_params(statement), params)
         if commit:
-            database.commit()
+            db.commit()
         return cursor
 
     @staticmethod
@@ -106,11 +116,10 @@ class db:
         @param commit: if True, autocommit after executing the statements (default: True)
         @return: a SQLite3 cursor object.
         """
-        database = db.connect()
-        cursor = database.cursor()
+        cursor = db.cursor()
         cursor.executescript(sql_statements)
         if commit:
-            database.commit()
+            db.commit()
         return cursor
 
     @staticmethod
@@ -133,7 +142,7 @@ class db:
         """
         row = db.execute_statement(statement, params, commit=False).fetchone()
         if row:
-            return dict(row)
+            return row
         else:
             return None
 

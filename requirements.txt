@@ -3,5 +3,5 @@ ckanapi>=3.5
 flask>=0.10
 flask-cache>=0.13
 requests_cache
-mysqlclient
+mysql-connector-python
 
