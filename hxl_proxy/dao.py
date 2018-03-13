@@ -23,7 +23,7 @@ that file for the properties of each record type).
 
 """
 
-import sqlite3, MySQLdb, json, os, random, time, base64, hashlib, flask
+import sqlite3, MySQLdb, MySQLdb.cursors, json, os, random, time, base64, hashlib, flask
 import hxl_proxy
 
 
@@ -58,20 +58,22 @@ class db:
             if db.type == 'sqlite3':
                 file = hxl_proxy.app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
                 database = sqlite3.dbapi2.connect(file)
+                database.row_factory = sqlite3.Row
             elif db.type == 'mysql':
-                host = hxl_proxy.app.config.get('DB_HOST', 'localhost')
-                port = hxl_proxy.app.config.get('DB_PORT', '3306')
-                dbname = hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy')
-                username = hxl_proxy.app.config.get('DB_USERNAME')
-                password = hxl_proxy.app.config.get('DB_PASSWORD')
-                database = MySQLdb.connect(host=host, port=port, database=dbname, user=username, password=password)
+                database = MySQLdb.connect(
+                    host=hxl_proxy.app.config.get('DB_HOST', 'localhost'),
+                    port=hxl_proxy.app.config.get('DB_PORT', '3306'),
+                    database=hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy'),
+                    user=hxl_proxy.app.config.get('DB_USERNAME'),
+                    password=hxl_proxy.app.config.get('DB_PASSWORD'),
+                    cursorclass=MySQLdb.cursors.DictCursor
+                )
             else:
                 raise Exception('Unknown database type: {}'.format(db.DB_TYPE))
             if flask.has_request_context():
                 flask.g._database = database
             else:
                 db._database = database
-            database.row_factory = sqlite3.Row
         return database
 
     @hxl_proxy.app.teardown_appcontext
@@ -86,7 +88,7 @@ class db:
         """Execute a single SQL statement, and optionally commit.
 
         @param statement: the SQL statement to execute.
-        @param params: sequence of values for any C{?} placeholders in the statement.
+        @param params: sequence of values for any C{%s} placeholders in the statement.
         @param commit: if True, autocommit at the end of the statement (default: False)
         @return: a SQLite3 cursor object.
         """
@@ -125,7 +127,7 @@ class db:
     def fetchone(statement, params=()):
         """Fetch a single row of data.
         @param statement: the SQL statement to execute.
-        @param params: sequence of values for any C{?} placeholders in the statement.
+        @param params: sequence of values for any placeholders in the statement.
         @return: a single row as a dict.
         @see: L{db.execute_statement}
         """
@@ -139,7 +141,7 @@ class db:
     def fetchall(statement, params=()):
         """Fetch a multiple rows of data.
         @param statement: the SQL statement to execute.
-        @param params: sequence of values for any C{?} placeholders in the statement.
+        @param params: sequence of values for any C{%s} placeholders in the statement.
         @return: multiple rows as a list of dicts.
         @see: L{db.execute_statement}
         """
@@ -156,7 +158,7 @@ class db:
     @staticmethod
     def fix_params(statement):
         if db.type == 'sqlite3':
-            statement = statement.replace('%s', '?').replace('%d', '?')
+            statement = statement.replace('%s', '?')
         return statement
 
 
@@ -173,8 +175,15 @@ class users:
         return db.execute_statement(
             "insert into Users"
             " (user_id, email, name, name_given, name_family, last_login)"
-            " values (?, ?, ?, ?, ?, datetime('now'))",
-            (user.get('user_id'), user.get('email'), user.get('name'), user.get('name_given'), user.get('name_family'),),
+            " values (%s, %s, %s, %s, %s, %s)",
+            (
+                user.get('user_id'),
+                user.get('email'),
+                user.get('name'),
+                user.get('name_given'),
+                user.get('name_family'),
+                time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+            ),
             commit=commit
         )
 
@@ -185,7 +194,7 @@ class users:
         @return: a dict of user properties, or None if the record doesn't exist.
         """
         return db.fetchone(
-            'select * from Users where user_id=?',
+            'select * from Users where user_id=%s',
             (user_id,)
         )
 
@@ -198,9 +207,16 @@ class users:
         """
         return db.execute_statement(
             "update Users"
-            " set email=?, name=?, name_given=?, name_family=?, last_login=datetime('now')"
-            " where user_id=?",
-            (user.get('email'), user.get('name'), user.get('name_given'), user.get('name_family'), user.get('user_id')),
+            " set email=%s, name=%s, name_given=%s, name_family=%s, last_login=%s"
+            " where user_id=%s",
+            (
+                user.get('email'),
+                user.get('name'),
+                user.get('name_given'),
+                user.get('name_family'),
+                user.get('user_id'),
+                time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+            ),
             commit=commit
         )
 
@@ -212,7 +228,7 @@ class users:
         @return: a SQLite3 cursor object.
         """
         return db.execute_statement(
-            "delete from Users where user_id=?",
+            "delete from Users where user_id=%s",
             (user_id,),
             commit=commit
         )
@@ -231,9 +247,18 @@ class recipes:
         return db.execute_statement(
             "insert into Recipes"
             " (recipe_id, passhash, name, description, cloneable, stub, args, date_created, date_modified)"
-            " values (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
-            (recipe.get('recipe_id'), recipe.get('passhash'), recipe.get('name'), recipe.get('description'),
-             recipe.get('cloneable'), recipe.get('stub'), json.dumps(recipe.get('args', {})),),
+            " values (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                recipe.get('recipe_id'),
+                recipe.get('passhash'),
+                recipe.get('name'),
+                recipe.get('description'),
+                recipe.get('cloneable'),
+                recipe.get('stub'),
+                json.dumps(recipe.get('args', {})),
+                time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+                time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+            ),
             commit=commit
         )
 
@@ -260,11 +285,19 @@ class recipes:
         """
         return db.execute_statement(
             "update Recipes"
-            " set passhash=?, name=?, description=?, cloneable=?, stub=?, args=?, "
-            " date_modified=datetime('now')"
-            " where recipe_id=?",
-            (recipe.get('passhash'), recipe.get('name'), recipe.get('description'), recipe.get('cloneable'),
-             recipe.get('stub'), json.dumps(recipe.get('args', {})), recipe.get('recipe_id'), ),
+            " set passhash=%s, name=%s, description=%s, cloneable=%s, stub=%s, args=%s, "
+            " date_modified=%s"
+            " where recipe_id=%s",
+            (
+                recipe.get('passhash'),
+                recipe.get('name'),
+                recipe.get('description'),
+                recipe.get('cloneable'),
+                recipe.get('stub'),
+                json.dumps(recipe.get('args', {})),
+                time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+                recipe.get('recipe_id'),
+            ),
             commit=commit
         )
 
@@ -276,7 +309,7 @@ class recipes:
         @return: a SQLite3 cursor object.
         """
         return db.execute_statement(
-            "delete from Recipes where recipe_id=?",
+            "delete from Recipes where recipe_id=%s",
             (recipe_id,),
             commit=commit
         )

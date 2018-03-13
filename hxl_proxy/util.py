@@ -116,15 +116,15 @@ def get_recipe(recipe_id=None, auth=False, args=None):
 
 def make_md5(s):
     """Return an MD5 hash for a string."""
-    return hashlib.md5(s.encode('utf-8')).digest()
+    return hashlib.md5(s.encode('utf-8')).hexdigest()
 
 def gen_recipe_id():
     """
     Generate a pseudo-random, 6-character hash for use as a recipe_id.
     """
     salt = str(time.time() * random.random())
-    encoded_hash = base64.urlsafe_b64encode(make_md5(salt))
-    return encoded_hash[:6].decode('ascii')
+    encoded_hash = make_md5(salt)
+    return encoded_hash[:6]
 
 def make_recipe_id():
     """Make a unique recipe_id for a saved recipe."""

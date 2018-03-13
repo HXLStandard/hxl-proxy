@@ -35,15 +35,18 @@ REQUEST_CACHE_TIMEOUT_SECONDS = 3600
 #
 # Database connection info
 #
-DB_TYPE='sqlite3'
-DB_FILE='/tmp/hxl-proxy.db' # for sqlite3
 
+# Uncomment for SQLite3
+DB_TYPE='sqlite3'
+DB_FILE='/tmp/hxl-proxy.db'
+
+# Uncomment for MySQL
 # DB_TYPE='mysql'
-# DB_HOST='localhost' # for mysql
-# DB_PORT=3306 # for mysql
-# DB_DATABASE='hxl_proxy' # for mysql
-# DB_USERNAME='username' # for mysql
-# DB_PASSWORD='password' # for mysql
+# DB_HOST='localhost'
+# DB_PORT=3306
+# DB_DATABASE='hxl_proxy'
+# DB_USERNAME='username'
+# DB_PASSWORD='password'
 
 #
 # Values for Google Drive access

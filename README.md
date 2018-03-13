@@ -35,7 +35,26 @@ To configure the proxy, make a copy of config.py.TEMPLATE (e.g. to config.py), a
 
 * CACHE_DIR - a directory where the proxy can cache output files. The directory must exist and be readable and writable by the web-server process.
 * REQUEST_CACHE - a file (which the proxy will create if necessary) where the proxy can cache input files. The file's directory must exist and be readable and writable by the web-server process.
-* DB_FILE - a file (which the proxy will create if necessary) containing a SQLite3 database of saved configurations. The file's directory must exist and be readable and writable by the web-server process.
+
+## Database support
+
+### Using SQLite3
+
+* DB_TYPE - (required) set to "sqlite3"
+* DB_FILE - (required) a file (which the proxy will create if necessary) containing a SQLite3 database of saved configurations. The file's directory must exist and be readable and writable by the web-server process.
+
+The database schema appears in hxl_proxy/schema-sqlite3.sql
+
+### Using MySQL
+
+* DB_TYPE - (required) set to "mysql"
+* DB_HOST - (optional) address of the MySQL host (defaults to "localhost")
+* DB_PORT - (optional) port number of the MySQL host (must be a number; defaults to 3306)
+* DB_DATABASE - (optional) database name for the HXL Proxy (defaults to "hxl_proxy")
+* DB_USERNAME - (required) database username
+* DB_PASSWORD - (required) database password
+
+Note that for MySQL, you *must* create the database manually. A schema appears in hxl_proxy/schema-mysql.sql
 
 ## Authorisation tokens
 
