@@ -142,7 +142,7 @@ class db:
         """
         row = db.execute_statement(statement, params, commit=False).fetchone()
         if row:
-            return row
+            return dict(row)
         else:
             return None
 
