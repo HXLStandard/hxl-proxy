@@ -23,17 +23,14 @@ that file for the properties of each record type).
 
 """
 
-import sqlite3, json, os, random, time, base64, hashlib, flask
+import sqlite3, MySQLdb, json, os, random, time, base64, hashlib, flask
 import hxl_proxy
 
 
 class db:
     """Low-level database functions"""
 
-    DB_FILE = hxl_proxy.app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
-    """The filename of the SQLite3 database."""
-
-    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema.sql')
+    TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema-sqlite3.sql')
     """The filename of the SQL schema."""
 
     _database = None
@@ -55,7 +52,19 @@ class db:
         else:
             database = db._database
         if database is None:
-            database = sqlite3.connect(db.DB_FILE)
+            type = hxl_proxy.app.config.get('DB_TYPE', 'sqlite3')
+            if type == 'sqlite3':
+                file = hxl_proxy.app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
+                database = sqlite3.dbapi2.connect(file)
+            elif type == 'mysql':
+                host = hxl_proxy.app.config.get('DB_HOST', 'localhost')
+                port = hxl_proxy.app.config.get('DB_PORT', '3306')
+                dbname = hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy')
+                username = hxl_proxy.app.config.get('DB_USERNAME')
+                password = hxl_proxy.app.config.get('DB_PASSWORD')
+                database = mysqlclient.connect(host=host, port=port, database=dbname, user=username, password=password)
+            else:
+                raise Exception('Unknown database type: {}'.format(db.DB_TYPE))
             if flask.has_request_context():
                 flask.g._database = database
             else:
@@ -137,10 +146,10 @@ class db:
     @staticmethod
     def create_db():
         """Create a new database, erasing the current one.
-        Use this method only for temporary databases in unit testing. Uses L{db.SCHEMA_FILE} to create
+        Use this method only for temporary databases in unit testing. Uses L{db.TEST_SCHEMA_FILE} to create
         the temporary database.
         """
-        db.execute_file(db.SCHEMA_FILE)
+        db.execute_file(db.TEST_SCHEMA_FILE)
 
 
 class users:
