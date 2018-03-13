@@ -33,6 +33,9 @@ class db:
     TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema-sqlite3.sql')
     """The filename of the SQL schema."""
 
+    type = hxl_proxy.app.config.get('DB_TYPE', 'sqlite3')
+
+
     _database = None
     """Internal connection, for testing use outside a request context."""
 
@@ -52,17 +55,16 @@ class db:
         else:
             database = db._database
         if database is None:
-            type = hxl_proxy.app.config.get('DB_TYPE', 'sqlite3')
-            if type == 'sqlite3':
+            if db.type == 'sqlite3':
                 file = hxl_proxy.app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
                 database = sqlite3.dbapi2.connect(file)
-            elif type == 'mysql':
+            elif db.type == 'mysql':
                 host = hxl_proxy.app.config.get('DB_HOST', 'localhost')
                 port = hxl_proxy.app.config.get('DB_PORT', '3306')
                 dbname = hxl_proxy.app.config.get('DB_DATABASE', 'hxl_proxy')
                 username = hxl_proxy.app.config.get('DB_USERNAME')
                 password = hxl_proxy.app.config.get('DB_PASSWORD')
-                database = mysqlclient.connect(host=host, port=port, database=dbname, user=username, password=password)
+                database = MySQLdb.connect(host=host, port=port, database=dbname, user=username, password=password)
             else:
                 raise Exception('Unknown database type: {}'.format(db.DB_TYPE))
             if flask.has_request_context():
@@ -90,7 +92,7 @@ class db:
         """
         database = db.connect()
         cursor = database.cursor()
-        cursor.execute(statement, params)
+        cursor.execute(db.fix_params(statement), params)
         if commit:
             database.commit()
         return cursor
@@ -150,6 +152,12 @@ class db:
         the temporary database.
         """
         db.execute_file(db.TEST_SCHEMA_FILE)
+
+    @staticmethod
+    def fix_params(statement):
+        if db.type == 'sqlite3':
+            statement = statement.replace('%s', '?').replace('%d', '?')
+        return statement
 
 
 class users:
@@ -236,7 +244,7 @@ class recipes:
         @return: a dict of recipe properties, or None if the record doesn't exist.
         """
         recipe = db.fetchone(
-            'select * from Recipes where recipe_id=?',
+            'select * from Recipes where recipe_id=%s',
             (recipe_id,)
         )
         if recipe:

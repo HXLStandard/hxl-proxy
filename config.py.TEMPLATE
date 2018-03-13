@@ -40,7 +40,7 @@ DB_FILE='/tmp/hxl-proxy.db' # for sqlite3
 
 # DB_TYPE='mysql'
 # DB_HOST='localhost' # for mysql
-# DB_PORT='3306' # for mysql
+# DB_PORT=3306 # for mysql
 # DB_DATABASE='hxl_proxy' # for mysql
 # DB_USERNAME='username' # for mysql
 # DB_PASSWORD='password' # for mysql
