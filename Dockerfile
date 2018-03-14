@@ -27,7 +27,7 @@ RUN apk update && \
         /srv/config \
         /srv/output \
         /var/log/proxy && \
-    mv config.py.TEMPLATE docker_files/config.py docker_files/gunicorn.py hxl_proxy/schema.sql /srv/config/ && \
+    mv config.py.TEMPLATE docker_files/config.py docker_files/gunicorn.py hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py . && \
     pip3 install --upgrade \
