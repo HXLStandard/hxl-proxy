@@ -223,8 +223,8 @@ class users:
                 user.get('name'),
                 user.get('name_given'),
                 user.get('name_family'),
-                user.get('user_id'),
                 time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+                user.get('user_id'),
             ),
             commit=commit
         )

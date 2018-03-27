@@ -99,7 +99,7 @@ def get_recipe(recipe_id=None, auth=False, args=None):
         if not recipe:
             raise NotFound("No saved recipe for " + recipe_id)
         if auth and not check_auth(recipe):
-            raise Forbidden("Wrong or missing password.")
+            raise Unauthorized("Wrong or missing password.")
     else:
         recipe = {'args': {key: args.get(key) for key in args}}
         if args.get('stub'):

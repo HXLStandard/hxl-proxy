@@ -37,11 +37,16 @@ def handle_exception(e):
     if isinstance(e, IOError):
         # probably tried to open an inappropriate URL
         status = 403
+    elif isinstance(e, werkzeug.exceptions.Unauthorized):
+        status = 303
+    elif isinstance(e, werkzeug.exceptions.NotFound):
+        status = 404
     else:
+        raise(e)
         status = 500
     return flask.render_template('error.html', e=e, category=type(e)), status
 
-if app.config.get('DEBUG') is not True:
+if app.config.get('DEBUG'):
     app.register_error_handler(Exception, handle_exception)
 
 #
@@ -151,7 +156,7 @@ def data_edit(recipe_id=None):
 
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Forbidden as e:
+    except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     if recipe['args'].get('url'):

@@ -12,12 +12,65 @@ License: Public Domain
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-# Use a common base class
-from .base import BaseControllerTest
+import hxl_proxy
+from . import base
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
 
-class TestLogin(BaseControllerTest):
+class AbstractControllerTest(base.AbstractDBTest):
+    """Base class for controller tests."""
+
+    def setUp(self):
+        """Configure a test app instance."""
+        super().setUp()
+        hxl_proxy.app.config['DEBUG'] = False
+        hxl_proxy.app.config['DB_TYPE'] = 'sqlite3'
+        hxl_proxy.app.config['DB_FILE'] = ':memory:'
+        hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
+        hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
+        hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
+        hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
+
+        self.recipe_id = 'AAAAA'
+        self.client = hxl_proxy.app.test_client()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def get(self, path, params=None, status=200):
+        """
+        Send a request to the test client and hang onto the result.
+        @param path the path to request
+        @param params (optional) a dict of get parameters
+        @param status (optional) the expected HTTP status (defaults to 200)
+        @return a Response object
+        """
+        print('***', path)
+        self.response = self.client.get(path, query_string=params)
+        self.assertEqual(status, self.response.status_code)
+        return self.response
+
+    def assertBasicDataset(self, response=None):
+        """Check that we're looking at the basic dataset"""
+        if response is None:
+            response = self.response
+        self.assertEqual(200, response.status_code)
+        assert b'Country' in response.data
+        assert b'#country' in response.data
+        assert b'Org A' in response.data
+        assert b'Education' in response.data
+        assert b'Myanmar' in response.data
+
+    @staticmethod
+    def make_recipe():
+        recipe = Recipe({
+            'url': 'http://example.org/basic-dataset.csv'
+        })
+        recipe.name = 'Sample dataset'
+        return recipe
+
+
+class TestLogin(AbstractControllerTest):
 
     path = '/login'
 
@@ -26,7 +79,7 @@ class TestLogin(BaseControllerTest):
         assert b'/oauth/authorize' in response.data
 
 
-class TestLogout(BaseControllerTest):
+class TestLogout(AbstractControllerTest):
 
     path = '/logout'
 
@@ -47,7 +100,7 @@ class TestLogout(BaseControllerTest):
             assert 'user' not in flask.session
 
 
-class TestDataSource(BaseControllerTest):
+class TestDataSource(AbstractControllerTest):
 
     path = '/data/source'
 
@@ -69,7 +122,7 @@ class TestDataSource(BaseControllerTest):
         assert b'<span>Dropbox</span>' in response.data
         assert b'<span>Google Drive</span>' in response.data
 
-class TestTaggerPage(BaseControllerTest):
+class TestTaggerPage(AbstractControllerTest):
 
     path = '/data/tagger'
 
@@ -121,7 +174,7 @@ class TestTaggerPage(BaseControllerTest):
         assert b'<th>#country</th>' in response.data
 
 
-class TestEditPage(BaseControllerTest):
+class TestEditPage(AbstractControllerTest):
     """Test /data/edit and /data/{recipe_id}/edit"""
 
     def test_redirect_no_url(self):
@@ -156,7 +209,7 @@ class TestEditPage(BaseControllerTest):
     # TODO test changing recipe
 
 
-class TestDataPage(BaseControllerTest):
+class TestDataPage(AbstractControllerTest):
     """Test /data and /data/{recipe_id}"""
 
     def test_empty_url(self):
@@ -185,7 +238,7 @@ class TestDataPage(BaseControllerTest):
     # TODO test that filters work
 
 
-class TestValidationPage(BaseControllerTest):
+class TestValidationPage(AbstractControllerTest):
     """Test /data/validate and /data/{recipe_id}/validate"""
 
     def test_empty_url(self):

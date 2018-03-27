@@ -8,16 +8,17 @@ License: Public Domain
 
 import unittest, os
 from hxl_proxy import app, dao
-from . import TEST_DATA_FILE
+from . import base
 
 
-class AbstractDBTest(unittest.TestCase):
+class AbstractDAOTest(base.AbstractDBTest):
     """Abstract base class for DAO tests."""
     
     def setUp(self):
-        # Prime with an in-memory database
-        dao.db.create_db()
-        dao.db.execute_file(TEST_DATA_FILE)
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
 
     def assertEquiv(self, model, actual):
         """Test equivalence where everything in model must be the same in actual
@@ -26,7 +27,7 @@ class AbstractDBTest(unittest.TestCase):
             self.assertEqual(model.get(key), actual.get(key), key)
 
 
-class TestUser(AbstractDBTest):
+class TestUser(AbstractDAOTest):
     """Test user DAO functionality"""
 
     NEW_USER = {
@@ -66,7 +67,7 @@ class TestUser(AbstractDBTest):
         assert dao.users.read(self.NEW_USER['user_id']) is None
 
 
-class TestRecipe(AbstractDBTest):
+class TestRecipe(AbstractDAOTest):
 
     NEW_RECIPE = {
         'recipe_id': 'XXXXX',
