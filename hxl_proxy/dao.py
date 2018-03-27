@@ -56,7 +56,7 @@ class db:
             database = db._database
         if database is None:
             if db.type == 'sqlite3':
-                file = hxl_proxy.app.config.get('DB_FILE', '/tmp/hxl-proxy.db')
+                file = hxl_proxy.app.config.get('DB_FILE', ':memory:')
                 database = sqlite3.dbapi2.connect(file)
                 database.row_factory = sqlite3.Row
             elif db.type == 'mysql':

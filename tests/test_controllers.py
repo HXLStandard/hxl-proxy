@@ -24,8 +24,6 @@ class AbstractControllerTest(base.AbstractDBTest):
         """Configure a test app instance."""
         super().setUp()
         hxl_proxy.app.config['DEBUG'] = False
-        hxl_proxy.app.config['DB_TYPE'] = 'sqlite3'
-        hxl_proxy.app.config['DB_FILE'] = ':memory:'
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
         hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
@@ -45,7 +43,6 @@ class AbstractControllerTest(base.AbstractDBTest):
         @param status (optional) the expected HTTP status (defaults to 200)
         @return a Response object
         """
-        print('***', path)
         self.response = self.client.get(path, query_string=params)
         self.assertEqual(status, self.response.status_code)
         return self.response
