@@ -23,10 +23,10 @@
 
       {% if recipe.recipe_id %}
       {% set method="POST" %}
-      {% set action="{{ url_for('do_data_save') }}" %}
+      {% set action=url_for('do_data_save') %}
       {% else %}
       {% set method="GET" %}
-      {% set action="{{ url_for('data_view') }}" %}
+      {% set action=url_for('data_view') %}
       {% endif %}
       <form action="{{ action }}" method="{{ method }}">
 
