@@ -16,7 +16,7 @@
 {% set filters_help = 'Tag patterns, comma-separated, "#" optional, (e.g. "country,adm1+code,org-funder")' %}
 {% set filters_placeholder = '#hashtag1,#hashtag2+attr1-attr2' %}
 
-{% set query_pattern = filter_pattern + '\s*([=~<>]|<=|>=|!=|!~).*' %}
+{% set query_pattern = filter_pattern + '\s*([=~<>]|<=|>=|!=|!~|is).*' %}
 {% set query_help = 'Row query, "#" optional (e.g. "country+code=SYR")' %}
 {% set query_placeholder = '#hashtag+attr=value' %}
 

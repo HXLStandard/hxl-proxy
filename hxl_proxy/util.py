@@ -40,7 +40,7 @@ def skip_cache_p ():
     
 def strnorm (s):
     """Normalise a string"""
-    return hxl.common.normalise_string(s)
+    return hxl.datatypes.normalise_string(s)
 
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
@@ -227,7 +227,7 @@ app.jinja_env.filters['urlquote'] = (
 )
 
 app.jinja_env.filters['strnorm'] = (
-    hxl.common.normalise_string
+    hxl.datatypes.normalise_string
 )
 
 app.jinja_env.globals['static'] = (
