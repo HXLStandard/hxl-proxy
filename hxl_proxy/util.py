@@ -191,6 +191,42 @@ def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None,
         args['recipe_id'] = recipe_id
     return url_for(endpoint, **args)
 
+def parse_validation_errors(errors, data_url, schema_url):
+    """Parse libhxl validation errors into a JSON-like data structure."""
+    error_report = {
+        "validator": "HXL Proxy",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "data_url": data_url,
+        "schema_url": schema_url,
+        "stats": {
+            "info": 0,
+            "warning": 0,
+            "error": 0,
+            "total": 0
+        },
+        "errors": [],
+    }
+    for key in errors:
+        model = errors[key][0]
+        error_report['stats']['total'] += len(errors[key])
+        error_report['stats'][model.rule.severity] += len(errors[key])
+        error_report['errors'].append({
+            "rule_id": key,
+            "rule_pattern": str(model.rule.tag_pattern),
+            "description": model.rule.description,
+            "severity": model.rule.severity,
+            "error_count": len(errors[key]),
+            "locations": [
+                {
+                    "row": error.row.row_number,
+                    "hashtag": error.column.display_tag if error.column else None,
+                    "error_value": error.value
+                } for error in errors[key]
+            ]
+        })
+    return error_report
+    
+
 def severity_class(severity):
     """Return a CSS class for a validation error severity"""
     if severity == 'error':

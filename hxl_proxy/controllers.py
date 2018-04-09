@@ -287,8 +287,10 @@ def data_map(recipe_id=None):
 
 
 @app.route("/data/validate")
+@app.route("/data/validate.<format>")
 @app.route("/data/<recipe_id>/validate")
-def data_validate(recipe_id=None):
+@app.route("/data/<recipe_id>/validate.<format>")
+def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
     # Get the recipe
@@ -312,10 +314,19 @@ def data_validate(recipe_id=None):
     if url:
         errors = validate.do_validate(filters.setup_filters(recipe), schema_url, severity_level)
 
-    return flask.render_template(
-        'validate-summary.html',
-        recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
-    )
+    if format == 'json':
+        return flask.Response(
+            json.dumps(
+                util.parse_validation_errors(errors, url, schema_url),
+                indent=4
+            ),
+            mimetype="application/json"
+        )
+    else:
+        return flask.render_template(
+            'validate-summary.html',
+            recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
+        )
 
 @app.route("/data/<recipe_id>/advanced")
 @app.route("/data/advanced")
