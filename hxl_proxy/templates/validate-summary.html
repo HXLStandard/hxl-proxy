@@ -14,14 +14,20 @@
   <body class="container-fluid">
     {% set page_help='Validation-page' %}
     {% include "includes/navbar.html" %}
-    <header>
-      <h1>
+    <header class="row">
+      <h1 class="col-md-10">
         {% if recipe.name %}
         Validate {{ recipe.name }}
         {% else %}
         Validate dataset
         {% endif %}
       </h1>
+      {% if errors %}
+      <p class="col-md-2 small">
+        <b>Download as:</b>
+        <a href="{{ data_url_for('data_validate', recipe, format='json') }}">JSON</a>
+      </p>
+      {% endif %}
     </header>
     <main>
       <p class="alert alert-info alert-dismissable" role="alert">
