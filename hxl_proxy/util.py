@@ -216,9 +216,10 @@ def parse_validation_errors(errors, data_url, schema_url):
             "description": model.rule.description,
             "severity": model.rule.severity,
             "error_count": len(errors[key]),
+            "scope": "row" if model.row else "dataset",
             "locations": [
                 {
-                    "row": error.row.row_number,
+                    "row": error.row.row_number if error.row else None,
                     "hashtag": error.column.display_tag if error.column else None,
                     "error_value": error.value
                 } for error in errors[key]
