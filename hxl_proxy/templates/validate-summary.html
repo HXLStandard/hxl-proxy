@@ -73,7 +73,12 @@
             </td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
-            <td>{{ error.value|nonone }}</td>
+            <td>
+              {{ error.value|nonone }}
+              {% if error.expected_value %}
+              (expected {{ error.expected_value }})
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>

@@ -2,6 +2,7 @@
 	- update to support new libhxl-python hxl.datatypes module (remove
 	  references to hxl.common)
 	- add JSON output option for data validation (/data/validate.json)
+	- show expected value in a validation error if available
 
 2018-03-31 Release 1.6
 	- add lat/lon to clean-data filter
