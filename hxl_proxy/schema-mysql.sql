@@ -1,7 +1,5 @@
-drop table if exists Recipes;
-drop table if exists Users;
 
-create table Users (
+create table if not exists Users (
        user_id varchar(128) primary key,
        email varchar(128) not null,
        name varchar(128) not null,
@@ -10,7 +8,7 @@ create table Users (
        last_login datetime not null
 );
 
-create table Recipes (
+create table if not exists Recipes (
        recipe_id char(6) primary key,
        name varchar(128) not null,
        passhash char(32) not null,
