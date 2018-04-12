@@ -12,6 +12,7 @@ if sys.version_info.major != 3:
 setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
+    package_data={'hxl_proxy': ['*.sql']},
     version = '1.6',
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
