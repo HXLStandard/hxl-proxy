@@ -107,7 +107,7 @@ def data_source(recipe_id=None):
 
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Forbidden as e:
+    except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     return flask.render_template('data-source.html', recipe=recipe)
@@ -120,7 +120,7 @@ def data_tagger(recipe_id=None):
 
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Forbidden as e:
+    except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     header_row = recipe['args'].get('header-row')
@@ -187,7 +187,7 @@ def data_save(recipe_id=None):
 
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Forbidden as e:
+    except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     if not recipe or not recipe['args'].get('url'):
@@ -489,7 +489,7 @@ def do_data_save():
     recipe_id = flask.request.form.get('recipe_id')
     try:
         recipe = util.get_recipe(recipe_id, auth=True, args=flask.request.form)
-    except werkzeug.exceptions.Forbidden as e:
+    except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     # Update recipe metadata

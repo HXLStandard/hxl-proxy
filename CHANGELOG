@@ -3,6 +3,7 @@
 	  references to hxl.common)
 	- add JSON output option for data validation (/data/validate.json)
 	- show expected value in a validation error if available
+	- fix bug with logging into saved recipes from some pages
 
 2018-03-31 Release 1.6
 	- add lat/lon to clean-data filter
