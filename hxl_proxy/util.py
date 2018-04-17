@@ -220,6 +220,7 @@ def parse_validation_errors(errors, data_url, schema_url):
             "locations": [
                 {
                     "row": error.row.row_number if error.row else None,
+                    "col": error.column.column_number if error.column else None,
                     "hashtag": error.column.display_tag if error.column else None,
                     "error_value": error.value,
                     "suggested_value": error.suggested_value
