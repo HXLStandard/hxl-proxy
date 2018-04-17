@@ -75,8 +75,8 @@
             <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td>
               {{ error.value|nonone }}
-              {% if error.expected_value %}
-              (expected {{ error.expected_value }})
+              {% if error.suggested_value %}
+              (suggest "{{ error.suggested_value }}")
               {% endif %}
             </td>
           </tr>
