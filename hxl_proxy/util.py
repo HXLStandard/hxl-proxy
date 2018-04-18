@@ -208,15 +208,23 @@ def parse_validation_errors(errors, data_url, schema_url):
     }
     for key in errors:
         model = errors[key][0]
+        if model.row is not None and model.column is not None:
+            scope = 'cell'
+        elif mode.row is not None:
+            scope = 'row'
+        elif model.col is not None:
+            scope = 'column'
+        else:
+            scope = 'dataset'
         error_report['stats']['total'] += len(errors[key])
         error_report['stats'][model.rule.severity] += len(errors[key])
         error_report['errors'].append({
             "rule_id": key,
-            "rule_pattern": str(model.rule.tag_pattern),
+            "tag_pattern": str(model.rule.tag_pattern),
             "description": model.rule.description,
             "severity": model.rule.severity,
             "error_count": len(errors[key]),
-            "scope": "row" if model.row else "dataset",
+            "scope": scope,
             "locations": [
                 {
                     "row": error.row.row_number if error.row else None,
