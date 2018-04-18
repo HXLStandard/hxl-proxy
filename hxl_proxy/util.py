@@ -192,7 +192,15 @@ def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None,
     return url_for(endpoint, **args)
 
 def parse_validation_errors(errors, data_url, schema_url):
-    """Parse libhxl validation errors into a JSON-like data structure."""
+    """Parse libhxl validation errors into a JSON-like data structure.
+    Format: https://docs.google.com/document/d/1PXVtK1YWwZEtAUOtImDSBudE3YYvzEXLEU2rFc6XC88/edit?usp=sharing
+    @param errors: a list of L{hxl.validation.HXLValidationError} objects
+    @param data_url: the URL of the dataset being validated
+    @param schema_url: the URL of the HXL schema in use
+    @returns: a data structure listing the errors, suitable for JSON rendition
+    """
+
+    # top-level report
     error_report = {
         "validator": "HXL Proxy",
         "timestamp": datetime.datetime.now().isoformat(),
@@ -204,8 +212,10 @@ def parse_validation_errors(errors, data_url, schema_url):
             "error": 0,
             "total": 0
         },
-        "errors": [],
+        "issues": [],
     }
+
+    # individual issues inside the report
     for key in errors:
         model = errors[key][0]
         if model.row is not None and model.column is not None:
@@ -218,23 +228,34 @@ def parse_validation_errors(errors, data_url, schema_url):
             scope = 'dataset'
         error_report['stats']['total'] += len(errors[key])
         error_report['stats'][model.rule.severity] += len(errors[key])
-        error_report['errors'].append({
+        
+        issue = {
             "rule_id": key,
             "tag_pattern": str(model.rule.tag_pattern),
             "description": model.rule.description,
             "severity": model.rule.severity,
-            "error_count": len(errors[key]),
+            "location_count": len(errors[key]),
             "scope": scope,
-            "locations": [
-                {
-                    "row": error.row.row_number if error.row else None,
-                    "col": error.column.column_number if error.column else None,
-                    "hashtag": error.column.display_tag if error.column else None,
-                    "error_value": error.value,
-                    "suggested_value": error.suggested_value
-                } for error in errors[key]
-            ]
-        })
+            "locations": []
+        }
+
+        # individual locations inside an issue
+        for error in errors[key]:
+            location = {}
+            if error.row is not None and error.row.row_number is not None:
+                location['row'] = error.row.row_number
+            if error.column is not None:
+                if error.column.column_number is not None:
+                    location['col'] = error.column.column_number
+                location['hashtag'] = error.column.display_tag
+            if error.value is not None:
+                location['error_value'] = error.value
+            if error.suggested_value is not None:
+                location['suggested_value'] = error.suggested_value
+            issue['locations'].append(location)
+
+        error_report['issues'].append(issue)
+
     return error_report
     
 
