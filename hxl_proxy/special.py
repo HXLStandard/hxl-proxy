@@ -13,7 +13,7 @@ PCODES_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_Exte
 PCODE_COLUMN_SPECS = {
     "admin0RefName": "#country+name+i_en",
     "admin0Name_fr": "#country+name+i_fr",
-    "admin0Pcode": "#country+code",
+    "admin0Pcode": "#country+code+v_iso2",
     "admin1RefName": "#adm1+name+i_en",
     "admin1Name_fr": "#adm1+name+i_fr",
     "admin1Pcode": "#adm1+code",
