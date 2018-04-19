@@ -587,7 +587,7 @@ def do_hid_authorisation():
 @cache.cached()
 def cods_get(country, level):
     with StringIO() as buffer:
-        special.extract_pcodes(country.upper(), level, buffer)
+        special.extract_pcodes(country.upper(), level.lower(), buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
