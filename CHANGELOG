@@ -1,4 +1,5 @@
 2018-04-30 Release 1.7
+	- add a /pcodes endpoint to download lists of P-codes
 	- update to support new libhxl-python hxl.datatypes module (remove
 	  references to hxl.common)
 	- add JSON output option for data validation (/data/validate.json)

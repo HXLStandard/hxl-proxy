@@ -7,9 +7,11 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, json, requests, requests_cache, urllib, werkzeug
+import flask, hxl, io, json, requests, requests_cache, urllib, werkzeug
 
-from . import app, auth, cache, dao, filters, preview, util, validate, exceptions
+from io import StringIO
+
+from . import app, auth, cache, dao, filters, preview, special, util, validate, exceptions
 
 
 # FIXME - move somewhere else
@@ -42,7 +44,7 @@ def handle_exception(e):
     elif isinstance(e, werkzeug.exceptions.NotFound):
         status = 404
     else:
-        raise(e)
+        #raise(e)
         status = 500
     return flask.render_template('error.html', e=e, category=type(e)), status
 
@@ -555,7 +557,6 @@ def hid_logout():
     flask.flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return flask.redirect(path, 303)
 
-
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
     """Handle OAuth2 token sent back from IdP (Humanitarian.ID) after remote authentication."""
@@ -577,5 +578,18 @@ def do_hid_authorisation():
     redirect_path = flask.session.get('login_redirect', '/')
     del flask.session['login_redirect']
     return flask.redirect(redirect_path, 303)
+
+
+#
+# Extra stuff tacked onto the Proxy
+#
+@app.route('/pcodes/<country>-<level>.csv')
+@cache.cached()
+def cods_get(country, level):
+    with StringIO() as buffer:
+        special.extract_pcodes(country.upper(), level, buffer)
+        response = flask.Response(buffer.getvalue(), mimetype='text/csv')
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 # end
