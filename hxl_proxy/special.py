@@ -1,5 +1,5 @@
 """Special data sources"""
-import csv, logging, requests, sys, werkzeug
+import csv, logging, re, requests, sys, werkzeug
 
 logger = logging.getLogger(__name__)
 
@@ -10,27 +10,15 @@ logger = logging.getLogger(__name__)
 PCODES_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
 """Pattern for constructing an iTOS query URL."""
 
-PCODE_COLUMN_SPECS = {
-    "admin0RefName": "#country+name+i_en",
-    "admin0Name_fr": "#country+name+i_fr",
-    "admin0Pcode": "#country+code+v_iso2",
-    "admin1RefName": "#adm1+name+i_en",
-    "admin1Name_fr": "#adm1+name+i_fr",
-    "admin1Pcode": "#adm1+code",
-    "admin2RefName": "#adm2+name+i_en",
-    "admin2Name_fr": "#adm2+name+i_fr",
-    "admin2Pcode": "#adm2+code",
-    "admin3RefName": "#adm3+name+i_en",
-    "admin3Name_fr": "#adm3+name+i_fr",
-    "admin3Pcode": "#adm3+code",
-    "admin4RefName": "#adm4+name+i_en",
-    "admin4Name_fr": "#adm4+name+i_fr",
-    "admin4Pcode": "#adm4+code",
-    "admin5RefName": "#adm5+name+i_en",
-    "admin5Name_fr": "#adm5+name+i_fr",
-    "admin5Pcode": "#adm5+code",
+PCODE_HEADER_PATTERNS = {
+    r'^admin0RefName$': '#country+name+ref',
+    r'^admin0Name_([a-z]{2})$': '#country+i_\\1+name',
+    r'^admin0Pcode$': '#country+code+iso2',
+    r'^admin([1-9])RefName$': '#adm\\1+name+ref',
+    r'^admin([1-9])Name_([a-z]{2})$': '#adm\\1+i_\\2+name',
+    r'^admin([1-9])Pcode$': '#adm\\1+code',
 }
-"""Map of iTOS headers to HXL hashtags."""
+"""Regular expressions mapping iTOS headers to HXL hashtags"""
 
 PCODE_LEVELS = {
     "country": 1,
@@ -71,11 +59,15 @@ def extract_pcodes(country, level, fp):
 
         # Set up the header and hashtag rows
         headers = []
-        for header in PCODE_COLUMN_SPECS:
-            for field in data['fields']:
-                if field['name'] == header:
+        hashtags = []
+        for field in data['fields']:
+            header = field['name']
+            for pattern in PCODE_HEADER_PATTERNS:
+                if re.fullmatch(pattern, header):
+                    hashtag = re.sub(pattern, PCODE_HEADER_PATTERNS[pattern], header)
                     headers.append(header)
-        hashtags = [PCODE_COLUMN_SPECS[header] for header in headers]
+                    hashtags.append(hashtag)
+                    break
 
         # Print the headers and hashtags
         output.writerow(headers)
@@ -84,7 +76,7 @@ def extract_pcodes(country, level, fp):
         # Process the rows
         for entry in data['features']:
             row = []
-            for header in PCODE_COLUMN_SPECS:
+            for header in headers:
                 # only fields in the header row get included
                 if header in entry['attributes']:
                     row.append(entry['attributes'][header])
