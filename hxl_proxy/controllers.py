@@ -594,6 +594,7 @@ def do_hid_authorisation():
 @app.route('/pcodes/<country>-<level>.csv')
 @cache.cached()
 def cods_get(country, level):
+    flask.g.output_format = 'csv'
     with StringIO() as buffer:
         special.extract_pcodes(country.upper(), level.lower(), buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
