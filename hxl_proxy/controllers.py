@@ -34,21 +34,40 @@ RECIPE_ARG_BLACKLIST = [
 # Error handling
 #
 
-def handle_exception(e):
+def handle_exception(e, format='html'):
     """Default error page."""
     if isinstance(e, IOError):
         # probably tried to open an inappropriate URL
         status = 403
     elif isinstance(e, werkzeug.exceptions.Unauthorized):
         status = 303
-    elif isinstance(e, werkzeug.exceptions.NotFound):
+    elif isinstance(e, werkzeug.exceptions.NotFound) or isinstance(e, requests.exceptions.HTTPError):
         status = 404
     else:
-        #raise(e)
         status = 500
-    return flask.render_template('error.html', e=e, category=type(e)), status
+    if flask.g.output_format != 'html':
+        # If the user is requesting a machine-readable, format,
+        # give a machine-readable error message with a CORS header.
+        json_error = {
+            'error': e.__class__.__name__
+        }
+        if hasattr(e, 'message'):
+            json_error['message'] = e.message
+        if hasattr(e, 'human'):
+            json_error['human_message'] = e.human
+        if hasattr(e, 'errno') and (e.errno is not None):
+            json_error['errno'] = e.errno
+        if hasattr(e, 'response'):
+            json_error['source_status_code'] = e.response.status_code
+            json_error['source_url'] = e.response.url
+            json_error['source_message'] = e.response.text
+        response = flask.Response(json.dumps(json_error, indent=4, sort_keys=True), mimetype='application/json', status=status)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    else:
+        return flask.render_template('error.html', e=e, category=type(e)), status        
 
-if app.config.get('DEBUG'):
+if not app.config.get('DEBUG'):
     app.register_error_handler(Exception, handle_exception)
 
 #
@@ -80,6 +99,7 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     flask.request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     flask.g.member = flask.session.get('member_info')
+    flask.g.output_format='html'
 
 
 #
@@ -353,6 +373,9 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
     def get_result ():
         """Closure to generate the output."""
+
+        # Save the data format
+        flask.g.output_format = format
 
         # Set up the data source from the recipe
         recipe = util.get_recipe(recipe_id, auth=False)
