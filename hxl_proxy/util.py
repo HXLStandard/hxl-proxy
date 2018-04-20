@@ -4,12 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six, hashlib, time, random, base64
-import re
-import urllib
-import datetime
-import pickle
-import re
+import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -190,6 +185,29 @@ def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None,
     if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
     return url_for(endpoint, **args)
+
+def make_json_error(e, status):
+    """Convert an exception to a string containing a JSON-formatted error
+    @param e: the exception to convert
+    @returns: a string containing JSON markup
+    """
+    json_error = {
+        'error': e.__class__.__name__,
+        'status': status
+    }
+    if hasattr(e, 'message'):
+        json_error['message'] = e.message
+    else:
+        json_error['message'] = str(e)
+    if hasattr(e, 'human'):
+        json_error['human_message'] = e.human
+    if hasattr(e, 'errno') and (e.errno is not None):
+        json_error['errno'] = e.errno
+    if hasattr(e, 'response'):
+        json_error['source_status_code'] = e.response.status_code
+        json_error['source_url'] = e.response.url
+        json_error['source_message'] = e.response.text
+    return json.dumps(json_error, indent=4, sort_keys=True)
 
 def parse_validation_errors(errors, data_url, schema_url):
     """Parse libhxl validation errors into a JSON-like data structure.

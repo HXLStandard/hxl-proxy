@@ -215,7 +215,7 @@ class TestDataPage(AbstractControllerTest):
 
     def test_local_file(self):
         """Make sure we're not leaking local data."""
-        response = self.get('/data?url=/etc/passwd&force=on', status=403)
+        response = self.get('/data?url=/etc/passwd&force=on', status=500)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):

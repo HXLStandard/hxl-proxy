@@ -36,7 +36,7 @@ RECIPE_ARG_BLACKLIST = [
 
 def handle_exception(e, format='html'):
     """Default error page."""
-    if isinstance(e, IOError):
+    if isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
         status = 403
     elif isinstance(e, werkzeug.exceptions.Unauthorized):
@@ -46,22 +46,7 @@ def handle_exception(e, format='html'):
     else:
         status = 500
     if flask.g.output_format != 'html':
-        # If the user is requesting a machine-readable, format,
-        # give a machine-readable error message with a CORS header.
-        json_error = {
-            'error': e.__class__.__name__
-        }
-        if hasattr(e, 'message'):
-            json_error['message'] = e.message
-        if hasattr(e, 'human'):
-            json_error['human_message'] = e.human
-        if hasattr(e, 'errno') and (e.errno is not None):
-            json_error['errno'] = e.errno
-        if hasattr(e, 'response'):
-            json_error['source_status_code'] = e.response.status_code
-            json_error['source_url'] = e.response.url
-            json_error['source_message'] = e.response.text
-        response = flask.Response(json.dumps(json_error, indent=4, sort_keys=True), mimetype='application/json', status=status)
+        response = flask.Response(util.make_json_error(e, status), mimetype='application/json', status=status)
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     else:
@@ -99,7 +84,7 @@ def before_request():
     app.secret_key = app.config['SECRET_KEY']
     flask.request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
     flask.g.member = flask.session.get('member_info')
-    flask.g.output_format='html'
+    flask.g.output_format='html' # default format is HTML, unless a controller changes it
 
 
 #
