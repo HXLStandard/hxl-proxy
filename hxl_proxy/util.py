@@ -246,11 +246,15 @@ def parse_validation_errors(errors, data_url, schema_url):
             scope = 'dataset'
         error_report['stats']['total'] += len(errors[key])
         error_report['stats'][model.rule.severity] += len(errors[key])
+
+        description = model.rule.description
+        if not description:
+            description = model.message
         
         issue = {
             "rule_id": key,
             "tag_pattern": str(model.rule.tag_pattern),
-            "description": model.rule.description,
+            "description": description,
             "severity": model.rule.severity,
             "location_count": len(errors[key]),
             "scope": scope,

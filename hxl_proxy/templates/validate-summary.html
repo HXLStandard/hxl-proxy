@@ -74,9 +74,9 @@
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td>
-              {{ error.value|nonone }}
+              <code style="whitespace:pre">"{{ error.value|nonone }}"</code>
               {% if error.suggested_value %}
-              (suggest "{{ error.suggested_value }}")
+              (suggest <code>"{{ error.suggested_value }}"</code>)
               {% endif %}
             </td>
           </tr>
