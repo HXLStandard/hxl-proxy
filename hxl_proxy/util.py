@@ -238,7 +238,7 @@ def parse_validation_errors(errors, data_url, schema_url):
         model = errors[key][0]
         if model.row is not None and model.column is not None:
             scope = 'cell'
-        elif mode.row is not None:
+        elif model.row is not None:
             scope = 'row'
         elif model.col is not None:
             scope = 'column'
