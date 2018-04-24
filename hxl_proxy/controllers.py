@@ -11,7 +11,7 @@ import flask, hxl, io, json, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, preview, special, util, validate, exceptions
+from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions
 
 
 # FIXME - move somewhere else
@@ -593,10 +593,10 @@ def do_hid_authorisation():
 #
 @app.route('/pcodes/<country>-<level>.csv')
 @cache.cached()
-def cods_get(country, level):
+def pcodes_get(country, level):
     flask.g.output_format = 'csv'
     with StringIO() as buffer:
-        special.extract_pcodes(country.upper(), level.lower(), buffer)
+        pcodes.extract_pcodes(country, level, buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response

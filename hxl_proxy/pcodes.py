@@ -39,6 +39,9 @@ def extract_pcodes(country, level, fp):
     @param fp: a file-like object (with a .write() method)
     """
 
+    country = country.upper()
+    level = level.lower()
+
     if not level in PCODE_LEVELS:
         raise werkzeug.exceptions.NotFound("Unrecognized P-code level: {}".format(level))
 
@@ -68,6 +71,10 @@ def extract_pcodes(country, level, fp):
                     headers.append(header)
                     hashtags.append(hashtag)
                     break
+
+        # If we didn't get any columns, it's bad data
+        if len(hashtags) == 0:
+            raise werkzeug.exceptions.NotFound('no P-codes available for this admin level')
 
         # Print the headers and hashtags
         output.writerow(headers)
