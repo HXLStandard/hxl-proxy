@@ -240,7 +240,7 @@ def parse_validation_errors(errors, data_url, schema_url):
             scope = 'cell'
         elif model.row is not None:
             scope = 'row'
-        elif model.col is not None:
+        elif model.column is not None:
             scope = 'column'
         else:
             scope = 'dataset'
