@@ -28,12 +28,7 @@ def do_validate(source, schema_url=None, severity_level=None):
                 errors[rule_hash] = []
             errors[rule_hash].append(error)
     schema = hxl.schema(schema_url, callback)
-    counter = source.row_counter()
-    result = schema.validate(counter)
-    if counter.row_count == 0:
-        return False
-    else:
-        return errors
-
+    result = schema.validate(source)
+    return errors
 
 # end

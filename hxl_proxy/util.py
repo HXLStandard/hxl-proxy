@@ -264,12 +264,16 @@ def parse_validation_errors(errors, data_url, schema_url):
         # individual locations inside an issue
         for error in errors[key]:
             location = {}
-            if error.row is not None and error.row.row_number is not None:
-                location['row'] = error.row.row_number
+            if error.row is not None:
+                if error.row.row_number is not None:
+                    location['row'] = error.row.row_number
+                if error.row.source_row_number is not None:
+                    location['source_row'] = error.row.source_row_number
             if error.column is not None:
                 if error.column.column_number is not None:
                     location['col'] = error.column.column_number
-                location['hashtag'] = error.column.display_tag
+                if error.column.display_tag is not None:
+                    location['hashtag'] = error.column.display_tag
             if error.value is not None:
                 location['error_value'] = error.value
             if error.suggested_value is not None:
