@@ -307,6 +307,17 @@ def search_by_attributes(attributes, columns):
                 break
     return result_columns
 
+def spreadsheet_col_num_to_name(num):
+    """Convert a column index to spreadsheet letters.
+    Adapted from http://asyoulook.com/computers%20&%20internet/python-convert-spreadsheet-number-to-column-letter/659618
+    """
+    letters = ''
+    while num:
+        mod = num % 26
+        letters += chr(mod + 65)
+        num = num // 26
+    return ''.join(reversed(letters))
+
 
 #
 # Declare Jinja2 filters and functions
@@ -318,6 +329,10 @@ app.jinja_env.filters['nonone'] = (
 
 app.jinja_env.filters['urlquote'] = (
     urlquote
+)
+
+app.jinja_env.filters['spreadsheet_col'] = (
+    spreadsheet_col_num_to_name
 )
 
 app.jinja_env.filters['strnorm'] = (
