@@ -7,7 +7,9 @@ License: Public Domain
 Documentation: https://github.com/HXLStandard/hxl-proxy/wiki
 """
 
-import csv, logging, re, requests, sys, werkzeug
+import csv, logging, re, requests, requests_cache, sys, werkzeug
+
+from . import app
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +45,12 @@ def get_country_levels(country):
     country = country.upper()
     url = COUNTRY_URL_PATTERN.format(country=country)
 
-    with requests.get(url) as result:
-        data = result.json()
+    with requests_cache.enabled(
+            app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
+            expire_after=app.config.get('PCODE_CACHE_TIMEOUT_SECONDS', 604800)
+    ):
+        with requests.get(url) as result:
+            data = result.json()
 
     if 'error' in data:
         raise werkzeug.exceptions.NotFound("iTOS P-code service does not support country: {}".format(country))
@@ -76,8 +82,12 @@ def extract_pcodes(country, level, fp):
 
     # Read the data from iTOS
     url = PCODES_URL_PATTERN.format(country=country, level=country_levels[level])
-    with requests.get(url) as result:
-        data = result.json()
+    with requests_cache.enabled(
+            app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
+            expire_after=app.config.get('PCODE_CACHE_TIMEOUT_SECONDS', 604800)
+    ):
+        with requests.get(url) as result:
+            data = result.json()
     if "error" in data:
         raise werkzeug.exceptions.BadGateway('Unexpected iTOS P-code service error (try again)')
 
