@@ -22,17 +22,15 @@ PCODE_HEADER_PATTERNS = {
 }
 """Regular expressions mapping iTOS headers to HXL hashtags"""
 
-PCODE_LEVELS = {
-    "country": 1,
-    "adm1": 2,
-    "adm2": 3,
-    "adm3": 4,
-    "adm4": 5,
-    "adm5": 6,
-}
 
+#
+# Functions
+#
 def get_country_levels(country):
-    """Look up the admin levels available for a country."""
+    """Look up the admin levels available for a country from the iTOS service.
+    @param country: the ISO3 country code (e.g. "GIN")
+    @returns: a dict of HXL admin-level names and iTOS levels
+    """
     levels = {}
     country = country.upper()
     url = COUNTRY_URL_PATTERN.format(country=country)
@@ -52,9 +50,6 @@ def get_country_levels(country):
     return levels
 
 
-#
-# Functions
-#
 def extract_pcodes(country, level, fp):
     """Extract P-codes to HXL-hashtagged CSV
     @param country: an ISO3 country code
@@ -65,23 +60,18 @@ def extract_pcodes(country, level, fp):
     country = country.upper()
     level = level.lower()
 
-    if not level in PCODE_LEVELS:
-        raise werkzeug.exceptions.NotFound("Unrecognized P-code level: {}".format(level))
+    country_levels = get_country_levels(country)
+    if not level in country_levels:
+        raise werkzeug.exceptions.NotFound("iTOS P-code service does support admin level {} for {}".format(level, country))
 
-    url = PCODES_URL_PATTERN.format(country=country, level=PCODE_LEVELS[level])
+    url = PCODES_URL_PATTERN.format(country=country, level=country_levels[level])
 
     with requests.get(url) as result:
         output = csv.writer(fp)
         data = result.json()
 
         if "error" in data:
-            message = data['error']['message']
-            if message.startswith('Service COD_External/'):
-                raise werkzeug.exceptions.NotFound('No P-codes found for country {}'.format(country))
-            elif message.startswith('Invalid or missing input parameters'):
-                raise werkzeug.exceptions.NotFound('No P-codes found at level {} for country {}'.format(level, country))
-            else:
-                raise werkzeug.exceptions.NotFound(data['error']['message'])
+            raise werkzeug.exceptions.BadGateway('Unexpected iTOS P-code service error (try again)')
 
         # Set up the header and hashtag rows
         headers = []
