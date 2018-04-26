@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 # Constants
 #
 
+COUNTRY_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/layers?f=pjson'
+
 PCODES_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
 """Pattern for constructing an iTOS query URL."""
 
@@ -28,6 +30,27 @@ PCODE_LEVELS = {
     "adm4": 5,
     "adm5": 6,
 }
+
+def get_country_levels(country):
+    """Look up the admin levels available for a country."""
+    levels = {}
+    country = country.upper()
+    url = COUNTRY_URL_PATTERN.format(country=country)
+    with requests.get(url) as result:
+        data = result.json()
+        if 'error' in data:
+            raise werkzeug.exceptions.NotFound("iTOS P-code service does not support country: {}".format(country))
+        for layer in result.json().get('layers'):
+            result = re.match(r'^Admin(\d)$', layer['name'])
+            if result:
+                id = layer['id']
+                l = result.group(1)
+                if result == 0:
+                    levels['country'] = id
+                else:
+                    levels['adm{}'.format(l)] = id
+    return levels
+
 
 #
 # Functions

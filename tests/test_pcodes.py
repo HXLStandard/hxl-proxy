@@ -9,7 +9,22 @@ License: Public Domain
 """
 
 import io, unittest, werkzeug.exceptions
-from hxl_proxy.pcodes import extract_pcodes
+from hxl_proxy.pcodes import get_country_levels, extract_pcodes
+
+class TestLevels(unittest.TestCase):
+    # tests require network connectivity to work
+
+    def test_good_levels(self):
+        self.assertTrue('adm1' in get_country_levels('GIN'), "Have an adm1 level for GIN")
+        self.assertTrue('adm2' in get_country_levels('BDI'), "Have an adm2 level for BDI")
+
+    def test_bad_levels(self):
+        seen_exception = False
+        try:
+            get_country_levels('XXX')
+        except werkzeug.exceptions.NotFound:
+            seen_exception = True
+        self.assertTrue(seen_exception, "Bad country code XXX raises a NotFound exception")
 
 class TestPcodes(unittest.TestCase):
     # tests require network connectivity to work
@@ -36,10 +51,10 @@ class TestPcodes(unittest.TestCase):
         with io.StringIO() as buffer:
             try:
                 extract_pcodes(country, admin_level, buffer)
-                self.assertFalse(expect_exception) # did we expect an exception before now?
+                self.assertFalse(expect_exception, 'Didn\'t get expected exception for {} {}'.format(country, admin_level))
                 return buffer
             except werkzeug.exceptions.NotFound:
-                self.assertTrue(expect_exception) # we *did* expect an exception
+                self.assertTrue(expect_exception, 'Got unexpected exception for {} {}'.format(country, admin_level))
                 return None
             
 
