@@ -12,7 +12,7 @@ License: Public Domain
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-import hxl_proxy
+import hxl_proxy, urllib
 from . import base
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
@@ -35,7 +35,19 @@ class AbstractControllerTest(base.AbstractDBTest):
     def tearDown(self):
         super().tearDown()
 
-    def get(self, path, params=None, status=200):
+    def get(self, path, query_string=None, status=200):
+        """
+        Send a request to the test client and hang onto the result.
+        @param path the path to request
+        @param query_string (optional) a dict of get parameters
+        @param status (optional) the expected HTTP status (defaults to 200)
+        @return a Response object
+        """
+        self.response = self.client.get(path, query_string=query_string)
+        self.assertEqual(status, self.response.status_code)
+        return self.response
+
+    def post(self, path, query_string=None, data=None, status=200):
         """
         Send a request to the test client and hang onto the result.
         @param path the path to request
@@ -43,7 +55,8 @@ class AbstractControllerTest(base.AbstractDBTest):
         @param status (optional) the expected HTTP status (defaults to 200)
         @return a Response object
         """
-        self.response = self.client.get(path, query_string=params)
+        print('***', path)
+        self.response = self.client.post(path, query_string=query_string, data=data)
         self.assertEqual(status, self.response.status_code)
         return self.response
 
@@ -258,4 +271,41 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'Validation succeeded' in response.data
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_get_schema_pass(self):
+        """GET with an inline schema that succeeds"""
+        response = self.get('/data/validate', {
+            'url': DATASET_URL,
+            'schema_content': '[{"#valid_tag":"#org","#valid_required":"true"}]'
+        })
+        assert b'Validation succeeded' in response.data
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_get_schema_fail(self):
+        """GET with an inline schema that fails"""
+        response = self.get('/data/validate', {
+            'url': DATASET_URL,
+            'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'
+        })
+        assert b'validation issue(s)' in response.data
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_post_schema_pass(self):
+        """POST with an inline schema that succeeds"""
+        response = self.post(
+            '/data/validate',
+            query_string={'url': DATASET_URL},
+            data={'schema_content': '[{"#valid_tag":"#org","#valid_required":"true"}]'}
+        )
+        assert b'Validation succeeded' in response.data
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_post_schema_fail(self):
+        """POST with an inline schema that fails"""
+        response = self.post(
+            '/data/validate',
+            query_string={'url': DATASET_URL},
+            data={'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'}
+        )
+        assert b'validation issue(s)' in response.data
 # end
