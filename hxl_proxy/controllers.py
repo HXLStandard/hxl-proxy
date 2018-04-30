@@ -293,10 +293,10 @@ def data_map(recipe_id=None):
     )
 
 
-@app.route("/data/validate")
-@app.route("/data/validate.<format>")
-@app.route("/data/<recipe_id>/validate")
-@app.route("/data/<recipe_id>/validate.<format>")
+@app.route("/data/validate", methods=['GET', 'POST'])
+@app.route("/data/validate.<format>", methods=['GET', 'POST'])
+@app.route("/data/<recipe_id>/validate", methods=['GET', 'POST'])
+@app.route("/data/<recipe_id>/validate.<format>", methods=['GET', 'POST'])
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
@@ -313,13 +313,24 @@ def data_validate(recipe_id=None, format='html'):
     else:
         schema_url = recipe['args'].get('schema_url', None)
 
+    # Check for inline schema content (POST first, then GET)
+    schema_content = flask.request.form.get(
+        'schema_content',
+        flask.request.args.get('schema_content')
+    )
+
     severity_level = args.get('severity', 'info')
 
     detail_hash = args.get('details', None)
 
     # If we have a URL, validate the data.
     if url:
-        errors = validate.do_validate(filters.setup_filters(recipe), schema_url, severity_level)
+        errors = validate.do_validate(
+            filters.setup_filters(recipe),
+            schema_url=schema_url,
+            schema_content=schema_content,
+            severity_level=severity_level
+        )
 
     if format == 'json':
         return flask.Response(
