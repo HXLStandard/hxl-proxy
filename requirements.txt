@@ -1,6 +1,6 @@
 libhxl>=4.6
 ckanapi>=3.5
-flask>=0.10
+flask==0.12.4
 flask-cache>=0.13
 requests_cache
 mysql-connector-python
