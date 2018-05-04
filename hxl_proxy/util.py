@@ -312,9 +312,10 @@ def spreadsheet_col_num_to_name(num):
     Adapted from http://asyoulook.com/computers%20&%20internet/python-convert-spreadsheet-number-to-column-letter/659618
     """
     letters = ''
+    num += 1
     while num:
         mod = num % 26
-        letters += chr(mod + 65)
+        letters += chr(mod + 64)
         num = num // 26
     return ''.join(reversed(letters))
 

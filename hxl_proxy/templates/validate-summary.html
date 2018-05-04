@@ -54,11 +54,11 @@
         <thead>
           <tr>
             <th>Severity</th>
-            <th>Row</th>
-            <th>Column</th>
-            <th>Explanation</th>
-            <th>Tag</th>
+            <th>Location</th>
             <th>Error value</th>
+            <th>Possible correction</th>
+            <th>Message</th>
+            <th>Tag pattern</th>
           </tr>
         </thead>
         <tbody>
@@ -67,28 +67,25 @@
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
             <td>
               {% if error.row %}
-              <a href="{{ data_url_for('data_view', recipe) }}#row_{{ error.row.row_number }}">{{ error.row.row_number+1 }}</a>
-              {% if error.row.source_row_number %}
-              ({{ error.row.source_row_number+1 }} in source)
-              {% endif %}
+              <a href="{{ data_url_for('data_view', recipe) }}#row_{{ error.row.row_number }}">
+                {% if error.row.source_row_number %}
+                {{ error.column.column_number|spreadsheet_col }}{{ error.row.source_row_number+1 }}
+                {% endif %}
+              </a>
               {% else %}
               <a href="{{ data_url_for('data_view', recipe) }}#hashtag-row">Hashtags</a>
               {% endif %}
             </td>
             <td>
-              {% if error.column %}
-              {{ error.column.column_number+1 }}
-              ({{ error.column.column_number|spreadsheet_col }})
+              «<code style="whitespace:pre">{{ error.value|nonone}}</code>»
+            </td>
+            <td>
+              {% if error.suggested_value %}
+              «<code>{{ error.suggested_value }}</code>»
               {% endif %}
             </td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
             <td>{{ error.rule.tag_pattern|nonone }}</td>
-            <td>
-              <code style="whitespace:pre">"{{ error.value|nonone }}"</code>
-              {% if error.suggested_value %}
-              (suggest <code>"{{ error.suggested_value }}"</code>)
-              {% endif %}
-            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -115,8 +112,8 @@
           <tr>
             <th>Severity</th>
             <th>Occurrences</th>
-            <th>HXL tag pattern</th>
             <th>Explanation</th>
+            <th>HXL tag pattern</th>
           </tr>
         </thead>
         <tbody>
@@ -126,8 +123,8 @@
           <tr>
             <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
             <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} occurrence(s)</a></td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
+            <td>{{ error.rule.tag_pattern|nonone }}</td>
           </tr>
           {% endfor %}
         </tbody>
