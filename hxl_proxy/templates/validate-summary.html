@@ -56,9 +56,9 @@
             <th>Severity</th>
             <th>Location</th>
             <th>Error value</th>
-            <th>Possible correction</th>
+            <th>Proposed correction</th>
             <th>Message</th>
-            <th>Tag pattern</th>
+            <th>Column hashtag</th>
           </tr>
         </thead>
         <tbody>
@@ -82,10 +82,16 @@
             <td>
               {% if error.suggested_value %}
               «<code>{{ error.suggested_value }}</code>»
+              {% else %}
+              <i>(none available)</i>
               {% endif %}
             </td>
             <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
+            <td>
+              {% if error.column %}
+              {{ error.column.display_tag }}
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
