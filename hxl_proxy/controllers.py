@@ -300,6 +300,9 @@ def data_map(recipe_id=None):
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
+    # Save the data format
+    flask.g.output_format = format
+
     # Get the recipe
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
@@ -435,6 +438,9 @@ def hxl_test(format='html'):
     """Test if a URL points to HXL-tagged data.
     @param format: the format for rendering the result.
     """
+
+    # Save the data format
+    flask.g.output_format = format
 
     url = flask.request.args.get('url')
     
