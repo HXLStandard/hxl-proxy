@@ -3,6 +3,9 @@
 	- when the validation error format is JSON, report other errors in
 	  JSON as well
 
+2018-05-11 Release 1.7.1
+	- require libhxl==4.7.1 for date-parsing hotfix
+
 2018-04-30 Release 1.7
 	- add a /pcodes endpoint to download lists of P-codes
 	- update to support new libhxl-python hxl.datatypes module (remove
