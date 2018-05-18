@@ -300,12 +300,24 @@ def data_map(recipe_id=None):
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
+    #
+    # FIXME - this controller contains too much special-purpose conditional code
+    # (mainly around POST for datasets and schemas)
+    # Replace with a new endpoint just for POST
+    #
+
     # Save the data format
     flask.g.output_format = format
 
+    # Data content
+    data_content = flask.request.form.get(
+        'data_content',
+        flask.request.args.get('data_content', None)
+    )
+
     # Get the recipe
     recipe = util.get_recipe(recipe_id)
-    if not recipe or not recipe['args'].get('url'):
+    if not data_content and (not recipe or not recipe['args'].get('url')):
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Get the parameters
@@ -327,9 +339,9 @@ def data_validate(recipe_id=None, format='html'):
     detail_hash = args.get('details', None)
 
     # If we have a URL, validate the data.
-    if url:
+    if data_content or url:
         errors = validate.do_validate(
-            filters.setup_filters(recipe),
+            filters.setup_filters(recipe, data_content=data_content),
             schema_url=schema_url,
             schema_content=schema_content,
             severity_level=severity_level

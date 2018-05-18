@@ -7,7 +7,7 @@ module uses the numbers to group the parameters, then to construct the
 hxl.filter objects from them and build a pipeline.
 """
 
-import hxl
+import hxl, io
 from hxl_proxy import exceptions, util
 import hxl.filters # why do we have to import this???
 from hxl.converters import Tagger
@@ -16,7 +16,7 @@ from hxl.converters import Tagger
 # Maximum number of filters to check
 MAX_FILTER_COUNT = 99
 
-def setup_filters(recipe):
+def setup_filters(recipe, data_content=None):
     """
     Open a stream to a data source URL, and create a filter pipeline based on the arguments.
     @param recipe the GET-request recipe (uses only recipe['args']).
@@ -24,11 +24,14 @@ def setup_filters(recipe):
     """
 
     # null recipe or url means null source
-    if not recipe or not recipe['args'].get('url'):
+    if not data_content and (not recipe or not recipe['args'].get('url')):
         return None
 
     # Basic input source
-    source = hxl.data(make_tagged_input(recipe['args']))
+    if data_content:
+        source = hxl.data(io.BytesIO(data_content.encode('utf-8')))
+    else:
+        source = hxl.data(make_tagged_input(recipe['args']))
 
     # Do we have a JSON recipe? Load it first.
     if recipe['args'].get('recipe'):

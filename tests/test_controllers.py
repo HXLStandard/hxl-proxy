@@ -55,7 +55,6 @@ class AbstractControllerTest(base.AbstractDBTest):
         @param status (optional) the expected HTTP status (defaults to 200)
         @return a Response object
         """
-        print('***', path)
         self.response = self.client.post(path, query_string=query_string, data=data)
         self.assertEqual(status, self.response.status_code)
         return self.response
@@ -288,6 +287,16 @@ class TestValidationPage(AbstractControllerTest):
             'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'
         })
         assert b'validation issue(s)' in response.data
+
+    def test_post_dataset_csv(self):
+        """Test posting a dataset for validation"""
+        response = self.post(
+            '/data/validate',
+            data={
+                'data_content': bytes("#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n", encoding='utf-8')
+            }
+        )
+        assert b'Validation succeeded' in response.data
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_post_schema_pass(self):
