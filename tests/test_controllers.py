@@ -12,7 +12,7 @@ License: Public Domain
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-import hxl_proxy, urllib
+import hxl_proxy, io, urllib
 from . import base
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
@@ -288,16 +288,6 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'validation issue(s)' in response.data
 
-    def test_post_dataset_csv(self):
-        """Test posting a dataset for validation"""
-        response = self.post(
-            '/data/validate',
-            data={
-                'data_content': bytes("#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n", encoding='utf-8')
-            }
-        )
-        assert b'Validation succeeded' in response.data
-
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_post_schema_pass(self):
         """POST with an inline schema that succeeds"""
@@ -317,4 +307,16 @@ class TestValidationPage(AbstractControllerTest):
             data={'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'}
         )
         assert b'validation issue(s)' in response.data
+
+
+class TestValidateAction(AbstractControllerTest):
+
+    def test_content(self):
+        response = self.post(
+            '/actions/validate',
+            data = {
+                'content': "#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"
+            }
+        )
+
 # end

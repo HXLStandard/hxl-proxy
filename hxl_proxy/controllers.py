@@ -503,6 +503,21 @@ def user_settings():
         return flask.redirect(url_for('login', **args), 303)
 
 
+@app.route("/actions/validate", methods=['POST'])
+def do_validate():
+    """POST handler: validate a dataset against the provided schema, and return a JSON report
+    This method does not apply filters, tagger, etc, but simply takes the following parameters:
+    * url | content - the data to validate
+    * schema_url | schema_content - the schema to use (optional)
+    """
+    url = flask.request.form.get('url')
+    schema_url = flask.request.form.get('schema_url')
+    content = flask.request.form.get('content')
+    schema_content = flask.request.form.get('schema_content')
+
+    print('***', url, schema_url, content, schema_content,)
+    return ''
+    
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():
     """POST handler: authenticate for a specific recipe (will disappear soon)."""
