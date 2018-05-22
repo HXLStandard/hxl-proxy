@@ -39,9 +39,9 @@ def handle_exception(e, format='html'):
     if isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
         status = 403
-    elif isinstance(e, werkzeug.exceptions.Unauthorized):
-        status = 303
-    elif isinstance(e, werkzeug.exceptions.NotFound) or isinstance(e, requests.exceptions.HTTPError):
+    elif isinstance(e, werkzeug.exceptions.HTTPException):
+        status = e.code
+    elif isinstance(e, requests.exceptions.HTTPError):
         status = 404
     else:
         status = 500
@@ -510,13 +510,45 @@ def do_validate():
     * url | content - the data to validate
     * schema_url | schema_content - the schema to use (optional)
     """
-    url = flask.request.form.get('url')
-    schema_url = flask.request.form.get('schema_url')
-    content = flask.request.form.get('content')
-    schema_content = flask.request.form.get('schema_content')
 
-    print('***', url, schema_url, content, schema_content,)
-    return ''
+    flask.g.output_format = 'json'
+    
+    url = flask.request.form.get('url')
+    content = flask.request.files.get('content')
+
+    schema_url = flask.request.form.get('schema_url')
+    schema_content = flask.request.files.get('schema_content')
+
+    # error conditions
+    if (url is not None and content is not None):
+        raise requests.exceptions.BadRequest("Both 'url' and 'content' specified")
+    if (url is None and content is None):
+        raise requests.exceptions.BadRequest("Require one of 'url' or 'content'")
+    if (schema_url is not None and schema_content is not None):
+        raise requests.exceptions.BadRequest("Both 'schema_url' and 'schema_content' specified")
+
+    # set up the main data
+    if content:
+        source = hxl.data(hxl.io.make_input(content))
+    else:
+        source = hxl.data(url)
+
+    # set up the schema (if present)
+    if schema_content:
+        schema_source = hxl.data(hxl.io.make_input(schema_content))
+    elif schema_url:
+        schema_source = hxl.data(schema_url)
+    else:
+        schema_source = None
+
+    # validate and return the JSON report
+    return flask.Response(
+        json.dumps(
+            hxl.validate(source, schema_source),
+            indent=4
+        ),
+        mimetype='application/json'
+    )
     
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():

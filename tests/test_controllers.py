@@ -12,7 +12,7 @@ License: Public Domain
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
-import hxl_proxy, io, urllib
+import hxl_proxy, io, json, urllib
 from . import base
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
@@ -311,12 +311,38 @@ class TestValidationPage(AbstractControllerTest):
 
 class TestValidateAction(AbstractControllerTest):
 
-    def test_content(self):
+    def test_post_valid_content(self):
+        """Should succeed, because content is valid against default schema"""
         response = self.post(
             '/actions/validate',
             data = {
-                'content': "#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"
+                'content': (io.BytesIO(b"#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"), 'text.csv')
             }
         )
+        result = json.loads(response.get_data(True))
+        self.assertTrue(result['is_valid'])
+
+    def test_post_invalid_content(self):
+        """Should failed, because #affected is not a number"""
+        response = self.post(
+            '/actions/validate',
+            data = {
+                'content': (io.BytesIO(b"#adm1,#affected\r\nCoast,xxx\r\nPlains,200\r\n"), 'text.csv')
+            }
+        )
+        result = json.loads(response.get_data(True))
+        self.assertFalse(result['is_valid'])
+
+    def test_post_schema(self):
+        """Should fail, because #affected < 1000 per custom schema"""
+        response = self.post(
+            '/actions/validate',
+            data = {
+                'content': (io.BytesIO(b"#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"), 'text.csv'),
+                'schema_content': (io.BytesIO(b'[{"#valid_tag":"#affected","#valid_value+min":"1000"}]'), 'schema.csv'),
+            }
+        )
+        result = json.loads(response.get_data(True))
+        self.assertFalse(result['is_valid'])
 
 # end
