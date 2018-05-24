@@ -13,7 +13,7 @@ from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
 
 import hxl_proxy, io, json, urllib
-from . import base
+from . import base, resolve_path
 
 DATASET_URL = 'http://example.org/basic-dataset.csv'
 
@@ -344,5 +344,24 @@ class TestValidateAction(AbstractControllerTest):
         )
         result = json.loads(response.get_data(True))
         self.assertFalse(result['is_valid'])
+
+    def test_post_excel(self):
+        """Open a dataset and schema from an Excel sheet"""
+        with open(resolve_path('files/validation-data.xlsx'), 'rb') as data_input:
+                  with open(resolve_path('files/validation-data.xlsx'), 'rb') as schema_input:
+                            response = self.post(
+                                '/actions/validate',
+                                data = {
+                                    'content': data_input,
+                                    'schema_content': schema_input,
+                                    'schema_sheet': 1,
+                                    'include_dataset': True
+                                }
+                            )
+                            report = json.loads(response.get_data(True))
+                            self.assertTrue('Access-Control-Allow-Origin' in response.headers)
+                            self.assertFalse(report['is_valid'])
+                            self.assertTrue('dataset' in report)
+                            self.assertTrue(len(report['dataset']) > 2)
 
 # end

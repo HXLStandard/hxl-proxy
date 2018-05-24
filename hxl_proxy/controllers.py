@@ -7,11 +7,13 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, io, json, requests, requests_cache, urllib, werkzeug
+import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
 from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions
+
+logger = logging.getLogger(__name__)
 
 
 # FIXME - move somewhere else
@@ -515,9 +517,21 @@ def do_validate():
     
     url = flask.request.form.get('url')
     content = flask.request.files.get('content')
+    try:
+        sheet_index = int(flask.request.form.get('sheet', 0))
+    except:
+        logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
+        sheet_index = 0
 
     schema_url = flask.request.form.get('schema_url')
     schema_content = flask.request.files.get('schema_content')
+    try:
+        schema_sheet_index = int(flask.request.form.get('schema_sheet', 0))
+    except:
+        logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
+        schema_sheet_index = 0
+
+    include_dataset = flask.request.form.get('include_dataset', False)
 
     # error conditions
     if (url is not None and content is not None):
@@ -529,22 +543,41 @@ def do_validate():
 
     # set up the main data
     if content:
-        source = hxl.data(hxl.io.make_input(content))
+        source = hxl.data(hxl.io.make_input(content, sheet_index=sheet_index))
     else:
-        source = hxl.data(url)
+        source = hxl.data(url, sheet_index=sheet_index)
+
+    # cache if we're including the dataset in the results
+    if include_dataset:
+        source = source.cache()
 
     # set up the schema (if present)
     if schema_content:
-        schema_source = hxl.data(hxl.io.make_input(schema_content))
+        schema_source = hxl.data(hxl.io.make_input(schema_content, sheet_index=schema_sheet_index))
     elif schema_url:
-        schema_source = hxl.data(schema_url)
+        schema_source = hxl.data(schema_url, sheet_index=schema_sheet_index)
     else:
         schema_source = None
+
+    # get the validation report
+    report = hxl.validate(source, schema_source)
+
+    # add the data content if requested
+    def no_none(s):
+        return s if s is not None else ''
+    
+    if include_dataset:
+        content = []
+        content.append([no_none(column.header) for column in source.columns])
+        content.append([no_none(column.display_tag) for column in source.columns])
+        for row in source:
+            content.append([no_none(value) for value in row.values])
+        report['dataset'] = content
 
     # validate and return the JSON report
     response = flask.Response(
         json.dumps(
-            hxl.validate(source, schema_source),
+            report,
             indent=4
         ),
         mimetype='application/json'
