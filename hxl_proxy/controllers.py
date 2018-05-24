@@ -542,13 +542,16 @@ def do_validate():
         schema_source = None
 
     # validate and return the JSON report
-    return flask.Response(
+    response = flask.Response(
         json.dumps(
             hxl.validate(source, schema_source),
             indent=4
         ),
         mimetype='application/json'
     )
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
     
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():
