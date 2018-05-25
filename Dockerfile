@@ -36,6 +36,12 @@ RUN apk update && \
         gunicorn \
         requests-cache && \
     pip3 install --upgrade -r requirements.txt && \
+    apk add --virtual .gevent-deps \
+        build-base \
+        python-dev && \
+    pip3 install gevent && \
+    apk del \
+        .gevent-deps && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
 
