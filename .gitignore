@@ -5,3 +5,4 @@ dist
 hxl-proxy.wsgi
 hxl_proxy.egg-info
 test-*.egg
+.idea

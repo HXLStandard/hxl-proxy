@@ -1,0 +1,25 @@
+###
+#  Local development file.
+###
+
+version: '2.1'
+
+services:
+  proxy:
+    entrypoint: []
+    environment:
+      DB_TYPE: sqlite
+      HXL_PROXY_CONFIG: /srv/config/config.py
+      PS1: '\h \w ~> '
+      TERM: xterm
+    hostname: proxy
+    image: unocha/hxl-proxy:dev
+    ports:
+    - 0.0.0.0:5000:5000
+    volumes:
+    - /srv/hxl/libhxl-python:/src/libhxl-python:rw
+    - ./:/srv/config:rw
+    - /srv/hxl/hxl-stack/env/common/etc/proxy:/srv/config:rw
+    # useless
+    - /srv/hxl/hxl-proxy:/srv/www:rw
+    #- /srv/hxl/vols/var/log/proxy:/var/log/proxy:rw
