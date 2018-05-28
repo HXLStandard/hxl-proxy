@@ -518,18 +518,18 @@ def do_validate():
     url = flask.request.form.get('url')
     content = flask.request.files.get('content')
     try:
-        sheet_index = int(flask.request.form.get('sheet', 0))
+        sheet_index = int(flask.request.form.get('sheet', None))
     except:
         logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
-        sheet_index = 0
+        sheet_index = None
 
     schema_url = flask.request.form.get('schema_url')
     schema_content = flask.request.files.get('schema_content')
     try:
-        schema_sheet_index = int(flask.request.form.get('schema_sheet', 0))
+        schema_sheet_index = int(flask.request.form.get('schema_sheet', None))
     except:
         logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
-        schema_sheet_index = 0
+        schema_sheet_index = None
 
     include_dataset = flask.request.form.get('include_dataset', False)
 
