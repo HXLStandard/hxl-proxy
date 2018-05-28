@@ -5,7 +5,9 @@
 	- when the validation error format is JSON, report other errors in
 	  JSON as well
 	- add new endpoint /actions/validate using POST (allows either
-	  uploading or providing a URL for both the schema and the content)
+	  uploading or providing a URL for both the schema and the
+	  content)
+	- fixed bug preventing changing custom validation schema
 
 2018-05-11 Release 1.7.1
 	- require libhxl==4.7.1 for date-parsing hotfix

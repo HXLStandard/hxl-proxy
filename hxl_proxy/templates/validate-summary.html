@@ -152,9 +152,7 @@
                 <p>Temporarily override the default schema for this recipe. To change the default schema, go to the
                 <a href="{{ data_url_for('data_edit', recipe) }}">edit page</a>.</p>
                 {% endif %}
-
-                {% include 'includes/recipe-form.html' %}
-
+                
                 <div class="form-group">
                   <label for="schema_url">Custom HXL schema URL</label>
                   <input name="schema_url" id="schema_url" type="url" value="{{ recipe.args.schema_url or '' }}" class="form-control"
@@ -165,7 +163,9 @@
                   {% endwith %}
                 </div>
 
+                {% with excludes=['schema_url'] %}
                 {% include "includes/params.html" %}
+                {% endwith %}
 
                 <button class="btn btn-success" type="submit">Update</button>
 
