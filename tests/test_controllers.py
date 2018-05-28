@@ -296,27 +296,6 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'validation issue(s)' in response.data
 
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_post_schema_pass(self):
-        """POST with an inline schema that succeeds"""
-        response = self.post(
-            '/data/validate',
-            query_string={'url': DATASET_URL},
-            data={'schema_content': '[{"#valid_tag":"#org","#valid_required":"true"}]'}
-        )
-        assert b'Validation succeeded' in response.data
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_post_schema_fail(self):
-        """POST with an inline schema that fails"""
-        response = self.post(
-            '/data/validate',
-            query_string={'url': DATASET_URL},
-            data={'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'}
-        )
-        assert b'validation issue(s)' in response.data
-
-
 class TestValidateAction(AbstractControllerTest):
 
     def test_post_valid_content(self):
