@@ -16,19 +16,18 @@
         <p>
           The HXL Proxy is an online data engine for datasets tagged
           using the <a href="http://hxlstandard.org">Humanitarian
-          Exchange Language</a> (HXL). It works much like the query
-          engine in a relational database like Oracle or MySQL, except
-          that instead of working with internally-stored data tables,
-          it operates directly on HXL-hashtagged datasets stored
-          anywhere on the Web (including <a
+          Exchange Language</a> (HXL). It performs the same tasks as
+          the query engine in a relational database like Oracle or
+          MySQL—<b>transforming</b>, <b>sorting</b>,
+          <b>aggregating</b>, <b>filtering</b>, <b>cleaning</b>,
+          <b>joining</b>, and <b>validating</b> data—except that
+          instead of operating on internally-stored data tables, it
+          lets you operate directly on HXL-hashtagged spreadsheets or
+          other data files stored anywhere on the Web (including <a
           href="https://data.humdata.org">HDX</a>, <a
           href="https://dropbox.com">Dropbox</a>, <a
-          href="https://drive.google.com">Google Drive</a>, or
-          anywhere else with a public URL). Instead of importing data
-          into a database and trying to keep it up to date, simply
-          point to the online datasets that you want to use, and you
-          get database-like operations without the extra
-          software-development and maintenance overhead.
+          href="https://drive.google.com">Google Drive</a>, or your
+          own web site).
         </p>
       </section>
       <section id="docs">
@@ -89,7 +88,10 @@
           <li>
             You are welcome to install your own version of the HXL
             Proxy web application on your personal computer, or on an
-            Intranet inside your organisation's firewall.
+            Intranet inside your organisation's firewall. There is a
+            <a
+                href="https://hub.docker.com/r/teodorescuserban/hxl-proxy/">Docker
+            image</a> available for fast deployment.
           </li>
         </ol>
       </section>
