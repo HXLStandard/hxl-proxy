@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>About the HXL Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>
+        About the HXL Proxy
+      </h1>
+    </header>
+    <main>
+      <section id="intro">
+        <p>
+          The HXL Proxy is an online data engine for datasets tagged
+          using the <a href="http://hxlstandard.org">Humanitarian
+          Exchange Language</a> (HXL). It works much like the query
+          engine in a relational database like Oracle or MySQL, except
+          that instead of working with internally-stored data tables,
+          it operates directly on HXL-hashtagged datasets stored
+          anywhere on the Web (including <a
+          href="https://data.humdata.org">HDX</a>, <a
+          href="https://dropbox.com">Dropbox</a>, <a
+          href="https://drive.google.com">Google Drive</a>, or
+          anywhere else with a public URL). Instead of importing data
+          into a database and trying to keep it up to date, simply
+          point to the online datasets that you want to use, and you
+          get database-like operations without the extra
+          software-development and maintenance overhead.
+        </p>
+      </section>
+      <section id="docs">
+        <h3>Where's the documentation?</h3>
+        <p>
+          Detailed documentation is available online in the <a href="https://github.com/HXLStandard/hxl-proxy/wiki">HXL Proxy
+          wiki</a>.
+        </p>
+      </section>
+      <section id="bugs">
+        <h3>How do I report a problem or ask for a feature?</h3>
+        <p>
+          To report bugs or new-feature requests, please visit <a
+          href="https://github.com/HXLStandard/hxl-proxy/issues">https://github.com/HXLStandard/hxl-proxy/issues</a>.
+        </p>
+      </section>
+      <section id="users">
+        <h3>Who uses it?</h3>
+        <p>
+          The HXL Proxy helps power several humanitarian data tools
+          behind the scenes, including <a
+          href="http://ifrcgo.org">IFRC Go</a>, the <a
+          href="https://data.humdata.org">Humanitarian Data
+          Exchange</a> (HDX), <a
+          href="https://tools.humdata.org/quickcharts/">Quick
+          Charts</a>, and <a
+          href="https://tools.humdata.org/wizard/#datacheck">Data
+          Check</a>.
+        </p>
+        <p>
+          Since any humanitarian organisation is welcome to
+          use the Proxy without pre-registration, there are likely
+          other applications that we do not yet know about.
+        </p>
+      </section>
+      <section id="privacy">
+        <h3>What about private data?</h3>
+        <p>
+          The free service at <a
+          href="https://proxy.hxlstandard.org">proxy.hxlstandard.org</a>
+          is intended only for non-sensitive, publicly-accessible
+          humanitarian data.
+        </p>
+        <p>
+          If you are dealing with sensitive data, you have two
+          options:
+        </p>
+        <ol>
+          <li>
+            The HXL Proxy is mostly a wrapper around <a
+            href="https://github.com/HXLStandard/libhxl-python">libhxl-python</a>,
+            a Python library for HXL data validation and
+            transformation. You can install this Python package, and
+            then use the built-in command-line tools in a shell
+            script, or call out to the library directly from your own
+            programmes.
+          </li>
+          <li>
+            You are welcome to install your own version of the HXL
+            Proxy web application on your personal computer, or on an
+            Intranet inside your organisation's firewall.
+          </li>
+        </ol>
+      </section>
+      <section id="packages">
+        <h3>What software does it use?</h3>
+        <p>(For a complete list of requirements, see the source code.)</p>
+        <table class="table">
+          <thead>
+            <th>Software package</th>
+            <th>Release</th>
+          </thead>
+          <tbody>
+            {% for package, release in releases.items() %}
+            <tr>
+              <td><a href="https://pypi.org/project/{{ package }}/">{{ package }}</a></td>
+              <td><a href="https://pypi.org/project/{{ package }}/{{ release }}">{{ release }}</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>

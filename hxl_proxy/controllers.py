@@ -11,7 +11,7 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions
+from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions, __version__
 
 logger = logging.getLogger(__name__)
 
@@ -99,10 +99,20 @@ def home():
     # note: not using data_url_for because this is outside data pages
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
-
 #
 # Primary controllers
 #
+
+@app.route("/about.html")
+def about():
+    # releases to list
+    releases = {
+        'hxl-proxy': __version__,
+        'libhxl': hxl.__version__,
+        'flask': flask.__version__,
+        'requests': requests.__version__
+    }
+    return flask.render_template('about.html', releases=releases)
 
 @app.route("/data/<recipe_id>/login")
 def data_login(recipe_id):

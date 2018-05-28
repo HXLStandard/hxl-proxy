@@ -109,6 +109,14 @@ class TestLogout(AbstractControllerTest):
             assert 'user' not in flask.session
 
 
+class TestAbout(AbstractControllerTest):
+
+    path = '/about.html'
+
+    def test_about(self):
+        response = self.get(self.path)
+
+
 class TestDataSource(AbstractControllerTest):
 
     path = '/data/source'
