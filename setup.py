@@ -6,6 +6,8 @@ For details, try
 
 import sys, setuptools
 
+from hxl_proxy import __version__
+
 if sys.version_info.major != 3:
     raise SystemExit("The HXL Proxy requires Python 3.x")
 
@@ -13,7 +15,7 @@ setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
     package_data={'hxl_proxy': ['*.sql']},
-    version = '1.7.1',
+    version = __version__,
     description = 'Flask-based web proxy for HXL',
     author='David Megginson',
     author_email='contact@megginson.com',
