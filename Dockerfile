@@ -38,7 +38,7 @@ RUN apk update && \
     pip3 install --upgrade -r requirements.txt && \
     apk add --virtual .gevent-deps \
         build-base \
-        python-dev && \
+        python3-dev && \
     pip3 install gevent && \
     apk del \
         .gevent-deps && \
