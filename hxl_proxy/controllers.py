@@ -572,6 +572,16 @@ def do_validate():
     # get the validation report
     report = hxl.validate(source, schema_source)
 
+    # add the URLs if supplied
+    if url:
+        report['data_url'] = url
+    if sheet_index is not None:
+        report['data_sheet_index'] = sheet_index
+    if schema_url:
+        report['schema_url'] = schema_url
+    if schema_sheet_index is not None:
+        report['schema_sheet_index'] = schema_sheet_index
+
     # add the data content if requested
     def no_none(s):
         return s if s is not None else ''
