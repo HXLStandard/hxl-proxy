@@ -19,12 +19,7 @@ RUN apk update && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py . && \
     pip3 install --upgrade \
-        gunicorn \
-        python-dateutil \
-        python-io-wrapper \
-        requests-cache \
-        unidecode \
-        xlrd && \
+        gunicorn && \
     pip3 install --upgrade -r requirements.txt && \
     apk add --virtual .gevent-deps \
         build-base \
