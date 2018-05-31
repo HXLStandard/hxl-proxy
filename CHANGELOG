@@ -1,5 +1,6 @@
 2018-05-31 Release 1.8.1
 	- hotfix for installation problem with 1.8 (in a clean install)
+	- require libhxl==4.8.2
 
 2018-05-31 Release 1.8
 	- add __version__ attribute to module
