@@ -62,6 +62,8 @@ def setup_filters(recipe, data_content=None):
             source = add_explode_filter(source, recipe['args'], index)
         elif filter == 'fill':
             source = add_fill_filter(source, recipe['args'], index)
+        elif filter == 'jsonpath':
+            source = add_jsonpath_filter(source, recipe['args'], index)
         elif filter == 'merge':
             source = add_merge_filter(source, recipe['args'], index)
         elif filter == 'rename':
@@ -214,9 +216,18 @@ def add_explode_filter(source, args, index):
     )
 
 def add_fill_filter(source, args, index):
-    pattern=args.get('fill-pattern%02d' % index, None)
-    queries=args.get('fill-where%02d' % index, None)
-    return source.fill_data(pattern=pattern, queries=queries)
+    patterns = args.get('fill-patterns%02d' % index, None)
+    if not patterns:
+        # deprecated
+        patterns = args.get('fill-pattern%02d' % index, None)
+    queries = args.get('fill-where%02d' % index, None)
+    return source.fill_data(patterns=patterns, queries=queries)
+
+def add_jsonpath_filter(source, args, index):
+    path = args.get('jsonpath-path%02d' % index)
+    patterns = args.get('jsonpath-patterns%02d' % index, None)
+    queries = args.get('jsonpath-where%02d' % index, None)
+    return source.jsonpath(path, patterns=patterns, queries=queries)
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
