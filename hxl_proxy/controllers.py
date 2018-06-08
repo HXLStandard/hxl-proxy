@@ -733,4 +733,24 @@ def pcodes_get(country, level):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
+@app.route('/iati2hxl')
+def iati_get():
+    import re
+
+    flask.g.output_format = 'csv'
+    url = flask.request.args.get('url')
+    if not url:
+        raise ValueError('url parameter required')
+
+    # can we pull a filename from the URL?
+    filename = 'iati-data.xml'
+    result = re.match(r'.*/([^/?]+)\.[xX][mM][lL]', url)
+    if result:
+        filename = result.group(1) + '.csv'
+
+    response = flask.Response(util.gen_iati_hxl(url), mimetype='text/csv; charset=utf-8')
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    return response
+
 # end

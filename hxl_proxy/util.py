@@ -4,7 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle
+import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, iati2hxl.generator, requests
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -79,8 +79,32 @@ def check_verify_ssl(args):
         return False
     else:
         return True
-    
 
+
+def gen_iati_hxl(url):
+    """Generate HXL CSV from IATI"""
+    import csv
+
+    class TextOut:
+        """Simple string output source to capture CSV"""
+        def __init__(self):
+            self.data = ''
+        def write(self, s):
+            self.data += s
+        def get(self):
+            data = self.data
+            self.data = ''
+            return data
+
+    output = TextOut()
+    writer = csv.writer(output)
+    with requests.get(url, stream=True) as response:
+        response.raw.decode_content = True
+        for row in iati2hxl.generator.genhxl(response.raw):
+            writer.writerow(row)
+            yield output.get()
+
+            
 RECIPE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
 
 def get_recipe(recipe_id=None, auth=False, args=None):

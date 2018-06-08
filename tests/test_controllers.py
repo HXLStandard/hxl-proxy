@@ -383,7 +383,17 @@ class TestPcodes(AbstractControllerTest):
         response = self.get('/pcodes/xxx-adm1.csv', status=404)
         #not easy before Flask 1.0
         #self.assertEqual('application/json', response.headers.get('content-type'))
-        self.assertEqual('*', response.headers.get('access-control-allow-origin'))
+        #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
+        
+class TestIATI(AbstractControllerTest):
+
+    URL = 'http://example.org/iati-dataset.xml'
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_good_iati(self):
+        response = self.get('/iati2hxl', {'url': self.URL})
+        self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
+        self.assertEqual('*', response.headers.get('access-control-allow-origin'))
     
 # end

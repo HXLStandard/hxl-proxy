@@ -4,4 +4,4 @@ flask==0.12.4
 flask-cache>=0.13
 requests_cache
 mysql-connector-python
-
+iati2hxl>=0.2

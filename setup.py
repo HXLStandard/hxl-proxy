@@ -20,7 +20,15 @@ setuptools.setup(
     url='https://github.com/HXLStandard/hxl-proxy',
     include_package_data = True,
     zip_safe = False,
-    install_requires=['flask-cache>=0.13', 'libhxl==4.8.3', 'ckanapi>=3.5', 'flask==0.12.4', 'requests_cache', 'mysql-connector-python'],
+    install_requires=[
+        'flask-cache>=0.13',
+        'libhxl==4.8.3',
+        'ckanapi>=3.5',
+        'flask==0.12.4',
+        'requests_cache',
+        'mysql-connector-python',
+        'iati2hxl>=0.2'
+    ],
     test_suite = "tests",
     tests_require = ['mock']
 )
