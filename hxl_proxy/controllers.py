@@ -740,7 +740,7 @@ def iati_get():
     flask.g.output_format = 'csv'
     url = flask.request.args.get('url')
     if not url:
-        raise ValueError('url parameter required')
+        return flask.render_template('iati2hxl.html')
 
     # can we pull a filename from the URL?
     filename = 'iati-data.xml'
