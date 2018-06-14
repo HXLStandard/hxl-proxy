@@ -385,7 +385,6 @@ class TestPcodes(AbstractControllerTest):
         #self.assertEqual('application/json', response.headers.get('content-type'))
         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
-        
 class TestIATI(AbstractControllerTest):
 
     URL = 'http://example.org/iati-dataset.xml'
