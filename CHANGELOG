@@ -1,5 +1,7 @@
 2018-06-29 Release 1.9
 	- added IATI support with /iati2hxl?url=<url> endpoint
+	- added POST endpoint /actions/json-recipe for submitting JSON
+	  recipes transactionally
 
 2018-06-14 Release 1.8.3
 	- add UI support for JSON filter
