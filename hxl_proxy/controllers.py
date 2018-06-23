@@ -514,6 +514,42 @@ def user_settings():
         args = { 'from': util.data_url_for('user_settings') }
         return flask.redirect(url_for('login', **args), 303)
 
+@app.route('/actions/json-spec', methods=['POST'])
+def do_json_recipe():
+    """POST handler to execute a JSON recipe
+    """
+
+    recipe = flask.request.files.get('recipe', None)
+
+    format = flask.request.form.get('format', 'csv')
+    show_headers = False if flask.request.form.get('show_headers', None) is None else True
+    use_objects = False if flask.request.form.get('use_objects', None) is None else True
+    stub = flask.request.form.get('stub', 'data')
+
+    flask.g.output_format = 'format'
+
+    if recipe is None:
+        raise werkzeug.exceptions.BadRequest("Parameter 'recipe' is required")
+
+    spec = json.load(recipe.stream)
+
+    source = hxl.io.from_spec(spec)
+
+    if format == 'json':
+        response = flask.Response(
+            source.gen_json(show_headers=show_headers, use_objects=use_objects),
+            mimetype='application/json'
+        )
+    else:
+        response = flask.Response(
+            source.gen_csv(show_headers=show_headers),
+            mimetype='text/csv'
+        )
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(stub, format)
+
+    return response
 
 @app.route("/actions/validate", methods=['POST'])
 def do_validate():
