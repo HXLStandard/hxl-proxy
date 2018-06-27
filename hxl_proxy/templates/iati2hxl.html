@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      Convert IATI to HXL
+    </title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set page_help='Home' %}
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>
+        Convert IATI to HXL
+      </h1>
+    </header>
+    <main class="row">
+      <form method="get" action="" class="col-sm-12">
+        <label for="url">URL of an iati-activities dataset:</label>
+        <div class="input-group required">
+          <input name="url"
+                 class="form-control"
+                 required="required"
+                 placeholder="http://example.org/iati-data.xml" />
+          <span class="input-group-btn">
+            <button class="btn btn-success">Convert</button>
+          </span>
+        </div>
+      </form>
+    </main>
+    <footer>
+      <p>Read more about the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL).</p>
+    </footer>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>

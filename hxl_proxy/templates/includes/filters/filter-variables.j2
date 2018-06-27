@@ -8,7 +8,7 @@
 {% set tags_help = 'Hashtag specs, comma-separated, "#" optional (e.g. "country+code,sector")' %}
 {% set tags_placeholder = '#hashtag1,#hashtag2+attr' %}
 
-{% set filter_pattern = '\s*#?(?:' + (token_pattern) + '|\*)(\s*[+-]' + token_pattern + ')*\s*' %}
+{% set filter_pattern = '\s*#?(?:' + (token_pattern) + '|\*)(\s*[+-]' + token_pattern + ')*\s*!\s*' %}
 {% set filter_help = 'Tag pattern, "#" optional (e.g. "country+code-dest")' %}
 {% set filter_placeholder = '#hashtag +attr1 -attr2' %}
 

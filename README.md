@@ -2,8 +2,7 @@ hxl-proxy
 =========
 
 Python-/flask-based web proxy for transforming a HXL dataset
-dynamically. Currently runs only in Python 2.7+, but Python 3 support
-is close.
+dynamically. Requires Python3.
 
 User documentation is available at https://github.com/HXLStandard/hxl-proxy/wiki
 
@@ -29,7 +28,7 @@ python setup.py test
 
 # Configuration
 
-To configure the proxy, make a copy of config.py.TEMPLATE (e.g. to config.py), and change its values as necessary. The environment variable HXL_PROXY_CONFIG should point to your local config file's location.  More details appear below.
+To configure the proxy, make a copy of config.py.TEMPLATE (e.g. to config.py), and change its values as necessary. The environment variable HXL\_PROXY\_CONFIG should point to your local config file's location.  More details appear below.
 
 ## Filesystem
 

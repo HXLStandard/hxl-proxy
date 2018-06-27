@@ -1,13 +1,33 @@
+2018-06-29 Release 1.9
+	- added IATI support with /iati2hxl?url=<url> endpoint
+	- added POST endpoint /actions/json-recipe for submitting JSON
+	  recipes transactionally
+	- update forms validation to support new tag patterns ending in "!"
+
+2018-06-14 Release 1.8.3
+	- add UI support for JSON filter
+	- require libhxl==4.8.4 for JSON filter support
+
+2018-06-05 Release 1.8.2
+	- require libhxl==4.8.3 for critical features and fixes
+
+2018-05-31 Release 1.8.1
+	- hotfix for installation problem with 1.8 (in a clean install)
+	- require libhxl==4.8.2
+	- DOCKERFILE updates
+
 2018-05-31 Release 1.8
 	- add __version__ attribute to module
 	- add /about.html
 	- change format of HTML validation error report
 	- when the validation error format is JSON, report other errors in
 	  JSON as well
-	- add new endpoint /actions/validate using POST (allows either
+	- add new POST endpoint /actions/validate (allows either
 	  uploading or providing a URL for both the schema and the
-	  content)
-	- fixed bug preventing changing custom validation schema
+	  content). Details: https://github.com/HXLStandard/hxl-proxy/wiki/Validation-service
+	- fixed bug preventing changing custom validation schema in
+	  /data/validate
+	- added PyCharm project file
 
 2018-05-11 Release 1.7.1
 	- require libhxl==4.7.1 for date-parsing hotfix

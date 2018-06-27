@@ -194,13 +194,22 @@ class TestPipelineFunctions(unittest.TestCase):
 
     def test_add_fill_filter(self):
         args = {
-            'fill-pattern03': 'org',
+            'fill-patterns03': 'org',
             'fill-where03': 'sector=wash'
         }
         filter = add_fill_filter(self.source, args, 3)
         self.assertEqual('FillDataFilter', filter.__class__.__name__)
-        self.assertEqual('#org', filter.pattern.tag)
+        self.assertEqual('#org', filter.patterns[0].tag)
         self.assertEqual('#sector', filter.queries[0].pattern.tag)
+
+    def test_add_jsonpath_filter(self):
+        args = {
+            'jsonpath-path03': 'foo',
+            'jsonpath-patterns03': 'sector'
+        }
+        filter = add_jsonpath_filter(self.source, args, 3)
+        self.assertEqual('JSONPathFilter', filter.__class__.__name__)
+        self.assertEqual('#sector', filter.patterns[0].tag)
 
     def test_add_row_filter(self):
         args = {

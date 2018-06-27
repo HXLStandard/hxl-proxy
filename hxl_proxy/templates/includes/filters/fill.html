@@ -6,7 +6,7 @@
     Fill empty cells from previous values in the same column.
   </p>
 
-  {% set name='fill-pattern%02d' % n %}
+  {% set name='fill-patterns%02d' % n %}
   <div class="form-group">
     <label for="{{ name }}">
       Tag patterns for filling (blank means fill all).
@@ -16,7 +16,7 @@
         class="form-control"
         name="{{ name }}"
         value="{{ recipe.args[name] }}"
-        pattern="^{{ vars.filters_pattern }}$"
+        patterns="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
         placeholder="{{ vars.filters_placeholder }}"
         />

@@ -1,0 +1,57 @@
+<div class="filter-jsonpath filter-body">
+  {% import 'includes/filters/filter-variables.j2' as vars %}
+
+  <p class="doc">
+    {% with key='JSONPath-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Extract a value from a JSON expression in a cell using a <a
+    href="http://goessner.net/articles/JsonPath/">JSONPath</a> expression.
+  </p>
+
+  {% set name='jsonpath-path%02d' % n %}
+  <div class="form-group required">
+    <label for="{{ name }}">
+      JSONPath expression for extracting a value.
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        title="{{ vars.filters_help }}"
+        required="required"
+        />
+  </div>
+
+  {% set name='jsonpath-patterns%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Tag patterns for applying the JSONPath (blank means apply to all).
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        patterns="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+  </div>
+
+  {% set name='jsonpath-where%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Apply only to rows matching this query
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
+</div>

@@ -496,6 +496,42 @@ def user_settings():
         args = { 'from': util.data_url_for('user_settings') }
         return flask.redirect(url_for('login', **args), 303)
 
+@app.route('/actions/json-spec', methods=['POST'])
+def do_json_recipe():
+    """POST handler to execute a JSON recipe
+    """
+
+    recipe = flask.request.files.get('recipe', None)
+
+    format = flask.request.form.get('format', 'csv')
+    show_headers = False if flask.request.form.get('show_headers', None) is None else True
+    use_objects = False if flask.request.form.get('use_objects', None) is None else True
+    stub = flask.request.form.get('stub', 'data')
+
+    flask.g.output_format = 'format'
+
+    if recipe is None:
+        raise werkzeug.exceptions.BadRequest("Parameter 'recipe' is required")
+
+    spec = json.load(recipe.stream)
+
+    source = hxl.io.from_spec(spec)
+
+    if format == 'json':
+        response = flask.Response(
+            source.gen_json(show_headers=show_headers, use_objects=use_objects),
+            mimetype='application/json'
+        )
+    else:
+        response = flask.Response(
+            source.gen_csv(show_headers=show_headers),
+            mimetype='text/csv'
+        )
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(stub, format)
+
+    return response
 
 @app.route("/actions/validate", methods=['POST'])
 def do_validate():
@@ -553,6 +589,16 @@ def do_validate():
 
     # get the validation report
     report = hxl.validate(source, schema_source)
+
+    # add the URLs if supplied
+    if url:
+        report['data_url'] = url
+    if sheet_index is not None:
+        report['data_sheet_index'] = sheet_index
+    if schema_url:
+        report['schema_url'] = schema_url
+    if schema_sheet_index is not None:
+        report['schema_sheet_index'] = schema_sheet_index
 
     # add the data content if requested
     def no_none(s):
@@ -703,6 +749,26 @@ def pcodes_get(country, level):
         pcodes.extract_pcodes(country, level, buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
     response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@app.route('/iati2hxl')
+def iati_get():
+    import re
+
+    flask.g.output_format = 'csv'
+    url = flask.request.args.get('url')
+    if not url:
+        return flask.render_template('iati2hxl.html')
+
+    # can we pull a filename from the URL?
+    filename = 'iati-data.xml'
+    result = re.match(r'.*/([^/?]+)\.[xX][mM][lL]', url)
+    if result:
+        filename = result.group(1) + '.csv'
+
+    response = flask.Response(util.gen_iati_hxl(url), mimetype='text/csv; charset=utf-8')
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
     return response
 
 # end
