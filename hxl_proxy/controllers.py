@@ -11,7 +11,7 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions, __version__
+from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
 
 logger = logging.getLogger(__name__)
 
@@ -305,72 +305,61 @@ def data_map(recipe_id=None):
     )
 
 
-@app.route("/data/validate", methods=['GET', 'POST'])
-@app.route("/data/validate.<format>", methods=['GET', 'POST'])
-@app.route("/data/<recipe_id>/validate", methods=['GET', 'POST'])
-@app.route("/data/<recipe_id>/validate.<format>", methods=['GET', 'POST'])
+@app.route("/data/validate")
+@app.route("/data/validate.<format>")
+@app.route("/data/<recipe_id>/validate")
+@app.route("/data/<recipe_id>/validate.<format>")
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
-
-    #
-    # FIXME - this controller contains too much special-purpose conditional code
-    # (mainly around POST for datasets and schemas)
-    # Replace with a new endpoint just for POST
-    #
 
     # Save the data format
     flask.g.output_format = format
 
-    # Data content
-    data_content = flask.request.form.get(
-        'data_content',
-        flask.request.args.get('data_content', None)
-    )
-
     # Get the recipe
     recipe = util.get_recipe(recipe_id)
-    if not data_content and (not recipe or not recipe['args'].get('url')):
+    if not recipe or not recipe['args'].get('url'):
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Get the parameters
-    url = recipe['args'].get('url')
-    args = flask.request.args
-    if args.get('schema_url'):
-        schema_url = args.get('schema_url', None)
-    else:
-        schema_url = recipe['args'].get('schema_url', None)
+    schema_url = recipe['args'].get('schema_url', None)
+    severity_level = recipe['args'].get('severity', 'info')
+    detail_hash = recipe['args'].get('details', None)
 
-    # Check for inline schema content (POST first, then GET)
-    schema_content = flask.request.form.get(
-        'schema_content',
-        flask.request.args.get('schema_content')
+    # set up the schema
+    schema_source = None
+    if schema_url:
+        schema_source = hxl.data(schema_url)
+
+    # run the validation
+    error_report = hxl.validate(
+        filters.setup_filters(recipe),
+        schema_source
     )
 
-    severity_level = args.get('severity', 'info')
-
-    detail_hash = args.get('details', None)
-
-    # If we have a URL, validate the data.
-    if data_content or url:
-        errors = validate.do_validate(
-            filters.setup_filters(recipe, data_content=data_content),
-            schema_url=schema_url,
-            schema_content=schema_content,
-            severity_level=severity_level
-        )
-
+    # return the results
     if format == 'json':
         return flask.Response(
-            json.dumps(
-                util.parse_validation_errors(errors, url, schema_url),
-                indent=4
-            ),
+            json.dumps(error_report, indent=4),
             mimetype="application/json"
         )
     else:
+        # issue to highlight (HTML only)
+        template_name = 'validate-summary.html'
+        selected_issue = None
+        if detail_hash:
+            template_name = 'validate-issue.html'
+            for issue in error_report['issues']:
+                if issue['rule_id'] == detail_hash:
+                    selected_issue = issue
+                    break
+
         return flask.render_template(
-            'validate-summary.html',
-            recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
+            template_name,
+            recipe=recipe,
+            schema_url=schema_url,
+            error_report=error_report,
+            issue=selected_issue,
+            severity=severity_level
         )
 
 @app.route("/data/<recipe_id>/advanced")

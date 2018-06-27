@@ -179,7 +179,8 @@ def add_args(extra_args):
             args[key] = extra_args[key]
         else:
             # remove keys with non-truthy values
-            del args[key]
+            if args.get(key):
+                del args[key]
     return '?' + urlencode_utf8(args)
 
 def make_args(recipe={}, format=None, flavour=None, recipe_id=None, cloned=False):
