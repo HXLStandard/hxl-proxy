@@ -11,7 +11,7 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, preview, pcodes, util, validate, exceptions, __version__
+from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
 
 logger = logging.getLogger(__name__)
 
@@ -312,12 +312,6 @@ def data_map(recipe_id=None):
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
-    #
-    # FIXME - this controller contains too much special-purpose conditional code
-    # (mainly around POST for datasets and schemas)
-    # Replace with a new endpoint just for POST
-    #
-
     # Save the data format
     flask.g.output_format = format
 
@@ -328,31 +322,44 @@ def data_validate(recipe_id=None, format='html'):
 
     # Get the parameters
     schema_url = recipe['args'].get('schema_url', None)
-    schema_content = recipe['args'].get('schema_content')
-
     severity_level = recipe['args'].get('severity', 'info')
-
     detail_hash = recipe['args'].get('details', None)
 
-    errors = validate.do_validate(
+    # set up the schema
+    schema_source = None
+    if schema_url:
+        schema_source = hxl.data(schema_url)
+
+    # run the validation
+    error_report = hxl.validate(
         filters.setup_filters(recipe),
-        schema_url=schema_url,
-        schema_content=schema_content,
-        severity_level=severity_level
+        schema_source
     )
 
+    # return the results
     if format == 'json':
         return flask.Response(
-            json.dumps(
-                util.parse_validation_errors(errors, url, schema_url),
-                indent=4
-            ),
+            json.dumps(error_report, indent=4),
             mimetype="application/json"
         )
     else:
+        # issue to highlight (HTML only)
+        template_name = 'validate-summary.html'
+        selected_issue = None
+        if detail_hash:
+            template_name = 'validate-issue.html'
+            for issue in error_report['issues']:
+                if issue['rule_id'] == detail_hash:
+                    selected_issue = issue
+                    break
+
         return flask.render_template(
-            'validate-summary.html',
-            recipe=recipe, schema_url=schema_url, errors=errors, detail_hash=detail_hash, severity=severity_level
+            template_name,
+            recipe=recipe,
+            schema_url=schema_url,
+            error_report=error_report,
+            issue=selected_issue,
+            severity=severity_level
         )
 
 @app.route("/data/<recipe_id>/advanced")
