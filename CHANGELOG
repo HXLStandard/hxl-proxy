@@ -1,3 +1,10 @@
+2018-06-29 Release 1.9
+	- added IATI support with /iati2hxl?url=<url> endpoint
+	- added POST endpoint /actions/json-recipe for submitting JSON
+	  recipes transactionally
+	- update forms validation to support new tag patterns ending in "!"
+	- refactored validation support to use JSON report from libhxl
+
 2018-06-14 Release 1.8.3
 	- add UI support for JSON filter
 	- require libhxl==4.8.4 for JSON filter support

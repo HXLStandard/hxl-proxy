@@ -22,7 +22,7 @@
         Validate dataset
         {% endif %}
       </h1>
-      {% if errors %}
+      {% if error_report %}
       <p class="col-md-2 small">
         <b>Download as:</b>
         <a href="{{ data_url_for('data_validate', recipe, format='json') }}">JSON</a>
@@ -30,6 +30,13 @@
       {% endif %}
     </header>
     <main>
+      {% if severity=='error' %}
+      {% set count = error_report.stats.error %}
+      {% elif severity=='warning' %}
+      {% set count = error_report.stats.error + error_report.stats.warning %}
+      {% else %}
+      {% set count = error_report.stats.total %}
+      {% endif %}
       <p class="alert alert-info alert-dismissable" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
         {% if schema_url %}
@@ -39,63 +46,8 @@
         {% endif %}
         <a class="btn btn-default" data-toggle="modal" data-target="#customise">Change schema</a>
       </p>
-      {% if errors == False %}
-
-      <p class="alert alert-danger">Dataset is empty!</p>
-
-      {% elif errors %}
-
-      {% if detail_hash %}
-      <p class="alert alert-warning">
-        Showing only errors for rule <code>{{ errors[detail_hash][0].message }}</code>
-        (<a href="{{ add_args({'details': None}) }}">back to error summary</a>)
-      </p>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Severity</th>
-            <th>Location</th>
-            <th>Error value</th>
-            <th>Proposed correction</th>
-            <th>Message</th>
-            <th>Column hashtag</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for error in errors[detail_hash] %}
-          <tr>
-            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td>
-              {% if error.row %}
-              <a href="{{ data_url_for('data_view', recipe) }}#row_{{ error.row.row_number }}">
-                {% if error.row.source_row_number %}
-                {{ error.column.column_number|spreadsheet_col }}{{ error.row.source_row_number+1 }}
-                {% endif %}
-              </a>
-              {% else %}
-              <a href="{{ data_url_for('data_view', recipe) }}#hashtag-row">Hashtags</a>
-              {% endif %}
-            </td>
-            <td>
-              «<code style="whitespace:pre">{{ error.value|nonone}}</code>»
-            </td>
-            <td>
-              {% if error.suggested_value %}
-              «<code>{{ error.suggested_value }}</code>»
-              {% else %}
-              <i>(none available)</i>
-              {% endif %}
-            </td>
-            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
-            <td>
-              {% if error.column %}
-              {{ error.column.display_tag }}
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if error_report.stats.total == 0 %}
+      <p class="alert alert-success">Validation succeeded with no issues.</p>
       {% else %}
       <form id="severity-form" class="form" action="" method="GET">
         <div class="form-group">
@@ -109,35 +61,40 @@
         </div>
         {% include "includes/params.html" %}
       </form>
-      <p class="alert alert-warning">
-        {{ errors|length }} validation issue(s)
-        {% if recipe.args.severity %} (minimum severity: {{ severity }}){% endif %}.
+      <p class="alert alert-info">
+        Showing {{ count }} of {{ error_report.stats.total }} issue location(s)
       </p>
+      {% if count == 0 %}
+      <p class="alert alert-warning">
+        No issues to show at this level. Try a different error level to
+        see more.
+      </p>
+      {% else %}
       <table class="table">
         <thead>
           <tr>
             <th>Severity</th>
-            <th>Occurrences</th>
+            <th>Locations</th>
             <th>Explanation</th>
+            <th>Scope</th>
             <th>HXL tag pattern</th>
           </tr>
         </thead>
         <tbody>
-          {% for rule_id in errors %}
-          {% set error = errors[rule_id][0] %}
-          {% set number = errors[rule_id]|count %}
+          {% for issue in error_report.issues %}
+          {% if severity=='info' or issue.severity=='error' or severity==issue.severity %}
           <tr>
-            <td><span class="badge {{ severity_class(error.rule.severity) }}">{{ error.rule.severity }}</span></td>
-            <td><a href="{{ add_args({'details': rule_id}) }}">See {{ number }} occurrence(s)</a></td>
-            <td class="validation-message">{{ error.rule.description or error.message|nonone }}</td>
-            <td>{{ error.rule.tag_pattern|nonone }}</td>
+            <td><span class="badge {{ severity_class(issue.severity) }}">{{ issue.severity }}</span></td>
+            <td><a href="{{ add_args({'details': issue.rule_id}) }}">See {{ issue.location_count }} location(s)</a></td>
+            <td class="validation-message">{{ issue.description }}</td>
+            <td>{{ issue.scope }}</td>
+            <td>{{ issue.tag_pattern }}</td>
           </tr>
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>
       {% endif %}
-      {% else %}
-      <p class="alert alert-success">Validation succeeded with no error.</p>
       {% endif %}
 
       <div class="modal fade" id="customise" tabindex="-1" role="dialog" aria-hidden="true">

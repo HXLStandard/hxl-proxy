@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% set facet='validate' %}
+  <head>
+    <title>
+      Issue details @ HXL Proxy
+    </title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set page_help='Validation-page' %}
+    {% include "includes/navbar.html" %}
+    <header class="row">
+      <h1 class="col-md-10">
+        Validation issue details
+      </h1>
+      <p class="col-md-2 small">
+        <a href="{{ add_args({'details': None}) }}">back to summary</a>
+      </p>
+    </header>
+    <main>
+      <p>
+        <b>Description:</b>
+        {{ issue.description }}
+      </p>
+      <p>
+        <b>Severity:</b>
+        {{ issue.severity }}
+      </p>
+      <p>
+        <b>Occurrences:</b>
+        {{ issue.location_count }}
+      </p>
+      <p>
+        <b>Scope:</b>
+        {{ issue.scope }}
+      </p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Error value</th>
+            <th>Proposed correction</th>
+            <th>Column hashtag</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for location in issue.locations %}
+          <tr>
+            <td>
+              {% if location.row is defined %}
+              <a href="{{ data_url_for('data_view', recipe) }}#row_{{ location.row }}">
+                {% if location.source_row is defined %}
+                {{ location.col|spreadsheet_col}}{{location.source_row+1 }}
+                {% else %}
+                data row #{{ location.row + 1 }}
+                {% endif %}
+              </a>
+              {% else %}
+              <a href="{{ data_url_for('data_view', recipe) }}#hashtag-row">Hashtags</a>
+              {% endif %}
+            </td>
+            <td>
+              {% if location.location_value is defined %}
+              «<code style="whitespace:pre">{{ location.location_value|nonone }}</code>»
+              {% endif %}
+            </td>
+            <td>
+              {% if location.suggested_value %}
+              «<code>{{ location.suggested_value }}</code>»
+              {% endif %}
+            </td>
+            <td>
+              {% if location.hashtag %}
+              {{ location.hashtag }}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+    {% include "includes/scripts.html" %}
+    {% include "includes/chooser-scripts.html" %}
+  </body>
+</html>

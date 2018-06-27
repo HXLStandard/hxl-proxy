@@ -278,44 +278,6 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'Validation succeeded' in response.data
 
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_get_schema_pass(self):
-        """GET with an inline schema that succeeds"""
-        response = self.get('/data/validate', {
-            'url': DATASET_URL,
-            'schema_content': '[{"#valid_tag":"#org","#valid_required":"true"}]'
-        })
-        assert b'Validation succeeded' in response.data
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_get_schema_fail(self):
-        """GET with an inline schema that fails"""
-        response = self.get('/data/validate', {
-            'url': DATASET_URL,
-            'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'
-        })
-        assert b'validation issue(s)' in response.data
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_post_schema_pass(self):
-        """POST with an inline schema that succeeds"""
-        response = self.post(
-            '/data/validate',
-            query_string={'url': DATASET_URL},
-            data={'schema_content': '[{"#valid_tag":"#org","#valid_required":"true"}]'}
-        )
-        assert b'Validation succeeded' in response.data
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_post_schema_fail(self):
-        """POST with an inline schema that fails"""
-        response = self.post(
-            '/data/validate',
-            query_string={'url': DATASET_URL},
-            data={'schema_content': '[{"#valid_tag":"#xxx","#valid_required":"true"}]'}
-        )
-        assert b'validation issue(s)' in response.data
-
 
 class TestValidateAction(AbstractControllerTest):
 
@@ -385,5 +347,14 @@ class TestPcodes(AbstractControllerTest):
         #self.assertEqual('application/json', response.headers.get('content-type'))
         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
+class TestIATI(AbstractControllerTest):
+
+    URL = 'http://example.org/iati-dataset.xml'
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_good_iati(self):
+        response = self.get('/iati2hxl', {'url': self.URL})
+        self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
+        self.assertEqual('*', response.headers.get('access-control-allow-origin'))
     
 # end
