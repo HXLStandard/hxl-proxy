@@ -1,4 +1,4 @@
-libhxl==4.9rc0
+libhxl==4.9
 ckanapi>=3.5
 flask==0.12.4
 flask-cache>=0.13
