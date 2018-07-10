@@ -1,3 +1,7 @@
+2018-07-31 Release 1.10
+	- add UI support for libhxl append-filter improvements (external list
+	  and row filters)
+
 2018-07-05 Release 1.9.1 (bug fix)
 	- fix bug in form-validation regex for tag patterns
 

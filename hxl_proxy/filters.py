@@ -50,6 +50,8 @@ def setup_filters(recipe, data_content=None):
             source = add_add_filter(source, recipe['args'], index)
         elif filter == 'append':
             source = add_append_filter(source, recipe['args'], index)
+        elif filter == 'append-list':
+            source = add_append_list_filter(source, recipe['args'], index)
         elif filter == 'clean':
             source = add_clean_filter(source, recipe['args'], index)
         elif filter == 'count':
@@ -121,7 +123,23 @@ def add_append_filter(source, args, index):
         append_source = args.get('append-dataset%02d-%02d' % (index, subindex))
         if append_source:
             append_sources.append(append_source)
-    return source.append(append_sources=append_sources, add_columns=(not exclude_columns))
+    row_query = args.get('append-where%02d' % index, None)
+    return source.append(
+        append_sources=append_sources,
+        add_columns=(not exclude_columns),
+        queries=row_query
+    )
+
+def add_append_list_filter(source, args, index):
+    """Add the hxlappend filter to the end of the chain with an external list."""
+    exclude_columns = args.get('append-list-exclude-columns%02d' % index, False)
+    source_list_url = args.get('append-list-url%02d' % index, None)
+    row_query = args.get('append-list-where%02d' % index, None)
+    return source.append_external_list(
+        source_list_url=source_list_url,
+        add_columns=(not exclude_columns),
+        queries=row_query
+    )
 
 def add_clean_filter(source, args, index):
     """Add the hxlclean filter to the end of the pipeline."""

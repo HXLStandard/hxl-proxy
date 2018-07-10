@@ -1,0 +1,63 @@
+<div class="filter-append-list filter-body">
+  {% import 'includes/filters/filter-variables.j2' as vars %}
+
+  <p class="doc">
+    {% with key='Append-datasets-%28external-list%29-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Combine multiple HXL datasets using an external list.
+  </p>
+
+  {% set name='append-list-exclude-columns%02d' % n %}
+  <div id="{{ name }}" class="checkbox">
+    <label>
+      {% if recipe.args[name] %}
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          checked="checked"
+          />
+      {% else %}
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          />
+      {% endif %}
+      Exclude columns not in original dataset.
+    </label>
+  </div>
+
+  {% set name='append-list-url%02d' % n %}
+  <div class="form-group required">
+    <label for="{{ name }}">
+      URL of the external list
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        required="required"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        type="url"
+        placeholder="http://example.org/append-list.csv"
+        />
+    {% with id='#' + name %}
+    {% include "includes/selectors.html" %}
+    {% endwith %}
+  </div>
+
+  {% set name='append-list-where%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Append only rows matching this query
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
+</div>
