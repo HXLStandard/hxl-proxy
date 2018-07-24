@@ -163,6 +163,7 @@
       </section>
 
       <section class="col-sm-8 col-md-9">
+        {% if source %}
         <h3>Result preview</h3>
         <div id="preview-table">
           {% include 'includes/hxltable.html' %}
@@ -171,6 +172,14 @@
         <p id="preview-warning" class="alert alert-warning hxltable-warning">
           Previewing the first {{ "{:,}".format(source.max_rows) }} data row(s).
         </p>
+        {% endif %}
+        {% else %}
+        <h3>Error!</h3>
+        {% if error %}
+        {{ error }}
+        {% else %}
+        Unknown error - please fix recipe
+        {% endif %}
         {% endif %}
       </section>
     </main>

@@ -178,11 +178,17 @@ def data_edit(recipe_id=None):
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
+    error = None
     if recipe['args'].get('url'):
         # show only a short preview
         max_rows = recipe['args'].get('max-rows', None)
         max_rows = min(int(max_rows), 25) if max_rows is not None else 25
-        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
+        try:
+            source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
+            source.columns
+        except Exception as e:
+            error = e
+            source = None
     else:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
@@ -197,7 +203,14 @@ def data_edit(recipe_id=None):
 
     show_headers = (recipe['args'].get('strip-headers') != 'on')
 
-    return flask.render_template('data-recipe.html', recipe=recipe, source=source, show_headers=show_headers, filter_count=filter_count)
+    return flask.render_template(
+        'data-recipe.html',
+        recipe=recipe,
+        source=source,
+        error=error,
+        show_headers=show_headers,
+        filter_count=filter_count
+    )
 
 @app.route("/data/save")
 @app.route("/data/<recipe_id>/save")
