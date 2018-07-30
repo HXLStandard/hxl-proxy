@@ -186,8 +186,10 @@ def data_edit(recipe_id=None):
         try:
             source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
             source.columns
-        except Exception as e:
-            error = e
+        except exceptions.RedirectException as e1:
+            raise e1
+        except Exception as e2:
+            error = e2
             source = None
     else:
         flask.flash('Please choose a data source first.')

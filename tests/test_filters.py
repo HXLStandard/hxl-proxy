@@ -95,7 +95,7 @@ class TestPipelineFunctions(unittest.TestCase):
         ]
         filter = add_clean_filter(self.source, args, 7)
         self.assertEqual('CleanDataFilter', filter.__class__.__name__)
-        self.assertEqual(self.source, filter.source, "source ok")
+        self.assertEqual(self.source, filter.source.source, "source ok")
         self.assertEqual(['#country', '#adm1'], [str(p) for p in filter.whitespace], "whitespace ok")
         self.assertEqual(['#sector'], [str(p) for p in filter.upper], "upper ok")
         self.assertEqual(['#org'], [str(p) for p in filter.lower], "lower ok")
