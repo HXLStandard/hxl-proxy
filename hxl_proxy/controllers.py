@@ -155,9 +155,17 @@ def data_tagger(recipe_id=None):
     except:
         sheet_index = 0
 
+    selector = recipe['args'].get('selector', None)
+
     preview = []
     i = 0
-    for row in hxl.io.make_input(recipe['args'].get('url'), sheet_index=sheet_index, verify_ssl=util.check_verify_ssl(recipe['args'])):
+    for row in hxl.io.make_input(
+            recipe['args'].get('url'),
+            sheet_index=sheet_index,
+            selector=selector,
+            verify_ssl=util.check_verify_ssl(recipe['args']),
+            http_headers={'User-Agent': 'hxl-proxy/tagger'},
+    ):
         if i >= 25:
             break
         else:
@@ -343,7 +351,11 @@ def data_validate(recipe_id=None, format='html'):
     # set up the schema
     schema_source = None
     if schema_url:
-        schema_source = hxl.data(schema_url)
+        schema_source = hxl.data(
+            schema_url,
+            verify_ssl=util.check_verify_ssl(recipe['args']),
+            http_headers={'User-Agent': 'hxl-proxy/validation'}
+        )
 
     # run the validation
     error_report = hxl.validate(
@@ -486,7 +498,11 @@ def hxl_test(format='html'):
 
     if url:
         try:
-            hxl.data(url, verify_ssl=util.check_verify_ssl(flask.request.args)).columns
+            hxl.data(
+                url,
+                verify_ssl=util.check_verify_ssl(flask.request.args),
+                http_headers={'User-Agent': 'hxl-proxy/test'}
+            ).columns
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
         except IOError as e1:
@@ -573,6 +589,8 @@ def do_validate():
         logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
         sheet_index = None
 
+    selector = flask.request.form.get('selector', None)
+
     schema_url = flask.request.form.get('schema_url')
     schema_content = flask.request.files.get('schema_content')
     try:
@@ -593,9 +611,15 @@ def do_validate():
 
     # set up the main data
     if content:
-        source = hxl.data(hxl.io.make_input(content, sheet_index=sheet_index))
+        source = hxl.data(hxl.io.make_input(
+            content, sheet_index=sheet_index, selector=selector
+        ))
     else:
-        source = hxl.data(url, sheet_index=sheet_index)
+        source = hxl.data(
+            url,
+            sheet_index=sheet_index,
+            http_headers={'User-Agent': 'hxl-proxy/validation'}
+        )
 
     # cache if we're including the dataset in the results
     if include_dataset:
@@ -603,9 +627,17 @@ def do_validate():
 
     # set up the schema (if present)
     if schema_content:
-        schema_source = hxl.data(hxl.io.make_input(schema_content, sheet_index=schema_sheet_index))
+        schema_source = hxl.data(hxl.io.make_input(
+            schema_content,
+            sheet_index=schema_sheet_index,
+            selector=selector
+        ))
     elif schema_url:
-        schema_source = hxl.data(schema_url, sheet_index=schema_sheet_index)
+        schema_source = hxl.data(
+            schema_url,
+            sheet_index=schema_sheet_index,
+            http_headers={'User-Agent': 'hxl-proxy/validation'}
+        )
     else:
         schema_source = None
 

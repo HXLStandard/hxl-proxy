@@ -88,7 +88,13 @@ def make_tagged_input(args):
     url = args.get('url')
     sheet_index = int(args.get('sheet')) if args.get('sheet') else None
     selector = args.get('selector', None)
-    input = hxl.io.make_input(url, sheet_index=sheet_index, verify_ssl=util.check_verify_ssl(args), selector=selector)
+    input = hxl.io.make_input(
+        url,
+        sheet_index=sheet_index,
+        verify_ssl=util.check_verify_ssl(args),
+        http_headers={'User-Agent': 'hxl-proxy/download'},
+        selector=selector, 
+    )
 
     # Intercept tagging as a special data input
     specs = []
@@ -254,7 +260,11 @@ def add_merge_filter(source, args, index):
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = hxl.data(url, util.check_verify_ssl(args))
+    merge_source = hxl.data(
+        url,
+        verify_ssl=util.check_verify_ssl(args),
+        http_headers={'User-Agent': 'hxl-proxy/download'}
+    )
     return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
@@ -278,7 +288,11 @@ def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
     row_query = args.get('replace-map-where%02d' % index)
-    return source.replace_data_map(hxl.data(url, util.check_verify_ssl(args)), queries=row_query)
+    return source.replace_data_map(hxl.data(
+        url,
+        verify_ssl=util.check_verify_ssl(args),
+        http_headers={'User-Agent': 'hxl-proxy/download'}
+    ), queries=row_query)
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""
