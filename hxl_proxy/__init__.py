@@ -16,7 +16,7 @@ from flask_cache import Cache
 import werkzeug.datastructures
 from . import reverse_proxied
 
-__version__="1.10"
+__version__="1.11"
 """Module version number
 See https://www.python.org/dev/peps/pep-0396/
 """

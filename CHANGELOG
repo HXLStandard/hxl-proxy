@@ -1,3 +1,6 @@
+2018-08-31 Release 1.11
+	- add special user-agent strings to help with analytics and traffic management
+
 2018-07-31 Release 1.10
 	- add UI support for libhxl append-filter improvements (external list
 	  and row filters)
