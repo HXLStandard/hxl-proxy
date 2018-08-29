@@ -1,4 +1,5 @@
 libhxl==4.11
+requests>=2.11
 ckanapi>=3.5
 flask==0.12.4
 flask-cache>=0.13
