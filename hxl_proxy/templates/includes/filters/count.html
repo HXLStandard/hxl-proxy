@@ -72,6 +72,11 @@
           {% else %}
           <option value="max">Maximum</option>
           {% endif %}
+          {% if recipe.args[type] == 'concat' %}
+          <option value="concat" selected="selected">Concatenate</option>
+          {% else %}
+          <option value="concat">Concatenate</option>
+          {% endif %}
         </select>
       </div>
       
