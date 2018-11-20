@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      HXL MD5 hash
+    </title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set page_help='Home' %}
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>
+        Generate an MD5 hash for HXL data
+      </h1>
+    </header>
+    <main class="row">
+      <form method="get" action="" class="col-sm-12">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="headers_only" id="headers_only"
+                   />
+            Use header rows only.
+          </label>
+        </div>
+        <label for="url">URL of a HXL dataset:</label>
+        <div class="input-group required">
+          <input name="url"
+                 class="form-control"
+                 required="required"
+                 placeholder="http://example.org/iati-data.xml" />
+          <span class="input-group-btn">
+            <button class="btn btn-success">Convert</button>
+          </span>
+        </div>
+      </form>
+    </main>
+    <footer>
+      <p>Read more about the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL).</p>
+    </footer>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>

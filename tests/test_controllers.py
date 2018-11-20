@@ -347,6 +347,31 @@ class TestPcodes(AbstractControllerTest):
         #self.assertEqual('application/json', response.headers.get('content-type'))
         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
+class TestHash(AbstractControllerTest):
+    URL = 'http://example.org/basic-dataset.xml'
+
+    def test_headers_hash(self):
+        response = self.get('/hash', {
+            'url': self.URL,
+            'headers_only': 'on'
+        })
+                            
+
+    def test_data_hash(self):
+        response = self.get('/hash', {
+            'url': self.URL
+        })
+
+    def test_hashes_different(self):
+        response_headers = self.get('/hash', {
+            'url': self.URL,
+            'headers_only': 'on'
+        })
+        response_data = self.get('/hash', {
+            'url': self.URL
+        })
+    
+
 class TestIATI(AbstractControllerTest):
 
     URL = 'http://example.org/iati-dataset.xml'

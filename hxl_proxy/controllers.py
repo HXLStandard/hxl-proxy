@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
+import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
 
 from io import StringIO
 
@@ -804,6 +804,28 @@ def pcodes_get(country, level):
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
+
+@app.route('/hash')
+def make_hash():
+    flask.g.output_format = 'json'
+    url = flask.request.args.get('url')
+    if not url:
+        return flask.render_template('hash.html')
+    headers_only = flask.request.args.get('headers_only')
+    source = hxl.data(url)
+    report = {
+        'hash': source.columns_hash if headers_only else source.data_hash,
+        'url': url,
+        'date': datetime.datetime.utcnow().isoformat(),
+        'headers_only': True if headers_only else False,
+        'headers': source.headers,
+        'hashtags': source.display_tags
+    }
+    return flask.Response(
+        json.dumps(report, indent=4),
+        mimetype="application/json"
+    )
+
 
 @app.route('/iati2hxl')
 def iati_get():

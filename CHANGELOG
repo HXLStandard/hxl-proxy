@@ -1,5 +1,6 @@
 Release 1.12
 	- add Concatenate option to Count filter
+	- add /hash endpoint for generating a JSON dataset hash
 
 2018-08-31 Release 1.11
 	- add special user-agent strings to help with analytics and traffic management
