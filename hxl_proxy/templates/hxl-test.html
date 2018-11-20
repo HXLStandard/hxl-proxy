@@ -62,7 +62,7 @@
           {% if result.status %}
           <a class="btn btn-default" href="{{ url_for('data_edit', url=result.url) }}">Open in HXL Proxy</a>
           {% elif result.exception=='HXLTagsNotFoundException' %}
-          <a class="btn btn-default" href="{{ url_for('data_tagger', url=result.url }}">Try tagging</a>
+          <a class="btn btn-default" href="{{ url_for('data_tagger', url=result.url) }}">Try tagging</a>
           {% endif %}
           <a class="btn btn-link pull-right icons small" href="/hxl-test.json?url={{ result.url|urlencode }}">JSON version</a>
         </div>
