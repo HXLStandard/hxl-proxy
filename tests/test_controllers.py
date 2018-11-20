@@ -357,12 +357,26 @@ class TestHash(AbstractControllerTest):
             'url': self.URL,
             'headers_only': 'on'
         })
+        report = json.loads(response.get_data(True))
+        self.assertEquals(32, len(report['hash']))
+        self.assertEqual(self.URL, report['url'])
+        self.assertTrue('date' in report)
+        self.assertTrue(report['headers_only'])
+        self.assertTrue('headers' in report)
+        self.assertTrue('hashtags' in report)
                             
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_data_hash(self):
         response = self.get('/hash', {
             'url': self.URL
         })
+        report = json.loads(response.get_data(True))
+        self.assertEquals(32, len(report['hash']))
+        self.assertEqual(self.URL, report['url'])
+        self.assertTrue('date' in report)
+        self.assertFalse(report['headers_only'])
+        self.assertTrue('headers' in report)
+        self.assertTrue('hashtags' in report)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_hashes_different(self):
@@ -370,9 +384,12 @@ class TestHash(AbstractControllerTest):
             'url': self.URL,
             'headers_only': 'on'
         })
+        report_headers = json.loads(response_headers.get_data(True))
         response_data = self.get('/hash', {
             'url': self.URL
         })
+        report_data = json.loads(response_data.get_data(True))
+        self.assertNotEquals(report_headers['hash'], report_data['hash'])
     
 
 class TestIATI(AbstractControllerTest):
