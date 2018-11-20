@@ -348,20 +348,23 @@ class TestPcodes(AbstractControllerTest):
         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
 class TestHash(AbstractControllerTest):
-    URL = 'http://example.org/basic-dataset.xml'
 
+    URL = 'http://example.org/basic-dataset.csv'
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_headers_hash(self):
         response = self.get('/hash', {
             'url': self.URL,
             'headers_only': 'on'
         })
                             
-
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_data_hash(self):
         response = self.get('/hash', {
             'url': self.URL
         })
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_hashes_different(self):
         response_headers = self.get('/hash', {
             'url': self.URL,
