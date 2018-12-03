@@ -1,4 +1,4 @@
-libhxl==4.11
+libhxl==4.12
 requests>=2.11
 ckanapi>=3.5
 flask==0.12.4

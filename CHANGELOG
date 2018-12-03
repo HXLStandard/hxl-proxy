@@ -1,4 +1,4 @@
-Release 1.12
+2018-12-03 Release 1.12
 	- add Concatenate option to Count filter
 	- add /hash endpoint for generating a JSON dataset hash
 
