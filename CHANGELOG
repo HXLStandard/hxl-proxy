@@ -1,3 +1,7 @@
+2019-02-06 Release 1.13.1
+	- update to libhxl 4.13.2 for bug fixes and new round() formula
+	  function
+
 2019-01-31 Release 1.13
 	- update to libhxl 4.13, which adds support for row formulas and
 	  fixes some bugs
