@@ -11,7 +11,7 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
+from . import app, auth, cache, dao, filters, long_cache, preview, pcodes, util, exceptions, __version__
 
 logger = logging.getLogger(__name__)
 
@@ -601,48 +601,9 @@ def do_validate():
 
     include_dataset = flask.request.form.get('include_dataset', False)
 
-    # error conditions
-    if (url is not None and content is not None):
-        raise requests.exceptions.BadRequest("Both 'url' and 'content' specified")
-    if (url is None and content is None):
-        raise requests.exceptions.BadRequest("Require one of 'url' or 'content'")
-    if (schema_url is not None and schema_content is not None):
-        raise requests.exceptions.BadRequest("Both 'schema_url' and 'schema_content' specified")
-
-    # set up the main data
-    if content:
-        source = hxl.data(hxl.io.make_input(
-            content, sheet_index=sheet_index, selector=selector
-        ))
-    else:
-        source = hxl.data(
-            url,
-            sheet_index=sheet_index,
-            http_headers={'User-Agent': 'hxl-proxy/validation'}
-        )
-
-    # cache if we're including the dataset in the results
-    if include_dataset:
-        source = source.cache()
-
-    # set up the schema (if present)
-    if schema_content:
-        schema_source = hxl.data(hxl.io.make_input(
-            schema_content,
-            sheet_index=schema_sheet_index,
-            selector=selector
-        ))
-    elif schema_url:
-        schema_source = hxl.data(
-            schema_url,
-            sheet_index=schema_sheet_index,
-            http_headers={'User-Agent': 'hxl-proxy/validation'}
-        )
-    else:
-        schema_source = None
-
-    # get the validation report
-    report = hxl.validate(source, schema_source)
+    (source, report) = util.run_validation(
+        url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset
+    )
 
     # add the URLs if supplied
     if url:
@@ -796,7 +757,7 @@ def do_hid_authorisation():
 # Extra stuff tacked onto the Proxy
 #
 @app.route('/pcodes/<country>-<level>.csv')
-@cache.cached()
+@long_cache.cached()
 def pcodes_get(country, level):
     flask.g.output_format = 'csv'
     with StringIO() as buffer:

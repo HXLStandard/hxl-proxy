@@ -42,6 +42,13 @@ cache = Cache(app,config={
     'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600)
 })
 
+long_cache = Cache(app,config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': app.config.get('CACHE_DIR', '/tmp/'),
+    'CACHE_THRESHOLD': app.config.get('CACHE_MAX_ITEMS', 1000),
+    'CACHE_DEFAULT_TIMEOUT': app.config.get('LONG_:(CACHE_DEFAULT_TIMEOUT_SECONDS', 604800)
+})
+
 # (Setting up requests cache dynamically in controllers.py)
 
 # Needed to register annotations

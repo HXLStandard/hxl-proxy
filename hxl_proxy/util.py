@@ -10,6 +10,8 @@ from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
 from flask import url_for, request, flash, session, g
 
+from . import cache
+
 import hxl
 
 import hxl_proxy
@@ -343,6 +345,52 @@ def spreadsheet_col_num_to_name(num):
         letters += chr(mod + 64)
         num = num // 26
     return ''.join(reversed(letters))
+
+@cache.memoize()
+def run_validation(url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset):
+
+    # error conditions
+    if (url is not None and content is not None):
+        raise requests.exceptions.BadRequest("Both 'url' and 'content' specified")
+    if (url is None and content is None):
+        raise requests.exceptions.BadRequest("Require one of 'url' or 'content'")
+    if (schema_url is not None and schema_content is not None):
+        raise requests.exceptions.BadRequest("Both 'schema_url' and 'schema_content' specified")
+
+    # set up the main data
+    if content:
+        source = hxl.data(hxl.io.make_input(
+            content, sheet_index=sheet_index, selector=selector
+        ))
+    else:
+        source = hxl.data(
+            url,
+            sheet_index=sheet_index,
+            http_headers={'User-Agent': 'hxl-proxy/validation'}
+        )
+
+    # cache if we're including the dataset in the results
+    if include_dataset:
+        source = source.cache()
+
+    # set up the schema (if present)
+    if schema_content:
+        schema_source = hxl.data(hxl.io.make_input(
+            schema_content,
+            sheet_index=schema_sheet_index,
+            selector=selector
+        ))
+    elif schema_url:
+        schema_source = hxl.data(
+            schema_url,
+            sheet_index=schema_sheet_index,
+            http_headers={'User-Agent': 'hxl-proxy/validation'}
+        )
+    else:
+        schema_source = None
+
+    # get the validation report
+    return (source, hxl.validate(source, schema_source),)
 
 
 #
