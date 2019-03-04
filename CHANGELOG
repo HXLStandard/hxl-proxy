@@ -1,7 +1,8 @@
-Release 1.14
+2019-03-04 Release 1.14
 	- longer cache for P-codes (1 week by default)
 	- cache results of POST validation service (will fill up cache
 	  quickly with big files)
+	- bump to libhxl 4.14 for new features and bug fixes
 
 2019-02-06 Release 1.13.1
 	- update to libhxl 4.13.2 for bug fixes and new round() formula
