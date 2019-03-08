@@ -286,10 +286,12 @@ class TestValidateAction(AbstractControllerTest):
         response = self.post(
             '/actions/validate',
             data = {
-                'content': (io.BytesIO(b"#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"), 'text.csv')
+                'include_dataset': True,
+                'content': (io.BytesIO(b"#adm1,#affected\r\nCoast,100\r\nPlains,200\r\n"), 'text.csv'),
             }
         )
         result = json.loads(response.get_data(True))
+        print('***', result)
         self.assertTrue(result['is_valid'])
 
     def test_post_invalid_content(self):
@@ -318,21 +320,21 @@ class TestValidateAction(AbstractControllerTest):
     def test_post_excel(self):
         """Open a dataset and schema from an Excel sheet"""
         with open(resolve_path('files/validation-data.xlsx'), 'rb') as data_input:
-                  with open(resolve_path('files/validation-data.xlsx'), 'rb') as schema_input:
-                            response = self.post(
-                                '/actions/validate',
-                                data = {
-                                    'content': data_input,
-                                    'schema_content': schema_input,
-                                    'schema_sheet': 1,
-                                    'include_dataset': True
-                                }
-                            )
-                            report = json.loads(response.get_data(True))
-                            self.assertTrue('Access-Control-Allow-Origin' in response.headers)
-                            self.assertFalse(report['is_valid'])
-                            self.assertTrue('dataset' in report)
-                            self.assertTrue(len(report['dataset']) > 2)
+            with open(resolve_path('files/validation-data.xlsx'), 'rb') as schema_input:
+                response = self.post(
+                    '/actions/validate',
+                    data = {
+                        'content': data_input,
+                        'schema_content': schema_input,
+                        'schema_sheet': 1,
+                        'include_dataset': True
+                    }
+                )
+                report = json.loads(response.get_data(True))
+                self.assertTrue('Access-Control-Allow-Origin' in response.headers)
+                self.assertFalse(report['is_valid'])
+                self.assertTrue('dataset' in report)
+                self.assertTrue(len(report['dataset']) > 2)
 
 class TestPcodes(AbstractControllerTest):
 
@@ -358,7 +360,7 @@ class TestHash(AbstractControllerTest):
             'headers_only': 'on'
         })
         report = json.loads(response.get_data(True))
-        self.assertEquals(32, len(report['hash']))
+        self.assertEqual(32, len(report['hash']))
         self.assertEqual(self.URL, report['url'])
         self.assertTrue('date' in report)
         self.assertTrue(report['headers_only'])
@@ -371,7 +373,7 @@ class TestHash(AbstractControllerTest):
             'url': self.URL
         })
         report = json.loads(response.get_data(True))
-        self.assertEquals(32, len(report['hash']))
+        self.assertEqual(32, len(report['hash']))
         self.assertEqual(self.URL, report['url'])
         self.assertTrue('date' in report)
         self.assertFalse(report['headers_only'])

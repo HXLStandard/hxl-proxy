@@ -175,7 +175,7 @@ class TestPipelineFunctions(unittest.TestCase):
         self.assertEqual(['#lat_deg', '#lon_deg'], [str(p) for p in filter.merge_tags])
         self.assertTrue(filter.replace)
         self.assertTrue(filter.overwrite)
-        #self.assertEquals(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
+        #self.assertEqual(args['merge-url11'], filter.merge_source._input) # need to be able to get URL
 
     def test_add_rename_filter(self):
         args = {

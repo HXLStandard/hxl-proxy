@@ -35,6 +35,9 @@ def skip_cache_p ():
     """Test if we should skip the cache."""
     return True if request.args.get('force') else False
     
+def no_none(s):
+    return s if s is not None else ''
+    
 def strnorm (s):
     """Normalise a string"""
     return hxl.datatypes.normalise_string(s)
@@ -236,82 +239,6 @@ def make_json_error(e, status):
         json_error['source_message'] = e.response.text
     return json.dumps(json_error, indent=4, sort_keys=True)
 
-def parse_validation_errors(errors, data_url, schema_url):
-    """Parse libhxl validation errors into a JSON-like data structure.
-    Format: https://docs.google.com/document/d/1PXVtK1YWwZEtAUOtImDSBudE3YYvzEXLEU2rFc6XC88/edit?usp=sharing
-    @param errors: a list of L{hxl.validation.HXLValidationError} objects
-    @param data_url: the URL of the dataset being validated
-    @param schema_url: the URL of the HXL schema in use
-    @returns: a data structure listing the errors, suitable for JSON rendition
-    """
-
-    # top-level report
-    error_report = {
-        "validator": "HXL Proxy",
-        "timestamp": datetime.datetime.now().isoformat(),
-        "data_url": data_url,
-        "schema_url": schema_url,
-        "stats": {
-            "info": 0,
-            "warning": 0,
-            "error": 0,
-            "total": 0
-        },
-        "issues": [],
-    }
-
-    # individual issues inside the report
-    for key in errors:
-        model = errors[key][0]
-        if model.row is not None and model.column is not None:
-            scope = 'cell'
-        elif model.row is not None:
-            scope = 'row'
-        elif model.column is not None:
-            scope = 'column'
-        else:
-            scope = 'dataset'
-        error_report['stats']['total'] += len(errors[key])
-        error_report['stats'][model.rule.severity] += len(errors[key])
-
-        description = model.rule.description
-        if not description:
-            description = model.message
-        
-        issue = {
-            "rule_id": key,
-            "tag_pattern": str(model.rule.tag_pattern),
-            "description": description,
-            "severity": model.rule.severity,
-            "location_count": len(errors[key]),
-            "scope": scope,
-            "locations": []
-        }
-
-        # individual locations inside an issue
-        for error in errors[key]:
-            location = {}
-            if error.row is not None:
-                if error.row.row_number is not None:
-                    location['row'] = error.row.row_number
-                if error.row.source_row_number is not None:
-                    location['source_row'] = error.row.source_row_number
-            if error.column is not None:
-                if error.column.column_number is not None:
-                    location['col'] = error.column.column_number
-                if error.column.display_tag is not None:
-                    location['hashtag'] = error.column.display_tag
-            if error.value is not None:
-                location['error_value'] = error.value
-            if error.suggested_value is not None:
-                location['suggested_value'] = error.suggested_value
-            issue['locations'].append(location)
-
-        error_report['issues'].append(issue)
-
-    return error_report
-    
-
 def severity_class(severity):
     """Return a CSS class for a validation error severity"""
     if severity == 'error':
@@ -369,7 +296,7 @@ def run_validation(url, content, sheet_index, selector, schema_url, schema_conte
             http_headers={'User-Agent': 'hxl-proxy/validation'}
         )
 
-    # cache if we're including the dataset in the results
+    # cache if we're including the dataset in the results (we have to run over it twice)
     if include_dataset:
         source = source.cache()
 
@@ -389,8 +316,29 @@ def run_validation(url, content, sheet_index, selector, schema_url, schema_conte
     else:
         schema_source = None
 
-    # get the validation report
-    return (source, hxl.validate(source, schema_source),)
+    # Validate the dataset
+    report = hxl.validate(source, schema_source)
+
+    # add the URLs if supplied
+    if url:
+        report['data_url'] = url
+    if sheet_index is not None:
+        report['data_sheet_index'] = sheet_index
+    if schema_url:
+        report['schema_url'] = schema_url
+    if schema_sheet_index is not None:
+        report['schema_sheet_index'] = schema_sheet_index
+
+    # include the original dataset if requested
+    if include_dataset:
+        content = []
+        content.append([no_none(column.header) for column in source.columns])
+        content.append([no_none(column.display_tag) for column in source.columns])
+        for row in source:
+            content.append([no_none(value) for value in row.values])
+        report['dataset'] = content
+
+    return report
 
 
 #
@@ -398,7 +346,7 @@ def run_validation(url, content, sheet_index, selector, schema_url, schema_conte
 #
 
 app.jinja_env.filters['nonone'] = (
-    lambda s: '' if s is None else s
+    no_none
 )
 
 app.jinja_env.filters['urlquote'] = (

@@ -50,7 +50,7 @@ class TestUtil(unittest.TestCase):
         params['a'] = 'aa'
         params['b'] = 'bb'
         params['c'] = 'cc'
-        self.assertEquals(expected, hxl_proxy.util.urlencode_utf8(params))
+        self.assertEqual(expected, hxl_proxy.util.urlencode_utf8(params))
 
     def test_using_tagger_p(self):
         with hxl_proxy.app.test_request_context('/data?tagger-01-header=country+code&tagger-01-tag=country%2Bcode'):
