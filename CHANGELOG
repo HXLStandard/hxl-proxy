@@ -1,5 +1,6 @@
 Release 1.15
 	- fix typo in config file template
+	- switch to Flask 1.x and Flask-Caching packages
 
 2019-03-04 Release 1.14
 	- longer cache for P-codes (1 week by default)

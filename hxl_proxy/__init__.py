@@ -11,7 +11,7 @@ import os
 
 import requests_cache
 from flask import Flask, g, request
-from flask_cache import Cache
+from flask_caching import Cache
 
 import werkzeug.datastructures
 from . import reverse_proxied

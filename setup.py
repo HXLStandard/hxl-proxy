@@ -24,8 +24,8 @@ setuptools.setup(
         'requests>=2.11',
         'libhxl==4.14',
         'ckanapi>=3.5',
-        'flask==0.12.4',
-        'flask-cache>=0.13',
+        'flask>=1.0',
+        'flask-caching',
         'requests_cache',
         'mysql-connector-python',
         'iati2hxl>=0.2'
