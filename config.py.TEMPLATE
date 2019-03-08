@@ -20,24 +20,19 @@ DEBUG=True
 SECRET_KEY='<secret key>'
 
 #
-# File cache directory
+# Output cache
 #
-CACHE_DIR = '/tmp'
+CACHE_DIR = '/tmp/'
 CACHE_MAX_ITEMS = 1000
 CACHE_DEFAULT_TIMEOUT_SECONDS = 3600 # 1 hour
-
-#
-# Cache for things that don't change much (e.g. P-codes)
-#
-LONG_CACHE_DIR = '/tmp'
-LONG_CACHE_MAX_ITEMS = 1000
-LONG_CACHE_DEFAULT_TIMEOUT_SECONDS = 604800 # 1 week
 
 #
 # Request cache
 #
 REQUEST_CACHE = '/tmp/hxl_proxy_requests'
 REQUEST_CACHE_TIMEOUT_SECONDS = 3600
+
+# Cache timeout for requests to iTOS
 PCODE_CACHE_TIMEOUT_SECONDS = 604800
 
 #

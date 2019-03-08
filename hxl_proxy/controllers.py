@@ -11,7 +11,7 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
-from . import app, auth, cache, dao, filters, long_cache, preview, pcodes, util, exceptions, __version__
+from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
 
 logger = logging.getLogger(__name__)
 
@@ -757,7 +757,7 @@ def do_hid_authorisation():
 # Extra stuff tacked onto the Proxy
 #
 @app.route('/pcodes/<country>-<level>.csv')
-@long_cache.cached()
+@cache.cached(timeout=604800) # 1 week cache
 def pcodes_get(country, level):
     flask.g.output_format = 'csv'
     with StringIO() as buffer:
