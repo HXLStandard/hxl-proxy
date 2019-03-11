@@ -8,3 +8,4 @@ errorlog = '/var/log/proxy/proxy.error.log'
 loglevel = 'warning'
 timeout = 120
 graceful_timeout = 90
+limit_request_line = 8096
