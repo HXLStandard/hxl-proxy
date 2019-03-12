@@ -1,6 +1,8 @@
-Release 1.15
+2019-03-12 Release 1.14.1
 	- fix typo in config file template
 	- switch to Flask 1.x and Flask-Caching packages
+	- fix bug in caching for POST validation request
+	- increase gunicorn max GET request line to 8K characters
 
 2019-03-04 Release 1.14
 	- longer cache for P-codes (1 week by default)
