@@ -44,7 +44,7 @@
             Map
           </a>
         </li>
-        {% if recipe.recipe_id and recipe.cloneable %}
+        {% if recipe.recipe_id and recipe.cloneable and not recipe.args.authorization_token %}
         <li>
           <a href="{{ data_url_for('data_view', recipe, cloned=True) }}">
             <span class="glyphicon glyphicon-copy"></span>
