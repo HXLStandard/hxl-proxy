@@ -67,6 +67,14 @@ def handle_redirect_exception(e):
 
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
 
+def handle_authorization_exception(e):
+    if e.message:
+        flask.flash(e.message)
+    return flask.redirect(util.data_url_for('data_save', recipe=util.get_recipe()), 302)
+
+app.register_error_handler(hxl.io.HXLAuthorizationException, handle_authorization_exception)
+
+
 #
 # SSL errors
 #
