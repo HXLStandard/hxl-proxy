@@ -24,18 +24,17 @@
         </div>
       </div>
       {% if recipe.args.need_token %}
-      <div class="row">
-        <div class="col-md-12 alert alert-danger" role="alert">
+        <div class="alert alert-warning" role="alert">
           {% if recipe.args.is_ckan %}
 
-          <p>You are trying to access a private CKAN dataset (e.g. on
+          <p><b>Notice:</b> You are trying to access a private CKAN dataset (e.g. on
           HDX). If you wish, you can provide your CKAN authorisation
           token here (from your user profile page when you are logged
           in). If the token fails, you will end up back here again.</p>
 
           {% else %}
 
-          <p>You are trying to access a dataset that requires
+          <p><b>Notice:</b> You are trying to access a dataset that requires
           authorisation. If you add an authorisation token below, the
           HXL Proxy will send it to the serve in the HTTP
           <code>Authorization:</code> header and see if it helps (if
@@ -47,7 +46,6 @@
           it will be accessible only through the short URL, so that
           your token is not visible to anyone else.</p>
         </div>
-      </div>
       {% endif %}
       <form class="form" method="POST" action="{{ url_for('do_data_save') }}">
         <div class="row">
