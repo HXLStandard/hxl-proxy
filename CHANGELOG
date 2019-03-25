@@ -1,4 +1,5 @@
 2019-03-12 Release 1.14.1
+	- allow user to provide authorisation token for a private CKAN dataset
 	- fix typo in config file template
 	- switch to Flask 1.x and Flask-Caching packages
 	- fix bug in caching for POST validation request
