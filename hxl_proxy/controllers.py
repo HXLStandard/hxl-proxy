@@ -57,10 +57,10 @@ def handle_exception(e, format='html'):
 if not app.config.get('DEBUG'):
     app.register_error_handler(Exception, handle_exception)
 
-#
-# Redirects
-#
+
 def handle_redirect_exception(e):
+    """ Exception to force a redirect to a different page
+    """
     if e.message:
         flask.flash(e.message)
     return flask.redirect(e.target_url, e.http_code)
@@ -68,9 +68,15 @@ def handle_redirect_exception(e):
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
 
 def handle_authorization_exception(e):
+    """ Exception when authorisation fails on the source resource
+    """
     if e.message:
         flask.flash(e.message)
-    return flask.redirect(util.data_url_for('data_save', recipe=util.get_recipe()), 302)
+    recipe = util.get_recipe()
+    recipe['args']['need_token'] = 'on' # hint that we need a token
+    if e.is_ckan:
+        recipe['args']['is_ckan'] = 'on'
+    return flask.redirect(util.data_url_for('data_save', recipe=recipe), 302)
 
 app.register_error_handler(hxl.io.HXLAuthorizationException, handle_authorization_exception)
 
@@ -204,8 +210,10 @@ def data_edit(recipe_id=None):
             source.columns
         except exceptions.RedirectException as e1:
             raise e1
-        except Exception as e2:
-            error = e2
+        except hxl.io.HXLAuthorizationException as e2:
+            raise e2
+        except Exception as e3:
+            error = e3
             source = None
     else:
         flask.flash('Please choose a data source first.')
