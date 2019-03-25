@@ -18,11 +18,6 @@
       </h1>
     </header>
     <main>
-      <div class="row">
-        <div class="col-md-12">
-          {% include "includes/source.html" %}
-        </div>
-      </div>
       {% if recipe.args.need_token %}
         <div class="alert alert-warning" role="alert">
           {% if recipe.args.is_ckan %}
@@ -47,6 +42,11 @@
           your token is not visible to anyone else.</p>
         </div>
       {% endif %}
+      <div class="row">
+        <div class="col-md-12">
+          {% include "includes/source.html" %}
+        </div>
+      </div>
       <form class="form" method="POST" action="{{ url_for('do_data_save') }}">
         <div class="row">
           <div class="form-group required col-md-6">

@@ -88,11 +88,16 @@ def make_tagged_input(args):
     url = args.get('url')
     sheet_index = int(args.get('sheet')) if args.get('sheet') else None
     selector = args.get('selector', None)
+    http_headers = {
+        'User-Agent': 'hxl-proxy/download'
+    }
+    if args.get('authorization_token'):
+        http_headers['Authorization'] = args['authorization_token']
     input = hxl.io.make_input(
         url,
         sheet_index=sheet_index,
         verify_ssl=util.check_verify_ssl(args),
-        http_headers={'User-Agent': 'hxl-proxy/download'},
+        http_headers=http_headers,
         selector=selector, 
     )
 
