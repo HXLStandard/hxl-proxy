@@ -237,7 +237,7 @@ def make_json_error(e, status):
         json_error['human_message'] = e.human
     if hasattr(e, 'errno') and (e.errno is not None):
         json_error['errno'] = e.errno
-    if hasattr(e, 'response'):
+    if hasattr(e, 'response') and e.response:
         json_error['source_status_code'] = e.response.status_code
         json_error['source_url'] = e.response.url
         json_error['source_message'] = e.response.text
