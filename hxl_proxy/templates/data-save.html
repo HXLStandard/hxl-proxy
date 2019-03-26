@@ -18,9 +18,9 @@
       </h1>
     </header>
     <main>
-      {% if recipe.args.need_token %}
+      {% if need_token %}
         <div class="alert alert-warning" role="alert">
-          {% if recipe.args.is_ckan %}
+          {% if is_ckan %}
 
           <p><b>Notice:</b> You are trying to access a private CKAN dataset (e.g. on
           HDX). If you wish, you can provide your CKAN authorisation
@@ -82,7 +82,7 @@
           </div>
         </div>
         <div class="row">
-          {% if recipe.args.need_token or recipe.args.authorization_token %}
+          {% if need_token or recipe.args.authorization_token %}
           <div class="form-group col-md-6 required">
             <label for="authorization_token">Authorisation token (for CKAN, etc)</label>
             <input name="authorization_token" id="authorization_token" required="required"

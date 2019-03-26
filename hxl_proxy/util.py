@@ -205,13 +205,17 @@ def make_args(recipe={}, format=None, flavour=None, recipe_id=None, cloned=False
         args['recipe_id'] = recipe_id
     return args
 
-def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None, cloned=False):
+def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None, cloned=False, extras={}):
     """Generate a URL relative to the subpath (etc)
     Wrapper around flask.url_for
     """
     if not recipe_id:
         recipe_id = recipe.get('recipe_id')
     args = make_args(recipe, format=format, flavour=flavour, recipe_id=recipe_id, cloned=cloned)
+    if extras:
+        # add in any extra GET params requested
+        for key in extras:
+            args[key] = extras[key]
     if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
     return url_for(endpoint, **args)

@@ -67,16 +67,21 @@ def handle_redirect_exception(e):
 
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
 
+
+# Source dataset requires authorisation
+
 def handle_authorization_exception(e):
     """ Exception when authorisation fails on the source resource
     """
     if e.message:
         flask.flash(e.message)
-    recipe = util.get_recipe()
-    recipe['args']['need_token'] = 'on' # hint that we need a token
+    recipe = util.get_recipe(recipe_id=flask.g.recipe_id)
+    extras = {
+        'need_token': 'on'
+    }
     if e.is_ckan:
-        recipe['args']['is_ckan'] = 'on'
-    return flask.redirect(util.data_url_for('data_save', recipe=recipe), 302)
+        extras['is_ckan'] = 'on'
+    return flask.redirect(util.data_url_for('data_save', recipe=recipe, extras=extras), 302)
 
 app.register_error_handler(hxl.io.HXLAuthorizationException, handle_authorization_exception)
 
@@ -195,6 +200,8 @@ def data_tagger(recipe_id=None):
 def data_edit(recipe_id=None):
     """Create or edit a filter pipeline."""
 
+    flask.g.recipe_id = recipe_id
+
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
@@ -248,16 +255,21 @@ def data_save(recipe_id=None):
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
+    need_token = flask.request.args.get('need_token')
+    is_ckan = flask.request.args.get('is_ckan')
+
     if not recipe or not recipe['args'].get('url'):
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
-    return flask.render_template('data-save.html', recipe=recipe)
+    return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
 
 
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
 def data_chart(recipe_id=None):
     """Show a chart visualisation for the data."""
+
+    flask.g.recipe_id = recipe_id
 
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
@@ -312,6 +324,8 @@ def data_chart(recipe_id=None):
 def data_map(recipe_id=None):
     """Show a map visualisation for the data."""
 
+    flask.g.recipe_id = recipe_id
+
     # Set up the data source
     recipe = util.get_recipe(recipe_id)
     if not recipe or not recipe['args'].get('url'):
@@ -350,6 +364,8 @@ def data_map(recipe_id=None):
 @app.route("/data/<recipe_id>/validate.<format>")
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
+
+    flask.g.recipe_id = recipe_id
 
     # Save the data format
     flask.g.output_format = format
@@ -425,6 +441,8 @@ def show_advanced(recipe_id=None):
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """Show full result dataset in HTML, CSV, or JSON (as requested)."""
+
+    flask.g.recipe_id = recipe_id
 
     def get_result ():
         """Closure to generate the output."""
