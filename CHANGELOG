@@ -1,6 +1,8 @@
-2019-04-01 Release 1.15
+2019-03-29 Release 1.15
 	- allow user to provide authorisation token for a private CKAN
 	  dataset or other link that returns 403 Forbidden
+	- proxy will automatically redirect and start a private dataset
+	  when it detects an authorisation error
 	- fix 404 error for non-existant P-codes
 
 2019-03-12 Release 1.14.1
