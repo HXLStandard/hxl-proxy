@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
+import flask, hashlib, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
 
 from io import StringIO
 
@@ -613,33 +613,51 @@ def do_validate():
     * schema_url | schema_content - the schema to use (optional)
     """
 
+    # signal that the output will be JSON (for error reporting)
     flask.g.output_format = 'json'
-    
+
+    # get the POST params: url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset
+    # (url or content is required)
     url = flask.request.form.get('url')
+    content_hash = None
     content = flask.request.files.get('content')
-    try:
-        sheet_index = int(flask.request.form.get('sheet', None))
-    except:
-        logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
-        sheet_index = None
-
+    if content is not None:
+        # need a hash of the content for caching
+        content_hash = hashlib.md5(content.read()).digest()
+    sheet_index = flask.request.form.get('sheet', None)
+    if sheet_index is not None:
+        try:
+            sheet_index = int(sheet_index)
+        except:
+            logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
+            sheet_index = None
     selector = flask.request.form.get('selector', None)
-
     schema_url = flask.request.form.get('schema_url')
+    schema_content_hash = None
     schema_content = flask.request.files.get('schema_content')
-    try:
-        schema_sheet_index = int(flask.request.form.get('schema_sheet', None))
-    except:
-        logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
-        schema_sheet_index = None
-
+    if schema_content is not None:
+        # need a hash of the schema content for caching
+        schema_content_hash = hashlib.md5(schema_content.read()).digest()
+        schema_content.seek(0)
+    schema_sheet_index = flask.request.form.get('schema_sheet', None)
+    if schema_sheet_index is not None:
+        try:
+            schema_sheet_index = int(schema_sheet_index)
+        except:
+            logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
+            schema_sheet_index = None
     include_dataset = flask.request.form.get('include_dataset', False)
 
+    # run the validation and save a report
+    # caching happens in the util.run_validation() function
     report = util.run_validation(
-        url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset
+        url, content, content_hash, sheet_index, selector,
+        schema_url, schema_content, schema_content_hash, schema_sheet_index,
+        include_dataset
     )
 
-    # validate and return the JSON report
+    # return a JSON version of the validation report as an HTTP response
+    # (make sure we have a CORS header)
     response = flask.Response(
         json.dumps(
             report,

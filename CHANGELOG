@@ -1,3 +1,6 @@
+2019-04-01 Release 1.15.1
+	- fix caching for validation requests sent via POST
+
 2019-03-29 Release 1.15
 	- allow user to provide authorisation token for a private CKAN
 	  dataset or other link that returns 403 Forbidden

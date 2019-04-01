@@ -4,7 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, iati2hxl.generator, requests
+import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, iati2hxl.generator, requests, logging
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -16,6 +16,8 @@ import hxl
 
 import hxl_proxy
 from hxl_proxy import app
+
+logger = logging.getLogger(__name__)
 
 CACHE_KEY_EXCLUDES = ['force']
 
@@ -277,10 +279,15 @@ def spreadsheet_col_num_to_name(num):
         num = num // 26
     return ''.join(reversed(letters))
 
-@cache.memoize()
-def run_validation(url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset):
-
-    # error conditions
+@cache.memoize(unless=skip_cache_p)
+def run_validation(url, content, content_hash, sheet_index, selector, schema_url, schema_content, schema_content_hash, schema_sheet_index, include_dataset):
+    """ Do the actual validation run, using the arguments provided.
+    Separated from the controller so that we can cache the result easiler.
+    The *_hash arguments exist only to assist with caching.
+    @returns: a validation report, suitable for returning as JSON.
+    """
+    
+    # test for opening error conditions
     if (url is not None and content is not None):
         raise requests.exceptions.BadRequest("Both 'url' and 'content' specified")
     if (url is None and content is None):
