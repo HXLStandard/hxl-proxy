@@ -131,14 +131,33 @@ def get_recipe(recipe_id=None, auth=False, args=None):
         if args.get('stub'):
             recipe['stub'] = args.get('stub')
 
-    # Allow some values to be overridden from request parameters
-    for key in RECIPE_OVERRIDES:
-        if args.get(key):
-            recipe['overridden'] = True
-            recipe['args'][key] = args.get(key)
+    # No overrides with a private authorization token!!!!!!!
+    # (potential security hole)
+    if args.get('authorization_token') is None:
+        # Allow some values to be overridden from request parameters
+        for key in RECIPE_OVERRIDES:
+            if args.get(key):
+                recipe['overridden'] = True
+                recipe['args'][key] = args.get(key)
 
     return recipe
 
+def make_file_hash(stream):
+    """Calculate a hash in chunks from a stream.
+    Must be random-access. Resets to position 0 before and after read.
+    @param stream: a bytes stream to read
+    @returns: an MD5 hash
+    """
+    file_hash = hashlib.md5()
+    stream.seek(0)
+    while True:
+        s = stream.read(8192)
+        if len(s) < 1:
+            break
+        else:
+            file_hash.update(s)
+    stream.seek(0)
+    return file_hash.hexdigest()
 
 def make_md5(s):
     """Return an MD5 hash for a string."""

@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import flask, hashlib, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
+import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
 
 from io import StringIO
 
@@ -628,8 +628,7 @@ def do_validate():
     content = flask.request.files.get('content')
     if content is not None:
         # need a hash of the content for caching
-        content_hash = hashlib.md5(content.read()).digest()
-        content.seek(0)
+        content_hash = util.make_file_hash(content)
     sheet_index = flask.request.form.get('sheet', None)
     if sheet_index is not None:
         try:
@@ -643,8 +642,7 @@ def do_validate():
     schema_content = flask.request.files.get('schema_content')
     if schema_content is not None:
         # need a hash of the schema content for caching
-        schema_content_hash = hashlib.md5(schema_content.read()).digest()
-        schema_content.seek(0)
+        schema_content_hash = util.make_file_hash(schema_content)
     schema_sheet_index = flask.request.form.get('schema_sheet', None)
     if schema_sheet_index is not None:
         try:
