@@ -629,6 +629,7 @@ def do_validate():
     if content is not None:
         # need a hash of the content for caching
         content_hash = hashlib.md5(content.read()).digest()
+        content.seek(0)
     sheet_index = flask.request.form.get('sheet', None)
     if sheet_index is not None:
         try:
