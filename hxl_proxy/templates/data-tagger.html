@@ -45,7 +45,19 @@
           {% for row in preview %}
           <tr>
             <td>
-              <form method="GET" action="">
+              {% if recipe.recipe_id %}
+              {% set method="POST" %}
+              {% set action=url_for('do_data_save') %}
+              {% else %}
+              {% set method="GET" %}
+              {% set action="" %}
+              {% endif %}
+              <form method="{{ method }}" action="{{ action }}">
+                {% if recipe.recipe_id %}
+                <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
+                {% endif %}
+                {% import 'includes/filters/filter-variables.j2' as vars %}
+
                 <input type="hidden" name="header-row" value="{{ loop.index }}" />
                 {% include "includes/metadata-params.html" %}
                 {% include "includes/recipe-params.html" %}
