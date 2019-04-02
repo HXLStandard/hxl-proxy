@@ -162,7 +162,7 @@ def data_tagger(recipe_id=None):
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     header_row = recipe['args'].get('header-row')
-    if header_row:
+    if header_row is not None:
         header_row = int(header_row)
 
     if not recipe['args'].get('url'):
@@ -178,12 +178,17 @@ def data_tagger(recipe_id=None):
 
     preview = []
     i = 0
+    http_headers = {
+        'User-Agent': 'hxl-proxy/tagger'
+    }
+    if recipe['args'].get('authorization_token'):
+        http_headers['Authorization'] = recipe['args']['authorization_token']
     for row in hxl.io.make_input(
             recipe['args'].get('url'),
             sheet_index=sheet_index,
             selector=selector,
             verify_ssl=util.check_verify_ssl(recipe['args']),
-            http_headers={'User-Agent': 'hxl-proxy/tagger'},
+            http_headers=http_headers
     ):
         if i >= 25:
             break

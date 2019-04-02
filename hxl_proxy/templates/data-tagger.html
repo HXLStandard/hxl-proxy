@@ -26,7 +26,7 @@
 
     </header>
     <main id="tagger" class="col-md-6 col-lg-5">
-      {% if (not recipe.recipe_id) and (not header_row) %}
+      {% if header_row is none %}
       <section class="col-sm-12">
         {% include "includes/source.html" %}
 
