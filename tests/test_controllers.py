@@ -305,7 +305,6 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'Validation succeeded' in response.data
 
-
 class TestValidateAction(AbstractControllerTest):
 
     def test_post_valid_content(self):
@@ -430,4 +429,22 @@ class TestIATI(AbstractControllerTest):
         self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
         self.assertEqual('*', response.headers.get('access-control-allow-origin'))
     
+
+class TestRemovedPages(AbstractControllerTest):
+
+    def test_chart_removed(self):
+        """/data/chart no longer exists. Should return 410."""
+        response = self.get('/data/chart', {
+            "url": "http://example.org/data.csv"
+        }, 410)
+        response = self.get('/data/abcdef/chart', {}, 410)
+
+    def test_map_removed(self):
+        """/data/map no longer exists. Should return 410."""
+        response = self.get('/data/map', {
+            "url": "http://example.org/data.csv"
+        }, 410)
+        response = self.get('/data/abcdef/map', {}, 410)
+
+
 # end

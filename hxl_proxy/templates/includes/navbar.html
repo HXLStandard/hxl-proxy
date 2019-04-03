@@ -32,18 +32,6 @@
             Validate
           </a>
         </li>
-        <li class="{% if facet=='chart' %}active{% endif %}">
-          <a href="{{ data_url_for('data_chart', recipe) }}">
-            <span class="glyphicon glyphicon-signal"></span>
-            Visualise
-          </a>
-        </li>
-        <li class="{% if facet=='map' %}active{% endif %}">
-          <a href="{{ data_url_for('data_map', recipe) }}">
-            <span class="glyphicon glyphicon-globe"></span>
-            Map
-          </a>
-        </li>
         {% if recipe.recipe_id and recipe.cloneable and not recipe.args.authorization_token %}
         <li>
           <a href="{{ data_url_for('data_view', recipe, cloned=True) }}">

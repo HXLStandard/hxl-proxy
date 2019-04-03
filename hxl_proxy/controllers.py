@@ -271,100 +271,6 @@ def data_save(recipe_id=None):
     return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
 
 
-@app.route('/data/<recipe_id>/chart')
-@app.route('/data/chart')
-def data_chart(recipe_id=None):
-    """Show a chart visualisation for the data."""
-
-    flask.g.recipe_id = recipe_id
-
-    recipe = util.get_recipe(recipe_id)
-    if not recipe or not recipe['args'].get('url'):
-        return flask.redirect(util.data_url_for('data_source', recipe), 303)
-
-    source = filters.setup_filters(recipe)
-
-    args = flask.request.args
-
-    value_pattern = args.get('value_tag')
-    value_col = None
-    if value_pattern:
-        value_pattern = hxl.TagPattern.parse(value_pattern)
-        value_col = value_pattern.find_column(source.columns)
-
-    label_pattern = args.get('label_tag')
-    label_col = None
-    if label_pattern:
-        label_pattern = hxl.TagPattern.parse(label_pattern)
-        label_col = label_pattern.find_column(source.columns)
-
-    filter_pattern = args.get('filter_tag')
-    filter_col = None
-    filter_value = args.get('filter_value')
-    filter_values = set()
-    if filter_pattern:
-        filter_pattern = hxl.TagPattern.parse(filter_pattern)
-        filter_col = filter_pattern.find_column(source.columns)
-        filter_values = source.get_value_set(filter_pattern)
-
-    count_pattern = args.get('count_tag')
-    count_col = None
-    if count_pattern:
-        count_pattern = hxl.TagPattern.parse(count_pattern)
-        count_col = count_pattern.find_column(source.columns)
-        
-    type = args.get('type', 'bar')
-    
-    return flask.render_template(
-        'visualise-chart.html',
-        recipe_id=recipe_id, recipe=recipe, type=type, source=source,
-        value_tag=value_pattern, value_col=value_col,
-        label_tag=label_pattern, label_col=label_col,
-        count_tag=count_pattern, count_col=count_col,
-        filter_tag=filter_pattern, filter_col=filter_col,
-        filter_values=sorted(filter_values), filter_value=filter_value
-    )
-
-
-@app.route('/data/<recipe_id>/map')
-@app.route('/data/map')
-def data_map(recipe_id=None):
-    """Show a map visualisation for the data."""
-
-    flask.g.recipe_id = recipe_id
-
-    # Set up the data source
-    recipe = util.get_recipe(recipe_id)
-    if not recipe or not recipe['args'].get('url'):
-        return flask.redirect(data_url_for('data_source', recipe), 303)
-    source = filters.setup_filters(recipe)
-
-    # Get arguments to control map display.
-    args = flask.request.args
-    default_country = args.get('default_country')
-
-    pcode_pattern = args.get('pcode_tag')
-    if pcode_pattern:
-        pcode_pattern = hxl.TagPattern.parse(pcode_pattern)
-        pcode_col = pcode_pattern.find_column(source.columns)
-
-    value_pattern = args.get('value_tag')
-    if value_pattern:
-        value_pattern = hxl.TagPattern.parse(value_pattern)
-        value_col = value_pattern.find_column(source.columns)
-
-    layer_pattern = args.get('layer_tag')
-    if layer_pattern:
-        layer_pattern = hxl.TagPattern.parse(layer_pattern)
-        layer_col = layer_pattern.find_column(source.columns)
-
-    # Show the map.
-    return flask.render_template(
-        'visualise-map.html', recipe=recipe,
-        default_country=default_country, pcode_tag=pcode_pattern, layer_tag=layer_pattern, value_tag=value_pattern, source=source
-    )
-
-
 @app.route("/data/validate")
 @app.route("/data/validate.<format>")
 @app.route("/data/<recipe_id>/validate")
@@ -513,57 +419,6 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     if util.skip_cache_p():
         cache.set(util.make_cache_key(), result)
     return result
-
-@app.route("/hxl-test.<format>")
-@app.route("/hxl-test")
-def hxl_test(format='html'):
-    """Test if a URL points to HXL-tagged data.
-    @param format: the format for rendering the result.
-    """
-
-    # Save the data format
-    flask.g.output_format = format
-
-    url = flask.request.args.get('url')
-    
-    if not url and (format != 'html'):
-        raise ValueError("&url parameter required")
-
-    result = {
-        'status': False,
-        'url': url
-    }
-
-    def record_exception(e):
-        result['exception'] = e.__class__.__name__
-        result['args'] = [str(arg) for arg in e.args]
-
-    if url:
-        try:
-            hxl.data(
-                url,
-                verify_ssl=util.check_verify_ssl(flask.request.args),
-                http_headers={'User-Agent': 'hxl-proxy/test'}
-            ).columns
-            result['status'] = True
-            result['message'] = 'Dataset has HXL hashtags'
-        except IOError as e1:
-            result['message'] = 'Cannot load dataset'
-            record_exception(e1)
-        except hxl.io.HXLTagsNotFoundException as e2:
-            result['message'] = 'Dataset does not have HXL hashtags'
-            record_exception(e2)
-        except BaseException as e3:
-            result['message'] = 'Undefined error'
-            record_exception(e3)
-    else:
-        result = None
-
-    if format == 'json':
-        return flask.Response(json.dumps(result), mimetype='application/json')
-    else:
-        return flask.render_template('hxl-test.html', result=result)
-
 
 @app.route('/settings/user')
 def user_settings():
@@ -792,9 +647,64 @@ def do_hid_authorisation():
     return flask.redirect(redirect_path, 303)
 
 
-#
+########################################################################
 # Extra stuff tacked onto the Proxy
 #
+# None of this is core to the Proxy's function, but this is a convenient
+# place to keep it.
+########################################################################
+
+@app.route("/hxl-test.<format>")
+@app.route("/hxl-test")
+def hxl_test(format='html'):
+    """Test if a URL points to HXL-tagged data.
+    @param format: the format for rendering the result.
+    """
+
+    # Save the data format
+    flask.g.output_format = format
+
+    url = flask.request.args.get('url')
+    
+    if not url and (format != 'html'):
+        raise ValueError("&url parameter required")
+
+    result = {
+        'status': False,
+        'url': url
+    }
+
+    def record_exception(e):
+        result['exception'] = e.__class__.__name__
+        result['args'] = [str(arg) for arg in e.args]
+
+    if url:
+        try:
+            hxl.data(
+                url,
+                verify_ssl=util.check_verify_ssl(flask.request.args),
+                http_headers={'User-Agent': 'hxl-proxy/test'}
+            ).columns
+            result['status'] = True
+            result['message'] = 'Dataset has HXL hashtags'
+        except IOError as e1:
+            result['message'] = 'Cannot load dataset'
+            record_exception(e1)
+        except hxl.io.HXLTagsNotFoundException as e2:
+            result['message'] = 'Dataset does not have HXL hashtags'
+            record_exception(e2)
+        except BaseException as e3:
+            result['message'] = 'Undefined error'
+            record_exception(e3)
+    else:
+        result = None
+
+    if format == 'json':
+        return flask.Response(json.dumps(result), mimetype='application/json')
+    else:
+        return flask.render_template('hxl-test.html', result=result)
+
+
 @app.route('/pcodes/<country>-<level>.csv')
 @cache.cached(timeout=604800) # 1 week cache
 def pcodes_get(country, level):
@@ -846,5 +756,21 @@ def iati_get():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
     return response
+
+
+########################################################################
+# Removed features (display messages)
+########################################################################
+
+@app.route('/data/<recipe_id>/chart')
+@app.route('/data/chart')
+def data_chart(recipe_id=None):
+    return "The HXL Proxy no longer supports basic charts. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
+
+@app.route('/data/<recipe_id>/map')
+@app.route('/data/map')
+def data_map(recipe_id=None):
+    """Show a map visualisation for the data."""
+    return "The HXL Proxy no longer supports basic maps. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
 
 # end

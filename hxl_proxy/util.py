@@ -112,7 +112,7 @@ def gen_iati_hxl(url):
             yield output.get()
 
             
-RECIPE_OVERRIDES = ['url', 'schema_url', 'filter_tag', 'filter_value', 'count_tag', 'label_tag', 'value_tag', 'type']
+RECIPE_OVERRIDES = ['url', 'schema_url']
 
 def get_recipe(recipe_id=None, auth=False, args=None):
     """Load a recipe or create from args."""
