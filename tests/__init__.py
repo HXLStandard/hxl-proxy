@@ -16,8 +16,16 @@ def mock_open_url(url, allow_local=False, timeout=None, verify_ssl=True, http_he
     open as a file under ./files/
 
     This is meant as a side effect for unittest.mock.Mock
+
+    Arguments are the same as hxl.io.open_url_or_file(), which this replaces
     """
+
     if re.match(r'https?:', url):
+        if re.match('.*/private/.*', url):
+            # fake a URL that needs authorisation (if it has /private/ in it)
+            # if there's no 'Authorization' header, raise an exception
+            if http_headers is None or not "Authorization" in http_headers:
+                raise hxl.io.HXLAuthorizationException('Need Authorization header', url)
         # Looks like a URL
         filename = re.sub(r'^.*/([^/]+)$', '\\1', url)
         path = resolve_path('files/' + filename)
@@ -33,7 +41,7 @@ def resolve_path(filename):
 # Target function to replace for mocking URL access.
 URL_MOCK_TARGET = 'hxl.io.open_url_or_file'
 
-# Mock object to replace hxl.io.make_stream
+# Mock object to replace hxl.io.open_url_or_file
 URL_MOCK_OBJECT = unittest.mock.Mock()
 URL_MOCK_OBJECT.side_effect = mock_open_url
 

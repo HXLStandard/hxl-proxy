@@ -149,6 +149,13 @@ class TestTaggerPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_auth(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/private/data.csv'
+        }, 302)
+        
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
         """Row not yet chosen."""
         response = self.get(self.path, {
@@ -200,6 +207,13 @@ class TestEditPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_auth(self):
+        response = self.get("/data/edit", {
+            'url': 'http://example.org/private/data.csv'
+        }, 302)
+        
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
         response = self.get('/data/edit', {
@@ -229,6 +243,12 @@ class TestEditPage(AbstractControllerTest):
 class TestDataPage(AbstractControllerTest):
     """Test /data and /data/{recipe_id}"""
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_auth(self):
+        response = self.get("/data", {
+            'url': 'http://example.org/private/data.csv'
+        }, 302)
+        
     def test_empty_url(self):
         response = self.get('/data', status=303)
         assert response.location.endswith('/data/source')
@@ -263,6 +283,13 @@ class TestValidationPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_auth(self):
+        response = self.get("/data/validate", {
+            'url': 'http://example.org/private/data.csv'
+        }, 302)
+        
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
         response = self.get('/data/validate', {
             'url': DATASET_URL
@@ -291,7 +318,6 @@ class TestValidateAction(AbstractControllerTest):
             }
         )
         result = json.loads(response.get_data(True))
-        print('***', result)
         self.assertTrue(result['is_valid'])
 
     def test_post_invalid_content(self):

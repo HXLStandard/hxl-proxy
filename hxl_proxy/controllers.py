@@ -156,6 +156,8 @@ def data_source(recipe_id=None):
 def data_tagger(recipe_id=None):
     """Add HXL tags to an untagged dataset."""
 
+    flask.g.recipe_id = recipe_id
+
     try:
         recipe = util.get_recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
@@ -430,6 +432,7 @@ def data_validate(recipe_id=None, format='html'):
 @app.route("/data/advanced")
 def show_advanced(recipe_id=None):
     """Advanced form for direct JSON entry."""
+    flask.g.recipe_id = recipe_id
     recipe = util.get_recipe(recipe_id, auth=True)
     return flask.render_template("data-advanced.html", recipe=recipe)
 
