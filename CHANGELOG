@@ -1,4 +1,4 @@
-2019-04-01 Release 1.15.1
+2019-04-04 Release 1.15.1
 	- fix caching for validation requests sent via POST
 	- removed obsolete basic chart and map demo
 
