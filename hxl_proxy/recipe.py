@@ -38,7 +38,7 @@ class Recipe:
 
             # read the recipe from the database
             saved_recipe = hxl_proxy.dao.recipes.read(self.recipe_id)
-            if not recipe:
+            if not saved_recipe:
                 raise werkzeug.exceptions.NotFound("No saved recipe for {}".format(recipe_id))
 
             # check if this page requires authorisation
@@ -46,15 +46,15 @@ class Recipe:
                 raise werkzeug.exceptions.Unauthorized("Wrong or missing password.")
 
             # default args are from the saved recipe
-            self.args = recipe.get("args")
+            self.args = saved_recipe.get("args")
 
             # grab some top-level properties
-            self.passhash = recipe.get("passhash")
-            self.stub = recipe.get("stub", recipe.args.get("stub"))
+            self.passhash = saved_recipe.get("passhash")
+            self.stub = saved_recipe.get("stub")
 
             # allow overrides *only* if we're not using a private dataset
             # (not sending an HTTP Authorization: header)
-            if "authorization_token" not in args:
+            if "authorization_token" not in self.args:
                 for key in self.RECIPE_OVERRIDES:
                     if key in request_args:
                         self.overridden = True

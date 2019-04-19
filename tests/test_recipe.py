@@ -13,11 +13,20 @@ from . import base
 
 class TestConstructor(base.AbstractDBTest):
 
-    def test_params(self):
+    def setUp(self):
+        super().setUp()
 
-        ARGS = {
+    def tearDown(self):
+        super().tearDown()
+
+    def test_params(self):
+        args = {
             "url": "http://example.org/data.csv",
         }
-        recipe = Recipe(request_args=ARGS)
-        self.assertEqual(ARGS["url"], recipe.args.get("url"))
-        self.assertEqual(ARGS["url"], recipe.url)
+        recipe = Recipe(request_args=args)
+        self.assertEqual(args["url"], recipe.args.get("url"))
+        self.assertEqual(args["url"], recipe.url)
+
+    def test_saved(self):
+        recipe_id = 'AAAAA'
+        recipe = Recipe(recipe_id=recipe_id, request_args={})
