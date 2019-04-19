@@ -146,7 +146,7 @@ def data_source(recipe_id=None):
     """Choose a new data source."""
 
     try:
-        recipe = util.get_recipe(recipe_id, auth=True)
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
