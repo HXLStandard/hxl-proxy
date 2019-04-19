@@ -133,27 +133,10 @@ def home():
     # note: not using data_url_for because this is outside data pages
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
-#
-# Primary controllers
-#
-
-@app.route("/about.html")
-def about():
-    """ Flask controller: show the about page
-    Includes version information for major packages, so that
-    we can tell easily what's deployed.
-    """
-    # include version information for these packages
-    releases = {
-        'hxl-proxy': __version__,
-        'libhxl': hxl.__version__,
-        'flask': flask.__version__,
-        'requests': requests.__version__
-    }
-
-    # draw the web page
-    return flask.render_template('about.html', releases=releases)
-
+
+########################################################################
+# Primary /data GET controllers
+########################################################################
 
 @app.route("/data/<recipe_id>/login")
 def data_login(recipe_id):
@@ -435,6 +418,16 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     This controller MUST come after all the other /data controllers, or
     else Flask will get confused.
 
+    This is a tricky controller to understand, for a few reasons:
+
+    1. It can render output in several different formats
+    2. It optionally caches the output
+    3. It includes a CORS HTTP header
+    4. Most of the work happens inside a nested function, to simplify caching
+    5. It may specify a download file name, based on the stub property
+
+    Grab a cup of tea, and work your way through the code slowly. :)
+
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     @param format: the selected output format (json or html)
     @param stub: the root filename for download, if supplied
@@ -442,18 +435,26 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """
     flask.g.recipe_id = recipe_id # for error handling
 
+    # Use an internal function to generate the output.
+    # That simplifies the control flow, so that we can easily
+    # capture the output regardless of chosen format, and
+    # cache it as needed. Most of the controller's code
+    # is inside this function.
     def get_result ():
-        """Closure to generate the output."""
-
-        # Save the data format
+        """ Internal output-generation function.
+        @returns: a Python generator to produce the input incrementally
+        """
         flask.g.output_format = format
 
         # Set up the data source from the recipe
         recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=False)
+
+        # Workflow: if there's no source URL, redirect the user to /data/source
         if not recipe.url:
+            flask.flash('Please choose a data source first.')
             return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
-        # Use caching if requested
+        # Use input caching if requested
         if util.skip_cache_p():
             source = filters.setup_filters(recipe)
         else:
@@ -463,12 +464,15 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
             ):
                 source = filters.setup_filters(recipe)
 
-        # Output parameters
+        # Parameters controlling the output
         show_headers = (recipe.args.get('strip-headers') != 'on')
         max_rows = recipe.args.get('max-rows', None)
 
         # Return a generator based on the format requested
+
+        # Render a web page
         if format == 'html':
+            # cap output at 5,000 rows for HTML
             max_rows = min(int(max_rows), 5000) if max_rows is not None else 5000
             return flask.render_template(
                 'data-view.html',
@@ -479,34 +483,74 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
         # Data formats from here on ...
 
+        # Limit the number of output rows *only* if requested
         if max_rows is not None:
             source = preview.PreviewFilter(source, max_rows=int(max_rows))
-            
+
+        # Render JSON output (list of lists or list of objects)
         if format == 'json':
-            use_objects = False
-            if flavour == 'objects':
-                use_objects = True
-            response = flask.Response(list(source.gen_json(show_headers=show_headers, use_objects=use_objects)), mimetype='application/json')
-            response.headers['Access-Control-Allow-Origin'] = '*'
-            if recipe.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(recipe.stub)
-            return response
+            response = flask.Response(
+                list(
+                    source.gen_json(show_headers=show_headers, use_objects=(flavour=='objects'))
+                ),
+                mimetype='application/json'
+            )
+
+        # Render CSV output
         else:
             response = flask.Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
-            response.headers['Access-Control-Allow-Origin'] = '*'
-            if recipe.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe.stub)
-            return response
 
+        # Include a CORS header for cross-origin data access
+        response.headers['Access-Control-Allow-Origin'] = '*'
+
+        # Set the file download name if &stub is present
+        if recipe.stub:
+            response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(recipe.stub, format)
+
+        # Return the response object
+        return response
+
+    # end of internal function
+    
     # Get the result and update the cache manually if we're skipping caching.
     result = get_result()
+
+    # Update the cache even if caching is turned off
+    # (this might not be working yet)
     if util.skip_cache_p():
         cache.set(util.make_cache_key(), result)
+
+    # return the response object that will render the output
     return result
 
+
+########################################################################
+# Secondary, supporting GET controllers
+########################################################################
+
+@app.route("/about.html")
+def about():
+    """ Flask controller: show the about page
+    Includes version information for major packages, so that
+    we can tell easily what's deployed.
+    """
+    # include version information for these packages
+    releases = {
+        'hxl-proxy': __version__,
+        'libhxl': hxl.__version__,
+        'flask': flask.__version__,
+        'requests': requests.__version__
+    }
+
+    # draw the web page
+    return flask.render_template('about.html', releases=releases)
+
+
+# not currently in use (until we reactivate H.ID support)
 @app.route('/settings/user')
 def user_settings():
-    """Show the user settings page (if authorised)."""
+    """ Flask controller: show the user's settings from Humanitarian.ID
+    """
     if flask.g.member:
         return flask.render_template('settings-user.html', member=flask.g.member)
     else:
@@ -515,45 +559,118 @@ def user_settings():
         args = { 'from': util.data_url_for('user_settings') }
         return flask.redirect(url_for('login', **args), 303)
 
-@app.route('/actions/json-spec', methods=['POST'])
-def do_json_recipe():
-    """POST handler to execute a JSON recipe
+
+#########################################################################
+# Primary action POST controllers
+# These are URLs that are not bookmarkable.
+########################################################################
+
+@app.route("/actions/login", methods=['POST'])
+def do_data_login():
+    """ Flask controller: log the user in for a specific dataset.
+    Note that this is NOT a user login; it's a dataset login. That 
+    means that the user will have to re-login if they start working
+    on a dataset that has a different password.
+    
+    POST parameters:
+
+    from - the origin URL (return there after login)
+    password - the clear-text password
     """
 
-    recipe = flask.request.files.get('recipe', None)
+    # Note origin page
+    destination = flask.request.form.get('from')
+    if not destination:
+        destination = util.data_url_for('data_view')
 
-    format = flask.request.form.get('format', 'csv')
-    show_headers = False if flask.request.form.get('show_headers', None) is None else True
-    use_objects = False if flask.request.form.get('use_objects', None) is None else True
-    stub = flask.request.form.get('stub', 'data')
+    # Just save the password hash in a cookie, but don't do anything with it
+    password = flask.request.form.get('password')
+    flask.session['passhash'] = util.make_md5(password)
 
-    flask.g.output_format = 'format'
+    # Try opening the original page again, with password hash token in the cookie.
+    return flask.redirect(destination, 303)
 
-    if recipe is None:
-        raise werkzeug.exceptions.BadRequest("Parameter 'recipe' is required")
 
-    spec = json.load(recipe.stream)
+@app.route("/actions/save-recipe", methods=['POST'])
+def do_data_save():
+    """ Flask controller: create or update a saved recipe
+    The saved recipe has all of its parameters in the database, and is
+    identified by a short hash. The user needs to supply a password
+    to edit it.
 
-    source = hxl.io.from_spec(spec)
+    Post parameters:
+    
+    recipe_id - the short hash identifying the recipe (blank to create a new one)
+    name - the recipe' title (optional)
+    description - the recipe's long description (optional)
+    cloneable - a flag indicating whether a user may clone the saved recipe (optional; defaults to "on")
+    stub - a root filename for downloading (optional)
+    password - a clear-text password (optional for a new saved recipe)
+    password_repeat - repeated clear-text password (optional for a new saved recipe)
 
-    if format == 'json':
-        response = flask.Response(
-            source.gen_json(show_headers=show_headers, use_objects=use_objects),
-            mimetype='application/json'
-        )
+    (Will also include all of the other HXL Proxy recipe arguments as hidden parameters)
+    """
+
+    # We will have a recipe_id if we're updating an existing pipeline
+    recipe_id = flask.request.form.get('recipe_id')
+    flask.g.recipe_id = recipe_id # for error handling    
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
+
+    # Update recipe metadata
+    if 'name' in flask.request.form:
+        recipe.name = flask.request.form['name']
+    if 'description' in flask.request.form:
+        recipe.description = flask.request.form['description']
+    if 'cloneable' in flask.request.form and not 'authorization_token' in flask.request.form:
+        recipe.cloneable = (flask.request.form['cloneable'] == 'on')
     else:
-        response = flask.Response(
-            source.gen_csv(show_headers=show_headers),
-            mimetype='text/csv'
-        )
+        recipe.cloneable = False
+    if 'stub' in flask.request.form:
+        recipe.stub = flask.request.form['stub']
 
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(stub, format)
+    # Merge changed values
+    recipe.args = {}
+    for name in flask.request.form:
+        if flask.request.form.get(name) and name not in RECIPE_ARG_BLACKLIST:
+            recipe.args[name] = flask.request.form.get(name)
 
-    return response
+    # Check for a password change
+    password = flask.request.form.get('password')
+    password_repeat = flask.request.form.get('password-repeat')
+
+    # Updating an existing recipe.
+    if recipe_id:
+        if password:
+            if password == password_repeat:
+                recipe.passhash = util.make_md5(password)
+                flask.session['passhash'] = recipe.passhash
+            else:
+                raise werkzeug.exceptions.BadRequest("Passwords don't match")
+        dao.recipes.update(recipe)
+
+    # Creating a new recipe.
+    else:
+        if password == password_repeat:
+            recipe.passhash = util.make_md5(password)
+            flask.session['passhash'] = recipe.passhash
+        else:
+            raise werkzeug.exceptions.BadRequest("Passwords don't match")
+        recipe_id = util.make_recipe_id()
+        recipe.recipe_id = recipe_id
+        dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
+        # FIXME other auth information is in __init__.py
+        flask.session['passhash'] = recipe.passhash
+
+    # Clear the entire HXL Proxy cache
+    # TODO: be more targeted here
+    cache.clear()
+
+    # Redirect to the /data view page
+    return flask.redirect(util.data_url_for('data_view', recipe), 303)
+
 
 @app.route("/actions/validate", methods=['POST'])
-def do_validate():
+def do_data_validate():
     """POST handler: validate a dataset against the provided schema, and return a JSON report
     This method does not apply filters, tagger, etc, but simply takes the following parameters:
     * url | content - the data to validate
@@ -615,80 +732,66 @@ def do_validate():
     return response
 
     
-@app.route("/actions/login", methods=['POST'])
-def do_data_login():
-    """POST handler: authenticate for a specific recipe (will disappear soon)."""
+# NOTE: This is an experiment that's probably not used anywhere right now
+# We may choose to remove it
+@app.route('/actions/json-spec', methods=['POST'])
+def do_json_recipe():
+    """ POST handler to execute a JSON recipe
+    This POST endpoint allows the user to upload a JSON HXL recipe
+    and execute it. The endpoint does NOT currently allow uploading
+    a file (but we should add that, to support private datasets).
 
-    # Note origin page
-    destination = flask.request.form.get('from')
-    if not destination:
-        destination = util.data_url_for('data_view')
+    POST parameters:
 
-    # Just save the password hash, but don't do anything with it
-    password = flask.request.form.get('password')
-    flask.session['passhash'] = util.make_md5(password)
+    recipe - a file upload containing a JSON recipe
+    format - "csv" or "json"
+    show_headers - if specified, include text headers in the output
+    use_objects - if specified, use JSON list of objects format
+    stub - root filename for downloads
 
-    # Try opening the original page again, with auth token in the cookie.
-    return flask.redirect(destination, 303)
+    Information on JSON recipes is available at
+    https://github.com/HXLStandard/hxl-proxy/wiki/JSON-recipes
+    """
 
+    # Get the JSON recipe as a file attachment
+    json_recipe_file = flask.request.files.get('recipe', None)
+    if json_recipe_file is None:
+        raise werkzeug.exceptions.BadRequest("Parameter 'recipe' is required")
+    json_recipe = json.load(json_recipe_file.stream)
 
-@app.route("/actions/save-recipe", methods=['POST'])
-def do_data_save():
-    """POST handler: start a new saved recipe, or update an existing one."""
+    # Other parameters
+    format = flask.request.form.get('format', 'csv')
+    show_headers = False if flask.request.form.get('show_headers', None) is None else True
+    use_objects = False if flask.request.form.get('use_objects', None) is None else True
+    stub = flask.request.form.get('stub', 'data')
 
-    # We will have a recipe_id if we're updating an existing pipeline
-    recipe_id = flask.request.form.get('recipe_id')
-    flask.g.recipe_id = recipe_id # for error handling    
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
+    # Set global output format
+    flask.g.output_format = 'format'
 
-    # Update recipe metadata
-    if 'name' in flask.request.form:
-        recipe.name = flask.request.form['name']
-    if 'description' in flask.request.form:
-        recipe.description = flask.request.form['description']
-    if 'cloneable' in flask.request.form and not 'authorization_token' in flask.request.form:
-        recipe.cloneable = (flask.request.form['cloneable'] == 'on')
+    # Create a HXL filter chain by parsing the JSON recipe
+    source = hxl.io.from_spec(json_recipe)
+
+    # Create a JSON or CSV response object, as requested
+    if format == 'json':
+        response = flask.Response(
+            source.gen_json(show_headers=show_headers, use_objects=use_objects),
+            mimetype='application/json'
+        )
     else:
-        recipe.cloneable = False
-    if 'stub' in flask.request.form:
-        recipe.stub = flask.request.form['stub']
+        response = flask.Response(
+            source.gen_csv(show_headers=show_headers),
+            mimetype='text/csv'
+        )
 
-    # merge args
-    recipe.args = {}
-    for name in flask.request.form:
-        if flask.request.form.get(name) and name not in RECIPE_ARG_BLACKLIST:
-            recipe.args[name] = flask.request.form.get(name)
+    # Add the CORS header for cross-origin compatibility
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
-    # check for a password change
-    password = flask.request.form.get('password')
-    password_repeat = flask.request.form.get('password-repeat')
+    # If a stub is specified, use it to define a download filename
+    if stub:
+        response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(stub, format)
 
-    if recipe_id:
-        # Updating an existing recipe.
-        if password:
-            if password == password_repeat:
-                recipe.passhash = util.make_md5(password)
-                flask.session['passhash'] = recipe.passhash
-            else:
-                raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        dao.recipes.update(recipe)
-    else:
-        # Creating a new recipe.
-        if password == password_repeat:
-            recipe.passhash = util.make_md5(password)
-            flask.session['passhash'] = recipe.passhash
-        else:
-            raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        recipe_id = util.make_recipe_id()
-        recipe.recipe_id = recipe_id
-        dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
-        # FIXME other auth information is in __init__.py
-        flask.session['passhash'] = recipe.passhash
-
-    # TODO be more specific about what we clear
-    cache.clear()
-
-    return flask.redirect(util.data_url_for('data_view', recipe), 303)
+    # Render the output
+    return response
 
 
 @app.route('/login')
