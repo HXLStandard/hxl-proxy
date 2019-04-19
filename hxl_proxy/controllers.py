@@ -261,14 +261,14 @@ def data_save(recipe_id=None):
     """Show form to save a recipe."""
 
     try:
-        recipe = util.get_recipe(recipe_id, auth=True)
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     need_token = flask.request.args.get('need_token')
     is_ckan = flask.request.args.get('is_ckan')
 
-    if not recipe or not recipe['args'].get('url'):
+    if not recipe or not recipe.url:
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
@@ -287,21 +287,21 @@ def data_validate(recipe_id=None, format='html'):
     flask.g.output_format = format
 
     # Get the recipe
-    recipe = util.get_recipe(recipe_id)
-    if not recipe or not recipe['args'].get('url'):
+    recipe = hxl_proxy.recipe.Recipe(recipe_id)
+    if not recipe or not recipe.url:
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Get the parameters
-    schema_url = recipe['args'].get('schema_url', None)
-    severity_level = recipe['args'].get('severity', 'info')
-    detail_hash = recipe['args'].get('details', None)
+    schema_url = recipe.schema_url
+    severity_level = flask.request.args.get('severity', 'info')
+    detail_hash = flask.request.args.get('details', None)
 
     # set up the schema
     schema_source = None
     if schema_url:
         schema_source = hxl.data(
             schema_url,
-            verify_ssl=util.check_verify_ssl(recipe['args']),
+            verify_ssl=util.check_verify_ssl(recipe.args),
             http_headers={'User-Agent': 'hxl-proxy/validation'}
         )
 
@@ -558,27 +558,27 @@ def do_data_save():
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
     try:
-        recipe = util.get_recipe(recipe_id, auth=True, args=flask.request.form)
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     # Update recipe metadata
     if 'name' in flask.request.form:
-        recipe['name'] = flask.request.form['name']
+        recipe.name = flask.request.form['name']
     if 'description' in flask.request.form:
-        recipe['description'] = flask.request.form['description']
+        recipe.description = flask.request.form['description']
     if 'cloneable' in flask.request.form and not 'authorization_token' in flask.request.form:
-        recipe['cloneable'] = (flask.request.form['cloneable'] == 'on')
+        recipe.cloneable = (flask.request.form['cloneable'] == 'on')
     else:
-        recipe['cloneable'] = False
+        recipe.cloneable = False
     if 'stub' in flask.request.form:
-        recipe['stub'] = flask.request.form['stub']
+        recipe.stub = flask.request.form['stub']
 
     # merge args
-    recipe['args'] = {}
+    recipe.args = {}
     for name in flask.request.form:
         if flask.request.form.get(name) and name not in RECIPE_ARG_BLACKLIST:
-            recipe['args'][name] = flask.request.form.get(name)
+            recipe.args[name] = flask.request.form.get(name)
 
     # check for a password change
     password = flask.request.form.get('password')
@@ -588,23 +588,23 @@ def do_data_save():
         # Updating an existing recipe.
         if password:
             if password == password_repeat:
-                recipe['passhash'] = util.make_md5(password)
-                flask.session['passhash'] = recipe['passhash']
+                recipe.passhash = util.make_md5(password)
+                flask.session['passhash'] = recipe.passhash
             else:
                 raise werkzeug.exceptions.BadRequest("Passwords don't match")
         dao.recipes.update(recipe)
     else:
         # Creating a new recipe.
         if password == password_repeat:
-            recipe['passhash'] = util.make_md5(password)
-            flask.session['passhash'] = recipe['passhash']
+            recipe.passhash = util.make_md5(password)
+            flask.session['passhash'] = recipe.passhash
         else:
             raise werkzeug.exceptions.BadRequest("Passwords don't match")
         recipe_id = util.make_recipe_id()
-        recipe['recipe_id'] = recipe_id
-        dao.recipes.create(recipe)
+        recipe.recipe_id = recipe_id
+        dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
         # FIXME other auth information is in __init__.py
-        flask.session['passhash'] = recipe['passhash']
+        flask.session['passhash'] = recipe.passhash
 
     # TODO be more specific about what we clear
     cache.clear()

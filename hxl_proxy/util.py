@@ -112,36 +112,6 @@ def gen_iati_hxl(url):
             yield output.get()
 
             
-RECIPE_OVERRIDES = ['url', 'schema_url']
-
-def get_recipe(recipe_id=None, auth=False, args=None):
-    """Load a recipe or create from args."""
-
-    if args is None:
-        args = request.args
-
-    if recipe_id:
-        recipe = hxl_proxy.dao.recipes.read(str(recipe_id))
-        if not recipe:
-            raise NotFound("No saved recipe for " + recipe_id)
-        if auth and not check_auth(recipe):
-            raise Unauthorized("Wrong or missing password.")
-    else:
-        recipe = {'args': {key: args.get(key) for key in args}}
-        if args.get('stub'):
-            recipe.stub = args.get('stub')
-
-    # No overrides with a private authorization token!!!!!!!
-    # (potential security hole)
-    if args.get('authorization_token') is None:
-        # Allow some values to be overridden from request parameters
-        for key in RECIPE_OVERRIDES:
-            if args.get(key):
-                recipe.overridden = True
-                recipe.args[key] = args.get(key)
-
-    return recipe
-
 def make_file_hash(stream):
     """Calculate a hash in chunks from a stream.
     Must be random-access. Resets to position 0 before and after read.
@@ -177,24 +147,6 @@ def make_recipe_id():
     while hxl_proxy.dao.recipes.read(recipe_id):
         recipe_id = gen_recipe_id()
     return recipe_id
-
-def check_auth(recipe, password=None):
-    """Check authorisation."""
-    passhash = recipe.passhash
-    if passhash:
-        if password:
-            session_passhash = make_md5(password)
-            session['passhash'] = session_passhash
-        else:
-            session_passhash = session.get('passhash')
-        if passhash == session_passhash:
-            return True
-        else:
-            session['passhash'] = None
-            flash("Wrong password")
-            return False
-    else:
-        return True
 
 def add_args(extra_args):
     """Add GET parameters."""

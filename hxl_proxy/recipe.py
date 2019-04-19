@@ -24,8 +24,12 @@ class Recipe:
         # initialise the properties
         self.recipe_id = str(recipe_id) if recipe_id is not None else None
         self.args = None
+        self.name = None
+        self.description = None
+        self.cloneable = True
         self.passhash = None
         self.stub = None
+
         self.overridden = False
         self.auth = auth
 
@@ -49,6 +53,7 @@ class Recipe:
             self.args = saved_recipe.get("args")
 
             # grab some top-level properties
+            self.name = saved_recipe.get("name")
             self.passhash = saved_recipe.get("passhash")
             self.stub = saved_recipe.get("stub")
 
@@ -69,6 +74,35 @@ class Recipe:
     @property
     def url(self):
         return self.args.get("url")
+
+    
+    @property
+    def schema_url(self):
+        return self.args.get("schema_url")
+
+    
+    def fromDict(self, props):
+        """ Serialise this object as a dict """
+        self.recipe_id = props.get("recipe_id")
+        self.name = props.get("name")
+        self.description = props.get("description")
+        self.cloneable = props.get("cloneable")
+        self.passhash = props.get("passhash")
+        self.stub = props.get("stub")
+        self.args = dict(props.get(args))
+
+        
+    def toDict(self):
+        """ Deserialise this object from a dict """
+        return {
+            "recipe_id": self.recipe_id,
+            "name": self.name,
+            "description": self.description,
+            "cloneable": self.cloneable,
+            "passhash": self.passhash,
+            "stub": self.stub,
+            "args": self.args,
+        }
     
 
     def check_auth(self, password=None):
