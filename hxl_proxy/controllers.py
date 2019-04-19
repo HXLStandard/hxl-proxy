@@ -70,7 +70,7 @@ def handle_redirect_exception(e):
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
 
 
-# Source dataset requires authorisation
+# Source dataset requires authorisation token
 
 def handle_authorization_exception(e):
     """ Exception when authorisation fails on the source resource
@@ -87,13 +87,26 @@ def handle_authorization_exception(e):
 
 app.register_error_handler(hxl.io.HXLAuthorizationException, handle_authorization_exception)
 
+# Page requires login
+
+def handle_login_exception(e):
+    """ Exception when we need to log into a resource
+    """
+    flask.flash("Login required")
+    if flask.g.recipe_id:
+        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id), 303)
+    else:
+        raise Exception("Internal error: login but no saved recipe")
+
+app.register_error_handler(werkzeug.exceptions.Unauthorized, handle_login_exception)
+    
 
 #
 # SSL errors
 #
 def handle_ssl_error(e):
     flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.data_url_for('data_source', recipe=util.get_recipe()), 302)
+    return flask.redirect(util.data_url_for('data_source', recipe=hxl_proxy.recipe.Recipe()), 302)
 
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_error)
 
@@ -137,7 +150,8 @@ def about():
 
 @app.route("/data/<recipe_id>/login")
 def data_login(recipe_id):
-    recipe = util.get_recipe(recipe_id)
+    flask.g.recipe_id = recipe_id # for error handling
+    recipe = hxl_proxy.recipe.Recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
 @app.route("/data/source")
@@ -145,10 +159,9 @@ def data_login(recipe_id):
 def data_source(recipe_id=None):
     """Choose a new data source."""
 
-    try:
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Unauthorized as e:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
+    flask.g.recipe_id = recipe_id # for error handling
+
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
     return flask.render_template('data-source.html', recipe=recipe)
 
@@ -158,12 +171,9 @@ def data_source(recipe_id=None):
 def data_tagger(recipe_id=None):
     """Add HXL tags to an untagged dataset."""
 
-    flask.g.recipe_id = recipe_id
+    flask.g.recipe_id = recipe_id # for error handling
 
-    try:
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Unauthorized as e:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
     header_row = recipe.args.get('header-row')
     if header_row is not None:
@@ -209,12 +219,9 @@ def data_tagger(recipe_id=None):
 def data_edit(recipe_id=None):
     """Create or edit a filter pipeline."""
 
-    flask.g.recipe_id = recipe_id
+    flask.g.recipe_id = recipe_id # for error handling
 
-    try:
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Unauthorized as e:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
     error = None
     if recipe.url:
@@ -260,10 +267,9 @@ def data_edit(recipe_id=None):
 def data_save(recipe_id=None):
     """Show form to save a recipe."""
 
-    try:
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
-    except werkzeug.exceptions.Unauthorized as e:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
+    flask.g.recipe_id = recipe_id # for error handling
+
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
     need_token = flask.request.args.get('need_token')
     is_ckan = flask.request.args.get('is_ckan')
@@ -281,7 +287,7 @@ def data_save(recipe_id=None):
 def data_validate(recipe_id=None, format='html'):
     """Run a validation and show the result in a dashboard."""
 
-    flask.g.recipe_id = recipe_id
+    flask.g.recipe_id = recipe_id # for error handling
 
     # Save the data format
     flask.g.output_format = format
@@ -341,7 +347,7 @@ def data_validate(recipe_id=None, format='html'):
 @app.route("/data/advanced")
 def show_advanced(recipe_id=None):
     """Advanced form for direct JSON entry."""
-    flask.g.recipe_id = recipe_id
+    flask.g.recipe_id = recipe_id # for error handling
     recipe = util.get_recipe(recipe_id, auth=True)
     return flask.render_template("data-advanced.html", recipe=recipe)
 
@@ -359,7 +365,7 @@ def show_advanced(recipe_id=None):
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """Show full result dataset in HTML, CSV, or JSON (as requested)."""
 
-    flask.g.recipe_id = recipe_id
+    flask.g.recipe_id = recipe_id # for error handling
 
     def get_result ():
         """Closure to generate the output."""
@@ -557,10 +563,8 @@ def do_data_save():
 
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
-    try:
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
-    except werkzeug.exceptions.Unauthorized as e:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
+    flask.g.recipe_id = recipe_id # for error handling    
+    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
 
     # Update recipe metadata
     if 'name' in flask.request.form:
