@@ -139,63 +139,87 @@ def home():
 
 @app.route("/about.html")
 def about():
-    # releases to list
+    """ Flask controller: show the about page
+    Includes version information for major packages, so that
+    we can tell easily what's deployed.
+    """
+    # include version information for these packages
     releases = {
         'hxl-proxy': __version__,
         'libhxl': hxl.__version__,
         'flask': flask.__version__,
         'requests': requests.__version__
     }
+
+    # draw the web page
     return flask.render_template('about.html', releases=releases)
+
 
 @app.route("/data/<recipe_id>/login")
 def data_login(recipe_id):
+    """ Flask controller: log in to work on a saved recipe
+    The user will end up here only if they tried to alter a saved
+    recipe. They will have to enter the recipe's password to
+    continue.
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    """
     flask.g.recipe_id = recipe_id # for error handling
     recipe = hxl_proxy.recipe.Recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
+
 @app.route("/data/source")
 @app.route("/data/<recipe_id>/source")
 def data_source(recipe_id=None):
-    """Choose a new data source."""
-
+    """ Flask controller: choose a new source URL
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    """
     flask.g.recipe_id = recipe_id # for error handling
 
+    # Build the recipe from the GET params and/or the database
     recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
+    # Render the login page
     return flask.render_template('data-source.html', recipe=recipe)
 
 
 @app.route("/data/tagger")
 @app.route("/data/<recipe_id>/tagger")
 def data_tagger(recipe_id=None):
-    """Add HXL tags to an untagged dataset."""
-
+    """ Flask controller: add HXL tags to an untagged dataset
+    The template will render differently depending on whether the user has selected the 
+    last row of text headers yet (&header_row), so this is actually two different workflow
+    steps.
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    """
     flask.g.recipe_id = recipe_id # for error handling
 
+    # Build the recipe from the GET params and/or the database
     recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
-    header_row = recipe.args.get('header-row')
-    if header_row is not None:
-        header_row = int(header_row)
-
+    # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
+    # We have to collect the following properties manually, because we don't have a complete
+    # HXLated recipe to open yet
+    header_row = recipe.args.get('header-row')
+    if header_row is not None:
+        header_row = int(header_row)
     try:
         sheet_index = int(recipe.args.get('sheet', 0))
     except:
         sheet_index = 0
-
     selector = recipe.args.get('selector', None)
 
+    # Set up a 25-row raw-data preview, using make_input from libhxl-python
     preview = []
     i = 0
     http_headers = {
         'User-Agent': 'hxl-proxy/tagger'
     }
-    if 'authorization_token' in recipe.args:
+    if 'authorization_token' in recipe.args: # private dataset
         http_headers['Authorization'] = recipe.args['authorization_token']
     for row in hxl.io.make_input(
             recipe.url,
@@ -204,44 +228,58 @@ def data_tagger(recipe_id=None):
             verify_ssl=util.check_verify_ssl(recipe.args),
             http_headers=http_headers
     ):
+        # Stop if we get to 25 rows
         if i >= 25:
             break
         else:
             i = i + 1
         if row:
             preview.append(row)
-        
+
+    # Draw the web page
     return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row)
 
 
 @app.route("/data/edit")
 @app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
 def data_edit(recipe_id=None):
-    """Create or edit a filter pipeline."""
-
+    """Flask controller: create or edit a filter pipeline.
+    Output for this page is never cached, but input may be.
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    """
     flask.g.recipe_id = recipe_id # for error handling
 
+    # Build the recipe from the GET params and/or the database
     recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
-    error = None
-    if recipe.url:
-        # show only a short preview
-        max_rows = recipe.args.get('max-rows')
-        max_rows = min(int(max_rows), 25) if max_rows is not None else 25
-        #source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows) # temporary
-        try:
-            source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
-            source.columns
-        except exceptions.RedirectException as e1:
-            raise e1
-        except hxl.io.HXLAuthorizationException as e2:
-            raise e2
-        except Exception as e3:
-            error = e3
-            source = None
-    else:
+    # Workflow: if there's no source URL, redirect the user to /data/source
+    if not recipe.url:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
+    
+    # show only a short preview
+    max_rows = recipe.args.get('max-rows')
+    max_rows = min(int(max_rows), 25) if max_rows is not None else 25
+
+    # check whether we're stripping headers
+    show_headers = (recipe.args.get('strip-headers') != 'on')
+
+    # Special handling: if the user has introduced an error in the filters,
+    # catch it so that they have an opportunity to change the filters and try to
+    # fix it.
+    error = None
+    try:
+        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
+        source.columns
+    except exceptions.RedirectException as e1:
+        # always pass through a redirect exception
+        raise e1
+    except hxl.io.HXLAuthorizationException as e2:
+        # always pass through an authorization exception
+        raise e2
+    except Exception as e3:
+        error = e3
+        source = None
 
     # Figure out how many filter forms to show
     filter_count = 0
@@ -251,8 +289,7 @@ def data_edit(recipe_id=None):
     if filter_count < filters.MAX_FILTER_COUNT:
         filter_count += 1
 
-    show_headers = (recipe.args.get('strip-headers') != 'on')
-
+    # Draw the web page
     return flask.render_template(
         'data-recipe.html',
         recipe=recipe,
@@ -262,21 +299,32 @@ def data_edit(recipe_id=None):
         filter_count=filter_count
     )
 
+
 @app.route("/data/save")
 @app.route("/data/<recipe_id>/save")
 def data_save(recipe_id=None):
-    """Show form to save a recipe."""
-
+    """ Flask controller: create or update a saved dataset (with a short URL)
+    The user will get redirected here automatically if they attempt to open a private
+    dataset on HDX (or anywhere else that requires an "Authorization:" HTTP header.
+    The controller creates a form that submits the recipe information to be saved
+    in the database and identified with a short hash.
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    """
     flask.g.recipe_id = recipe_id # for error handling
 
+    # Build the recipe from the GET params and/or the database
     recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
 
-    need_token = flask.request.args.get('need_token')
-    is_ckan = flask.request.args.get('is_ckan')
-
-    if not recipe or not recipe.url:
+    # Workflow: if there's no source URL, redirect the user to /data/source
+    if not recipe.url:
+        flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
+    # Grab controller-specific properties for the template
+    need_token = flask.request.args.get('need_token') # we need an authentication token
+    is_ckan = flask.request.args.get('is_ckan') # the source looks like CKAN
+
+    # Draw the web page
     return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
 
 
@@ -285,48 +333,57 @@ def data_save(recipe_id=None):
 @app.route("/data/<recipe_id>/validate")
 @app.route("/data/<recipe_id>/validate.<format>")
 def data_validate(recipe_id=None, format='html'):
-    """Run a validation and show the result in a dashboard."""
-
+    """ Flask controller: validate a HXL dataset and show the results
+    Output options include a web-based HTML dashboard or JSON.
+    Output for this page is never cached, but input may be.
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    @param format: the selected output format (json or html)
+    """
+    # Set global variables
     flask.g.recipe_id = recipe_id # for error handling
-
-    # Save the data format
-    flask.g.output_format = format
+    flask.g.output_format = format # requested output format
 
     # Get the recipe
     recipe = hxl_proxy.recipe.Recipe(recipe_id)
-    if not recipe or not recipe.url:
+
+    # Workflow: if there's no source URL, redirect the user to /data/source
+    if not recipe.url:
+        flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
-    # Get the parameters
-    schema_url = recipe.schema_url
+    # Special GET parameters for controlling validation
     severity_level = flask.request.args.get('severity', 'info')
     detail_hash = flask.request.args.get('details', None)
 
-    # set up the schema
+    # Set up the HXL validation schema
     schema_source = None
-    if schema_url:
+    if recipe.schema_url:
         schema_source = hxl.data(
-            schema_url,
+            recipe.schema_url,
             verify_ssl=util.check_verify_ssl(recipe.args),
             http_headers={'User-Agent': 'hxl-proxy/validation'}
         )
 
-    # run the validation
+    # Run the validation and get a JSON report from libhxl-python
     error_report = hxl.validate(
         filters.setup_filters(recipe),
         schema_source
     )
 
-    # return the results
+    # Render the validation results in JSON
     if format == 'json':
         return flask.Response(
             json.dumps(error_report, indent=4),
             mimetype="application/json"
         )
+
+    # Render the validation results in HTML
     else:
         # issue to highlight (HTML only)
         template_name = 'validate-summary.html'
         selected_issue = None
+
+        # if there's a detail_hash, show just that detail in the report
         if detail_hash:
             template_name = 'validate-issue.html'
             for issue in error_report['issues']:
@@ -334,22 +391,27 @@ def data_validate(recipe_id=None, format='html'):
                     selected_issue = issue
                     break
 
+        # draw the web page
         return flask.render_template(
             template_name,
             recipe=recipe,
-            schema_url=schema_url,
+            schema_url=recipe.schema_url,
             error_report=error_report,
             issue=selected_issue,
             severity=severity_level
         )
 
-@app.route("/data/<recipe_id>/advanced")
+
 @app.route("/data/advanced")
-def show_advanced(recipe_id=None):
-    """Advanced form for direct JSON entry."""
-    flask.g.recipe_id = recipe_id # for error handling
-    recipe = util.get_recipe(recipe_id, auth=True)
+def show_advanced():
+    """ Flask controller: developer page for entering a JSON recipe directly
+    This page isn't linked from the HXML Proxy validation, but it's a convenient
+    place to experiment with creating JSON-encoded recipes, as described at 
+    https://github.com/HXLStandard/hxl-proxy/wiki/JSON-recipes
+    """
+    recipe = util.get_recipe(auth=True)
     return flask.render_template("data-advanced.html", recipe=recipe)
+
 
 @app.route("/data")
 @app.route("/data.<flavour>.<format>")
@@ -363,8 +425,21 @@ def show_advanced(recipe_id=None):
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):
-    """Show full result dataset in HTML, CSV, or JSON (as requested)."""
+    """ Flask controller: render a transformed dataset
+    This is the controller that requests will hit most of the time.
+    It renders a transformed dataset as an HTML web page, a JSON
+    list of lists, or a JSON list of objects, based on the URL, Note that
+    the URL patterns above allow for custom-named download files
+    as well as generic downloads, hence the wide variety of patterns.
+    
+    This controller MUST come after all the other /data controllers, or
+    else Flask will get confused.
 
+    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+    @param format: the selected output format (json or html)
+    @param stub: the root filename for download, if supplied
+    @param flavour: the JSON flavour, if supplied (will be "objects")
+    """
     flask.g.recipe_id = recipe_id # for error handling
 
     def get_result ():
