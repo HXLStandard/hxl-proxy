@@ -165,7 +165,8 @@ def make_args(recipe=None, format=None, flavour=None, recipe_id=None, cloned=Fal
     """Construct args for url_for."""
     args = {}
     if recipe and recipe.args and (cloned or not recipe_id):
-        args = dict.copy(recipe.args)
+        for key in recipe.args:
+            args[key] = recipe.args[key]
     if format:
         args['format'] = format
         args['flavour'] = flavour

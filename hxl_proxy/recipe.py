@@ -1,3 +1,9 @@
+""" Manage a data-transformation recipe
+David Megginson
+April 2019
+License: Public Domain
+"""
+
 import flask, hxl_proxy, werkzeug
 
 
@@ -42,20 +48,16 @@ class Recipe:
 
             # read the recipe from the database
             saved_recipe = hxl_proxy.dao.recipes.read(self.recipe_id)
+
             if not saved_recipe:
                 raise werkzeug.exceptions.NotFound("No saved recipe for {}".format(recipe_id))
+
+            # populate the class from the saved recipe dict
+            self.fromDict(saved_recipe)
 
             # check if this page requires authorisation
             if auth and not self.check_auth():
                 raise werkzeug.exceptions.Unauthorized("Wrong or missing password.")
-
-            # default args are from the saved recipe
-            self.args = saved_recipe.get("args")
-
-            # grab some top-level properties
-            self.name = saved_recipe.get("name")
-            self.passhash = saved_recipe.get("passhash")
-            self.stub = saved_recipe.get("stub")
 
             # allow overrides *only* if we're not using a private dataset
             # (not sending an HTTP Authorization: header)
@@ -89,7 +91,7 @@ class Recipe:
         self.cloneable = props.get("cloneable")
         self.passhash = props.get("passhash")
         self.stub = props.get("stub")
-        self.args = dict(props.get(args))
+        self.args = dict(props.get("args"))
 
         
     def toDict(self):
@@ -122,10 +124,10 @@ class Recipe:
                 session_passhash = flask.session.get('passhash')
 
             # do the password hashes match?
-            if passhash == session_passhash:
+            if self.passhash == session_passhash:
                 return True
             else:
-                session['passhash'] = None
+                flask.session['passhash'] = None
                 flask.flash("Wrong password")
                 return False
 
