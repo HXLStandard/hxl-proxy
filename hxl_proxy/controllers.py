@@ -407,13 +407,13 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
                 use_objects = True
             response = flask.Response(list(source.gen_json(show_headers=show_headers, use_objects=use_objects)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if recipe.get('stub'):
+            if recipe.stub:
                 response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(recipe['stub'])
             return response
         else:
             response = flask.Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
             response.headers['Access-Control-Allow-Origin'] = '*'
-            if recipe.get('stub'):
+            if recipe.stub:
                 response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe['stub'])
             return response
 
