@@ -368,8 +368,8 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
         flask.g.output_format = format
 
         # Set up the data source from the recipe
-        recipe = util.get_recipe(recipe_id, auth=False)
-        if not recipe or not recipe['args'].get('url'):
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=False)
+        if not recipe.url:
             return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
         # Use caching if requested
@@ -383,8 +383,8 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
                 source = filters.setup_filters(recipe)
 
         # Output parameters
-        show_headers = (recipe['args'].get('strip-headers') != 'on')
-        max_rows = recipe['args'].get('max-rows', None)
+        show_headers = (recipe.args.get('strip-headers') != 'on')
+        max_rows = recipe.args.get('max-rows', None)
 
         # Return a generator based on the format requested
         if format == 'html':
