@@ -77,7 +77,7 @@ def handle_authorization_exception(e):
     """
     if e.message:
         flask.flash(e.message)
-    recipe = util.get_recipe(recipe_id=flask.g.recipe_id)
+    recipe = hxl_proxy.recipe.Recipe(recipe_id=flask.g.recipe_id)
     extras = {
         'need_token': 'on'
     }
@@ -161,37 +161,37 @@ def data_tagger(recipe_id=None):
     flask.g.recipe_id = recipe_id
 
     try:
-        recipe = util.get_recipe(recipe_id, auth=True)
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
-    header_row = recipe['args'].get('header-row')
+    header_row = recipe.args.get('header-row')
     if header_row is not None:
         header_row = int(header_row)
 
-    if not recipe['args'].get('url'):
+    if not recipe.url:
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     try:
-        sheet_index = int(recipe['args'].get('sheet', 0))
+        sheet_index = int(recipe.args.get('sheet', 0))
     except:
         sheet_index = 0
 
-    selector = recipe['args'].get('selector', None)
+    selector = recipe.args.get('selector', None)
 
     preview = []
     i = 0
     http_headers = {
         'User-Agent': 'hxl-proxy/tagger'
     }
-    if recipe['args'].get('authorization_token'):
-        http_headers['Authorization'] = recipe['args']['authorization_token']
+    if 'authorization_token' in recipe.args:
+        http_headers['Authorization'] = recipe.args['authorization_token']
     for row in hxl.io.make_input(
-            recipe['args'].get('url'),
+            recipe.url,
             sheet_index=sheet_index,
             selector=selector,
-            verify_ssl=util.check_verify_ssl(recipe['args']),
+            verify_ssl=util.check_verify_ssl(recipe.args),
             http_headers=http_headers
     ):
         if i >= 25:
@@ -408,13 +408,13 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
             response = flask.Response(list(source.gen_json(show_headers=show_headers, use_objects=use_objects)), mimetype='application/json')
             response.headers['Access-Control-Allow-Origin'] = '*'
             if recipe.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(recipe['stub'])
+                response.headers['Content-Disposition'] = 'attachment; filename={}.json'.format(recipe.stub)
             return response
         else:
             response = flask.Response(list(source.gen_csv(show_headers=show_headers)), mimetype='text/csv')
             response.headers['Access-Control-Allow-Origin'] = '*'
             if recipe.stub:
-                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe['stub'])
+                response.headers['Content-Disposition'] = 'attachment; filename={}.csv'.format(recipe.stub)
             return response
 
     # Get the result and update the cache manually if we're skipping caching.

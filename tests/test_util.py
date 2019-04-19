@@ -54,20 +54,11 @@ class TestUtil(unittest.TestCase):
 
     def test_using_tagger_p(self):
         with hxl_proxy.app.test_request_context('/data?tagger-01-header=country+code&tagger-01-tag=country%2Bcode'):
-            recipe = hxl_proxy.util.get_recipe()
+            recipe = hxl_proxy.recipe.Recipe()
             self.assertTrue(hxl_proxy.util.using_tagger_p(recipe))
         with hxl_proxy.app.test_request_context('/data?url=http://example.org'):
-            recipe = hxl_proxy.util.get_recipe()
+            recipe = hxl_proxy.recipe.Recipe()
             self.assertFalse(hxl_proxy.util.using_tagger_p(recipe))
-
-    def test_get_recipe(self):
-        # TODO test with recipe_id access
-        with hxl_proxy.app.test_request_context('/data?url=http://example.org&filter01=count&count-spec01=country'):
-            recipe = hxl_proxy.util.get_recipe()
-            self.assertTrue(recipe)
-            self.assertEqual('count', recipe['args'].get('filter01'))
-
-    # skip check_auth
 
     # TODO add_args
 
