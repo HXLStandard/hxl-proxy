@@ -22,7 +22,7 @@ class Recipe:
         """
 
         # initialise the properties
-        self.recipe_id = str(recipe_id)
+        self.recipe_id = str(recipe_id) if recipe_id is not None else None
         self.args = None
         self.passhash = None
         self.stub = None

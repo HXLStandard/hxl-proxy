@@ -63,7 +63,7 @@ def urlencode_utf8(params):
     )
 
 def using_tagger_p(recipe):
-    for name in recipe['args']:
+    for name in recipe.args:
         if re.match(r'^tagger-', name):
             return True
     return False
@@ -129,7 +129,7 @@ def get_recipe(recipe_id=None, auth=False, args=None):
     else:
         recipe = {'args': {key: args.get(key) for key in args}}
         if args.get('stub'):
-            recipe['stub'] = args.get('stub')
+            recipe.stub = args.get('stub')
 
     # No overrides with a private authorization token!!!!!!!
     # (potential security hole)
@@ -137,8 +137,8 @@ def get_recipe(recipe_id=None, auth=False, args=None):
         # Allow some values to be overridden from request parameters
         for key in RECIPE_OVERRIDES:
             if args.get(key):
-                recipe['overridden'] = True
-                recipe['args'][key] = args.get(key)
+                recipe.overridden = True
+                recipe.args[key] = args.get(key)
 
     return recipe
 
@@ -180,7 +180,7 @@ def make_recipe_id():
 
 def check_auth(recipe, password=None):
     """Check authorisation."""
-    passhash = recipe.get('passhash')
+    passhash = recipe.passhash
     if passhash:
         if password:
             session_passhash = make_md5(password)
@@ -209,29 +209,29 @@ def add_args(extra_args):
                 del args[key]
     return '?' + urlencode_utf8(args)
 
-def make_args(recipe={}, format=None, flavour=None, recipe_id=None, cloned=False):
+def make_args(recipe=None, format=None, flavour=None, recipe_id=None, cloned=False):
     """Construct args for url_for."""
     args = {}
-    if recipe.get('args') and (cloned or not recipe_id):
-        args = dict.copy(recipe['args'])
+    if recipe and recipe.args and (cloned or not recipe_id):
+        args = dict.copy(recipe.args)
     if format:
         args['format'] = format
         args['flavour'] = flavour
-        stub = recipe.get('stub')
+        stub = recipe.stub
         if stub:
             args['stub'] = stub
-    if not recipe_id:
-        recipe_id = recipe.get('recipe_id')
+    if not recipe_id and recipe:
+        recipe_id = recipe.recipe_id
     if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
     return args
 
-def data_url_for(endpoint, recipe={}, format=None, flavour=None, recipe_id=None, cloned=False, extras={}):
+def data_url_for(endpoint, recipe=None, format=None, flavour=None, recipe_id=None, cloned=False, extras={}):
     """Generate a URL relative to the subpath (etc)
     Wrapper around flask.url_for
     """
-    if not recipe_id:
-        recipe_id = recipe.get('recipe_id')
+    if not recipe_id and recipe:
+        recipe_id = recipe.recipe_id
     args = make_args(recipe, format=format, flavour=flavour, recipe_id=recipe_id, cloned=cloned)
     if extras:
         # add in any extra GET params requested

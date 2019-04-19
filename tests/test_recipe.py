@@ -26,6 +26,7 @@ class TestConstructor(base.AbstractDBTest):
         recipe = Recipe(request_args=args)
         self.assertEqual(args["url"], recipe.args.get("url"))
         self.assertEqual(args["url"], recipe.url)
+        self.assertTrue(recipe.recipe_id is None)
 
     def test_saved(self):
         recipe_id = 'AAAAA'

@@ -11,6 +11,8 @@ import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug
 
 from io import StringIO
 
+import hxl_proxy.recipe
+
 from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
 
 logger = logging.getLogger(__name__)
@@ -210,15 +212,16 @@ def data_edit(recipe_id=None):
     flask.g.recipe_id = recipe_id
 
     try:
-        recipe = util.get_recipe(recipe_id, auth=True)
+        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
     except werkzeug.exceptions.Unauthorized as e:
         return flask.redirect(util.data_url_for('data_login', recipe_id=recipe_id), 303)
 
     error = None
-    if recipe['args'].get('url'):
+    if recipe.url:
         # show only a short preview
-        max_rows = recipe['args'].get('max-rows', None)
+        max_rows = recipe.args.get('max-rows')
         max_rows = min(int(max_rows), 25) if max_rows is not None else 25
+        #source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows) # temporary
         try:
             source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
             source.columns
@@ -236,12 +239,12 @@ def data_edit(recipe_id=None):
     # Figure out how many filter forms to show
     filter_count = 0
     for n in range(1, filters.MAX_FILTER_COUNT):
-        if recipe['args'].get('filter%02d' % n):
+        if recipe.args.get('filter%02d' % n):
             filter_count = n
     if filter_count < filters.MAX_FILTER_COUNT:
         filter_count += 1
 
-    show_headers = (recipe['args'].get('strip-headers') != 'on')
+    show_headers = (recipe.args.get('strip-headers') != 'on')
 
     return flask.render_template(
         'data-recipe.html',

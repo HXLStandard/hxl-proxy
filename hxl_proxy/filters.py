@@ -19,23 +19,23 @@ MAX_FILTER_COUNT = 99
 def setup_filters(recipe, data_content=None):
     """
     Open a stream to a data source URL, and create a filter pipeline based on the arguments.
-    @param recipe the GET-request recipe (uses only recipe['args']).
+    @param recipe the GET-request recipe (uses only recipe.args).
     @return a HXL DataSource representing the full pipeline.
     """
 
     # null recipe or url means null source
-    if not data_content and (not recipe or not recipe['args'].get('url')):
+    if not data_content and (not recipe or not recipe.url):
         return None
 
     # Basic input source
     if data_content:
         source = hxl.data(io.BytesIO(data_content.encode('utf-8')))
     else:
-        source = hxl.data(make_tagged_input(recipe['args']))
+        source = hxl.data(make_tagged_input(recipe.args))
 
     # Do we have a JSON recipe? Load it first.
-    if recipe['args'].get('recipe'):
-        source = source.recipe(recipe['args'].get('recipe'))
+    if recipe.args.get('recipe'):
+        source = source.recipe(recipe.args.get('recipe'))
 
     # Intercept missing hashtags here
     try:
@@ -45,39 +45,39 @@ def setup_filters(recipe, data_content=None):
 
     # Create the filter pipeline from the source
     for index in range(1, MAX_FILTER_COUNT):
-        filter = recipe['args'].get('filter%02d' % index)
+        filter = recipe.args.get('filter%02d' % index)
         if filter == 'add':
-            source = add_add_filter(source, recipe['args'], index)
+            source = add_add_filter(source, recipe.args, index)
         elif filter == 'append':
-            source = add_append_filter(source, recipe['args'], index)
+            source = add_append_filter(source, recipe.args, index)
         elif filter == 'append-list':
-            source = add_append_list_filter(source, recipe['args'], index)
+            source = add_append_list_filter(source, recipe.args, index)
         elif filter == 'clean':
-            source = add_clean_filter(source, recipe['args'], index)
+            source = add_clean_filter(source, recipe.args, index)
         elif filter == 'count':
-            source = add_count_filter(source, recipe['args'], index)
+            source = add_count_filter(source, recipe.args, index)
         elif filter == 'column' or filter == 'cut':
-            source = add_column_filter(source, recipe['args'], index)
+            source = add_column_filter(source, recipe.args, index)
         elif filter == 'dedup':
-            source = add_dedup_filter(source, recipe['args'], index)
+            source = add_dedup_filter(source, recipe.args, index)
         elif filter == 'explode':
-            source = add_explode_filter(source, recipe['args'], index)
+            source = add_explode_filter(source, recipe.args, index)
         elif filter == 'fill':
-            source = add_fill_filter(source, recipe['args'], index)
+            source = add_fill_filter(source, recipe.args, index)
         elif filter == 'jsonpath':
-            source = add_jsonpath_filter(source, recipe['args'], index)
+            source = add_jsonpath_filter(source, recipe.args, index)
         elif filter == 'merge':
-            source = add_merge_filter(source, recipe['args'], index)
+            source = add_merge_filter(source, recipe.args, index)
         elif filter == 'rename':
-            source = add_rename_filter(source, recipe['args'], index)
+            source = add_rename_filter(source, recipe.args, index)
         elif filter == 'replace':
-            source = add_replace_filter(source, recipe['args'], index)
+            source = add_replace_filter(source, recipe.args, index)
         elif filter == 'replace-map':
-            source = add_replace_map_filter(source, recipe['args'], index)
+            source = add_replace_map_filter(source, recipe.args, index)
         elif filter == 'rows' or filter == 'select':
-            source = add_row_filter(source, recipe['args'], index)
+            source = add_row_filter(source, recipe.args, index)
         elif filter == 'sort':
-            source = add_sort_filter(source, recipe['args'], index)
+            source = add_sort_filter(source, recipe.args, index)
         elif filter:
             raise Exception("Unknown filter type '{}'".format(filter))
 
