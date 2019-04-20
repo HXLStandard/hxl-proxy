@@ -1,4 +1,4 @@
-""" Unit tests for hxl_proxy.recipe module
+""" Unit tests for hxl_proxy.recipes module
 David Megginson
 April 2019
 License: Public Domain
@@ -6,7 +6,7 @@ License: Public Domain
 
 import unittest
 
-from hxl_proxy.recipe import Recipe
+from hxl_proxy.recipes import Recipe
 
 from . import base
 

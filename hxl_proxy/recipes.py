@@ -1,6 +1,5 @@
 """ Manage a data-transformation recipe
-David Megginson
-April 2019
+Started April 2019 by David Megginson
 License: Public Domain
 """
 

@@ -54,10 +54,10 @@ class TestUtil(unittest.TestCase):
 
     def test_using_tagger_p(self):
         with hxl_proxy.app.test_request_context('/data?tagger-01-header=country+code&tagger-01-tag=country%2Bcode'):
-            recipe = hxl_proxy.recipe.Recipe()
+            recipe = hxl_proxy.recipes.Recipe()
             self.assertTrue(hxl_proxy.util.using_tagger_p(recipe))
         with hxl_proxy.app.test_request_context('/data?url=http://example.org'):
-            recipe = hxl_proxy.recipe.Recipe()
+            recipe = hxl_proxy.recipes.Recipe()
             self.assertFalse(hxl_proxy.util.using_tagger_p(recipe))
 
     # TODO add_args

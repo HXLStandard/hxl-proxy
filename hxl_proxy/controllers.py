@@ -1,18 +1,15 @@
 """ HTTP controllers for the HXL Proxy
-David Megginson
-January 2015
+Started January 2015 by David Megginson
 License: Public Domain
 """
 
 import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
 
-import hxl_proxy.recipe
-
-from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
+from hxl_proxy import app, auth, cache, dao, filters, preview, pcodes, recipes, util, exceptions, __version__
 
 
-# Logging
 logger = logging.getLogger(__name__)
+""" Python logger for this module """
 
 
 
@@ -29,7 +26,7 @@ def handle_default_exception(e):
     """ Error handler: display an error page with various HTTP status codes
     This handler applies to any exception that doesn't have a more-specific
     handler below.
-    @param e: the exception caught
+    @param e: the exception being handled
     """
     if isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
@@ -62,7 +59,7 @@ def handle_redirect_exception(e):
     Different parts of the code throw hxl_proxy.exceptions.RedirectException
     when they need the HXL Proxy to jump to a different page. This is especially
     important for workflow (e.g. if there's no URL, jump to /data/source)
-    @param e: the exception being caught
+    @param e: the exception being handled
     """
     if e.message:
         flask.flash(e.message)
@@ -76,7 +73,7 @@ def handle_source_authorization_exception(e):
     """ Error handler: the data source requires authorisation
     This will be triggered when opening a private HDX dataset before
     the user has supplied their authorisation token.
-    @param e: the exception being caught
+    @param e: the exception being handled
     """
     if e.message:
         flask.flash(e.message)
@@ -84,7 +81,7 @@ def handle_source_authorization_exception(e):
     # we're using flask.g.recipe_id to handle the case where a saved recipe
     # points to a formerly-public dataset that has suddenly become private
     # normally, it will be None (because there's no saved recipe yet)
-    recipe = hxl_proxy.recipe.Recipe(recipe_id=flask.g.recipe_id)
+    recipe = recipes.Recipe(recipe_id=flask.g.recipe_id)
 
     # add an extra parameter for the /data/save form to indicate that we
     # want the user to provide an authorisation token
@@ -107,7 +104,7 @@ def handle_password_required_exception(e):
     """ Error handler: the HXL Proxy saved recipe requires a password login
     Note that this handler triggers on a recipe basis, not a user basis; each
     each saved recipe can potentially have a different password.
-    @param e: the exception being caught
+    @param e: the exception being handled
     """
     flask.flash("Login required")
     if flask.g.recipe_id:
@@ -125,7 +122,7 @@ def handle_ssl_certificate_error(e):
     @param e: the exception being handled
     """
     flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.data_url_for('data_source', recipe=hxl_proxy.recipe.Recipe()), 302)
+    return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
 
 # register the SSL certificate verification handler
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
@@ -167,7 +164,7 @@ def data_login(recipe_id):
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     """
     flask.g.recipe_id = recipe_id # for error handling
-    recipe = hxl_proxy.recipe.Recipe(recipe_id)
+    recipe = recipes.Recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
 
@@ -180,7 +177,7 @@ def data_source(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe(recipe_id, auth=True)
 
     # Render the login page
     return flask.render_template('data-source.html', recipe=recipe)
@@ -198,7 +195,7 @@ def data_tagger(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -253,7 +250,7 @@ def data_edit(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -316,7 +313,7 @@ def data_save(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -347,7 +344,7 @@ def data_validate(recipe_id=None, format='html'):
     flask.g.output_format = format # requested output format
 
     # Get the recipe
-    recipe = hxl_proxy.recipe.Recipe(recipe_id)
+    recipe = recipes.Recipe(recipe_id)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -467,7 +464,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
         flask.g.output_format = format
 
         # Set up the data source from the recipe
-        recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=False)
+        recipe = recipes.Recipe(recipe_id, auth=False)
 
         # Workflow: if there's no source URL, redirect the user to /data/source
         if not recipe.url:
@@ -649,7 +646,7 @@ def do_data_save():
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
     flask.g.recipe_id = recipe_id # for error handling    
-    recipe = hxl_proxy.recipe.Recipe(recipe_id, auth=True, request_args=flask.request.form)
+    recipe = recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
 
     # Update recipe metadata
     if 'name' in flask.request.form:

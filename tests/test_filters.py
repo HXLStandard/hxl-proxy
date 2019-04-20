@@ -13,7 +13,7 @@ import operator
 from hxl.model import TagPattern
 from hxl.io import ArrayInput, HXLReader
 from hxl_proxy.filters import *
-from hxl_proxy.recipe import Recipe
+from hxl_proxy.recipes import Recipe
 
 #
 # Mock URL access so that tests work offline
