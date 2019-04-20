@@ -1,6 +1,4 @@
-"""
-Utility functions for hxl_proxy
-
+""" Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
@@ -17,56 +15,50 @@ import hxl
 import hxl_proxy
 from hxl_proxy import app
 
+
+# Logger for this module
 logger = logging.getLogger(__name__)
 
-CACHE_KEY_EXCLUDES = ['force']
+
+########################################################################
+# Utility functions for caching
+########################################################################
 
 def make_cache_key (path = None, args_in=None):
-    """Make a key for a caching request, based on the full path."""
+    """Make a key for a caching request, based on the full path.
+    The cache key depends on the path and the GET parameters,
+    excluding &force (so that we can cache the request by using
+    the force parameter).
+    @param path: the HTTP path, or None to use the current request
+    @param args_in: the GET params, or None to use the current request
+    """
+    CACHE_KEY_EXCLUDES = ['force']
+
+    # Fill in default 
     if path is None:
         path = request.path
     if args_in is None:
         args_in = request.args
+
+    # Construct the args for the cache key
     args_out = {}
-    for name in args_in:
+    for name in sorted(args_in.keys()):
         if name not in CACHE_KEY_EXCLUDES:
             args_out[name] = args_in[name]
+
+    # Use a pickled version path and args for the cache key
     return path + pickle.dumps(args_out).decode('latin1')
 
+
 def skip_cache_p ():
-    """Test if we should skip the cache."""
+    """ Determine whether we are skipping the cache.
+    The HTTP &force parameter requests cache skipping.
+    Note that this function will not detect the &force
+    parameter inside a saved recipe; for now, it has to
+    be specified as a GET param.
+    @returns: True if we don't want to cache
+    """
     return True if request.args.get('force') else False
-    
-def no_none(s):
-    return s if s is not None else ''
-    
-def strnorm (s):
-    """Normalise a string"""
-    return hxl.datatypes.normalise_string(s)
-
-def stream_template(template_name, **context):
-    """From the flask docs - stream a long template result."""
-    app.update_template_context(context)
-    t = app.jinja_env.get_template(template_name)
-    rv = t.stream(context)
-    rv.enable_buffering(5)
-    return rv
-
-def urlquote(value):
-    return urllib.parse.quote_plus(value, safe='/')
-
-def urlencode_utf8(params):
-    if hasattr(params, 'items'):
-        params = list(params.items())
-    return '&'.join(
-            urlquote(k) + '=' + urlquote(v) for k, v in params if v
-    )
-
-def using_tagger_p(recipe):
-    for name in recipe.args:
-        if re.match(r'^tagger-', name):
-            return True
-    return False
 
 def get_gravatar(email, size=40):
     import hashlib
@@ -215,18 +207,6 @@ def search_by_attributes(attributes, columns):
                 break
     return result_columns
 
-def spreadsheet_col_num_to_name(num):
-    """Convert a column index to spreadsheet letters.
-    Adapted from http://asyoulook.com/computers%20&%20internet/python-convert-spreadsheet-number-to-column-letter/659618
-    """
-    letters = ''
-    num += 1
-    while num:
-        mod = num % 26
-        letters += chr(mod + 64)
-        num = num // 26
-    return ''.join(reversed(letters))
-
 @cache.memoize(unless=skip_cache_p)
 def run_validation(url, content, content_hash, sheet_index, selector, schema_url, schema_content, schema_content_hash, schema_sheet_index, include_dataset):
     """ Do the actual validation run, using the arguments provided.
@@ -299,6 +279,57 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
 
     return report
 
+
+########################################################################
+# Output helper functions for templates
+########################################################################
+
+def no_none(s):
+    """ Template helper: prevent None from appearing in output.
+    @param s: the input value
+    @returns: a string version of the value, or "" if None
+    """
+    return str(s) if s is not None else ''
+    
+def strnorm (s):
+    """Normalise a string"""
+    return hxl.datatypes.normalise_string(s)
+
+def stream_template(template_name, **context):
+    """From the flask docs - stream a long template result."""
+    app.update_template_context(context)
+    t = app.jinja_env.get_template(template_name)
+    rv = t.stream(context)
+    rv.enable_buffering(5)
+    return rv
+
+def urlquote(value):
+    return urllib.parse.quote_plus(value, safe='/')
+
+def spreadsheet_col_num_to_name(num):
+    """Convert a column index to spreadsheet letters.
+    Adapted from http://asyoulook.com/computers%20&%20internet/python-convert-spreadsheet-number-to-column-letter/659618
+    """
+    letters = ''
+    num += 1
+    while num:
+        mod = num % 26
+        letters += chr(mod + 64)
+        num = num // 26
+    return ''.join(reversed(letters))
+
+def using_tagger_p(recipe):
+    for name in recipe.args:
+        if re.match(r'^tagger-', name):
+            return True
+    return False
+
+def urlencode_utf8(params):
+    if hasattr(params, 'items'):
+        params = list(params.items())
+    return '&'.join(
+            urlquote(k) + '=' + urlquote(v) for k, v in params if v
+    )
 
 #
 # Declare Jinja2 filters and functions
