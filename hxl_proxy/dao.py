@@ -322,3 +322,24 @@ class recipes:
             (recipe_id,),
             commit=commit
         )
+
+
+########################################################################
+# Support functions
+########################################################################
+
+def gen_recipe_id():
+    """
+    Generate a pseudo-random, 6-character hash for use as a recipe_id.
+    """
+    salt = str(time.time() * random.random())
+    encoded_hash = hxl_proxy.util.make_md5(salt)
+    return encoded_hash[:6]
+
+def make_recipe_id():
+    """Make a unique recipe_id for a saved recipe."""
+    recipe_id = gen_recipe_id()
+    while hxl_proxy.dao.recipes.read(recipe_id):
+        recipe_id = gen_recipe_id()
+    return recipe_id
+
