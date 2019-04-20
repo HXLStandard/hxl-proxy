@@ -4,7 +4,7 @@ Utility functions for hxl_proxy
 Started 2015-02-18 by David Megginson
 """
 
-import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, iati2hxl.generator, requests, logging
+import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, requests, logging
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 
@@ -88,30 +88,6 @@ def check_verify_ssl(args):
         return True
 
 
-def gen_iati_hxl(url):
-    """Generate HXL CSV from IATI"""
-    import csv
-
-    class TextOut:
-        """Simple string output source to capture CSV"""
-        def __init__(self):
-            self.data = ''
-        def write(self, s):
-            self.data += s
-        def get(self):
-            data = self.data
-            self.data = ''
-            return data
-
-    output = TextOut()
-    writer = csv.writer(output)
-    with requests.get(url, stream=True) as response:
-        response.raw.decode_content = True
-        for row in iati2hxl.generator.genhxl(response.raw):
-            writer.writerow(row)
-            yield output.get()
-
-            
 def make_file_hash(stream):
     """Calculate a hash in chunks from a stream.
     Must be random-access. Resets to position 0 before and after read.

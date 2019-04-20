@@ -1,3 +1,8 @@
+2019-05-01 Release 1.16
+	- major code refactoring with new Recipe class
+	- removed iati2hxl endpoint
+	- improved organisation and documentation for controllers
+
 2019-04-04 Release 1.15.1
 	- fix caching for validation requests sent via POST
 	- removed obsolete basic chart and map demo

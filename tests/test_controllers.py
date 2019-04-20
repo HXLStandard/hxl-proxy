@@ -419,17 +419,6 @@ class TestHash(AbstractControllerTest):
         self.assertNotEquals(report_headers['hash'], report_data['hash'])
     
 
-class TestIATI(AbstractControllerTest):
-
-    URL = 'http://example.org/iati-dataset.xml'
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_good_iati(self):
-        response = self.get('/iati2hxl', {'url': self.URL})
-        self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
-        self.assertEqual('*', response.headers.get('access-control-allow-origin'))
-    
-
 class TestRemovedPages(AbstractControllerTest):
 
     def test_chart_removed(self):

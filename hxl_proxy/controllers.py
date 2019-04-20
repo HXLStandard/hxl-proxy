@@ -1,10 +1,7 @@
-"""
-HTTP controllers for the HXL Proxy
+""" HTTP controllers for the HXL Proxy
 David Megginson
 January 2015
-
 License: Public Domain
-Documentation: http://hxlstandard.org
 """
 
 import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
@@ -18,28 +15,22 @@ from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions,
 logger = logging.getLogger(__name__)
 
 
-# FIXME - move somewhere else
-RECIPE_ARG_BLACKLIST = [
-    'cloneable',
-    'description',
-    'details'
-    'name',
-    'passhash',
-    'password',
-    'password-repeat',
-    'recipe_id',
-    'severity',
-    'stub',
-]
-"""Properties that should never appear in a recipe's args dictionary"""
-
-
+
+########################################################################
+# Error handlers
 #
-# Error handling
+# These functions handle exceptions that make it to the top level.
 #
+# The HXL Proxy uses exceptions for special purposes like redirections
+# or authorisation as well as errors.
+########################################################################
 
-def handle_exception(e, format='html'):
-    """Default error page."""
+def handle_default_exception(e):
+    """ Error handler: display an error page with various HTTP status codes
+    This handler applies to any exception that doesn't have a more-specific
+    handler below.
+    @param e: the exception caught
+    """
     if isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
         status = 403
@@ -49,48 +40,74 @@ def handle_exception(e, format='html'):
         status = 404
     else:
         status = 500
+
+    # Check the global output_format variable to see if it's HTML or JSON/CSV
+    # Use a JSON error format if not HTML
     if flask.g.output_format != 'html':
         response = flask.Response(util.make_json_error(e, status), mimetype='application/json', status=status)
+        # add CORS header
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     else:
+        # Generic HTML error page
         return flask.render_template('error.html', e=e, category=type(e)), status        
 
+# Register the general error handler UNLESS we're in debug mode
 if not app.config.get('DEBUG'):
-    app.register_error_handler(Exception, handle_exception)
+    app.register_error_handler(Exception, handle_default_exception)
 
 
 def handle_redirect_exception(e):
-    """ Exception to force a redirect to a different page
+    """ Error handler: catch a redirection exception
+    Different parts of the code throw hxl_proxy.exceptions.RedirectException
+    when they need the HXL Proxy to jump to a different page. This is especially
+    important for workflow (e.g. if there's no URL, jump to /data/source)
+    @param e: the exception being caught
     """
     if e.message:
         flask.flash(e.message)
     return flask.redirect(e.target_url, e.http_code)
 
+# Register the redirect exception handler
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
 
 
-# Source dataset requires authorisation token
-
-def handle_authorization_exception(e):
-    """ Exception when authorisation fails on the source resource
+def handle_source_authorization_exception(e):
+    """ Error handler: the data source requires authorisation
+    This will be triggered when opening a private HDX dataset before
+    the user has supplied their authorisation token.
+    @param e: the exception being caught
     """
     if e.message:
         flask.flash(e.message)
+
+    # we're using flask.g.recipe_id to handle the case where a saved recipe
+    # points to a formerly-public dataset that has suddenly become private
+    # normally, it will be None (because there's no saved recipe yet)
     recipe = hxl_proxy.recipe.Recipe(recipe_id=flask.g.recipe_id)
+
+    # add an extra parameter for the /data/save form to indicate that we
+    # want the user to provide an authorisation token
     extras = {
         'need_token': 'on'
     }
+
+    # note whether the resource looked like it came from HDX
     if e.is_ckan:
         extras['is_ckan'] = 'on'
+
+    # redirect to the /data/save page to ask the user for a token
     return flask.redirect(util.data_url_for('data_save', recipe=recipe, extras=extras), 302)
 
-app.register_error_handler(hxl.io.HXLAuthorizationException, handle_authorization_exception)
+# register the source authorisation handler
+app.register_error_handler(hxl.io.HXLAuthorizationException, handle_source_authorization_exception)
 
-# Page requires login
 
-def handle_login_exception(e):
-    """ Exception when we need to log into a resource
+def handle_password_required_exception(e):
+    """ Error handler: the HXL Proxy saved recipe requires a password login
+    Note that this handler triggers on a recipe basis, not a user basis; each
+    each saved recipe can potentially have a different password.
+    @param e: the exception being caught
     """
     flask.flash("Login required")
     if flask.g.recipe_id:
@@ -98,40 +115,43 @@ def handle_login_exception(e):
     else:
         raise Exception("Internal error: login but no saved recipe")
 
-app.register_error_handler(werkzeug.exceptions.Unauthorized, handle_login_exception)
+# register the password required handler
+app.register_error_handler(werkzeug.exceptions.Unauthorized, handle_password_required_exception)
     
 
-#
-# SSL errors
-#
-def handle_ssl_error(e):
+def handle_ssl_certificate_error(e):
+    """ Error handler: SSL certificate error
+    Give the user an option to disable SSL certificate verification by redirecting to the /data/source page.
+    @param e: the exception being handled
+    """
     flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
     return flask.redirect(util.data_url_for('data_source', recipe=hxl_proxy.recipe.Recipe()), 302)
 
-app.register_error_handler(requests.exceptions.SSLError, handle_ssl_error)
+# register the SSL certificate verification handler
+app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
 
-#
-# Meta handlers
-#
+
+
+########################################################################
+# Global pre-/post-controller functions
+########################################################################
 
 @app.before_request
 def before_request():
     """Code to run immediately before the request"""
+
+    # grab the secret key
     app.secret_key = app.config['SECRET_KEY']
+
+    # choose the parameter storage class before parsing the GET parameters
     flask.request.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
+
+    # grab the member error for Humanitarian.ID (not currently used)
     flask.g.member = flask.session.get('member_info')
-    flask.g.output_format='html' # default format is HTML, unless a controller changes it
 
+    # select the default output format (controllers may change it)
+    flask.g.output_format='html'
 
-#
-# Redirects for deprecated URL patterns
-#
-
-@app.route("/")
-def home():
-    # home isn't moved permanently
-    # note: not using data_url_for because this is outside data pages
-    return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
 
 ########################################################################
@@ -611,6 +631,21 @@ def do_data_save():
     (Will also include all of the other HXL Proxy recipe arguments as hidden parameters)
     """
 
+    # FIXME - move somewhere else
+    RECIPE_ARG_BLACKLIST = [
+        'cloneable',
+        'description',
+        'details'
+        'name',
+        'passhash',
+        'password',
+        'password-repeat',
+        'recipe_id',
+        'severity',
+        'stub',
+    ]
+    """Properties that should never appear in a recipe's args dictionary"""
+
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
     flask.g.recipe_id = recipe_id # for error handling    
@@ -661,7 +696,7 @@ def do_data_save():
         # FIXME other auth information is in __init__.py
         flask.session['passhash'] = recipe.passhash
 
-    # Clear the entire HXL Proxy cache
+    # Clear the entire HXL Proxy cache to avoid stale data (!!!)
     # TODO: be more targeted here
     cache.clear()
 
@@ -671,20 +706,29 @@ def do_data_save():
 
 @app.route("/actions/validate", methods=['POST'])
 def do_data_validate():
-    """POST handler: validate a dataset against the provided schema, and return a JSON report
-    This method does not apply filters, tagger, etc, but simply takes the following parameters:
-    * url | content - the data to validate
-    * schema_url | schema_content - the schema to use (optional)
+    """ Flask controler: validate an uploaded file against an uploaded HXL schema
+    This controller was created for HDX Data Check, which is the only known user.
+    The controller returns a JSON validation report from libhxl-python.
+
+    Post parameters:
+
+    url - the URL of the data to validate (required unless "content" is specified)
+    content - a file attachment with the HXL content (required unless "url" is specified)
+    sheet_index - the 0-based index of the tab in a dataset Excel sheet
+    selector - the top-level key for a JSON dataset
+
+    schema_url - the URL of the HXL schema to use (optional; exclusive with "schema_content")
+    schema_content - a file attachment with the HXL schema to use (optional; exclusive with "schema_url")
+    schema_sheet_index - the 0-based index of the  tab in a schema Excel sheet
+
+    include_dataset - if specified, include the original dataset in the JSON validation result
     """
+    flask.g.output_format = 'json' # for error reporting
 
-    # signal that the output will be JSON (for error reporting)
-    flask.g.output_format = 'json'
-
-    # get the POST params: url, content, sheet_index, selector, schema_url, schema_content, schema_sheet_index, include_dataset
-    # (url or content is required)
+    # dataset-related POST parameters
     url = flask.request.form.get('url')
-    content_hash = None
     content = flask.request.files.get('content')
+    content_hash = None
     if content is not None:
         # need a hash of the content for caching
         content_hash = util.make_file_hash(content)
@@ -696,9 +740,11 @@ def do_data_validate():
             logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
             sheet_index = None
     selector = flask.request.form.get('selector', None)
+
+    # schema-related POST parameters
     schema_url = flask.request.form.get('schema_url')
-    schema_content_hash = None
     schema_content = flask.request.files.get('schema_content')
+    schema_content_hash = None
     if schema_content is not None:
         # need a hash of the schema content for caching
         schema_content_hash = util.make_file_hash(schema_content)
@@ -709,6 +755,8 @@ def do_data_validate():
         except:
             logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
             schema_sheet_index = None
+
+    # general POST parameters
     include_dataset = flask.request.form.get('include_dataset', False)
 
     # run the validation and save a report
@@ -728,7 +776,11 @@ def do_data_validate():
         ),
         mimetype='application/json'
     )
+
+    # add the CORS header for cross-origin compatibility
     response.headers['Access-Control-Allow-Origin'] = '*'
+
+    # render the JSON response
     return response
 
     
@@ -793,32 +845,63 @@ def do_json_recipe():
     # Render the output
     return response
 
+
+########################################################################
+# Humanitarian.ID controllers
+# (not in active use as of 2019-04)
+########################################################################
 
 @app.route('/login')
 def hid_login():
-    """Log the user using OAuth2 via the IdP (Humanitarian.ID), and set a cookie."""
+    """ Flask controller: display login page for Humanitarian.ID
+    This is distinct from the /data/login page, which accepts a password
+    for a DATASET rather than a USER.
+
+    In the future, we can associate saved datasets with users, so they can
+    manage them without individual dataset passwords.
+
+    GET parameters:
+
+    from - the URL of the page from which we were redirected
+    """
+    # set the from path in a session cookie for later use
     flask.session['login_redirect'] = flask.request.args.get('from', '/')
+
+    # redirect to Humanitarian.ID for the actual login form
     return flask.redirect(auth.get_hid_login_url(), 303)
 
 
 @app.route('/logout')
 def hid_logout():
-    """Kill the login cookie (and any others)."""
+    """ Flask controller: kill the user's login session with Humanitarian.ID
+
+    GET parameters:
+
+    from - the URL of the page from which we were redirected
+    """
     path = flask.request.args.get('from', '/') # original path where user choose to log out
-    flask.session.clear()
+    flask.session.clear() # clear the login cookie
     flask.flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return flask.redirect(path, 303)
 
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
-    """Handle OAuth2 token sent back from IdP (Humanitarian.ID) after remote authentication."""
+    """Flask controller: accept an OAuth2 token after successful login via Humanitarian.ID
 
-    # Check if we really sent the request, and save the auth token
+    GET parameters:
+
+    code - the OAuth2 token
+    state - the state that we originally passed to Humanitarian.ID (for verification)
+    """
+    # grab the token
     code = flask.request.args.get('code')
+
+    # grab the state and check if it's the same as the one we saved in a session cookie
     state = flask.request.args.get('state')
     if state != flask.session.get('state'):
         raise Exception("Security violation: inconsistent state returned from humanitarian.id login request")
     else:
+        # if OK, clear the session cookie
         flask.session['state'] = None
 
     # Look up extra info from Humanitarian.ID
@@ -832,8 +915,9 @@ def do_hid_authorisation():
     return flask.redirect(redirect_path, 303)
 
 
+
 ########################################################################
-# Extra stuff tacked onto the Proxy
+# Controllers for extras tacked onto the Proxy
 #
 # None of this is core to the Proxy's function, but this is a convenient
 # place to keep it.
@@ -842,72 +926,108 @@ def do_hid_authorisation():
 @app.route("/hxl-test.<format>")
 @app.route("/hxl-test")
 def hxl_test(format='html'):
-    """Test if a URL points to HXL-tagged data.
+    """ Flask controller: test if a resource is HXL hashtagged
+    GET parameters:
+    url - the URL of the resource th check
     @param format: the format for rendering the result.
     """
+    flask.g.output_format = format # save the data format for error reporting
 
-    # Save the data format
-    flask.g.output_format = format
-
+    # get the URL
     url = flask.request.args.get('url')
-    
     if not url and (format != 'html'):
+        # if it's a web page, show a form; otherwise, throw an error
         raise ValueError("&url parameter required")
 
+    # start the result status report
     result = {
         'status': False,
         'url': url
     }
 
+    # internal function: serialise an exception for inclusion in the report
     def record_exception(e):
         result['exception'] = e.__class__.__name__
         result['args'] = [str(arg) for arg in e.args]
 
+    # if there's a URL, test the resource
     if url:
         try:
+            # we grab the columns to force lazy parsing
             hxl.data(
                 url,
                 verify_ssl=util.check_verify_ssl(flask.request.args),
                 http_headers={'User-Agent': 'hxl-proxy/test'}
             ).columns
+            # if we get to here, it's OK
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
         except IOError as e1:
+            # can't open resource to check it
             result['message'] = 'Cannot load dataset'
             record_exception(e1)
         except hxl.io.HXLTagsNotFoundException as e2:
+            # not hashtagged
             result['message'] = 'Dataset does not have HXL hashtags'
             record_exception(e2)
         except BaseException as e3:
+            # something else went wrong
             result['message'] = 'Undefined error'
             record_exception(e3)
     else:
+        # no URL, so no result
         result = None
 
     if format == 'json':
+        # render a JSON result
         return flask.Response(json.dumps(result), mimetype='application/json')
     else:
+        # render an HTML page
         return flask.render_template('hxl-test.html', result=result)
 
 
 @app.route('/pcodes/<country>-<level>.csv')
 @cache.cached(timeout=604800) # 1 week cache
 def pcodes_get(country, level):
-    flask.g.output_format = 'csv'
+    """ Flask controller: look up a list of P-codes from iTOS
+    @param country: the ISO3 country code
+    @param level: the admin level (e.g. "adm2")
+    """
+    flask.g.output_format = 'csv' # for error reporting
+
+    # Get the P-codes
     with StringIO() as buffer:
         pcodes.extract_pcodes(country, level, buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
+
+    # Add a CORS header for cross-origin support
     response.headers['Access-Control-Allow-Origin'] = '*'
+
+    # Render the result
     return response
+
 
 @app.route('/hash')
 def make_hash():
-    flask.g.output_format = 'json'
+    """ Flask controller: hash a HXL dataset
+    GET parameters:
+    url - the URL of the dataset to check
+    headers_only - if specified, hash only the headers, not the content
+    """
+    flask.g.output_format = 'json' # for error reporting
+
+    # Get the URL; if not supplied, open an HTML form
     url = flask.request.args.get('url')
     if not url:
         return flask.render_template('hash.html')
+
+    # Check if we're hashing only headers
     headers_only = flask.request.args.get('headers_only')
+
+    # Open the HXL dataset
     source = hxl.data(url)
+
+    # Generate the report
     report = {
         'hash': source.columns_hash if headers_only else source.data_hash,
         'url': url,
@@ -916,46 +1036,37 @@ def make_hash():
         'headers': source.headers,
         'hashtags': source.display_tags
     }
+
+    # Render the JSON response
     return flask.Response(
         json.dumps(report, indent=4),
         mimetype="application/json"
     )
 
-
-@app.route('/iati2hxl')
-def iati_get():
-    import re
-
-    flask.g.output_format = 'csv'
-    url = flask.request.args.get('url')
-    if not url:
-        return flask.render_template('iati2hxl.html')
-
-    # can we pull a filename from the URL?
-    filename = 'iati-data.xml'
-    result = re.match(r'.*/([^/?]+)\.[xX][mM][lL]', url)
-    if result:
-        filename = result.group(1) + '.csv'
-
-    response = flask.Response(util.gen_iati_hxl(url), mimetype='text/csv; charset=utf-8')
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
-    return response
-
-
+
 ########################################################################
-# Removed features (display messages)
+# Controllers for removed features (display error messages)
 ########################################################################
+
+@app.route("/")
+def home():
+    """ Flask controller: nothing currently at root
+    Redirect to the /data/source page
+    """
+    # home isn't moved permanently
+    return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
+
 
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
 def data_chart(recipe_id=None):
+    """ Flask controller: discontinued charting endpoint """
     return "The HXL Proxy no longer supports basic charts. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
 
 @app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
 def data_map(recipe_id=None):
-    """Show a map visualisation for the data."""
+    """ Flask controller: discontinued mapping endpoint """
     return "The HXL Proxy no longer supports basic maps. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
 
 # end
