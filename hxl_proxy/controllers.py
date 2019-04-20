@@ -6,12 +6,12 @@ License: Public Domain
 
 import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
 
-from io import StringIO
-
 import hxl_proxy.recipe
 
 from . import app, auth, cache, dao, filters, preview, pcodes, util, exceptions, __version__
 
+
+# Logging
 logger = logging.getLogger(__name__)
 
 
@@ -996,7 +996,7 @@ def pcodes_get(country, level):
     flask.g.output_format = 'csv' # for error reporting
 
     # Get the P-codes
-    with StringIO() as buffer:
+    with io.StringIO() as buffer:
         pcodes.extract_pcodes(country, level, buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
 
