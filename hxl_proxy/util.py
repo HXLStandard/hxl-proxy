@@ -1,23 +1,17 @@
 """ Utility functions for hxl_proxy
+TODO: also contains template output functions, which need to move to their own module.
 Started 2015-02-18 by David Megginson
+License: Public Domain
 """
 
-import six, hashlib, json, re, time, random, base64, urllib, datetime, pickle, requests, logging
-
-from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-
-from flask import url_for, request, flash, session, g
-
-from . import cache
-
-import hxl
-
 import hxl_proxy
-from hxl_proxy import app
+
+import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
 
 
 # Logger for this module
 logger = logging.getLogger(__name__)
+
 
 
 ########################################################################
@@ -36,9 +30,9 @@ def make_cache_key (path = None, args_in=None):
 
     # Fill in default 
     if path is None:
-        path = request.path
+        path = flask.request.path
     if args_in is None:
-        args_in = request.args
+        args_in = flask.request.args
 
     # Construct the args for the cache key
     args_out = {}
@@ -58,7 +52,7 @@ def skip_cache_p ():
     be specified as a GET param.
     @returns: True if we don't want to cache
     """
-    return True if request.args.get('force') else False
+    return True if flask.request.args.get('force') else False
 
 def get_gravatar(email, size=40):
     import hashlib
@@ -116,19 +110,6 @@ def make_recipe_id():
         recipe_id = gen_recipe_id()
     return recipe_id
 
-def add_args(extra_args):
-    """Add GET parameters."""
-    args = {key: request.args.get(key) for key in request.args}
-    for key in extra_args:
-        if extra_args[key]:
-            # add keys with truthy values
-            args[key] = extra_args[key]
-        else:
-            # remove keys with non-truthy values
-            if args.get(key):
-                del args[key]
-    return '?' + urlencode_utf8(args)
-
 def make_args(recipe=None, format=None, flavour=None, recipe_id=None, cloned=False):
     """Construct args for url_for."""
     args = {}
@@ -146,21 +127,6 @@ def make_args(recipe=None, format=None, flavour=None, recipe_id=None, cloned=Fal
     if recipe_id and not cloned:
         args['recipe_id'] = recipe_id
     return args
-
-def data_url_for(endpoint, recipe=None, format=None, flavour=None, recipe_id=None, cloned=False, extras={}):
-    """Generate a URL relative to the subpath (etc)
-    Wrapper around flask.url_for
-    """
-    if not recipe_id and recipe:
-        recipe_id = recipe.recipe_id
-    args = make_args(recipe, format=format, flavour=flavour, recipe_id=recipe_id, cloned=cloned)
-    if extras:
-        # add in any extra GET params requested
-        for key in extras:
-            args[key] = extras[key]
-    if recipe_id and not cloned:
-        args['recipe_id'] = recipe_id
-    return url_for(endpoint, **args)
 
 def make_json_error(e, status):
     """Convert an exception to a string containing a JSON-formatted error
@@ -185,15 +151,6 @@ def make_json_error(e, status):
         json_error['source_message'] = e.response.text
     return json.dumps(json_error, indent=4, sort_keys=True)
 
-def severity_class(severity):
-    """Return a CSS class for a validation error severity"""
-    if severity == 'error':
-        return 'severity_error'
-    elif severity == 'warning':
-        return 'severity_warning'
-    else:
-        return 'severity_info'
-
 def re_search(regex, string):
     """Try matching a regular expression."""
     return re.search(regex, string)
@@ -207,7 +164,7 @@ def search_by_attributes(attributes, columns):
                 break
     return result_columns
 
-@cache.memoize(unless=skip_cache_p)
+@hxl_proxy.cache.memoize(unless=skip_cache_p)
 def run_validation(url, content, content_hash, sheet_index, selector, schema_url, schema_content, schema_content_hash, schema_sheet_index, include_dataset):
     """ Do the actual validation run, using the arguments provided.
     Separated from the controller so that we can cache the result easiler.
@@ -291,14 +248,10 @@ def no_none(s):
     """
     return str(s) if s is not None else ''
     
-def strnorm (s):
-    """Normalise a string"""
-    return hxl.datatypes.normalise_string(s)
-
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
-    app.update_template_context(context)
-    t = app.jinja_env.get_template(template_name)
+    hxl_proxy.app.update_template_context(context)
+    t = hxl_proxy.app.jinja_env.get_template(template_name)
     rv = t.stream(context)
     rv.enable_buffering(5)
     return rv
@@ -324,6 +277,43 @@ def using_tagger_p(recipe):
             return True
     return False
 
+def add_args(extra_args):
+    """Add GET parameters."""
+    args = {key: flask.request.args.get(key) for key in flask.request.args}
+    for key in extra_args:
+        if extra_args[key]:
+            # add keys with truthy values
+            args[key] = extra_args[key]
+        else:
+            # remove keys with non-truthy values
+            if args.get(key):
+                del args[key]
+    return '?' + urlencode_utf8(args)
+
+def data_url_for(endpoint, recipe=None, format=None, flavour=None, recipe_id=None, cloned=False, extras={}):
+    """Generate a URL relative to the subpath (etc)
+    Wrapper around flask.url_for
+    """
+    if not recipe_id and recipe:
+        recipe_id = recipe.recipe_id
+    args = make_args(recipe, format=format, flavour=flavour, recipe_id=recipe_id, cloned=cloned)
+    if extras:
+        # add in any extra GET params requested
+        for key in extras:
+            args[key] = extras[key]
+    if recipe_id and not cloned:
+        args['recipe_id'] = recipe_id
+    return flask.url_for(endpoint, **args)
+
+def severity_class(severity):
+    """Return a CSS class for a validation error severity"""
+    if severity == 'error':
+        return 'severity_error'
+    elif severity == 'warning':
+        return 'severity_warning'
+    else:
+        return 'severity_info'
+
 def urlencode_utf8(params):
     if hasattr(params, 'items'):
         params = list(params.items())
@@ -335,51 +325,51 @@ def urlencode_utf8(params):
 # Declare Jinja2 filters and functions
 #
 
-app.jinja_env.filters['nonone'] = (
+hxl_proxy.app.jinja_env.filters['nonone'] = (
     no_none
 )
 
-app.jinja_env.filters['urlquote'] = (
+hxl_proxy.app.jinja_env.filters['urlquote'] = (
     urlquote
 )
 
-app.jinja_env.filters['spreadsheet_col'] = (
+hxl_proxy.app.jinja_env.filters['spreadsheet_col'] = (
     spreadsheet_col_num_to_name
 )
 
-app.jinja_env.filters['strnorm'] = (
+hxl_proxy.app.jinja_env.filters['strnorm'] = (
     hxl.datatypes.normalise_string
 )
 
-app.jinja_env.globals['static'] = (
-    lambda filename: url_for('static', filename=filename)
+hxl_proxy.app.jinja_env.globals['static'] = (
+    lambda filename: flask.url_for('static', filename=filename)
 )
 
-app.jinja_env.globals['using_tagger_p'] = (
+hxl_proxy.app.jinja_env.globals['using_tagger_p'] = (
     using_tagger_p
 )
 
-app.jinja_env.globals['add_args'] = (
+hxl_proxy.app.jinja_env.globals['add_args'] = (
     add_args
 )
 
-app.jinja_env.globals['data_url_for'] = (
+hxl_proxy.app.jinja_env.globals['data_url_for'] = (
     data_url_for
 )
 
-app.jinja_env.globals['severity_class'] = (
+hxl_proxy.app.jinja_env.globals['severity_class'] = (
     severity_class
 )
 
-app.jinja_env.globals['re_search'] = (
+hxl_proxy.app.jinja_env.globals['re_search'] = (
     re_search
 )
 
-app.jinja_env.globals['search_by_attributes'] = (
+hxl_proxy.app.jinja_env.globals['search_by_attributes'] = (
     search_by_attributes
 )
 
-app.jinja_env.globals['get_gravatar'] = (
+hxl_proxy.app.jinja_env.globals['get_gravatar'] = (
     get_gravatar
 )
 

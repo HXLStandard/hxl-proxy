@@ -3,9 +3,12 @@ Started January 2015 by David Megginson
 License: Public Domain
 """
 
-import flask, hxl, io, json, logging, requests, requests_cache, urllib, werkzeug, datetime
+import hxl_proxy, hxl_proxy.auth, hxl_proxy.exceptions, hxl_proxy.preview
 
-from hxl_proxy import app, auth, cache, dao, filters, preview, pcodes, recipes, util, exceptions, __version__
+# import the hxl_proxy modules we use a lot into this module
+from hxl_proxy import app, cache, util
+
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug
 
 
 logger = logging.getLogger(__name__)
@@ -66,7 +69,7 @@ def handle_redirect_exception(e):
     return flask.redirect(e.target_url, e.http_code)
 
 # Register the redirect exception handler
-app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
+app.register_error_handler(hxl_proxy.exceptions.RedirectException, handle_redirect_exception)
 
 
 def handle_source_authorization_exception(e):
@@ -81,7 +84,7 @@ def handle_source_authorization_exception(e):
     # we're using flask.g.recipe_id to handle the case where a saved recipe
     # points to a formerly-public dataset that has suddenly become private
     # normally, it will be None (because there's no saved recipe yet)
-    recipe = recipes.Recipe(recipe_id=flask.g.recipe_id)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id=flask.g.recipe_id)
 
     # add an extra parameter for the /data/save form to indicate that we
     # want the user to provide an authorisation token
@@ -122,7 +125,7 @@ def handle_ssl_certificate_error(e):
     @param e: the exception being handled
     """
     flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
+    return flask.redirect(util.data_url_for('data_source', recipe=hxl_proxy.recipes.Recipe()), 302)
 
 # register the SSL certificate verification handler
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
@@ -164,7 +167,7 @@ def data_login(recipe_id):
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     """
     flask.g.recipe_id = recipe_id # for error handling
-    recipe = recipes.Recipe(recipe_id)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
 
@@ -175,11 +178,7 @@ def data_source(recipe_id=None):
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     """
     flask.g.recipe_id = recipe_id # for error handling
-
-    # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
-
-    # Render the login page
+    recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=True)
     return flask.render_template('data-source.html', recipe=recipe)
 
 
@@ -195,10 +194,11 @@ def data_tagger(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
+        logger.info("No URL supplied for /data/tagger; redirecting to /data/source")
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
@@ -210,6 +210,7 @@ def data_tagger(recipe_id=None):
     try:
         sheet_index = int(recipe.args.get('sheet', 0))
     except:
+        logger.info("Assuming sheet 0, since none specified")
         sheet_index = 0
     selector = recipe.args.get('selector', None)
 
@@ -250,11 +251,12 @@ def data_edit(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logger.info("No URL supplied for /data/edit; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
     
     # show only a short preview
@@ -269,24 +271,25 @@ def data_edit(recipe_id=None):
     # fix it.
     error = None
     try:
-        source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
+        source = hxl_proxy.preview.PreviewFilter(hxl_proxy.filters.setup_filters(recipe), max_rows=max_rows)
         source.columns
-    except exceptions.RedirectException as e1:
+    except hxl_proxy.exceptions.RedirectException as e1:
         # always pass through a redirect exception
         raise e1
     except hxl.io.HXLAuthorizationException as e2:
         # always pass through an authorization exception
         raise e2
     except Exception as e3:
+        logger.exception(e3)
         error = e3
         source = None
 
     # Figure out how many filter forms to show
     filter_count = 0
-    for n in range(1, filters.MAX_FILTER_COUNT):
+    for n in range(1, hxl_proxy.filters.MAX_FILTER_COUNT):
         if recipe.args.get('filter%02d' % n):
             filter_count = n
-    if filter_count < filters.MAX_FILTER_COUNT:
+    if filter_count < hxl_proxy.filters.MAX_FILTER_COUNT:
         filter_count += 1
 
     # Draw the web page
@@ -313,11 +316,12 @@ def data_save(recipe_id=None):
     flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=True)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logger.info("No URL supplied for /data/save; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
     # Grab controller-specific properties for the template
@@ -344,16 +348,13 @@ def data_validate(recipe_id=None, format='html'):
     flask.g.output_format = format # requested output format
 
     # Get the recipe
-    recipe = recipes.Recipe(recipe_id)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id)
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logger.info("No URL supplied for /data/validate; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
-
-    # Special GET parameters for controlling validation
-    severity_level = flask.request.args.get('severity', 'info')
-    detail_hash = flask.request.args.get('details', None)
 
     # Set up the HXL validation schema
     schema_source = None
@@ -363,10 +364,13 @@ def data_validate(recipe_id=None, format='html'):
             verify_ssl=util.check_verify_ssl(recipe.args),
             http_headers={'User-Agent': 'hxl-proxy/validation'}
         )
+        logger.info("Using HXL validation schema at %s", recipe.schema_url)
+    else:
+        logger.info("No HXL validation schema specified; using default schema")
 
     # Run the validation and get a JSON report from libhxl-python
     error_report = hxl.validate(
-        filters.setup_filters(recipe),
+        hxl_proxy.filters.setup_filters(recipe),
         schema_source
     )
 
@@ -383,8 +387,13 @@ def data_validate(recipe_id=None, format='html'):
         template_name = 'validate-summary.html'
         selected_issue = None
 
+        # Special GET parameters for controlling validation
+        severity_level = flask.request.args.get('severity', 'info')
+        detail_hash = flask.request.args.get('details', None)
+
         # if there's a detail_hash, show just that detail in the report
         if detail_hash:
+            logger.info("Showing validation-report detail")
             template_name = 'validate-issue.html'
             for issue in error_report['issues']:
                 if issue['rule_id'] == detail_hash:
@@ -464,7 +473,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
         flask.g.output_format = format
 
         # Set up the data source from the recipe
-        recipe = recipes.Recipe(recipe_id, auth=False)
+        recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=False)
 
         # Workflow: if there's no source URL, redirect the user to /data/source
         if not recipe.url:
@@ -473,13 +482,13 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
         # Use input caching if requested
         if util.skip_cache_p():
-            source = filters.setup_filters(recipe)
+            source = hxl_proxy.filters.setup_filters(recipe)
         else:
             with requests_cache.enabled(
                     app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
                     expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
             ):
-                source = filters.setup_filters(recipe)
+                source = hxl_proxy.filters.setup_filters(recipe)
 
         # Parameters controlling the output
         show_headers = (recipe.args.get('strip-headers') != 'on')
@@ -493,7 +502,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
             max_rows = min(int(max_rows), 5000) if max_rows is not None else 5000
             return flask.render_template(
                 'data-view.html',
-                source=preview.PreviewFilter(source, max_rows=max_rows),
+                source=hxl_proxy.preview.PreviewFilter(source, max_rows=max_rows),
                 recipe=recipe,
                 show_headers=show_headers
             )
@@ -502,7 +511,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
         # Limit the number of output rows *only* if requested
         if max_rows is not None:
-            source = preview.PreviewFilter(source, max_rows=int(max_rows))
+            source = hxl_proxy.preview.PreviewFilter(source, max_rows=int(max_rows))
 
         # Render JSON output (list of lists or list of objects)
         if format == 'json':
@@ -553,7 +562,7 @@ def about():
     """
     # include version information for these packages
     releases = {
-        'hxl-proxy': __version__,
+        'hxl-proxy': hxl_proxy.__version__,
         'libhxl': hxl.__version__,
         'flask': flask.__version__,
         'requests': requests.__version__
@@ -646,7 +655,7 @@ def do_data_save():
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
     flask.g.recipe_id = recipe_id # for error handling    
-    recipe = recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
+    recipe = hxl_proxy.recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
 
     # Update recipe metadata
     if 'name' in flask.request.form:
@@ -678,7 +687,7 @@ def do_data_save():
                 flask.session['passhash'] = recipe.passhash
             else:
                 raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        dao.recipes.update(recipe)
+        hxl_proxy.dao.recipes.update(recipe)
 
     # Creating a new recipe.
     else:
@@ -689,7 +698,7 @@ def do_data_save():
             raise werkzeug.exceptions.BadRequest("Passwords don't match")
         recipe_id = util.make_recipe_id()
         recipe.recipe_id = recipe_id
-        dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
+        hxl_proxy.dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
         # FIXME other auth information is in __init__.py
         flask.session['passhash'] = recipe.passhash
 
@@ -865,7 +874,7 @@ def hid_login():
     flask.session['login_redirect'] = flask.request.args.get('from', '/')
 
     # redirect to Humanitarian.ID for the actual login form
-    return flask.redirect(auth.get_hid_login_url(), 303)
+    return flask.redirect(hxl_proxy.auth.get_hid_login_url(), 303)
 
 
 @app.route('/logout')
@@ -902,7 +911,7 @@ def do_hid_authorisation():
         flask.session['state'] = None
 
     # Look up extra info from Humanitarian.ID
-    user_info = auth.get_hid_user(code) # look up user info from Humanitarian.ID
+    user_info = hxl_proxy.auth.get_hid_user(code) # look up user info from Humanitarian.ID
     flask.session['member_info'] = user_info
     flask.flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
 
@@ -994,7 +1003,7 @@ def pcodes_get(country, level):
 
     # Get the P-codes
     with io.StringIO() as buffer:
-        pcodes.extract_pcodes(country, level, buffer)
+        hxl_proxy.pcodes.extract_pcodes(country, level, buffer)
         response = flask.Response(buffer.getvalue(), mimetype='text/csv')
 
     # Add a CORS header for cross-origin support

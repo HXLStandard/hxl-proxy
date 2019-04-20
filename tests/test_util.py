@@ -29,11 +29,6 @@ class TestUtil(unittest.TestCase):
         with hxl_proxy.app.test_request_context('/data?a=aa&b=bb'):
             self.assertFalse(hxl_proxy.util.skip_cache_p())
 
-    def test_strnorm(self):
-        """Normalise case and whitespace in a string."""
-        self.assertEqual('foo bar', hxl_proxy.util.strnorm('  foo   Bar   '))
-        self.assertEqual('foo bar', hxl_proxy.util.strnorm("  foO\nBar   "))
-
     # skip stream_template
 
     def test_urlquote(self):
@@ -59,8 +54,6 @@ class TestUtil(unittest.TestCase):
         with hxl_proxy.app.test_request_context('/data?url=http://example.org'):
             recipe = hxl_proxy.recipes.Recipe()
             self.assertFalse(hxl_proxy.util.using_tagger_p(recipe))
-
-    # TODO add_args
 
     # TODO severity_class
 
