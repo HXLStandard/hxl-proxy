@@ -2,8 +2,6 @@
 	- major code refactoring with new Recipe class
 	- removed iati2hxl endpoint
 	- improved organisation and documentation for controllers
-	- fix minor stability issues (e.g. unclosed file resources)
-	- fix CSV delimiter detection to ensure "," is always tried first
 
 2019-04-04 Release 1.15.1
 	- fix caching for validation requests sent via POST
