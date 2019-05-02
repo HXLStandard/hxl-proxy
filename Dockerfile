@@ -21,6 +21,7 @@ RUN apk update && \
     pip3 install --upgrade \
         gunicorn && \
     pip3 install --upgrade -r requirements.txt && \
+    pip3 install newrelic && \
     apk add --virtual .gevent-deps \
         build-base \
         python3-dev && \
