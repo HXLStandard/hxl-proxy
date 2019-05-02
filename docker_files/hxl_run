@@ -1,7 +1,5 @@
 #!/usr/bin/with-contenv sh
 
-gunicorn app --chdir /srv/www -c /srv/config/gunicorn.py
-
 [ -z "$NEW_RELIC_APP_NAME"     ] && export NEW_RELIC_APP_NAME="Python Application"
 [ -z "$NEW_RELIC_CONFIG_FILE"  ] && export NEW_RELIC_CONFIG_FILE=/srv/newrelic.ini
 [ -z "$NEW_RELIC_ENABLED"      ] && export NEW_RELIC_ENABLED=false
