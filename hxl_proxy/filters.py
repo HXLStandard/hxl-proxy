@@ -19,8 +19,9 @@ MAX_FILTER_COUNT = 99
 def setup_filters(recipe, data_content=None):
     """
     Open a stream to a data source URL, and create a filter pipeline based on the arguments.
-    @param recipe the GET-request recipe (uses only recipe.args).
-    @return a HXL DataSource representing the full pipeline.
+    @param: recipe the GET-request recipe (uses only recipe.args).
+    @param data_content: a dataset uploaded directly via a POST request.
+    @returns: a HXL DataSource representing the full pipeline.
     """
 
     # null recipe or url means null source

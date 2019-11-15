@@ -36,6 +36,7 @@
           {% set action=url_for("data_edit") %}
           {% endif %}
           <form action="{{ action }}" method="{{ method }}">
+            <input type="hidden" name="dest" value="data_view"/>
             <div class="col-sm-8 col-md-10">
               <div class="input-group required">
                 <input id='dataset-url'

@@ -48,6 +48,7 @@
         </div>
       </div>
       <form class="form" method="POST" action="{{ url_for('do_data_save') }}">
+        <input type="hidden" name="dest" value="data_view"/>
         <div class="row">
           <div class="form-group required col-md-6">
             <label for="name">Recipe name</label>

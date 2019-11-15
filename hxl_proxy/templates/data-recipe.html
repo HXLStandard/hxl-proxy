@@ -31,7 +31,7 @@
         {% set action=url_for('data_edit') %}
         {% endif %}
         <form action="{{ action }}" method="{{ method }}" id="filter-form">
-
+          <input type="hidden" name="dest" value="data_edit"/>
           <ol class="filter-list" role="group" aria-label="Data filters">
             {# Filter types and names defined in this file: #}
             {% import 'includes/filters/filter-types.j2' as filter_types %}

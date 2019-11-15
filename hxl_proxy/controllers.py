@@ -656,6 +656,8 @@ def do_data_save():
     flask.g.recipe_id = recipe_id # for error handling    
     recipe = recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
 
+    destination_facet = flask.request.form.get('dest', 'data_view')
+
     # Update recipe metadata
     if 'name' in flask.request.form:
         recipe.name = flask.request.form['name']
@@ -686,7 +688,7 @@ def do_data_save():
                 flask.session['passhash'] = recipe.passhash
             else:
                 raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        dao.recipes.update(recipe)
+        dao.recipes.update(recipe.toDict())
 
     # Creating a new recipe.
     else:
@@ -706,7 +708,7 @@ def do_data_save():
     cache.clear()
 
     # Redirect to the /data view page
-    return flask.redirect(util.data_url_for('data_view', recipe), 303)
+    return flask.redirect(util.data_url_for(destination_facet, recipe), 303)
 
 
 @app.route("/actions/validate", methods=['POST'])

@@ -83,7 +83,7 @@ class Recipe:
 
     
     def fromDict(self, props):
-        """ Serialise this object as a dict """
+        """ Deserialise this object from a dict """
         self.recipe_id = props.get("recipe_id")
         self.name = props.get("name")
         self.description = props.get("description")
@@ -94,7 +94,7 @@ class Recipe:
 
         
     def toDict(self):
-        """ Deserialise this object from a dict """
+        """ Serialise this object to a dict """
         return {
             "recipe_id": self.recipe_id,
             "name": self.name,
