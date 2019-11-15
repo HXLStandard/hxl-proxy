@@ -1,5 +1,4 @@
 bind = '0.0.0.0:5000'
-workers = 4
 # worker type. comment out to use async gevent instead of the default sync
 #worker_class = 'gevent'
 access_log_format = '"%({x-real-ip}i)s" %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
