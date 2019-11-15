@@ -663,10 +663,11 @@ def do_data_save():
         recipe.name = flask.request.form['name']
     if 'description' in flask.request.form:
         recipe.description = flask.request.form['description']
-    if 'cloneable' in flask.request.form and not 'authorization_token' in flask.request.form:
-        recipe.cloneable = (flask.request.form['cloneable'] == 'on')
-    else:
-        recipe.cloneable = False
+    if 'cloneable' in flask.request.form:
+        if not flask.request.form.get('authorization_token'):
+            recipe.cloneable = (flask.request.form['cloneable'] == 'on')
+        else:
+            recipe.cloneable = False
     if 'stub' in flask.request.form:
         recipe.stub = flask.request.form['stub']
 
