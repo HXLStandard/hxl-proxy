@@ -40,6 +40,14 @@
             <td>{{ recipe.stub|nonone }}</td>
           </tr>
           <tr>
+            <th>Date created</th>
+            <td>{{ recipe.date_created }}</td>
+          </tr>
+          <tr>
+            <th>Date modified</th>
+            <td>{{ recipe.date_modified }}</td>
+          </tr>
+          <tr>
             <th>Args</th>
             <td>
               <table class="table">
@@ -57,14 +65,6 @@
                 {% endfor %}
               </table>
             </td>
-          </tr>
-          <tr>
-            <th>Date created</th>
-            <td>{{ recipe.date_created }}</td>
-          </tr>
-          <tr>
-            <th>Date modified</th>
-            <td>{{ recipe.date_modified }}</td>
           </tr>
           <tr>
             <th>Clone URL</th>

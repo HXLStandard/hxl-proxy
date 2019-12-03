@@ -943,6 +943,11 @@ def admin_recipe_list():
     recipes = admin.admin_get_recipes()
     return flask.render_template('admin-recipe-list.html', recipes=recipes)
 
+@app.route("/admin/")
+def admin_root():
+    """ Root of admin pages """
+    return flask.render_template('admin-root.html')
+
 
 
 ########################################################################
