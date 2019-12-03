@@ -20,6 +20,13 @@ DEBUG=True
 SECRET_KEY='<secret key>'
 
 #
+# Admin password MD5 hash
+# To generate, use this command (replacing "PASSWORD" with your password):
+# $ python -c 'import hashlib; print(hashlib.md5("PASSWORD".encode("utf-8")).hexdigest())'
+#
+ADMIN_PASSWORD_MD5='<md5 hash>'
+
+#
 # Output cache
 #
 CACHE_DIR = '/tmp/'

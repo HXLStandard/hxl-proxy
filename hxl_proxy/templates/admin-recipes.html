@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>[admin] Recipes @ Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>[admin] Recipes</h1>
+    </header>
+    <main>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Modified</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for recipe in recipes %}
+          <tr>
+            <td>
+              <a href="/admin/recipes/{{ recipe.recipe_id }}/">{{ recipe.recipe_id }}</a>
+            </td>
+            <td>{{ recipe.name }}</td>
+            <td>{{ recipe.date_created }}</td>
+            <td>{{ recipe.date_modified }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>
+

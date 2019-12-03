@@ -323,6 +323,11 @@ class recipes:
             commit=commit
         )
 
+    @staticmethod
+    def list():
+        """List all existing recipes, sorted in descending creation-date order"""
+        return db.fetchall("select * from Recipes order by date_created desc")
+
 
 ########################################################################
 # Support functions

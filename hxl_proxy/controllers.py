@@ -1,11 +1,14 @@
 """ HTTP controllers for the HXL Proxy
+
+All of the Flask controllers are in this module.
+
 Started January 2015 by David Megginson
 License: Public Domain
 """
 
 import hxl_proxy
 
-from hxl_proxy import app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
+from hxl_proxy import admin, app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
 import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug
 
@@ -921,6 +924,17 @@ def do_hid_authorisation():
     redirect_path = flask.session.get('login_redirect', '/')
     del flask.session['login_redirect']
     return flask.redirect(redirect_path, 303)
+
+
+########################################################################
+# Admin controllers
+########################################################################
+
+@app.route("/admin/recipes/")
+def admin_recipe_list():
+    """ List all saved recipes """
+    recipes = admin.admin_get_recipes()
+    return flask.render_template('admin-recipes.html', recipes=recipes)
 
 
 
