@@ -7,6 +7,10 @@
   <body class="container-fluid">
     {% include "includes/navbar.html" %}
     <header>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin/">[admin]</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Recipes</li>
+        </ul>
       <h1>[admin] Recipes</h1>
     </header>
     <main>
@@ -15,6 +19,7 @@
           <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Description</th>
             <th>Created</th>
             <th>Modified</th>
           </tr>
@@ -26,6 +31,7 @@
               <a href="/admin/recipes/{{ recipe.recipe_id }}/">{{ recipe.recipe_id }}</a>
             </td>
             <td>{{ recipe.name }}</td>
+            <td>{{ recipe.description|nonone }}</td>
             <td>{{ recipe.date_created }}</td>
             <td>{{ recipe.date_modified }}</td>
           </tr>

@@ -3,5 +3,9 @@
 from hxl_proxy import dao
 
 def admin_get_recipes ():
-    cursor = dao.recipes.list()
-    return cursor
+    recipes = dao.recipes.list()
+    return recipes
+
+def admin_get_recipe (recipe_id):
+    recipe = dao.recipes.read(recipe_id)
+    return recipe

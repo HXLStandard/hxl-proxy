@@ -930,11 +930,18 @@ def do_hid_authorisation():
 # Admin controllers
 ########################################################################
 
+@app.route("/admin/recipes/<recipe_id>/")
+def admin_recipe_view(recipe_id):
+    """ View a specific recipe """
+    recipe = recipes.Recipe(recipe_id, auth=False)
+    clone_url = util.data_url_for('data_view', recipe, cloned=True)
+    return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
+
 @app.route("/admin/recipes/")
 def admin_recipe_list():
     """ List all saved recipes """
     recipes = admin.admin_get_recipes()
-    return flask.render_template('admin-recipes.html', recipes=recipes)
+    return flask.render_template('admin-recipe-list.html', recipes=recipes)
 
 
 

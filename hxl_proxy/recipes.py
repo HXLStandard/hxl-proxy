@@ -90,6 +90,8 @@ class Recipe:
         self.cloneable = props.get("cloneable")
         self.passhash = props.get("passhash")
         self.stub = props.get("stub")
+        self.date_created = props.get('date_created')
+        self.date_modified = props.get('date_modified')
         self.args = dict(props.get("args"))
 
         
