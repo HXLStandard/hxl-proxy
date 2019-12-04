@@ -940,7 +940,10 @@ def admin_recipe_view(recipe_id):
     """ View a specific recipe """
     admin.admin_auth()
     recipe = recipes.Recipe(recipe_id, auth=False)
-    clone_url = util.data_url_for('data_view', recipe, cloned=True)
+    if 'authorization_token' in recipe.args:
+        clone_url = None
+    else:
+        clone_url = util.data_url_for('data_view', recipe, cloned=True)
     return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
 
 @app.route("/admin/recipes/<recipe_id>/edit.html")

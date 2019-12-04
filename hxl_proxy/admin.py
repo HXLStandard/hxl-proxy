@@ -82,12 +82,17 @@ def do_admin_update_recipe (fields):
 
     # munge the checkbox value
     if fields.get('cloneable') == 'on':
-        fields['cloneable'] = True
+        if 'authorization_token' in fields['args']:
+            flash("Cannot make recipe cloneable (contains authorisation token)")
+            fields['cloneable'] = False
+        else:
+            fields['cloneable'] = True
     else:
         fields['cloneable'] = False
 
     # see if there's a new password
     if fields.get('password'):
+        flash("Updated recipe password")
         fields['passhash'] = util.make_md5(fields['password'])
         del fields['password']
 

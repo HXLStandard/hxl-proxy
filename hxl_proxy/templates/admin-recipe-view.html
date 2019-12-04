@@ -68,10 +68,12 @@
               </table>
             </td>
           </tr>
+          {% if clone_url %}
           <tr>
             <th>Clone URL</th>
             <td><a href="{{ clone_url }}">{{ clone_url }}</a></td>
           </tr>
+          {% endif %}
         </tbody>
       </table>
     </main>
