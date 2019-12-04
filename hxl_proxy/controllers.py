@@ -977,7 +977,7 @@ def do_admin_login():
     password = flask.request.form.get('password')
     admin.do_admin_login(password)
     flask.flash("Logged in as admin")
-    return flask.redirect('/admin', 303)
+    return flask.redirect('/admin/', 303)
 
 @app.route("/admin/actions/logout", methods=['POST'])
 def do_admin_logout():
