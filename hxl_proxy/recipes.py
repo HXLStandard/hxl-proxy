@@ -3,7 +3,7 @@ Started April 2019 by David Megginson
 License: Public Domain
 """
 
-import flask, hxl_proxy, werkzeug
+import flask, hxl_proxy, hxl_proxy.dao, werkzeug
 
 
 class Recipe:

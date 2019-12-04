@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>[admin] Delete recipe {{ recipe.recipe_id }} @ Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "includes/navbar.html" %}
+    <header>
+      <nav aria-label="breadcrumb">
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin/">[admin]</a></li>
+          <li class="breadcrumb-item"><a href="/admin/recipes/">Recipes</a></li>
+          <li class="breadcrumb-item"><a href="/admin/recipes/{{ recipe.recipe_id }}/">{{ recipe.recipe_id }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Delete</li>
+        </ul>
+      </nav>
+      <h1>[admin] Delete recipe {{ recipe.recipe_id }}</h1>
+    </header>
+    <main>
+      <p class="alert alert-warning">
+        Are you sure you want to delete the saved recipe <cite>{{ recipe.name }}</cite>?
+      </p>
+      <form action="/admin/actions/delete-recipe" method="POST" class="form">
+        <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
+        <div class="form-group">
+          <button type="submit" class="btn btn-danger">Delete recipe</button>
+        </div>
+      </form>
+    </main>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>
+

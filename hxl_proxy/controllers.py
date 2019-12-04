@@ -943,6 +943,21 @@ def admin_recipe_view(recipe_id):
     clone_url = util.data_url_for('data_view', recipe, cloned=True)
     return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
 
+@app.route("/admin/recipes/<recipe_id>/edit.html")
+def admin_recipe_edit(recipe_id):
+    """ Edit a saved recipe """
+    admin.admin_auth()
+    recipe = recipes.Recipe(recipe_id, auth=False)
+    args = json.dumps(recipe.args, indent=4)
+    return flask.render_template('admin-recipe-edit.html', recipe=recipe, args=args)
+
+@app.route("/admin/recipes/<recipe_id>/delete.html")
+def admin_recipe_delete(recipe_id):
+    """ Delete a saved recipe """
+    admin.admin_auth()
+    recipe = recipes.Recipe(recipe_id, auth=False)
+    return flask.render_template('admin-recipe-delete.html', recipe=recipe)
+
 @app.route("/admin/recipes/")
 def admin_recipe_list():
     """ List all saved recipes """
@@ -959,6 +974,7 @@ def admin_root():
 @app.route("/admin/actions/login", methods=['POST'])
 def do_admin_login():
     """ POST controller for an admin login """
+    admin.admin_auth()
     password = flask.request.form.get('password')
     admin.do_admin_login(password)
     flask.flash("Logged in as admin")
@@ -967,9 +983,26 @@ def do_admin_login():
 @app.route("/admin/actions/logout", methods=['POST'])
 def do_admin_logout():
     """ POST controller for an admin logout """
+    admin.admin_auth()
     admin.do_admin_logout()
     flask.flash("Logged out of admin functions")
     return flask.redirect('/data/source', 303)
+
+@app.route("/admin/actions/update-recipe", methods=['POST'])
+def do_admin_update_recipe():
+    admin.admin_auth()
+    recipe_id = flask.request.form.get('recipe_id')
+    admin.do_admin_update_recipe(dict(flask.request.form))
+    flask.flash("Updated recipe {}".format(recipe_id))
+    return flask.redirect('/admin/recipes/{}/'.format(recipe_id), 303)
+
+@app.route("/admin/actions/delete-recipe", methods=['POST'])
+def do_admin_delete_recipe():
+    admin.admin_auth()
+    recipe_id = flask.request.form.get('recipe_id')
+    admin.do_admin_delete_recipe(recipe_id)
+    flask.flash("Deleted recipe {}".format(recipe_id))
+    return flask.redirect('/admin/recipes/'.format(recipe_id), 303)
 
 
 
