@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>[admin] Login @ Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% include "includes/navbar.html" %}
+    <header>
+      <nav aria-label="breadcrumb">
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin/">[admin]</a></li>
+          <li class="breadcrumb-item active">Login</li>
+        </ul>
+      </nav>
+      <h1>[admin] Login</h1>
+    </header>
+    <main>
+      <form action="/admin/actions/login" method="post">
+        <div>
+          <label for="password">Password</label>
+          <input id="password" type="password" name="password" required="required"/>
+          <button class="btn btn-primary" type="submit">Login</button>
+        </div>
+      </form>
+    </main>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>
+

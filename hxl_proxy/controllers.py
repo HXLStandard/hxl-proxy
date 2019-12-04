@@ -930,9 +930,15 @@ def do_hid_authorisation():
 # Admin controllers
 ########################################################################
 
+@app.route("/admin/login")
+def admin_login():
+    """ Log in to use admin functions """
+    return flask.render_template('admin-login.html')
+
 @app.route("/admin/recipes/<recipe_id>/")
 def admin_recipe_view(recipe_id):
     """ View a specific recipe """
+    admin.admin_auth()
     recipe = recipes.Recipe(recipe_id, auth=False)
     clone_url = util.data_url_for('data_view', recipe, cloned=True)
     return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
@@ -940,13 +946,30 @@ def admin_recipe_view(recipe_id):
 @app.route("/admin/recipes/")
 def admin_recipe_list():
     """ List all saved recipes """
+    admin.admin_auth()
     recipes = admin.admin_get_recipes()
     return flask.render_template('admin-recipe-list.html', recipes=recipes)
 
 @app.route("/admin/")
 def admin_root():
     """ Root of admin pages """
+    admin.admin_auth()
     return flask.render_template('admin-root.html')
+
+@app.route("/admin/actions/login", methods=['POST'])
+def do_admin_login():
+    """ POST controller for an admin login """
+    password = flask.request.form.get('password')
+    admin.do_admin_login(password)
+    flask.flash("Logged in as admin")
+    return flask.redirect('/admin', 303)
+
+@app.route("/admin/actions/logout", methods=['POST'])
+def do_admin_logout():
+    """ POST controller for an admin logout """
+    admin.do_admin_logout()
+    flask.flash("Logged out of admin functions")
+    return flask.redirect('/data/source', 303)
 
 
 

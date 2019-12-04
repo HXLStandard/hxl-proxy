@@ -42,6 +42,11 @@
         {% endif %}
         {% endif %}
       </ul>
+      {% if session.is_admin %}
+      <form class="navbar-form navbar-right" method="POST" action="/admin/actions/logout">
+        <button type="submit" class="btn btn-danger">Admin logout</button>
+      </form>
+      {% endif %}
       <ul class="nav navbar-nav navbar-right">
         {#
         {* HID stuff commented out for now *}
