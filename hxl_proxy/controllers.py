@@ -974,7 +974,6 @@ def admin_root():
 @app.route("/admin/actions/login", methods=['POST'])
 def do_admin_login():
     """ POST controller for an admin login """
-    admin.admin_auth()
     password = flask.request.form.get('password')
     admin.do_admin_login(password)
     flask.flash("Logged in as admin")

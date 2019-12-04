@@ -26,7 +26,6 @@ def do_admin_login (password):
     """ POST action: log into admin functions 
     @param password: the text of the admin password
     """
-    admin_auth()
     expected_passhash = app.config.get('ADMIN_PASSWORD_MD5')
     actual_passhash = hashlib.md5(password.encode("utf-8")).hexdigest()
     if expected_passhash == actual_passhash:
