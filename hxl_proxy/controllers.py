@@ -10,7 +10,7 @@ import hxl_proxy
 
 from hxl_proxy import admin, app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv
 
 
 logger = logging.getLogger(__name__)
@@ -1009,14 +1009,18 @@ def do_admin_delete_recipe():
 
 
 ########################################################################
-# Controllers for extras tacked onto the Proxy
+# Controllers for extra API calls
+#
+# Migrating to /api (gradually)
 #
 # None of this is core to the Proxy's function, but this is a convenient
 # place to keep it.
 ########################################################################
 
-@app.route("/hxl-test.<format>")
-@app.route("/hxl-test")
+@app.route("/api/hxl-test.<format>")
+@app.route("/api/hxl-test")
+@app.route("/hxl-test.<format>") # legacy path
+@app.route("/hxl-test") # legacy path
 def hxl_test(format='html'):
     """ Flask controller: test if a resource is HXL hashtagged
     GET parameters:
@@ -1078,7 +1082,72 @@ def hxl_test(format='html'):
         return flask.render_template('hxl-test.html', result=result)
 
 
-@app.route('/pcodes/<country>-<level>.csv')
+@app.route('/api/data-preview.<format>')
+#@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
+def data_preview (format="json"):
+    """ Return a raw-data preview of any data source supported by the HXL Proxy
+    Does not attempt HXL processing.
+    """
+
+    def json_generator ():
+        """ Generate JSON output, row by row """
+        counter = 0
+        yield '['
+        for row in input:
+            if rows > 0 and counter >= rows:
+                break
+            if counter == 0:
+                line = "\n  "
+            else:
+                line = ",\n  "
+            counter += 1
+            line += json.dumps(row)
+            yield line
+        yield "\n]"
+
+    def csv_generator ():
+        """ Generate CSV output, row by row """
+        counter = 0
+        for row in input:
+            if rows > 0 and counter >= rows:
+                break
+            counter += 1
+            output = io.StringIO()
+            csv.writer(output).writerow(row)
+            s = output.getvalue()
+            output.close()
+            yield s
+    
+    flask.g.output_format = format # for error reporting
+
+    # params
+    url = flask.request.args.get('url')
+    if not url:
+        raise ValueError("&url parameter required")
+
+    sheet = flask.request.args.get('sheet', 0)
+    sheet = int(sheet)
+
+    rows = flask.request.args.get('rows', -1)
+    rows = int(rows)
+
+    # make input
+    input = hxl.io.make_input(url, sheet_index=sheet)
+
+    # Generate result
+    if format == 'json':
+        response = flask.Response(json_generator(), mimetype='application/json')
+    elif format == 'csv':
+        response = flask.Response(csv_generator(), mimetype='text/csv')
+    else:
+        raise ValueError("Unsupported &format {}".format(format))
+
+    # Add CORS header and return
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@app.route('/api/pcodes/<country>-<level>.csv')
+@app.route('/pcodes/<country>-<level>.csv') # legacy path
 @cache.cached(timeout=604800) # 1 week cache
 def pcodes_get(country, level):
     """ Flask controller: look up a list of P-codes from iTOS
@@ -1099,7 +1168,8 @@ def pcodes_get(country, level):
     return response
 
 
-@app.route('/hash')
+@app.route('/api/hash')
+@app.route('/hash') # legacy path
 def make_hash():
     """ Flask controller: hash a HXL dataset
     GET parameters:

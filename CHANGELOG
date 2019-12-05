@@ -1,11 +1,11 @@
-2019-12-06 Release 1.17
+Release 1.16
 	- update to libhxl v4.17
 	- added an admin interface under /admin (need to set a local admin password)
+	- added an endpoint /api/data-preview to do a raw (no-HXL) preview of tabular data sources
+	- migrating other non-core API calls—P-codes, hash, and hxl_test—to under /api (old URLs still work)
 	- implemented a common Recipe class to centralise operations
 	- stay on the recipe page after updating a saved recipe
 	- fix bug with saving clone permission
-
-2019-05-01 Release 1.16
 	- major code refactoring with new Recipe class
 	- removed iati2hxl endpoint
 	- improved organisation and documentation for controllers
