@@ -1083,7 +1083,7 @@ def hxl_test(format='html'):
 
 
 @app.route('/api/data-preview.<format>')
-@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
+#@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
 def data_preview (format="json"):
     """ Return a raw-data preview of any data source supported by the HXL Proxy
     Does not attempt HXL processing.
