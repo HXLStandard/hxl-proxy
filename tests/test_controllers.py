@@ -361,6 +361,27 @@ class TestValidateAction(AbstractControllerTest):
                 self.assertTrue('dataset' in report)
                 self.assertTrue(len(report['dataset']) > 2)
 
+class TestRemovedPages(AbstractControllerTest):
+
+    def test_chart_removed(self):
+        """/data/chart no longer exists. Should return 410."""
+        response = self.get('/data/chart', {
+            "url": "http://example.org/data.csv"
+        }, 410)
+        response = self.get('/data/abcdef/chart', {}, 410)
+
+    def test_map_removed(self):
+        """/data/map no longer exists. Should return 410."""
+        response = self.get('/data/map', {
+            "url": "http://example.org/data.csv"
+        }, 410)
+        response = self.get('/data/abcdef/map', {}, 410)
+
+
+########################################################################
+# API tests
+########################################################################
+
 class TestPcodes(AbstractControllerTest):
 
     def test_good_pcodes(self):
@@ -419,21 +440,53 @@ class TestHash(AbstractControllerTest):
         self.assertNotEquals(report_headers['hash'], report_data['hash'])
     
 
-class TestRemovedPages(AbstractControllerTest):
+class TestDataPreview(AbstractControllerTest):
 
-    def test_chart_removed(self):
-        """/data/chart no longer exists. Should return 410."""
-        response = self.get('/data/chart', {
-            "url": "http://example.org/data.csv"
-        }, 410)
-        response = self.get('/data/abcdef/chart', {}, 410)
+    EXPECTED_JSON = [
+        ['Organisation', 'Sector', 'Country'],
+        ['#org', '#sector', '#country'],
+        ['Org A', 'WASH', 'Colombia'],
+        ['Org B', 'Education', 'Guinea'],
+        ['Org C', 'Health', 'Myanmar']
+    ]
 
-    def test_map_removed(self):
-        """/data/map no longer exists. Should return 410."""
-        response = self.get('/data/map', {
-            "url": "http://example.org/data.csv"
-        }, 410)
-        response = self.get('/data/abcdef/map', {}, 410)
+    EXPECTED_CSV = b'Organisation,Sector,Country\r\n#org,#sector,#country\r\nOrg A,WASH,Colombia\r\nOrg B,Education,Guinea\r\nOrg C,Health,Myanmar\r\n'
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_csv_input(self):
+        response = self.get('/api/data-preview.json', {
+            'url': 'http://example.org/basic-dataset.csv'
+        })
+        self.assertEqual(self.EXPECTED_JSON, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_input(self):
+        response = self.get('/api/data-preview.json', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_JSON, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_multisheet(self):
+        response = self.get('/api/data-preview.json', {
+            'url': 'http://example.org/multisheet-dataset.xlsx',
+            'sheet': 1,
+        })
+        self.assertEqual(self.EXPECTED_JSON, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_limit_rows(self):
+        response = self.get('/api/data-preview.json', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+            'rows': 2,
+        })
+        self.assertEqual(self.EXPECTED_JSON[:2], response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_csv_output(self):
+        response = self.get('/api/data-preview.csv', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_CSV, response.data)
 
 # end
