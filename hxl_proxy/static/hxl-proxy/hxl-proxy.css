@@ -229,6 +229,14 @@ ol.filter-list .filter-delete {
     float: right;
 }
 
+.form-group .help {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 83.333333%;
+    color: #555555;
+    font-style: italic;
+}
+
 .handle {
     margin-right: 1em;
 }

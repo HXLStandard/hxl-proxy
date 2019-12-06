@@ -8,9 +8,7 @@
 
   {% set name='count-tags%02d' % n %}
   <div class="form-group">
-    <label for="{{ name }}">
-      Count unique combinations of these hashtags (comma-separated)
-    </label>
+    <label for="{{ name }}">Tag pattern(s) for column(s)</label>
     <input
         id="{{ name }}"
         class="form-control"
@@ -19,13 +17,18 @@
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
         placeholder="{{ vars.filters_placeholder }}" />
+    <p class="help">
+      Count unique combinations of values from columns matching one or
+      more of these <a target="_blank"
+      href="https://github.com/HXLStandard/hxl-proxy/wiki/Tag-patterns">tag
+      patterns</a> (comma-separated). If blank, count unique
+      combinations of values from all columns.
+    </p>
   </div>
 
   {% set name='count-where%02d' % n %}
   <div class="form-group">
-    <label for="{{ name }}">
-      Count only rows that match this query
-    </label>
+    <label for="{{ name }}">Row query</label>
     <input
         id="{{ name }}"
         class="form-control"
@@ -34,6 +37,11 @@
         pattern="^{{ vars.query_pattern }}$"
         title="{{ vars.query_help }}"
         placeholder="#tag=value" />
+    <p class="help">
+      Count values from rows matching this <a target="_blank"
+      href="https://github.com/HXLStandard/hxl-proxy/wiki/Row-queries">row
+      query</a>. If blank, count values from all rows.
+    </p>
   </div>
 
   <fieldset>
