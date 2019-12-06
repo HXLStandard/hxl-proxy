@@ -474,8 +474,19 @@ $(function() {
 
 // If we're jumping straight to a row, highlight it
 $(function () {
-    if (window.location.hash.startsWith('#row_')) {
-        $(window.location.hash).addClass('highlighted');
+    var hash = window.location.hash;
+    if (hash.startsWith('#row_')) {
+        var node = document.getElementById(hash.substring(1));
+        var previous = node.previousElementSibling;
+        $(node).addClass('highlighted');
+        // hack to fix scrolling into view
+        if (previous) {
+            if (previous.previousElementSibling) {
+                previous.previousElementSibling.scrollIntoView();
+            } else {
+                previous.scrollIntoView();
+            }
+        }
     }
 });
 

@@ -1,33 +1,9 @@
-#map-container {
-    position: relative;
-    height: 480px;
-}
-
-#map-div {
-    height: 100%;
-    width: 100%;
-}
-
-#map-loading {
-    display: none;
-    margin: auto;
-    position: absolute;
-    height: 4em;
-    width: 100%;
-    text-align: center;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    color: #333333;
-    font-size: 120%;
-}
-
 body {
     padding-top: 50px;
 }
 
 main {
+    margin-top: 50px;
     overflow: auto;
 }
 
