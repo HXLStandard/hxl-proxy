@@ -1083,7 +1083,7 @@ def hxl_test(format='html'):
 
 
 @app.route('/api/data-preview.<format>')
-#@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
+@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 def data_preview (format="json"):
     """ Return a raw-data preview of any data source supported by the HXL Proxy
     Does not attempt HXL processing.
@@ -1132,7 +1132,14 @@ def data_preview (format="json"):
     rows = int(rows)
 
     # make input
-    input = hxl.io.make_input(url, sheet_index=sheet)
+    if util.skip_cache_p():
+        input = hxl.io.make_input(url, sheet_index=sheet)
+    else:
+        with requests_cache.enabled(
+                app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
+                expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+        ):
+            input = hxl.io.make_input(url, sheet_index=sheet)
 
     # Generate result
     if format == 'json':
