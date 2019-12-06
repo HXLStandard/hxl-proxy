@@ -404,9 +404,6 @@ hxl_proxy.util = {};
  */
 hxl_proxy.util.pad2 = function (num) {
     return ('00' + num).substr(-2);
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
-    return s;
 };
 
 
@@ -473,6 +470,13 @@ $(function() {
 // Trim unused rows from the tagger form
 $(function() {
     $("form.tagger").submit(function () { hxl_proxy.ui.trimTagger(this); });
+});
+
+// If we're jumping straight to a row, highlight it
+$(function () {
+    if (window.location.hash.startsWith('#row_')) {
+        $(window.location.hash).addClass('highlighted');
+    }
 });
 
 

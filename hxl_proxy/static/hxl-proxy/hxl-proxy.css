@@ -261,3 +261,7 @@ fieldset legend {
     margin-top: 3ex;
     margin-bottom: 3ex;
 }
+
+.highlighted {
+    background: #F3E5AB;
+}
