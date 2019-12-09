@@ -1,17 +1,16 @@
-Release 1.16
-	- update to libhxl v4.17
-	- added an admin interface under /admin (need to set a local admin password)
-	- added an endpoint /api/data-preview to do a raw (no-HXL) preview of tabular data sources
-	- migrating other non-core API calls—P-codes, hash, and hxl_test—to under /api (old URLs still work)
-	- implemented a common Recipe class to centralise operations
+2019-12-09 Release 1.16
+	- update to libhxl v4.16
+	- add an admin interface under /admin (need to set a local admin password)
+	- add an endpoint /api/data-preview to do a raw (no-HXL) preview of tabular data sources
+	- migrate non-core API calls for P-codes, hash, and hxl_test—to under /api (old URLs still work)
 	- stay on the recipe page after updating a saved recipe
 	- fix bug with saving clone permission
 	- fix bugs with /data/advanced page (for direct JSON entry)
 	- fix bug in download stub filename (Flask wasn't escaping it)
-	- added more controller unit tests
 	- major code refactoring with new Recipe class
-	- removed iati2hxl endpoint
-	- improved organisation and documentation for controllers
+	- remove obsolete iati2hxl endpoint
+	- improve organisation and documentation for controllers
+	- added more controller unit tests
 
 2019-04-04 Release 1.15.1
 	- fix caching for validation requests sent via POST
