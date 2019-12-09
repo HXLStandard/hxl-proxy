@@ -101,7 +101,7 @@ def make_args(recipe=None, format=None, flavour=None, recipe_id=None, cloned=Fal
         args['flavour'] = flavour
         stub = recipe.stub
         if stub:
-            args['stub'] = stub
+            args['stub'] = re.sub("[^a-zA-Z0-9_-]+", '_', stub) # Flask's url_for doesn't escape !!!
     if not recipe_id and recipe:
         recipe_id = recipe.recipe_id
     if recipe_id and not cloned:

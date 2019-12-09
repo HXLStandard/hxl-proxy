@@ -6,7 +6,8 @@ Release 1.16
 	- implemented a common Recipe class to centralise operations
 	- stay on the recipe page after updating a saved recipe
 	- fix bug with saving clone permission
-	- fixed bugs with /data/advanced page (for direct JSON entry)
+	- fix bugs with /data/advanced page (for direct JSON entry)
+	- fix bug in download stub filename (Flask wasn't escaping it)
 	- added more controller unit tests
 	- major code refactoring with new Recipe class
 	- removed iati2hxl endpoint
