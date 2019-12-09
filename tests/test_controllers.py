@@ -117,6 +117,21 @@ class TestAbout(AbstractControllerTest):
         response = self.get(self.path)
 
 
+
+########################################################################
+# /data controllers
+########################################################################
+
+class TestDataLogin(AbstractControllerTest):
+
+    path = '/data/AAAAA/login'
+
+    def test_page(self):
+        response = self.get(self.path)
+        assert b'Password required' in response.data
+        assert b'type="password"' in response.data
+
+
 class TestDataSource(AbstractControllerTest):
 
     path = '/data/source'
@@ -235,9 +250,17 @@ class TestEditPage(AbstractControllerTest):
         response = self.get('/data/{}/edit'.format(self.recipe_id), status=303)
         assert '/data/{}/login'.format(self.recipe_id) in response.headers['Location']
 
-    # TODO test logging in (good and bad passwords)
 
-    # TODO test changing recipe
+class TestDataSavePage(AbstractControllerTest):
+
+    path = '/data/save'
+
+    def test_page(self):
+        response = self.get(self.path, {
+            'url': DATASET_URL,
+        })
+        assert b'Save recipe' in response.data
+        assert b'<form' in response.data
 
 
 class TestDataPage(AbstractControllerTest):
@@ -305,6 +328,7 @@ class TestValidationPage(AbstractControllerTest):
         })
         assert b'Validation succeeded' in response.data
 
+
 class TestValidateAction(AbstractControllerTest):
 
     def test_post_valid_content(self):
@@ -361,6 +385,21 @@ class TestValidateAction(AbstractControllerTest):
                 self.assertTrue('dataset' in report)
                 self.assertTrue(len(report['dataset']) > 2)
 
+
+class TestDataAdvanced(AbstractControllerTest):
+
+    path = '/data/advanced'
+
+    def test_page(self):
+        response = self.get(self.path)
+        assert b'Advanced transformation' in response.data
+
+
+
+########################################################################
+# Obsolete pages
+########################################################################
+
 class TestRemovedPages(AbstractControllerTest):
 
     def test_chart_removed(self):
@@ -376,6 +415,7 @@ class TestRemovedPages(AbstractControllerTest):
             "url": "http://example.org/data.csv"
         }, 410)
         response = self.get('/data/abcdef/map', {}, 410)
+
 
 
 ########################################################################

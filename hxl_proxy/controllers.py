@@ -160,6 +160,7 @@ def before_request():
 # Primary /data GET controllers
 ########################################################################
 
+# has tests
 @app.route("/data/<recipe_id>/login")
 def data_login(recipe_id):
     """ Flask controller: log in to work on a saved recipe
@@ -172,7 +173,7 @@ def data_login(recipe_id):
     recipe = recipes.Recipe(recipe_id)
     return flask.render_template('data-login.html', recipe=recipe)
 
-
+# has tests
 @app.route("/data/source")
 @app.route("/data/<recipe_id>/source")
 def data_source(recipe_id=None):
@@ -183,7 +184,7 @@ def data_source(recipe_id=None):
     recipe = recipes.Recipe(recipe_id, auth=True)
     return flask.render_template('data-source.html', recipe=recipe)
 
-
+# has tests
 @app.route("/data/tagger")
 @app.route("/data/<recipe_id>/tagger")
 def data_tagger(recipe_id=None):
@@ -243,6 +244,7 @@ def data_tagger(recipe_id=None):
     return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row)
 
 
+# has tests
 @app.route("/data/edit")
 @app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
 def data_edit(recipe_id=None):
@@ -305,6 +307,7 @@ def data_edit(recipe_id=None):
     )
 
 
+# has tests
 @app.route("/data/save")
 @app.route("/data/<recipe_id>/save")
 def data_save(recipe_id=None):
@@ -333,7 +336,7 @@ def data_save(recipe_id=None):
     # Draw the web page
     return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
 
-
+# has tests
 @app.route("/data/validate")
 @app.route("/data/validate.<format>")
 @app.route("/data/<recipe_id>/validate")
@@ -413,17 +416,20 @@ def data_validate(recipe_id=None, format='html'):
         )
 
 
+# has tests
 @app.route("/data/advanced")
-def show_advanced():
+@app.route("/data/<recipe_id>/advanced")
+def show_advanced(recipe_id=None):
     """ Flask controller: developer page for entering a JSON recipe directly
     This page isn't linked from the HXML Proxy validation, but it's a convenient
     place to experiment with creating JSON-encoded recipes, as described at 
     https://github.com/HXLStandard/hxl-proxy/wiki/JSON-recipes
     """
-    recipe = util.get_recipe(auth=True)
+    recipe = recipes.Recipe(recipe_id)
     return flask.render_template("data-advanced.html", recipe=recipe)
 
 
+# has tests
 @app.route("/data")
 @app.route("/data.<flavour>.<format>")
 @app.route("/data.<format>")
@@ -550,6 +556,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
     # return the response object that will render the output
     return result
+
 
 
 ########################################################################

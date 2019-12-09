@@ -30,6 +30,10 @@
       {% endif %}
       <form action="{{ action }}" method="{{ method }}">
 
+        {% if recipe.recipe_id %}
+        <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
+        {% endif %}
+
         <div class="form-group required col-sm-12">
           <label for="url">Data URL</label>
           <input class="form-control" name="url" required="required" type="url" value="{{ recipe.args.url|nonone }}"/>
