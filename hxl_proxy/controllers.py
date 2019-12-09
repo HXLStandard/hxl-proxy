@@ -2,6 +2,8 @@
 
 All of the Flask controllers are in this module.
 
+See unit tests in tests/test_controllers.py
+
 Started January 2015 by David Megginson
 License: Public Domain
 """
@@ -157,7 +159,31 @@ def before_request():
 
 
 ########################################################################
-# Primary /data GET controllers
+# Top-level page controllers
+########################################################################
+
+# has tests
+@app.route("/about.html")
+def about():
+    """ Flask controller: show the about page
+    Includes version information for major packages, so that
+    we can tell easily what's deployed.
+    """
+    # include version information for these packages
+    releases = {
+        'hxl-proxy': hxl_proxy.__version__,
+        'libhxl': hxl.__version__,
+        'flask': flask.__version__,
+        'requests': requests.__version__
+    }
+
+    # draw the web page
+    return flask.render_template('about.html', releases=releases)
+
+
+
+########################################################################
+# /data GET controllers
 ########################################################################
 
 # has tests
@@ -559,47 +585,12 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
 
 
-########################################################################
-# Secondary, supporting GET controllers
-########################################################################
-
-@app.route("/about.html")
-def about():
-    """ Flask controller: show the about page
-    Includes version information for major packages, so that
-    we can tell easily what's deployed.
-    """
-    # include version information for these packages
-    releases = {
-        'hxl-proxy': hxl_proxy.__version__,
-        'libhxl': hxl.__version__,
-        'flask': flask.__version__,
-        'requests': requests.__version__
-    }
-
-    # draw the web page
-    return flask.render_template('about.html', releases=releases)
-
-
-# not currently in use (until we reactivate H.ID support)
-@app.route('/settings/user')
-def user_settings():
-    """ Flask controller: show the user's settings from Humanitarian.ID
-    """
-    if flask.g.member:
-        return flask.render_template('settings-user.html', member=flask.g.member)
-    else:
-        # redirect back to the settings page after login
-        # ('from' is reserved, so we need a bit of a workaround)
-        args = { 'from': util.data_url_for('user_settings') }
-        return flask.redirect(url_for('login', **args), 303)
-
-
 #########################################################################
 # Primary action POST controllers
 # These are URLs that are not bookmarkable.
 ########################################################################
 
+# needs tests
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():
     """ Flask controller: log the user in for a specific dataset.
@@ -625,7 +616,7 @@ def do_data_login():
     # Try opening the original page again, with password hash token in the cookie.
     return flask.redirect(destination, 303)
 
-
+# needs tests
 @app.route("/actions/save-recipe", methods=['POST'])
 def do_data_save():
     """ Flask controller: create or update a saved recipe
@@ -721,7 +712,7 @@ def do_data_save():
     # Redirect to the /data view page
     return flask.redirect(util.data_url_for(destination_facet, recipe), 303)
 
-
+# has tests
 @app.route("/actions/validate", methods=['POST'])
 def do_data_validate():
     """ Flask controler: validate an uploaded file against an uploaded HXL schema
@@ -801,7 +792,8 @@ def do_data_validate():
     # render the JSON response
     return response
 
-    
+
+# needs tests
 # NOTE: This is an experiment that's probably not used anywhere right now
 # We may choose to remove it
 @app.route('/actions/json-spec', methods=['POST'])
@@ -863,6 +855,7 @@ def do_json_recipe():
     # Render the output
     return response
 
+
 
 ########################################################################
 # Humanitarian.ID controllers
@@ -902,6 +895,21 @@ def hid_logout():
     flask.flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
     return flask.redirect(path, 303)
 
+
+# not currently in use (until we reactivate H.ID support)
+@app.route('/settings/user')
+def user_settings():
+    """ Flask controller: show the user's settings from Humanitarian.ID
+    """
+    if flask.g.member:
+        return flask.render_template('settings-user.html', member=flask.g.member)
+    else:
+        # redirect back to the settings page after login
+        # ('from' is reserved, so we need a bit of a workaround)
+        args = { 'from': util.data_url_for('user_settings') }
+        return flask.redirect(url_for('login', **args), 303)
+
+
 @app.route('/oauth/authorized2/1')
 def do_hid_authorisation():
     """Flask controller: accept an OAuth2 token after successful login via Humanitarian.ID
@@ -932,16 +940,21 @@ def do_hid_authorisation():
     del flask.session['login_redirect']
     return flask.redirect(redirect_path, 303)
 
+
 
 ########################################################################
-# Admin controllers
+# /admin controllers
 ########################################################################
 
+
+# needs tests
 @app.route("/admin/login")
 def admin_login():
     """ Log in to use admin functions """
     return flask.render_template('admin-login.html')
 
+
+# needs tests
 @app.route("/admin/recipes/<recipe_id>/")
 def admin_recipe_view(recipe_id):
     """ View a specific recipe """
@@ -953,6 +966,8 @@ def admin_recipe_view(recipe_id):
         clone_url = util.data_url_for('data_view', recipe, cloned=True)
     return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
 
+
+# needs tests
 @app.route("/admin/recipes/<recipe_id>/edit.html")
 def admin_recipe_edit(recipe_id):
     """ Edit a saved recipe """
@@ -961,6 +976,8 @@ def admin_recipe_edit(recipe_id):
     args = json.dumps(recipe.args, indent=4)
     return flask.render_template('admin-recipe-edit.html', recipe=recipe, args=args)
 
+
+# needs tests
 @app.route("/admin/recipes/<recipe_id>/delete.html")
 def admin_recipe_delete(recipe_id):
     """ Delete a saved recipe """
@@ -968,6 +985,8 @@ def admin_recipe_delete(recipe_id):
     recipe = recipes.Recipe(recipe_id, auth=False)
     return flask.render_template('admin-recipe-delete.html', recipe=recipe)
 
+
+# needs tests
 @app.route("/admin/recipes/")
 def admin_recipe_list():
     """ List all saved recipes """
@@ -975,12 +994,16 @@ def admin_recipe_list():
     recipes = admin.admin_get_recipes()
     return flask.render_template('admin-recipe-list.html', recipes=recipes)
 
+
+# needs tests
 @app.route("/admin/")
 def admin_root():
     """ Root of admin pages """
     admin.admin_auth()
     return flask.render_template('admin-root.html')
 
+
+# needs tests
 @app.route("/admin/actions/login", methods=['POST'])
 def do_admin_login():
     """ POST controller for an admin login """
@@ -989,6 +1012,8 @@ def do_admin_login():
     flask.flash("Logged in as admin")
     return flask.redirect('/admin/', 303)
 
+
+# needs tests
 @app.route("/admin/actions/logout", methods=['POST'])
 def do_admin_logout():
     """ POST controller for an admin logout """
@@ -997,6 +1022,8 @@ def do_admin_logout():
     flask.flash("Logged out of admin functions")
     return flask.redirect('/data/source', 303)
 
+
+# needs tests
 @app.route("/admin/actions/update-recipe", methods=['POST'])
 def do_admin_update_recipe():
     admin.admin_auth()
@@ -1005,6 +1032,8 @@ def do_admin_update_recipe():
     flask.flash("Updated recipe {}".format(recipe_id))
     return flask.redirect('/admin/recipes/{}/'.format(recipe_id), 303)
 
+
+# needs tests
 @app.route("/admin/actions/delete-recipe", methods=['POST'])
 def do_admin_delete_recipe():
     admin.admin_auth()
@@ -1024,6 +1053,8 @@ def do_admin_delete_recipe():
 # place to keep it.
 ########################################################################
 
+
+# needs tests
 @app.route("/api/hxl-test.<format>")
 @app.route("/api/hxl-test")
 @app.route("/hxl-test.<format>") # legacy path
@@ -1089,6 +1120,7 @@ def hxl_test(format='html'):
         return flask.render_template('hxl-test.html', result=result)
 
 
+# has tests
 @app.route('/api/data-preview.<format>')
 #@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
 def data_preview (format="json"):
@@ -1160,6 +1192,8 @@ def data_preview (format="json"):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
+
+# has tests
 @app.route('/api/pcodes/<country>-<level>.csv')
 @app.route('/pcodes/<country>-<level>.csv') # legacy path
 @cache.cached(timeout=604800) # 1 week cache
@@ -1182,6 +1216,7 @@ def pcodes_get(country, level):
     return response
 
 
+# has tests
 @app.route('/api/hash')
 @app.route('/hash') # legacy path
 def make_hash():
@@ -1219,11 +1254,14 @@ def make_hash():
         mimetype="application/json"
     )
 
+
 
 ########################################################################
 # Controllers for removed features (display error messages)
 ########################################################################
 
+
+# needs tests
 @app.route("/")
 def home():
     """ Flask controller: nothing currently at root
@@ -1233,16 +1271,20 @@ def home():
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
 
 
+# has tests
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
 def data_chart(recipe_id=None):
     """ Flask controller: discontinued charting endpoint """
     return "The HXL Proxy no longer supports basic charts. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
 
+
+# has tests
 @app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
 def data_map(recipe_id=None):
     """ Flask controller: discontinued mapping endpoint """
     return "The HXL Proxy no longer supports basic maps. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
+
 
 # end
