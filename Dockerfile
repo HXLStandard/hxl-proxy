@@ -1,4 +1,4 @@
-FROM unocha/alpine-base-s6-python3:latest
+FROM unocha/alpine-base-s6-python3:3.8
 
 WORKDIR /srv/www
 
