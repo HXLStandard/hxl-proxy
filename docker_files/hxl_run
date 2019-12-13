@@ -8,7 +8,7 @@ unset NEW_RELIC_CONFIG_FILE
 [ -z "$NEW_RELIC_LICENSE_KEY"  ] && export NEW_RELIC_LICENSE_KEY="LICENSE"
 [ -z "$NEW_RELIC_LOG"          ] && export NEW_RELIC_LOG=false
 
-[ -z "HXL_WORKERS" ]             && export HXL_WORKERS=4
+[ -z "$HXL_WORKERS" ]             && export HXL_WORKERS=4
 
 if [ "$NEW_RELIC_ENABLED" = true ]; then
     echo "new relic is enabled."
