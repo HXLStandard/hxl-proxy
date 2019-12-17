@@ -36,10 +36,9 @@ To enable the admin interface, you need to enter the MD5 hash of a password into
 
     $ python -c 'import hashlib; print(hashlib.md5("hello-kitty".encode("utf-8")).hexdigest())'
 
-## Filesystem
+## Caching
 
-* CACHE_DIR - a directory where the proxy can cache output files. The directory must exist and be readable and writable by the web-server process.
-* REQUEST_CACHE - a file (which the proxy will create if necessary) where the proxy can cache input files. The file's directory must exist and be readable and writable by the web-server process.
+Choose and configure your input and output caches as needed, following the examples in the config template. You may need to create local directories or databases, depending on the caching backends you choose.
 
 ## Database support
 

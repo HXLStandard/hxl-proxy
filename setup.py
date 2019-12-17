@@ -27,7 +27,8 @@ setuptools.setup(
         'flask>=1.0',
         'flask-caching',
         'requests_cache',
-        'mysql-connector-python'
+        'mysql-connector-python',
+        'redis',
     ],
     test_suite = "tests",
     tests_require = ['mock']

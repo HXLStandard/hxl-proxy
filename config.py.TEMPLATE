@@ -27,15 +27,37 @@ SECRET_KEY='<secret key>'
 ADMIN_PASSWORD_MD5='<md5 hash>'
 
 #
-# Output cache
+# Output cache configuration
+# see https://flask-caching.readthedocs.io/en/latest/#built-in-cache-backends
 #
-CACHE_DIR = '/tmp/'
-CACHE_MAX_ITEMS = 1000
-CACHE_DEFAULT_TIMEOUT_SECONDS = 3600 # 1 hour
+
+# filesystem output cache
+
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': '/tmp/',
+    'CACHE_THRESHOLD': 1000,
+    'CACHE_DEFAULT_TIMEOUT': 3600,
+}
+
+# redis output cache
+
+#CACHE_CONFIG = {
+#    'CACHE_TYPE': 'redis',
+#    'CACHE_KEY_PREFIX': 'hxl-proxy',
+#    'CACHE_DEFAULT_TIMEOUT': 3600,
+#    'CACHE_REDIS_HOST': '127.0.0.1',
+#    'CACHE_REDIS_PORT': '6379',
+#    'CACHE_REDIS_PASSWORD': '',
+#    'CACHE_REDIS_DB': '',
+#    'CACHE_REDIS_URL': ''
+#}
+
 
 #
-# Request cache
+# Request cache configuration (input)
 #
+
 REQUEST_CACHE = '/tmp/hxl_proxy_requests'
 REQUEST_CACHE_TIMEOUT_SECONDS = 3600
 

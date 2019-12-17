@@ -35,12 +35,7 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
 # Set up output cache
-cache = Cache(app,config={
-    'CACHE_TYPE': 'filesystem',
-    'CACHE_DIR': app.config.get('CACHE_DIR', '/tmp/'),
-    'CACHE_THRESHOLD': app.config.get('CACHE_MAX_ITEMS', 1000),
-    'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT_SECONDS', 3600),
-})
+cache = Cache(app, config=app.config.get('CACHE_CONFIG'))
 
 # (Setting up requests cache dynamically in controllers.py)
 

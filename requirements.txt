@@ -5,3 +5,4 @@ flask>=1.0
 flask-caching
 requests_cache
 mysql-connector-python
+redis
