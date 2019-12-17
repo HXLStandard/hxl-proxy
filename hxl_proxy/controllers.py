@@ -519,8 +519,9 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
             source = filters.setup_filters(recipe)
         else:
             with requests_cache.enabled(
-                    app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
-                    expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+                    app.config.get('REQUEST_CACHE_NAME', 'hxl-proxy-in'),
+                    backend=app.config.get('REQUEST_CACHE_BACKEND', 'memory'),
+                    expire_after=app.config.get('REQUEST_CACHE_TIMEOUT', 3600)
             ):
                 source = filters.setup_filters(recipe)
 
@@ -1175,8 +1176,9 @@ def data_preview (format="json"):
         input = hxl.io.make_input(url, sheet_index=sheet)
     else:
         with requests_cache.enabled(
-                app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
-                expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+                app.config.get('REQUEST_CACHE_NAME', 'hxl-proxy-in'),
+                backend=app.config.get('REQUEST_CACHE_BACKEND', 'memory'),
+                expire_after=app.config.get('REQUEST_CACHE_TIMEOUT', 3600)
         ):
             input = hxl.io.make_input(url, sheet_index=sheet)
 

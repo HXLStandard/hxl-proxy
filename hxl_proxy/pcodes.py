@@ -46,8 +46,9 @@ def get_country_levels(country):
     url = COUNTRY_URL_PATTERN.format(country=country)
 
     with requests_cache.enabled(
-            app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
-            expire_after=app.config.get('PCODE_CACHE_TIMEOUT_SECONDS', 604800)
+            app.config.get('ITOS_CACHE_NAME', 'itos-in'), 
+            backend=app.config.get('ITOS_CACHE_BACKEND', 'memory'),
+            expire_after=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
     ):
         with requests.get(url) as result:
             data = result.json()
@@ -83,8 +84,9 @@ def extract_pcodes(country, level, fp):
     # Read the data from iTOS
     url = PCODES_URL_PATTERN.format(country=country, level=country_levels[level])
     with requests_cache.enabled(
-            app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'), 
-            expire_after=app.config.get('PCODE_CACHE_TIMEOUT_SECONDS', 604800)
+            app.config.get('ITOS_CACHE_NAME', 'itos-in'),
+            backend=app.config.get('ITOS_CACHE_BACKEND', 'memory'),
+            expire_after=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
     ):
         with requests.get(url) as result:
             data = result.json()
