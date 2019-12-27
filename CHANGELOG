@@ -1,3 +1,6 @@
+2019-12-27 Release 1.16.1
+	- minor update: fix HXL_WORKERS check for Docker deployment
+
 2019-12-09 Release 1.16
 	- update to libhxl v4.16
 	- add an admin interface under /admin (need to set a local admin password)
