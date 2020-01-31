@@ -9,6 +9,7 @@ License: Public Domain
 """
 
 import hxl_proxy
+from hxl.io import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
@@ -18,6 +19,7 @@ import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkze
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
 
+SHEET_MAX_NO = 20
 
 
 ########################################################################
@@ -1192,6 +1194,89 @@ def data_preview (format="json"):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
+# has no tests
+@app.route('/api/data-preview-get-sheets.<format>')
+# @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
+def data_preview_get_sheets(format="json"):
+    """ Return all sheets of any data source supported by the HXL Proxy.
+    In case of csv it returns one sheet called 'Default'
+    Does not attempt HXL processing.
+    """
+
+    def json_generator():
+        """ Generate JSON output, row by row """
+        counter = 0
+        yield '['
+        for row in input:
+            if rows > 0 and counter >= rows:
+                break
+            if counter == 0:
+                line = "\n  "
+            else:
+                line = ",\n  "
+            counter += 1
+            line += json.dumps(row)
+            yield line
+        yield "\n]"
+
+    def csv_generator():
+        """ Generate CSV output, row by row """
+        counter = 0
+        for row in input:
+            if rows > 0 and counter >= rows:
+                break
+            counter += 1
+            output = io.StringIO()
+            csv.writer(output).writerow([row])
+            s = output.getvalue()
+            output.close()
+            yield s
+
+    flask.g.output_format = format  # for error reporting
+
+    # params
+    url = flask.request.args.get('url')
+    if not url:
+        raise ValueError("&url parameter required")
+
+    rows = -1
+
+    # make input
+    _output = []
+    try:
+        for sheet in range(0, SHEET_MAX_NO):
+            if util.skip_cache_p():
+                input = hxl.io.make_input(url, sheet_index=sheet)
+            else:
+                with requests_cache.enabled(
+                        app.config.get('REQUEST_CACHE', '/tmp/hxl_proxy_requests'),
+                        expire_after=app.config.get('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+                ):
+                    input = hxl.io.make_input(url, sheet_index=sheet)
+            if isinstance(input, hxl.io.CSVInput):
+                _output.append("Default")
+                break
+            else:
+                if input._sheet and input._sheet.name:
+                    _output.append(input._sheet.name)
+                else:
+                    _output.append(str(sheet))
+
+    except HXLIOException as ex:
+        logger.debug("Found the last sheet of the Excel file")
+
+    # Generate result
+    input = _output
+    if format == 'json':
+        response = flask.Response(json_generator(), mimetype='application/json')
+    elif format == 'csv':
+        response = flask.Response(csv_generator(), mimetype='text/csv')
+    else:
+        raise ValueError("Unsupported &format {}".format(format))
+
+    # Add CORS header and return
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 # has tests
 @app.route('/api/pcodes/<country>-<level>.csv')
