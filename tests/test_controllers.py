@@ -494,7 +494,52 @@ class TestDataPreview(AbstractControllerTest):
         })
         self.assertEqual(self.EXPECTED_CSV, response.data)
 
+class TestDataPreviewGetSheets(AbstractControllerTest):
 
+    path = '/api/data-preview-get-sheets.json'
+
+    EXPECTED_JSON_FOR_CSV = [
+        'Default'
+    ]
+    EXPECTED_JSON_FOR_EXCEL = [
+        'basic-dataset'
+    ]
+
+    EXPECTED_JSON_FOR_EXCEL_MULTISHEET = [
+        'Not the right sheet',
+        'The right sheet'
+    ]
+
+
+    EXPECTED_CSV = b'basic-dataset\r\n'
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_csv_input(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/basic-dataset.csv'
+        })
+        self.assertEqual(self.EXPECTED_JSON_FOR_CSV, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_input(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/basic-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_JSON_FOR_EXCEL, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_multisheet(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/multisheet-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_JSON_FOR_EXCEL_MULTISHEET, response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_csv_output(self):
+        response = self.get('/api/data-preview-get-sheets.csv', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_CSV, response.data)
 
 ########################################################################
 # Humanitarian.ID controllers (not currently in use)
