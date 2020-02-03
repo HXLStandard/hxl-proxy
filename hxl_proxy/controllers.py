@@ -1197,12 +1197,12 @@ def data_preview (format="json"):
     return response
 
 # has no tests
-@app.route('/api/data-preview-get-sheets.<format>')
+@app.route('/api/data-preview-sheets.<format>')
 # @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
-def data_preview_get_sheets(format="json"):
-    """ Return all sheets of any data source supported by the HXL Proxy.
-    In case of csv it returns one sheet called 'Default'
-    Does not attempt HXL processing.
+def data_preview_sheets(format="json"):
+    """ Return names only for the sheets in an Excel workbook.
+    In case of csv it returns one sheet name 'Default'
+    You must use data_preview to get the actual sheet contents.
     """
 
     def json_generator():
@@ -1279,6 +1279,7 @@ def data_preview_get_sheets(format="json"):
     # Add CORS header and return
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
+
 
 # has tests
 @app.route('/api/pcodes/<country>-<level>.csv')

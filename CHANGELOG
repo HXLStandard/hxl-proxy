@@ -1,5 +1,6 @@
 Release 1.17
 	- added optional configuration for redis caching (input and output)
+	- added API endpoint /api/data-preview-sheets to fetch a list of sheet titles from an Excel workbook
 
 2019-12-27 Release 1.16.1
 	- minor update: fix HXL_WORKERS check for Docker deployment

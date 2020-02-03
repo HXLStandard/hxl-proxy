@@ -496,7 +496,7 @@ class TestDataPreview(AbstractControllerTest):
 
 class TestDataPreviewGetSheets(AbstractControllerTest):
 
-    path = '/api/data-preview-get-sheets.json'
+    path = '/api/data-preview-sheets.json'
 
     EXPECTED_JSON_FOR_CSV = [
         'Default'
@@ -536,7 +536,7 @@ class TestDataPreviewGetSheets(AbstractControllerTest):
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_csv_output(self):
-        response = self.get('/api/data-preview-get-sheets.csv', {
+        response = self.get('/api/data-preview-sheets.csv', {
             'url': 'http://example.org/basic-dataset.xlsx',
         })
         self.assertEqual(self.EXPECTED_CSV, response.data)
