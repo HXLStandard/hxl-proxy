@@ -257,7 +257,8 @@ def add_jsonpath_filter(source, args, index):
     path = args.get('jsonpath-path%02d' % index)
     patterns = args.get('jsonpath-patterns%02d' % index, None)
     queries = args.get('jsonpath-where%02d' % index, None)
-    return source.jsonpath(path, patterns=patterns, queries=queries)
+    use_json = (args.get('jsonpath-flatten%02d' % index) != 'on')
+    return source.jsonpath(path, patterns=patterns, queries=queries, use_json=use_json)
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
