@@ -65,6 +65,8 @@ def setup_filters(recipe, data_content=None):
             source = add_explode_filter(source, recipe.args, index)
         elif filter == 'fill':
             source = add_fill_filter(source, recipe.args, index)
+        elif filter == 'implode':
+            source = add_implode_filter(source, recipe.args, index)
         elif filter == 'jsonpath':
             source = add_jsonpath_filter(source, recipe.args, index)
         elif filter == 'merge':
@@ -252,6 +254,12 @@ def add_fill_filter(source, args, index):
         patterns = args.get('fill-pattern%02d' % index, None)
     queries = args.get('fill-where%02d' % index, None)
     return source.fill_data(patterns=patterns, queries=queries)
+
+def add_implode_filter(source, args, index):
+    return source.implode(
+        label_pattern=args.get('implode-label-pattern%02d' % index, 'header'),
+        value_pattern=args.get('implode-value-pattern%02d' % index, 'value')
+    )
 
 def add_jsonpath_filter(source, args, index):
     path = args.get('jsonpath-path%02d' % index)
