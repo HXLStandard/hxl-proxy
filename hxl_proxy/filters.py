@@ -285,10 +285,11 @@ def add_merge_filter(source, args, index):
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
     oldtag = hxl.TagPattern.parse(args.get('rename-oldtag%02d' % index))
+    oldheader = hxl.datatypes.normalise_string(args.get('rename-oldheader%02d' % index))
     tagspec = _parse_tagspec(args.get('rename-newtag%02d' % index))
     header = args.get('rename-header%02d' % index)
     column = hxl.Column.parse(tagspec, header=header)
-    return source.rename_columns([(oldtag, column)])
+    return source.rename_columns([(oldtag, column, oldheader)])
 
 def add_replace_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
