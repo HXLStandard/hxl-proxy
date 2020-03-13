@@ -1195,7 +1195,7 @@ def data_preview (format="json"):
     # Add CORS header and return
     response.headers['Access-Control-Allow-Origin'] = '*'
 
-    # Set the file download name if &stub is present
+    # Set the file download name if &filename is present
     filename = flask.request.args.get('filename')
     if filename:
         response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(filename, format)
