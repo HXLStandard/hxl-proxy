@@ -1,4 +1,12 @@
+2020-03-16 Release 1.18
+	- add UI support for new implode filter
+	- add UI support for flattening JSON lists
+	- add optional header field for rename-column filter
+	- add optional &filename= param for /api/data-preview
+
 2020-02-18 Release 1.17
+	- added UI support for new Implode filter
+	- extended Rename column filter to optionally use headers as well as hashtags
 	- added optional configuration for redis caching (input and output); more needed
 	- added API endpoint /api/data-preview-sheets to fetch a list of sheet titles from an Excel workbook
 	- Docker fixes

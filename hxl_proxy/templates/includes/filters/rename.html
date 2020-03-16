@@ -22,6 +22,20 @@
         />
   </div>
 
+  {% set name='rename-oldheader%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Choose only columns with this text header (optional)
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        placeholder="Old display header"
+        />
+  </div>
+
   {% set name='rename-newtag%02d' % n %}
   <div class="form-group required">
     <label for="{{ name }}">

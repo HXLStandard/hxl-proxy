@@ -65,6 +65,8 @@ def setup_filters(recipe, data_content=None):
             source = add_explode_filter(source, recipe.args, index)
         elif filter == 'fill':
             source = add_fill_filter(source, recipe.args, index)
+        elif filter == 'implode':
+            source = add_implode_filter(source, recipe.args, index)
         elif filter == 'jsonpath':
             source = add_jsonpath_filter(source, recipe.args, index)
         elif filter == 'merge':
@@ -253,11 +255,18 @@ def add_fill_filter(source, args, index):
     queries = args.get('fill-where%02d' % index, None)
     return source.fill_data(patterns=patterns, queries=queries)
 
+def add_implode_filter(source, args, index):
+    return source.implode(
+        label_pattern=args.get('implode-label-pattern%02d' % index, 'header'),
+        value_pattern=args.get('implode-value-pattern%02d' % index, 'value')
+    )
+
 def add_jsonpath_filter(source, args, index):
     path = args.get('jsonpath-path%02d' % index)
     patterns = args.get('jsonpath-patterns%02d' % index, None)
     queries = args.get('jsonpath-where%02d' % index, None)
-    return source.jsonpath(path, patterns=patterns, queries=queries)
+    use_json = (args.get('jsonpath-flatten%02d' % index) != 'on')
+    return source.jsonpath(path, patterns=patterns, queries=queries, use_json=use_json)
 
 def add_merge_filter(source, args, index):
     """Add the hxlmerge filter to the end of the pipeline."""
@@ -276,10 +285,11 @@ def add_merge_filter(source, args, index):
 def add_rename_filter(source, args, index):
     """Add the hxlrename filter to the end of the pipeline."""
     oldtag = hxl.TagPattern.parse(args.get('rename-oldtag%02d' % index))
+    oldheader = hxl.datatypes.normalise_string(args.get('rename-oldheader%02d' % index))
     tagspec = _parse_tagspec(args.get('rename-newtag%02d' % index))
     header = args.get('rename-header%02d' % index)
     column = hxl.Column.parse(tagspec, header=header)
-    return source.rename_columns([(oldtag, column)])
+    return source.rename_columns([(oldtag, column, oldheader)])
 
 def add_replace_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""

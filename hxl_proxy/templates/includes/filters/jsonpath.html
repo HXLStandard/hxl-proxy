@@ -54,4 +54,18 @@
         />
   </div>
 
+  {% set name='jsonpath-flatten%02d' % n %}
+  <div class="checkbox">
+    <label>
+      <input
+          type="checkbox"
+          name="{{ name }}"
+          {% if recipe.args[name] %}
+          checked="checked"
+          {% endif %}
+          />
+          Flatten multiple results (separated by " | ")
+    </label>
+  </div>
+  
 </div>

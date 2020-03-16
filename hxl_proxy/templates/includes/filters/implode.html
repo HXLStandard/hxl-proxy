@@ -1,40 +1,41 @@
-<div class="filter-explode filter-body">
+<div class="filter-implode filter-body">
   {% import 'includes/filters/filter-variables.j2' as vars %}
 
   <p class="doc">
-    {% with key='Explode-data-filter' %}{% include "includes/help.html" %}{% endwith %}
-    Normalise data from "wide" to "narrow" using the headers as labels. This filter
-    uses the special <code>+label</code> attribute to identify columns.
+    {% with key='Implode-data-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Denormalise data from "narrow" to "wide".
   </p>
 
-  {% set name='explode-header-att%02d' % n %}
-  <div class="form-group">
+  {% set name='implode-label-pattern%02d' % n %}
+  <div class="form-group required">
     <label for="{{ name }}">
-      Attribute for former header text.
+      Labels column:
     </label>
     <input
         id="{{ name }}"
         class="form-control"
         name="{{ name }}"
-        value="{{ recipe.args[name] or 'header' }}"
+        value="{{ recipe.args[name] }}"
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
+        required="required"
         placeholder="{{ vars.filters_placeholder }}"
         />
   </div>
 
-  {% set name='explode-value-att%02d' % n %}
-  <div class="form-group">
+  {% set name='implode-value-pattern%02d' % n %}
+  <div class="form-group required">
     <label for="{{ name }}">
-      Attribute for original value.
+      Values column:
     </label>
     <input
         id="{{ name }}"
         class="form-control"
         name="{{ name }}"
-        value="{{ recipe.args[name] or 'value' }}"
+        value="{{ recipe.args[name] }}"
         pattern="^{{ vars.filters_pattern }}$"
         title="{{ vars.filters_help }}"
+        required="required"
         placeholder="{{ vars.filters_placeholder }}"
         />
   </div>

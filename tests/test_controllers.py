@@ -494,6 +494,14 @@ class TestDataPreview(AbstractControllerTest):
         })
         self.assertEqual(self.EXPECTED_CSV, response.data)
 
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_csv_file_output(self):
+        response = self.get('/api/data-preview.csv', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+            'filename': 'test_file.csv',
+        })
+        self.assertTrue(('Content-Disposition', 'attachment; filename=test_file.csv') in response.headers._list)
+
 class TestDataPreviewGetSheets(AbstractControllerTest):
 
     path = '/api/data-preview-sheets.json'
