@@ -1,4 +1,4 @@
-Release 1.18
+2020-03-16 Release 1.18
 	- add UI support for new implode filter
 	- add UI support for flattening JSON lists
 	- add optional header field for rename-column filter
