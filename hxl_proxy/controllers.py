@@ -1198,7 +1198,7 @@ def data_preview (format="json"):
     # Set the file download name if &filename is present
     filename = flask.request.args.get('filename')
     if filename:
-        response.headers['Content-Disposition'] = 'attachment; filename={}.{}'.format(filename, format)
+        response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 
     return response
 

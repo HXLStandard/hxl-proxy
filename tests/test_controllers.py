@@ -498,7 +498,7 @@ class TestDataPreview(AbstractControllerTest):
     def test_csv_file_output(self):
         response = self.get('/api/data-preview.csv', {
             'url': 'http://example.org/basic-dataset.xlsx',
-            'filename': 'test_file',
+            'filename': 'test_file.csv',
         })
         self.assertTrue(('Content-Disposition', 'attachment; filename=test_file.csv') in response.headers._list)
 

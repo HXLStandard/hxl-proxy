@@ -2,6 +2,7 @@ Release 1.18
 	- add UI support for new implode filter
 	- add UI support for flattening JSON lists
 	- add optional header field for rename-column filter
+	- add optional &filename= param for /api/data-preview
 
 2020-02-18 Release 1.17
 	- added UI support for new Implode filter
