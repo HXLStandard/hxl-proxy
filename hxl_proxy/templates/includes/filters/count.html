@@ -6,6 +6,8 @@
     Aggregate HXL data to generate reports or protect private data.
   </p>
 
+  {% include 'includes/filters/label-field.html' %}
+
   {% set name='count-tags%02d' % n %}
   <div class="form-group">
     <label for="{{ name }}">Tag pattern(s) for column(s)</label>

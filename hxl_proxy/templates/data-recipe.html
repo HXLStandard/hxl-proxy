@@ -38,15 +38,21 @@
             {% set vars = {'last_index': 0 } %}
             {% for n in range(1, 99) %}
             {% set filter_type = recipe.args['filter{0:02}'.format(n)] %}
+            {% set filter_label = recipe.args['filter-label{0:02}'.format(n)] %}
             {% if filter_type %}
             {% if vars.update({'last_index': n}) %}{% endif %}{# kludge to set var outside scope #}
             <li class="filter{% if n!=filter_count %} sort-item{% endif %}">
               <span class="handle glyphicon glyphicon-move"></span>
-              <a class="filter-button"
-                 data-toggle="modal"
-                 data-target="{{'#filter-dialog-%02d' % n }}" href="{{'#filter-dialog-%02d' % n}}">
-                {{ filter_types.names[filter_type] }}
-              </a>
+              <span class="filter-name">
+                <a class="filter-button"
+                   data-toggle="modal"
+                   data-target="{{'#filter-dialog-%02d' % n }}" href="{{'#filter-dialog-%02d' % n}}">
+                  {{ filter_types.names[filter_type] }}
+                </a>
+              </span>
+              {% if filter_label %}
+              <span class="filter-label">{{ filter_label }}</span>
+              {% endif %}
               <span class="filter-delete">[<a onclick="hxl_proxy.ui.removeFilter(this);">x</a>]</span>
               <div class="modal fade" id="{{ 'filter-dialog-%02d' % n }}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">

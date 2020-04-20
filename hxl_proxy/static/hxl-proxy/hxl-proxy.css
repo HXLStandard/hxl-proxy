@@ -188,13 +188,31 @@ ol.filter-list {
 }
 
 ol.filter-list li.filter {
+    position: relative;
     margin-bottom: 1ex;
+    margin-left: 2em;
 }
 
 ol.filter-list li.placeholder:before {
     position: absolute;
     content: "\21D2";
     margin-left: -1em;
+}
+
+ol.filter-list .handle {
+    position: absolute;
+    left: -2em;;
+    top: .4ex;
+}
+
+ol.filter-list .filter-name {
+    display: inline-block;
+    font-weight: bold;
+}
+
+ol.filter-list .filter-label {
+    display: block;
+    font-style: italic;
 }
 
 ol.filter-list .filter-delete {
@@ -211,10 +229,6 @@ ol.filter-list .filter-delete {
     font-size: 83.333333%;
     color: #555555;
     font-style: italic;
-}
-
-.handle {
-    margin-right: 1em;
 }
 
 fieldset legend {
