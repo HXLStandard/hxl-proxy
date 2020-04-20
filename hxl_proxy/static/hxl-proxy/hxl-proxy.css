@@ -216,7 +216,9 @@ ol.filter-list .filter-label {
 }
 
 ol.filter-list .filter-delete {
-    float: right;
+    position: absolute;
+    right: 0;
+    top: .4ex;
 }
 
 .help-link {
