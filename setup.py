@@ -22,7 +22,7 @@ setuptools.setup(
     zip_safe = False,
     install_requires=[
         'requests>=2.11',
-        'libhxl==4.18',
+        'libhxl==4.19',
         'ckanapi>=3.5',
         'flask>=1.0',
         'flask-caching',
