@@ -1,4 +1,4 @@
-Release 1.19
+2020-04-27 Release 1.19
 	- add UI support for labeling steps in a recipe
 	- added field on data-source page to specify a JSONpath selector to find the HXL data
 
