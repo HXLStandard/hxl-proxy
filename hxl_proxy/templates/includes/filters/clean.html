@@ -11,6 +11,8 @@
       </p>
     </div>
 
+    {% include 'includes/filters/label-field-multicol.html' %}
+
     {% set name='clean-whitespace-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
@@ -27,7 +29,7 @@
           />
     </div>
 
-        {% set name='clean-latlon-tags{0:02}'.format(n) %}
+    {% set name='clean-latlon-tags{0:02}'.format(n) %}
     <div class="form-group col-sm-6">
       <label for="{{ name }}">
         Standardise lat/lon for these hashtags

@@ -6,6 +6,8 @@
     Add a new column (with a constant value) to the data.
   </p>
 
+  {% include 'includes/filters/label-field.html' %}
+
   {% set name='add-tag{0:02}'.format(n) %}
   <div class="form-group required">
     <label for="{{ name }}">

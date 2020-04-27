@@ -1,0 +1,14 @@
+  {% set name='filter-label{0:02}'.format(n) %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Label
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        placeholder="Notes about this step"
+        />
+  </div>
+

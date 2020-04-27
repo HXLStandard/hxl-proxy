@@ -5,6 +5,8 @@
     Include rows that match <strong>any</strong> of the following queries
   </p>
 
+  {% include 'includes/filters/label-field.html' %}
+
   {% set name='select-query%02d' % n %}
   <div class="form-group required">
     <label>Queries (e.g. adm1=Bomo)</label>

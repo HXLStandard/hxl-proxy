@@ -59,7 +59,7 @@
 
             <div class="form-group form-inline">
 
-              <div class="col-sm-6">
+              <div class="col-sm-4">
                 <label for="sheet">
                   Tab #
                 </label>
@@ -68,7 +68,16 @@
                 </div>
               </div>
 
-              <div class="col-sm-6 checkbox">
+              <div class="col-sm-4">
+                <label for="selector">
+                  Selector
+                </label>
+                <div class="form-group">
+                  <input name="selector" value="{{ recipe.args.selector }}" class="form-control" placeholder="JSONpath"/>
+                </div>
+              </div>
+
+              <div class="col-sm-4 checkbox">
                 <label>
                   <input type="checkbox" name="skip_verify_ssl" {% if (recipe.args.skip_verify_ssl == 'on') %}checked="checked"{% endif %}/>
                   Don't verify SSL certificates

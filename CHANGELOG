@@ -1,3 +1,7 @@
+2020-04-27 Release 1.19
+	- add UI support for labeling steps in a recipe
+	- added field on data-source page to specify a JSONpath selector to find the HXL data
+
 2020-03-16 Release 1.18
 	- add UI support for new implode filter
 	- add UI support for flattening JSON lists
