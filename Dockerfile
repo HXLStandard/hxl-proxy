@@ -1,4 +1,4 @@
-FROM unocha/alpine-base-s6-python3:3.8
+FROM unocha/alpine-base-s6-python3:3.11.2
 
 WORKDIR /srv/www
 
@@ -8,6 +8,7 @@ RUN apk update && \
     apk upgrade && \
     apk add \
         sqlite && \
+    apk add libffi-dev && \
     mkdir -p \
         /etc/services.d/hxl \
         /srv/db \
