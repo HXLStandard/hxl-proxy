@@ -1,3 +1,6 @@
+Release 1.20
+	- add long description in setup.py for PyPi (from README.md)
+
 2020-04-27 Release 1.19
 	- add UI support for labeling steps in a recipe
 	- added field on data-source page to specify a JSONpath selector to find the HXL data

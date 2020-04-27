@@ -9,12 +9,17 @@ import sys, setuptools
 if sys.version_info.major != 3:
     raise SystemExit("The HXL Proxy requires Python 3.x")
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
     package_data={'hxl_proxy': ['*.sql']},
     version = "1.19",
     description = 'Flask-based web proxy for HXL',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
