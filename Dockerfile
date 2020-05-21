@@ -28,7 +28,8 @@ RUN apk update && \
         python3-dev && \
     pip3 install gevent && \
     apk del \
-        .gevent-deps && \
+        .gevent-deps \
+        libffi-dev && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
 
