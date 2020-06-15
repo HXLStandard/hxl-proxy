@@ -61,6 +61,8 @@ def setup_filters(recipe, data_content=None):
             source = add_column_filter(source, recipe.args, index)
         elif filter == 'dedup':
             source = add_dedup_filter(source, recipe.args, index)
+        elif filter == 'expand':
+            source = add_expand_filter(source, recipe.args, index)
         elif filter == 'explode':
             source = add_explode_filter(source, recipe.args, index)
         elif filter == 'fill':
@@ -240,6 +242,18 @@ def add_dedup_filter(source, args, index):
     tags = args.get('dedup-tags%02d' % index, [])
     row_query = args.get('dedup-where%02d' % index, '')
     return source.dedup(tags, queries=row_query)
+
+def add_expand_filter(source, args, index):
+    tags = args.get('expand-tags%02d' % index, [])
+    separator = args.get('expand-separator%02d' % index, "|")
+    correlate = (args.get('expand-correlate%02d' % index) == 'on')
+    row_query = args.get('expand-where%02d' % index, '')
+    return source.expand_lists(
+        patterns = tags,
+        separator=separator,
+        correlate=correlate,
+        queries=row_query
+    )
 
 def add_explode_filter(source, args, index):
     return source.explode(

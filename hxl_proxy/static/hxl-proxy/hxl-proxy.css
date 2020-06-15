@@ -225,7 +225,7 @@ ol.filter-list .filter-delete {
     float: right;
 }
 
-.form-group .help {
+.form-group .help, .checkbox .help {
     margin-top: 0;
     padding-top: 0;
     font-size: 83.333333%;

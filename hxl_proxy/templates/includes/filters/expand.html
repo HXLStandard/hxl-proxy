@@ -1,0 +1,72 @@
+<div class="filter-expand filter-body">
+  {% import 'includes/filters/filter-variables.j2' as vars %}
+
+  <p class="doc">
+    {% with key='Expand-lists-filter' %}{% include "includes/help.html" %}{% endwith %}
+    Expand lists by duplicating rows
+  </p>
+
+  {% include 'includes/filters/label-field.html' %}
+
+  {% set name='expand-tags%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Expand lists in these columns
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.filters_pattern }}$"
+        title="{{ vars.filters_help }}"
+        placeholder="{{ vars.filters_placeholder }}"
+        />
+    <p class="help">If blank, expand lists in all columns containing the +list attribute</p>
+  </div>
+
+  {% set name='expand-separator{0:02}'.format(n) %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      List separator string
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        placeholder="|"
+        />
+    <p class="help">Defaults to "|" if unspecified.</p>
+  </div>
+
+  {% set name='expand-correlate%02d' % n %}
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="{{ name }}"{% if recipe.args[name] %} checked="checked"{% endif %} />
+      Correlate list values in multiple columns
+    </label>
+    <p class="help">
+      If checked, correlate the list items in multiple columns; otherwise,
+      generate their Cartesian product (one row for each possible
+      combination). Has no effect if you select only a single column.
+    </p>
+  </div>
+
+  {% set name='expand-where%02d' % n %}
+  <div class="form-group">
+    <label for="{{ name }}">
+      Expand lists only in rows matching this query
+    </label>
+    <input
+        id="{{ name }}"
+        class="form-control"
+        name="{{ name }}"
+        value="{{ recipe.args[name] }}"
+        pattern="^{{ vars.query_pattern }}$"
+        title="{{ vars.query_help }}"
+        placeholder="{{ vars.query_placeholder }}"
+        />
+  </div>
+
+</div>

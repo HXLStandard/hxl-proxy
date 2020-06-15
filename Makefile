@@ -39,6 +39,9 @@ test: $(VENV)
 # alias to (re)build the Python virtual environment
 build-venv: $(VENV)
 
+remove-venv:
+	rm -rf $(VENV)
+
 # (re)build the virtual environment if it's missing, or whenever setup.py changes
 $(VENV): setup.py
 	rm -rf venv && virtualenv venv
@@ -87,7 +90,7 @@ browser-tests-prod:
 
 # (re)generate emacs TAGS file
 etags:
-	find hxl_proxy tests -name '*.py' -o -name '*.csv' | xargs etags
+	find hxl_proxy tests -name '*.py' -o -name '*.csv' -o -name '*.html' -o -name '*.js' | xargs etags
 
 # restart the web app by touching the WSGI file (depends on the platform)
 restart:
