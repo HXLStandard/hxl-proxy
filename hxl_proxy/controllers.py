@@ -641,7 +641,7 @@ def do_data_save():
     """
 
     # FIXME - move somewhere else
-    RECIPE_ARG_BLACKLIST = [
+    RECIPE_ARG_EXCLUDES = [
         'cloneable',
         'description',
         'details'
@@ -678,7 +678,7 @@ def do_data_save():
     # Merge changed values
     recipe.args = {}
     for name in flask.request.form:
-        if flask.request.form.get(name) and name not in RECIPE_ARG_BLACKLIST:
+        if flask.request.form.get(name) and name not in RECIPE_ARG_EXCLUDES:
             recipe.args[name] = flask.request.form.get(name)
 
     # Check for a password change
