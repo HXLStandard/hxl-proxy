@@ -644,6 +644,7 @@ def do_data_save():
     RECIPE_ARG_EXCLUDES = [
         'cloneable',
         'description',
+        'dest',
         'details'
         'name',
         'passhash',
@@ -663,22 +664,29 @@ def do_data_save():
     destination_facet = flask.request.form.get('dest', 'data_view')
 
     # Update recipe metadata
+    # Note that an empty/unchecked value will be omitted from the form
     if 'name' in flask.request.form:
         recipe.name = flask.request.form['name']
+
     if 'description' in flask.request.form:
         recipe.description = flask.request.form['description']
-    if 'cloneable' in flask.request.form:
-        if not flask.request.form.get('authorization_token'):
-            recipe.cloneable = (flask.request.form['cloneable'] == 'on')
-        else:
-            recipe.cloneable = False
+    else:
+        recipe.description = ''
+        
+    if 'cloneable' in flask.request.form and not flask.request.form.get('authorization_token') and flask.request.form['cloneable'] == "on":
+        recipe.cloneable = True
+    else:
+        recipe.cloneable = False
+
     if 'stub' in flask.request.form:
         recipe.stub = flask.request.form['stub']
+    else:
+        recipe.stub = ''
 
     # Merge changed values
     recipe.args = {}
     for name in flask.request.form:
-        if flask.request.form.get(name) and name not in RECIPE_ARG_EXCLUDES:
+        if name not in RECIPE_ARG_EXCLUDES:
             recipe.args[name] = flask.request.form.get(name)
 
     # Check for a password change
