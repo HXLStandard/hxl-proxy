@@ -88,6 +88,10 @@ browser-tests-staging:
 browser-tests-prod:
 	cat tests/browser-tests/prod-urls.txt | xargs -d '\n' firefox
 
+# run local dev (needs config in local/config.py)
+run-dev: $(VENV)
+	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py python run-server.py
+
 # (re)generate emacs TAGS file
 etags:
 	find hxl_proxy tests -name '*.py' -o -name '*.csv' -o -name '*.html' -o -name '*.js' | xargs etags

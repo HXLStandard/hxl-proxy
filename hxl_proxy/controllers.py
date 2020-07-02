@@ -1167,19 +1167,41 @@ def data_preview (format="json"):
             s = output.getvalue()
             output.close()
             yield s
+
+    # allow overriding the format in a parameter (useful for forms)
+    if "format" in flask.request.args and format != "html":
+        format = flask.request.args.get("format")
     
     flask.g.output_format = format # for error reporting
 
     # params
     url = flask.request.args.get('url')
+
+    sheet = flask.request.args.get('sheet')
+    if sheet is not None:
+        sheet = int(sheet)
+
+    rows = flask.request.args.get('rows')
+    if rows is not None:
+        rows = int(rows)
+
+    force = flask.request.args.get('force')
+
+    filename = flask.request.args.get('filename')
+
+    if format == "html":
+        return flask.render_template('api-data-preview.html', url=url, sheet=sheet, rows=rows, filename=filename, force=force)
+
+    # if there's no URL, then show an interactive form
     if not url:
-        raise ValueError("&url parameter required")
+        return flask.redirect('/api/data-preview.html', 302)
 
-    sheet = flask.request.args.get('sheet', 0)
-    sheet = int(sheet)
-
-    rows = flask.request.args.get('rows', -1)
-    rows = int(rows)
+    # fix up params
+    if not sheet:
+        sheet = -1
+        
+    if not rows:
+        rows = -1
 
     # make input
     if util.skip_cache_p():
@@ -1204,7 +1226,6 @@ def data_preview (format="json"):
     response.headers['Access-Control-Allow-Origin'] = '*'
 
     # Set the file download name if &filename is present
-    filename = flask.request.args.get('filename')
     if filename:
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 
