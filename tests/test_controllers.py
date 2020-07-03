@@ -455,6 +455,13 @@ class TestDataPreview(AbstractControllerTest):
         ['Org C', 'Health', 'Myanmar']
     ]
 
+    EXPECTED_OBJECT_JSON = [
+        {'Organisation': '#org', 'Sector': '#sector', 'Country': '#country'},
+        {'Organisation': 'Org A', 'Sector': 'WASH', 'Country': 'Colombia'},
+        {'Organisation': 'Org B', 'Sector': 'Education', 'Country': 'Guinea'},
+        {'Organisation': 'Org C', 'Sector': 'Health', 'Country': 'Myanmar'},
+    ]
+
     EXPECTED_CSV = b'Organisation,Sector,Country\r\n#org,#sector,#country\r\nOrg A,WASH,Colombia\r\nOrg B,Education,Guinea\r\nOrg C,Health,Myanmar\r\n'
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
@@ -486,6 +493,13 @@ class TestDataPreview(AbstractControllerTest):
             'rows': 2,
         })
         self.assertEqual(self.EXPECTED_JSON[:2], response.json)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_json_object_output(self):
+        response = self.get('/api/data-preview.objects.json', {
+            'url': 'http://example.org/basic-dataset.xlsx',
+        })
+        self.assertEqual(self.EXPECTED_OBJECT_JSON, response.json)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_csv_output(self):

@@ -1162,6 +1162,30 @@ def data_preview (format="json"):
             yield line
         yield "\n]"
 
+    def json_object_generator ():
+        """ Generate JSON object-style output, row by row """
+        counter = 0
+        headers = None
+        yield '['
+        for row in input:
+            if headers is None:
+                headers = row
+                continue
+            if rows > 0 and counter >= rows:
+                break
+            if counter == 0:
+                line = "\n  "
+            else:
+                line = ",\n  "
+            counter += 1
+            object = {}
+            for i, header in enumerate(headers):
+                if header and i < len(row):
+                    object[header] = row[i]
+            line += json.dumps(object)
+            yield line
+        yield "\n]"
+
     def csv_generator ():
         """ Generate CSV output, row by row """
         counter = 0
@@ -1224,6 +1248,8 @@ def data_preview (format="json"):
     # Generate result
     if format == 'json':
         response = flask.Response(json_generator(), mimetype='application/json')
+    elif format == 'objects.json':
+        response = flask.Response(json_object_generator(), mimetype='application/json')
     elif format == 'csv':
         response = flask.Response(csv_generator(), mimetype='text/csv')
     else:
