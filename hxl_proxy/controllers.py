@@ -13,7 +13,7 @@ from hxl.io import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
 
 
 logger = logging.getLogger(__name__)
@@ -117,7 +117,11 @@ def handle_password_required_exception(e):
     """
     flask.flash("Login required")
     if flask.g.recipe_id:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id), 303)
+        destination = flask.request.path
+        args = dict(flask.request.args)
+        if args:
+            destination += "?" + urllib.parse.urlencode(args)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id, extras={"from": destination}), 303)
     else:
         raise Exception("Internal error: login but no saved recipe")
 
@@ -199,7 +203,10 @@ def data_login(recipe_id):
     """
     flask.g.recipe_id = recipe_id # for error handling
     recipe = recipes.Recipe(recipe_id)
-    return flask.render_template('data-login.html', recipe=recipe)
+    destination = flask.request.args.get('from')
+    if not destination:
+        destination = util.data_url_for('data_edit', recipe)
+    return flask.render_template('data-login.html', recipe=recipe, destination=destination)
 
 # has tests
 @app.route("/data/source")

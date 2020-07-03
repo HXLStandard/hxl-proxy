@@ -3,6 +3,7 @@ Release 1.21
 	- remove "whitelist" and "blacklist" throughout code and comments
 	- fix saved-recipe bug that prevented disabling cloning or removing a description
 	- added HTML form to set up data-preview API call interactively
+	- ensure that user always returns to select page after login diversion
 
 2020-05-21 Release 1.20
 	- fixed bug with JSONPath &selector
