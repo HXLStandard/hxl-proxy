@@ -134,8 +134,14 @@ def handle_ssl_certificate_error(e):
     Give the user an option to disable SSL certificate verification by redirecting to the /data/source page.
     @param e: the exception being handled
     """
-    flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
+    if flask.g.output_format == "html":
+        flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
+        return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
+    else:
+        response = flask.Response(util.make_json_error(e, 400), mimetype='application/json', status=400)
+        # add CORS header
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 # register the SSL certificate verification handler
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
@@ -1071,6 +1077,74 @@ def do_admin_delete_recipe():
 # place to keep it.
 ########################################################################
 
+@app.route("/api/from-spec.<format>")
+def from_spec(format="json"):
+    """ Use a JSON HXL spec 
+    Not cached
+    """
+
+    # allow format override
+    format = flask.request.args.get("format", format)
+    flask.g.output_format = format
+
+    # other args
+    verify_ssl = util.check_verify_ssl(flask.request.args)
+    http_headers = {
+        'User-Agent': 'hxl-proxy/download'
+    }
+
+    # check arg logic
+    spec_url = flask.request.args.get("spec-url")
+    spec_json = flask.request.args.get("spec-json")
+    spec = None
+
+    if spec_url and spec_json:
+        raise ValueError("Must specify only one of &spec-url or &spec-json")
+    elif spec_url:
+        spec_response = requests.get(spec_url, verify=verify_ssl, headers=http_headers)
+        spec_response.raise_for_status()
+        spec = spec_response.json()
+    elif spec_json:
+        spec = json.loads(spec_json)
+    else:
+        raise ValueError("Either &spec-url or &spec-json required")
+
+    # process the JSON spec
+    source = hxl.io.from_spec(spec)
+
+    # produce appropriate output
+    if format == "json":
+        response = flask.Response(
+            source.gen_json(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True),
+                use_objects=False
+            ),
+            mimetype="application/json"
+        )
+    elif format == "objects.json":
+        response = flask.Response(
+            source.gen_json(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True),
+                use_objects=True
+            ),
+            mimetype="application/json"
+        )
+    elif format == "csv":
+        response = flask.Response(
+            source.gen_csv(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True)
+            ),
+            mimetype="text/csv"
+        )
+    else:
+        raise ValueError("Unsupported output format {}".format(format))
+
+    return response
+        
+        
 
 # needs tests
 @app.route("/api/hxl-test.<format>")
