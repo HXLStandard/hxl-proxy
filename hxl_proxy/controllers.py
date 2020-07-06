@@ -1084,21 +1084,33 @@ def from_spec(format="json"):
     """
 
     # allow format override
-    format = flask.request.args.get("format", format)
-    flask.g.output_format = format
+    if format != "html":
+        format = flask.request.args.get("format", format)
+        flask.g.output_format = format
 
     # other args
     verify_ssl = util.check_verify_ssl(flask.request.args)
     http_headers = {
         'User-Agent': 'hxl-proxy/download'
     }
+    filename = flask.request.args.get('filename')
+    force = flask.request.args.get("force")
 
     # check arg logic
     spec_url = flask.request.args.get("spec-url")
     spec_json = flask.request.args.get("spec-json")
     spec = None
 
-    if spec_url and spec_json:
+    if format == "html":
+        return flask.render_template(
+            'api-from-spec.html',
+            spec_json=spec_json,
+            spec_url=spec_url,
+            verify_ssl=verify_ssl,
+            filename=filename,
+            force=force
+        )
+    elif spec_url and spec_json:
         raise ValueError("Must specify only one of &spec-url or &spec-json")
     elif spec_url:
         spec_response = requests.get(spec_url, verify=verify_ssl, headers=http_headers)
@@ -1139,8 +1151,16 @@ def from_spec(format="json"):
             ),
             mimetype="text/csv"
         )
+
     else:
         raise ValueError("Unsupported output format {}".format(format))
+
+    # Add CORS header and return
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    # Set the file download name if &filename is present
+    if filename:
+        response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 
     return response
         
