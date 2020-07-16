@@ -251,11 +251,13 @@ def data_tagger(recipe_id=None):
     header_row = recipe.args.get('header-row')
     if header_row is not None:
         header_row = int(header_row)
+        
     try:
         sheet_index = int(recipe.args.get('sheet', 0))
     except:
         logger.info("Assuming sheet 0, since none specified")
         sheet_index = 0
+
     selector = recipe.args.get('selector', None)
 
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
@@ -281,8 +283,14 @@ def data_tagger(recipe_id=None):
         if row:
             preview.append(row)
 
+    if header_row is not None:
+        mappings = util.clean_tagger_mappings(preview[header_row-1], recipe)
+        mappings += [["", ""]] # room for an extra header in the form
+    else:
+        mappings = []
+
     # Draw the web page
-    return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row)
+    return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row, mappings=mappings)
 
 
 # has tests

@@ -143,18 +143,18 @@
                 </tr>
               </thead>
               <tbody>
-                {% for value in preview[header_row-1] %}
+                {% for mapping in mappings %}
                 {% set name='tagger-%02d' % loop.index %}
                 <tr>
                   <td>{{ loop.index }}</td>
                   <td>
                     <input class="form-control" name="{{ name + '-header' }}"
-                           value="{{ recipe.args[name + '-header'] or value|strnorm }}"
+                           value="{{ mapping[0] }}"
                            placeholder="Header text" />
                   </td>
                   <td>
                     <input class="form-control" name="{{ name + '-tag' }}"
-                           value="{{ recipe.args[name + '-tag'] }}"
+                           value="{{ mapping[1] }}"
                            pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
                            placeholder="{{ vars.tag_placeholder }}" />
                   </td>
