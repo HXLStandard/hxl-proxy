@@ -1,5 +1,6 @@
 Release 1.21
 	- added UI support for Expand lists filter
+	- make tagger UI smarter about avoiding duplicates
 	- remove "whitelist" and "blacklist" throughout code and comments
 	- fix saved-recipe bug that prevented disabling cloning or removing a description
 	- added HTML form to set up data-preview API call interactively, and added objects.json format
