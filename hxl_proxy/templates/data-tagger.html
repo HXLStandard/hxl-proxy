@@ -82,7 +82,7 @@
         {% set method="GET" %}
         {% set action=url_for('data_edit') %}
         {% endif %}
-        <form class="tagger" action="{{ action }}" method="{{ method }}">
+        <form id="tagger" class="tagger" action="{{ action }}" method="{{ method }}">
 
           {% if recipe.recipe_id %}
           <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>

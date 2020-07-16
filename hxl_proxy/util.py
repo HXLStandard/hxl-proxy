@@ -62,8 +62,9 @@ def skip_cache_p ():
 def clean_tagger_mappings(headers, recipe):
     """ Create a clean list of hashtag mappings for the tagger form
     """
-    headers_seen = set()
+    existing_mappings = dict()
     mappings = list()
+    headers_seen = set()
 
     # Existing mappings are in tagger-nn-header and tagger-nn-tag
     for arg in recipe.args:
@@ -72,15 +73,20 @@ def clean_tagger_mappings(headers, recipe):
             n = result.group(1)
             header = hxl.datatypes.normalise_string(recipe.args[arg])
             tagspec = recipe.args.get("tagger-" + n + "-tag")
-            if header and tagspec and header not in headers_seen:
-                mappings.append([header, tagspec])
-                headers_seen.add(header)
+            if header and tagspec and header not in existing_mappings:
+                existing_mappings[header] = tagspec
 
-    # Add any unmapped headers to the form
+    # Do the headers in document order
     for header in headers:
         header = hxl.datatypes.normalise_string(header)
         if header and header not in headers_seen:
-            mappings.append([header, ""])
+            mappings.append([header, existing_mappings.get(header, "")])
+            headers_seen.add(header)
+
+    # Add any extra mappings back in
+    for header in existing_mappings:
+        if header not in headers_seen:
+            mappings.append([header, existing_mappings[header]])
             headers_seen.add(header)
 
     return mappings
