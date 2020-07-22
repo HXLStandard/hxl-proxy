@@ -25,7 +25,7 @@ See https://www.python.org/dev/peps/pep-0396/
 app = Flask(__name__)
 
 # Disable default logging (we'll add any log handlers explicitly in deployment)
-app.logger.addHandler(logging.NullHandler)
+app.logger.addHandler(logging.NullHandler())
 
 # Handle subpaths
 app.wsgi_app = reverse_proxied.ReverseProxied(app.wsgi_app)
