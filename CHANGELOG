@@ -1,4 +1,5 @@
 Release 1.21
+	- added a new "Logs" tab to show logs from HXL processing
 	- added UI support for Expand lists filter
 	- make tagger UI smarter about avoiding duplicates
 	- remove "whitelist" and "blacklist" throughout code and comments
