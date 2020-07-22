@@ -59,7 +59,9 @@
           </select>
           <button class="hidden btn btn-default" type="submit">Change</button>
         </div>
+        {% if not recipe.recipe_id %}
         {% include "includes/params.html" %}
+        {% endif %}
       </form>
       <p class="alert alert-info">
         Showing {{ count }} of {{ error_report.stats.total }} issue location(s)

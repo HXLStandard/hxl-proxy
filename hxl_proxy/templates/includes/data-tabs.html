@@ -32,4 +32,9 @@
       View
     </a>
   </li>
+  <li class="{% if facet=='logs' %}active{% endif %}">
+    <a href="{{ data_url_for('data_logs', recipe) }}">
+      Logs
+    </a>
+  </li>
 </ul>

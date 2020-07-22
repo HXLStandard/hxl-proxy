@@ -478,6 +478,17 @@ def show_advanced(recipe_id=None):
     return flask.render_template("data-advanced.html", recipe=recipe)
 
 
+# no tests
+@app.route("/data/logs")
+@app.route("/data/<recipe_id>/logs")
+def data_logs(recipe_id=None):
+    """ Flask controller: show logs for a recipe
+    """
+    level = flask.request.args.get('level', 'WARNING').upper()
+    recipe = recipes.Recipe(recipe_id)
+    return flask.render_template("data-logs.html", recipe=recipe, level=level)
+
+
 # has tests
 @app.route("/data")
 @app.route("/data.<flavour>.<format>")

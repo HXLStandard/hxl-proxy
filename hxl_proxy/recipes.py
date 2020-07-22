@@ -3,7 +3,7 @@ Started April 2019 by David Megginson
 License: Public Domain
 """
 
-import flask, hxl_proxy, hxl_proxy.dao, werkzeug
+import flask, hxl_proxy, hxl_proxy.dao, hxl_proxy.filters, logging, werkzeug
 
 
 class Recipe:
@@ -106,7 +106,20 @@ class Recipe:
             "stub": self.stub,
             "args": self.args,
         }
-    
+
+
+    def logs(self, level="WARNING"):
+        handler = Recipe.LogHandler(level)
+        logging.getLogger('hxl').addHandler(handler)
+        logging.getLogger('hxl_proxy').addHandler(handler)
+        source = hxl_proxy.filters.setup_filters(self)
+        try:
+            for row in source:
+                pass
+        except:
+            pass
+        return handler.messages
+            
 
     def check_auth(self, password=None):
         """ Check whether a users is authorised to access this page.
@@ -135,6 +148,16 @@ class Recipe:
         # no password required, so always OK
         else:
             return True
+
+
+    class LogHandler(logging.Handler):
+
+        def __init__(self, level):
+            super().__init__(level)
+            self.messages = []
+
+        def handle(self, record):
+            self.messages.append(record)
         
 
 
