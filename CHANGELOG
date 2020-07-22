@@ -1,4 +1,4 @@
-Release 1.21
+2020-07-23 Release 1.21
 	- added a new "Logs" tab to show logs from HXL processing
 	- added UI support for Expand lists filter
 	- make tagger UI smarter about avoiding duplicates
@@ -7,6 +7,7 @@ Release 1.21
 	- added HTML form to set up data-preview API call interactively, and added objects.json format
 	- ensure that user always returns to select page after login diversion
 	- added /api/from-spec endpoint to read a full JSON spec (including input and tagger)
+	- updated to libhxl-python 4.21
 
 2020-05-21 Release 1.20
 	- fixed bug with JSONPath &selector
