@@ -4,8 +4,6 @@ WORKDIR /srv/www
 
 COPY . .
 
-# RUN apk update && \
-#     apk upgrade && \
 RUN apk add \
         sqlite && \
     apk add libffi-dev && \
