@@ -8,6 +8,7 @@
 	- ensure that user always returns to select page after login diversion
 	- added /api/from-spec endpoint to read a full JSON spec (including input and tagger)
 	- updated to libhxl-python 4.21
+	- hide unusable data tabs
 
 2020-05-21 Release 1.20
 	- fixed bug with JSONPath &selector
