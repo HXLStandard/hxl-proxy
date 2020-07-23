@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      Data preview
+    </title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% set page_help='Home' %}
+    {% include "includes/navbar.html" %}
+    <header>
+      <h1>
+        Data preview
+      </h1>
+    </header>
+    <main class="container-fluid">
+      <section class="doc">
+      <p>
+        This is an interactive interface for the HXL Proxy's <a target="_blank"
+        href="https://github.com/HXLStandard/hxl-proxy/wiki/Data-preview-service">data-preview</a>
+        API call. You can specify all of your parameters here, then
+        the result will be a link that you can copy or bookmark.
+      </p>
+      <p>
+        Note that this is a <b>raw</b> preview of tabular data, without HXL-hashtag processing.
+      </p>
+      </section>
+      <form method="get" action="/api/data-preview.json" class="row">
+        <div class="form-group col-sm-12 required">
+          <label for="url">Dataset URL:</label>
+          <input name="url"
+                 class="form-control"
+                 required="required"
+                 placeholder="http://example.org/data.csv"
+                 default=""
+                 value="{{ url|nonone }}" />
+        </div>
+        <div class="form-group col-sm-4">
+          <label for="sheet">Sheet:</label>
+          <input name="sheet"
+                 class="form-control"
+                 type="number"
+                 value="{{ sheet|nonone }}" />
+          <p class="help">For Excel only. First sheet is 0. If blank, will look for first sheet with HXL hashtags.</p>
+        </div>
+        <div class="form-group col-sm-4">
+          <label for="rows">Max rows:</label>
+          <input name="rows"
+                 class="form-control"
+                 type="number"
+                 value="{{ rows|nonone }}" />
+          <p class="help">Maximum rows to preview. If blank, show all rows.</p>
+        </div>
+        <div class="form-group col-sm-4">
+          <label for="format">Output format:</label>
+          <select name="format" class="form-control">
+            <option value="json">JSON (row style)</option>
+            <option value="objects.json">JSON (object style)</option>
+            <option value="csv">CSV</option>
+          </select>
+        </div>
+        <div class="form-group col-sm-6">
+          <label for="filename">Output filename:</label>
+          <input name="filename"
+                 class="form-control"
+                 placeholder="my-data.json"
+                 default=""
+                 value="{{ filename|nonone }}" />
+          <p class="help">Output filename (including extension)</p>
+        </div>
+        <div class="checkbox col-sm-6">
+          <label>
+            <input type="checkbox" name="force"{% if force %} checked="checked"{% endif %} />
+            Don't cache
+          </label>
+        </div>
+        <div class="form-group col-sm-12 required">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-success">Test</button>
+          </span>
+        </div>
+      </form>
+      {% if result %}
+      <section id="result" class="col-sm-12">
+      <div class="panel {% if result.status %}panel-success{% else %}panel-danger{% endif %}">
+        <div class="panel-heading">
+          {% if result.status %}
+          <h2 class="panel-title">Yes, I found HXL hashtags!</h2>
+          {% else %}
+          <h2 class="panel-title">No, I couldn't read this as HXL :(</h2>
+          {% endif %}
+        </div>
+        <div class="panel-body">
+          <dl>
+            <dt>URL</dt>
+            <dd><p><a href="{{ result.url }}">{{ result.url }}</a></p></dd>
+            <dt>Message</dt>
+            <dd><p>{{ result.message }}</p></dd>
+            {% if not result.status %}
+            <dt>Error type</dt>
+            <dd><p>{{ result.exception }}</p></dd>
+            {% if result.args %}
+            <dt>Details</dt>
+            <dd>
+              <ul>
+                {% for arg in result.args %}
+                <li>{{ arg }}</li>
+                {% endfor %}
+              </ul>
+            </dd>
+            {% endif %}
+            {% endif %}
+          </dl>
+          {% if result.status %}
+          <a class="btn btn-default" href="{{ url_for('data_edit', url=result.url) }}">Open in HXL Proxy</a>
+          {% elif result.exception=='HXLTagsNotFoundException' %}
+          <a class="btn btn-default" href="{{ url_for('data_tagger', url=result.url) }}">Try tagging</a>
+          {% endif %}
+          <a class="btn btn-link pull-right icons small" href="/hxl-test.json?url={{ result.url|urlencode }}">JSON version</a>
+        </div>
+      </div>
+      </section>
+      {% endif %}
+    </main>
+    <footer>
+      <p>Read more about the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL).</p>
+    </footer>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>
+
+
+

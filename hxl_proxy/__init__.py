@@ -7,7 +7,7 @@ License: Public Domain
 Documentation: http://hxlstandard.org
 """
 
-import os
+import logging, os
 
 import requests_cache
 from flask import Flask, g, request
@@ -16,13 +16,16 @@ from flask_caching import Cache
 import werkzeug.datastructures
 from . import reverse_proxied
 
-__version__="1.20"
+__version__="1.21"
 """Module version number
 See https://www.python.org/dev/peps/pep-0396/
 """
 
 # Main application object
 app = Flask(__name__)
+
+# Disable default logging (we'll add any log handlers explicitly in deployment)
+app.logger.addHandler(logging.NullHandler())
 
 # Handle subpaths
 app.wsgi_app = reverse_proxied.ReverseProxied(app.wsgi_app)

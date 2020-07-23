@@ -82,7 +82,7 @@
         {% set method="GET" %}
         {% set action=url_for('data_edit') %}
         {% endif %}
-        <form class="tagger" action="{{ action }}" method="{{ method }}">
+        <form id="tagger" class="tagger" action="{{ action }}" method="{{ method }}">
 
           {% if recipe.recipe_id %}
           <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
@@ -121,7 +121,7 @@
           </div>
 
           <p class="alert alert-info">
-            Pick HXL tags for some or all of your headers.
+            Pick HXL tags for some or all of your headers. Note that each string may have only one hashtag spec mapped to it (it is not possible to distinguish multiple columns with identical header text).
           </p>
 
           <p class="visible-xs visible-sm">
@@ -143,18 +143,18 @@
                 </tr>
               </thead>
               <tbody>
-                {% for value in preview[header_row-1] %}
+                {% for mapping in mappings %}
                 {% set name='tagger-%02d' % loop.index %}
                 <tr>
                   <td>{{ loop.index }}</td>
                   <td>
                     <input class="form-control" name="{{ name + '-header' }}"
-                           value="{{ recipe.args[name + '-header'] or value|strnorm }}"
+                           value="{{ mapping[0] }}"
                            placeholder="Header text" />
                   </td>
                   <td>
                     <input class="form-control" name="{{ name + '-tag' }}"
-                           value="{{ recipe.args[name + '-tag'] }}"
+                           value="{{ mapping[1] }}"
                            pattern="^{{ vars.tag_pattern }}$" title="{{ vars.tag_help }}"
                            placeholder="{{ vars.tag_placeholder }}" />
                   </td>

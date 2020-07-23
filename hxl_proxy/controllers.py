@@ -13,7 +13,7 @@ from hxl.io import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
 
 
 logger = logging.getLogger(__name__)
@@ -117,7 +117,11 @@ def handle_password_required_exception(e):
     """
     flask.flash("Login required")
     if flask.g.recipe_id:
-        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id), 303)
+        destination = flask.request.path
+        args = dict(flask.request.args)
+        if args:
+            destination += "?" + urllib.parse.urlencode(args)
+        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id, extras={"from": destination}), 303)
     else:
         raise Exception("Internal error: login but no saved recipe")
 
@@ -130,8 +134,14 @@ def handle_ssl_certificate_error(e):
     Give the user an option to disable SSL certificate verification by redirecting to the /data/source page.
     @param e: the exception being handled
     """
-    flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
-    return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
+    if flask.g.output_format == "html":
+        flask.flash("SSL error. If you understand the risks, you can check \"Don't verify SSL certificates\" to continue.")
+        return flask.redirect(util.data_url_for('data_source', recipe=recipes.Recipe()), 302)
+    else:
+        response = flask.Response(util.make_json_error(e, 400), mimetype='application/json', status=400)
+        # add CORS header
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 # register the SSL certificate verification handler
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
@@ -199,7 +209,10 @@ def data_login(recipe_id):
     """
     flask.g.recipe_id = recipe_id # for error handling
     recipe = recipes.Recipe(recipe_id)
-    return flask.render_template('data-login.html', recipe=recipe)
+    destination = flask.request.args.get('from')
+    if not destination:
+        destination = util.data_url_for('data_edit', recipe)
+    return flask.render_template('data-login.html', recipe=recipe, destination=destination)
 
 # has tests
 @app.route("/data/source")
@@ -238,11 +251,13 @@ def data_tagger(recipe_id=None):
     header_row = recipe.args.get('header-row')
     if header_row is not None:
         header_row = int(header_row)
+        
     try:
         sheet_index = int(recipe.args.get('sheet', 0))
     except:
         logger.info("Assuming sheet 0, since none specified")
         sheet_index = 0
+
     selector = recipe.args.get('selector', None)
 
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
@@ -268,8 +283,14 @@ def data_tagger(recipe_id=None):
         if row:
             preview.append(row)
 
+    if header_row is not None:
+        mappings = util.clean_tagger_mappings(preview[header_row-1], recipe)
+        mappings += [["", ""]] # room for an extra header in the form
+    else:
+        mappings = []
+
     # Draw the web page
-    return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row)
+    return flask.render_template('data-tagger.html', recipe=recipe, preview=preview, header_row=header_row, mappings=mappings)
 
 
 # has tests
@@ -457,6 +478,17 @@ def show_advanced(recipe_id=None):
     return flask.render_template("data-advanced.html", recipe=recipe)
 
 
+# no tests
+@app.route("/data/logs")
+@app.route("/data/<recipe_id>/logs")
+def data_logs(recipe_id=None):
+    """ Flask controller: show logs for a recipe
+    """
+    level = flask.request.args.get('level', 'WARNING').upper()
+    recipe = recipes.Recipe(recipe_id)
+    return flask.render_template("data-logs.html", recipe=recipe, level=level, in_logger=True)
+
+
 # has tests
 @app.route("/data")
 @app.route("/data.<flavour>.<format>")
@@ -641,9 +673,10 @@ def do_data_save():
     """
 
     # FIXME - move somewhere else
-    RECIPE_ARG_BLACKLIST = [
+    RECIPE_ARG_EXCLUDES = [
         'cloneable',
         'description',
+        'dest',
         'details'
         'name',
         'passhash',
@@ -663,22 +696,29 @@ def do_data_save():
     destination_facet = flask.request.form.get('dest', 'data_view')
 
     # Update recipe metadata
+    # Note that an empty/unchecked value will be omitted from the form
     if 'name' in flask.request.form:
         recipe.name = flask.request.form['name']
+
     if 'description' in flask.request.form:
         recipe.description = flask.request.form['description']
-    if 'cloneable' in flask.request.form:
-        if not flask.request.form.get('authorization_token'):
-            recipe.cloneable = (flask.request.form['cloneable'] == 'on')
-        else:
-            recipe.cloneable = False
+    else:
+        recipe.description = ''
+        
+    if 'cloneable' in flask.request.form and not flask.request.form.get('authorization_token') and flask.request.form['cloneable'] == "on":
+        recipe.cloneable = True
+    else:
+        recipe.cloneable = False
+
     if 'stub' in flask.request.form:
         recipe.stub = flask.request.form['stub']
+    else:
+        recipe.stub = ''
 
     # Merge changed values
     recipe.args = {}
     for name in flask.request.form:
-        if flask.request.form.get(name) and name not in RECIPE_ARG_BLACKLIST:
+        if name not in RECIPE_ARG_EXCLUDES:
             recipe.args[name] = flask.request.form.get(name)
 
     # Check for a password change
@@ -1056,6 +1096,94 @@ def do_admin_delete_recipe():
 # place to keep it.
 ########################################################################
 
+@app.route("/api/from-spec.<format>")
+def from_spec(format="json"):
+    """ Use a JSON HXL spec 
+    Not cached
+    """
+
+    # allow format override
+    if format != "html":
+        format = flask.request.args.get("format", format)
+        flask.g.output_format = format
+
+    # other args
+    verify_ssl = util.check_verify_ssl(flask.request.args)
+    http_headers = {
+        'User-Agent': 'hxl-proxy/download'
+    }
+    filename = flask.request.args.get('filename')
+    force = flask.request.args.get("force")
+
+    # check arg logic
+    spec_url = flask.request.args.get("spec-url")
+    spec_json = flask.request.args.get("spec-json")
+    spec = None
+
+    if format == "html":
+        return flask.render_template(
+            'api-from-spec.html',
+            spec_json=spec_json,
+            spec_url=spec_url,
+            verify_ssl=verify_ssl,
+            filename=filename,
+            force=force
+        )
+    elif spec_url and spec_json:
+        raise ValueError("Must specify only one of &spec-url or &spec-json")
+    elif spec_url:
+        spec_response = requests.get(spec_url, verify=verify_ssl, headers=http_headers)
+        spec_response.raise_for_status()
+        spec = spec_response.json()
+    elif spec_json:
+        spec = json.loads(spec_json)
+    else:
+        raise ValueError("Either &spec-url or &spec-json required")
+
+    # process the JSON spec
+    source = hxl.io.from_spec(spec)
+
+    # produce appropriate output
+    if format == "json":
+        response = flask.Response(
+            source.gen_json(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True),
+                use_objects=False
+            ),
+            mimetype="application/json"
+        )
+    elif format == "objects.json":
+        response = flask.Response(
+            source.gen_json(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True),
+                use_objects=True
+            ),
+            mimetype="application/json"
+        )
+    elif format == "csv":
+        response = flask.Response(
+            source.gen_csv(
+                show_headers=spec.get("show_headers", True),
+                show_tags=spec.get("show_tags", True)
+            ),
+            mimetype="text/csv"
+        )
+
+    else:
+        raise ValueError("Unsupported output format {}".format(format))
+
+    # Add CORS header and return
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    # Set the file download name if &filename is present
+    if filename:
+        response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+
+    return response
+        
+        
 
 # needs tests
 @app.route("/api/hxl-test.<format>")
@@ -1147,6 +1275,30 @@ def data_preview (format="json"):
             yield line
         yield "\n]"
 
+    def json_object_generator ():
+        """ Generate JSON object-style output, row by row """
+        counter = 0
+        headers = None
+        yield '['
+        for row in input:
+            if headers is None:
+                headers = row
+                continue
+            if rows > 0 and counter >= rows:
+                break
+            if counter == 0:
+                line = "\n  "
+            else:
+                line = ",\n  "
+            counter += 1
+            object = {}
+            for i, header in enumerate(headers):
+                if header and i < len(row):
+                    object[header] = row[i]
+            line += json.dumps(object)
+            yield line
+        yield "\n]"
+
     def csv_generator ():
         """ Generate CSV output, row by row """
         counter = 0
@@ -1159,19 +1311,41 @@ def data_preview (format="json"):
             s = output.getvalue()
             output.close()
             yield s
+
+    # allow overriding the format in a parameter (useful for forms)
+    if "format" in flask.request.args and format != "html":
+        format = flask.request.args.get("format")
     
     flask.g.output_format = format # for error reporting
 
     # params
     url = flask.request.args.get('url')
+
+    sheet = flask.request.args.get('sheet')
+    if sheet is not None:
+        sheet = int(sheet)
+
+    rows = flask.request.args.get('rows')
+    if rows is not None:
+        rows = int(rows)
+
+    force = flask.request.args.get('force')
+
+    filename = flask.request.args.get('filename')
+
+    if format == "html":
+        return flask.render_template('api-data-preview.html', url=url, sheet=sheet, rows=rows, filename=filename, force=force)
+
+    # if there's no URL, then show an interactive form
     if not url:
-        raise ValueError("&url parameter required")
+        return flask.redirect('/api/data-preview.html', 302)
 
-    sheet = flask.request.args.get('sheet', 0)
-    sheet = int(sheet)
-
-    rows = flask.request.args.get('rows', -1)
-    rows = int(rows)
+    # fix up params
+    if not sheet:
+        sheet = -1
+        
+    if not rows:
+        rows = -1
 
     # make input
     if util.skip_cache_p():
@@ -1187,6 +1361,8 @@ def data_preview (format="json"):
     # Generate result
     if format == 'json':
         response = flask.Response(json_generator(), mimetype='application/json')
+    elif format == 'objects.json':
+        response = flask.Response(json_object_generator(), mimetype='application/json')
     elif format == 'csv':
         response = flask.Response(csv_generator(), mimetype='text/csv')
     else:
@@ -1196,7 +1372,6 @@ def data_preview (format="json"):
     response.headers['Access-Control-Allow-Origin'] = '*'
 
     # Set the file download name if &filename is present
-    filename = flask.request.args.get('filename')
     if filename:
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 

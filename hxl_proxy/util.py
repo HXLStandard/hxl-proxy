@@ -59,6 +59,39 @@ def skip_cache_p ():
 # Not yet classified
 ########################################################################
 
+def clean_tagger_mappings(headers, recipe):
+    """ Create a clean list of hashtag mappings for the tagger form
+    """
+    existing_mappings = dict()
+    mappings = list()
+    headers_seen = set()
+
+    # Existing mappings are in tagger-nn-header and tagger-nn-tag
+    for arg in recipe.args:
+        result = re.match(r'^tagger-(\d{2})-header', arg)
+        if result:
+            n = result.group(1)
+            header = hxl.datatypes.normalise_string(recipe.args[arg])
+            tagspec = recipe.args.get("tagger-" + n + "-tag")
+            if header and tagspec and header not in existing_mappings:
+                existing_mappings[header] = tagspec
+
+    # Do the headers in document order
+    for header in headers:
+        header = hxl.datatypes.normalise_string(header)
+        if header and header not in headers_seen:
+            mappings.append([header, existing_mappings.get(header, "")])
+            headers_seen.add(header)
+
+    # Add any extra mappings back in
+    for header in existing_mappings:
+        if header not in headers_seen:
+            mappings.append([header, existing_mappings[header]])
+            headers_seen.add(header)
+
+    return mappings
+            
+
 def check_verify_ssl(args):
     """Check parameters to see if we need to verify SSL connections."""
     if args.get('skip_verify_ssl') == 'on':

@@ -7,3 +7,4 @@ https://dev.proxy.hxlstandard.org/data?name=Humanitarian+Response+Plans&url=http
 https://dev.proxy.hxlstandard.org/data/validate?schema_url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1ebcgNBh_v-IhW1hvrk6bkhIxVM3E6uVkHOBkx-bsbK8%2Fedit%23gid%3D152581637&url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1ebcgNBh_v-IhW1hvrk6bkhIxVM3E6uVkHOBkx-bsbK8%2Fedit%23gid%3D0
 https://dev.proxy.hxlstandard.org/pcodes/mli-adm1.csv
 https://dev.proxy.hxlstandard.org/api/data-preview.json?url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2Fcadre-harmonise
+https://dev.proxy.hxlstandard.org/data/logs?dest=data_edit&filter01=clean&clean-date-tags01=date&tagger-match-all=on&tagger-01-header=header+1&tagger-01-tag=%23date&header-row=1&url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1_PstA2iB0W1VdA9zhj2hqyQPFkf_7eZJBhOO3MjxNaE%2Fedit%3Fusp%3Dsharing

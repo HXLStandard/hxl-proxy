@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Data logs @ HXL Proxy</title>
+    {% include "includes/headers.html" %}
+  </head>
+  <body class="container-fluid">
+    {% with facet='logs' %}
+    {% set page_help='Logs-page' %}
+    {% include "includes/navbar.html" %}
+    {% endwith %}
+    <header>
+      {% if recipe.args.url %}
+      {% with facet='logs' %}
+      {% include "includes/data-tabs.html" %}
+      {% endwith %}
+      {% endif %}
+      <h1>
+        Logs from HXL processing
+      </h1>
+    </header>
+    <main>
+      <p class="alert alert-info">
+        This page displays internal log messages from HXL
+        processing. If something unexpected is happening (for example,
+        a number or date isn't being formatted correctly), you might
+        be able to find the answer here.
+      </p>
+      <form id="level-form" class="form" action="" method="GET">
+        <div class="form-group">
+          <label for="level">Minimum log level to show</label>
+          <select name="level" class="form-control" onchange="$('#level-form').submit();">
+            <option value="DEBUG"{% if level == 'DEBUG' %} selected="selected"{% endif %}>DEBUG (most messages)</option>
+            <option value="INFO"{% if level == 'INFO' %} selected="selected"{% endif %}>INFO</option>
+            <option value="WARNING"{% if level == 'WARNING' %} selected="selected"{% endif %}>WARNING</option>
+            <option value="ERROR"{% if level == 'ERROR' %} selected="selected"{% endif %}>ERROR</option>
+            <option value="CRITICAL"{% if level == 'CRITICAL' %} selected="selected"{% endif %}>CRITICAL (fewest messages)</option>
+          </select>
+          <button class="hidden btn btn-default" type="submit">Change</button>
+        </div>
+        {% if not recipe.recipe_id %}
+        {% include "includes/params.html" %}
+        {% endif %}
+      </form>
+      {% for message in recipe.logs(level) %}
+      <p>
+        <b>{{ message.name }} [{{ message.levelname }}]:</b>
+        {{ message.getMessage() }}
+      </p>
+      {% else %}
+      <p class="alert alert-warning">No log messages at level {{level}} or higher.</p>
+      {% endfor %}
+    </main>
+    {% include "includes/scripts.html" %}
+  </body>
+</html>

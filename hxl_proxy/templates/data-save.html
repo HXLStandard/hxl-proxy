@@ -85,7 +85,7 @@
         <div class="row">
           {% if need_token or recipe.args.authorization_token %}
           <div class="form-group col-md-6 required">
-            <label for="authorization_token">Authorisation token (for CKAN, etc)</label>
+            <label for="authorization_token">Authorisation token (for Kobo or HDX)</label>
             <input name="authorization_token" id="authorization_token" required="required"
                    class="form-control" value="{{ recipe.args.authorization_token|nonone }}" />
           </div>
