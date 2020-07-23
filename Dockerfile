@@ -20,7 +20,7 @@ RUN apk add \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py . && \
     pip3 --no-cache-dir install --upgrade pip \
-        gunicorn && \
+        wheel gunicorn && \
     pip3 install --upgrade -r requirements.txt && \
     pip3 install newrelic && \
     apk add --virtual .gevent-deps \
