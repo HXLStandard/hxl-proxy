@@ -486,7 +486,7 @@ def data_logs(recipe_id=None):
     """
     level = flask.request.args.get('level', 'WARNING').upper()
     recipe = recipes.Recipe(recipe_id)
-    return flask.render_template("data-logs.html", recipe=recipe, level=level)
+    return flask.render_template("data-logs.html", recipe=recipe, level=level, in_logger=True)
 
 
 # has tests

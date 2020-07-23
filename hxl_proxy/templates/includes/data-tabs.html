@@ -12,7 +12,7 @@
     </a>
   </li>
   {% endif %}
-  {% if source %}
+  {% if source or using_tagger_p(recipe) or in_logger %}
   <li class="{% if facet=='edit' %}active{% endif %}">
     <a href="{{ data_url_for('data_edit', recipe) }}">
       Recipe
