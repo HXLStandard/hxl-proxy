@@ -14,8 +14,8 @@ if [ "$NEW_RELIC_ENABLED" = true ]; then
     echo "new relic is enabled."
     # not needed anymore, env vars > config file :)
     # newrelic-admin generate-config $NEW_RELIC_LICENSE_KEY $NEW_RELIC_CONFIG_FILE
-    exec newrelic-admin run-program gunicorn -w ${HXL_WORKERS} app --chdir /srv/www -c /srv/config/gunicorn.py
+    exec newrelic-admin run-program gunicorn -w ${HXL_WORKERS} app --capture-output --chdir /srv/www -c /srv/config/gunicorn.py
 else
     echo "new relic is disabled."
-    exec gunicorn -w ${HXL_WORKERS} app --chdir /srv/www -c /srv/config/gunicorn.py
+    exec gunicorn -w ${HXL_WORKERS} app --capture-output --chdir /srv/www -c /srv/config/gunicorn.py
 fi
