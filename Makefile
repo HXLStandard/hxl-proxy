@@ -94,7 +94,7 @@ run-dev: $(VENV)
 
 # (re)generate emacs TAGS file
 etags:
-	find hxl_proxy tests -name '*.py' -o -name '*.csv' -o -name '*.html' -o -name '*.js' | xargs etags
+	find hxl_proxy tests -name '*.py' -o -name '*.csv' -o -name '*.html' -o -name '*.js'| grep -v static/jquery | grep -v static/bootstrap | grep -v static/compat | xargs etags
 
 # restart the web app by touching the WSGI file (depends on the platform)
 restart:
