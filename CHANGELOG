@@ -1,3 +1,6 @@
+2020-08-18 Release 1.21.2
+	- update to libhxl==4.21.1 to fix URL munging for HXL Proxy source links
+
 2020-08-06 Release 1.21.1
 	- restored default Flask logging to stdout/stderr
 
