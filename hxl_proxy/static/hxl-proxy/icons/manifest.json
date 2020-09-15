@@ -3,6 +3,7 @@
     "short_name": "HXL Proxy",
     "start_url": "/data/source",
     "display": "standalone",
+    "background_color": "white",
     "icons": [
         {
             "src": "./android-icon-36x36.png",
