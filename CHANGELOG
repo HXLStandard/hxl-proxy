@@ -1,3 +1,6 @@
+2020-12-08 Release 1.21.3
+	- update to libhxl=4.21.2 to fix rare Unicode encoding error for CSV lookahead buffers
+
 2020-08-18 Release 1.21.2
 	- update to libhxl==4.21.1 to fix URL munging for HXL Proxy source links
 
