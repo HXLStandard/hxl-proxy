@@ -59,14 +59,23 @@ CACHE_CONFIG = {
 #
 
 REQUEST_CACHE_NAME = 'hxl-proxy-in' # no trailing colon needed
-REQUEST_CACHE_BACKEND = 'memory'
-#REQUEST_CACHE_BACKEND = 'redis'
 REQUEST_CACHE_TIMEOUT_SECONDS = 3600
 
-# Cache timeout for requests to iTOS
+# in-memory cache
+
+REQUEST_CACHE_BACKEND = 'memory'
+REQUEST_CACHE_EXTRAS = {}
+
+# redis cache - could also use os.environ to look up REDIS_URL environment variable
+
+# import redis
+# REQUEST_CACHE_BACKEND = 'redis'
+# REQUEST_CACHE_EXTRAS = {
+#     "connection": redis.from_url("redis://localhost:6379/0")
+# }
+
+# Cache name and timeout for requests to iTOS (otherwise uses REQUEST_CACHE_*)
 ITOS_CACHE_NAME = 'itos-in' # no trailing colon needed
-ITOS_CACHE_BACKEND = 'memory'
-#ITOS_CACHE_BACKEND = 'redis'
 ITOS_CACHE_TIMEOUT = 604800
 
 #
