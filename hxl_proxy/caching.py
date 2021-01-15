@@ -5,20 +5,32 @@ import hxl_proxy, logging, os, redis, requests_cache
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
 
+
 class input:
-    """ Context manager for input caching. """
+    """Context manager for input caching.
+
+    Uses the app.config REQUEST_CACHE_* variables, including
+    REQUEST_CACHE_TYPE, REQUEST_CACHE_NAME, and
+    REQUEST_CACHE_TIMEOUT_SECONDS, as defaults.
+
+    Usage:
+        with caching.input():
+            data = hxl.data(source_url)
+
+        with caching.input(namespace="foo", timeout=3600):
+            data = hxl.data(source_url)
+
+    """
 
     def __init__ (self, namespace=None, timeout=None):
         """ Temporarily enable input caching.
-
-        Uses the app.config REQUEST_CACHE_* variables, including REQUEST_CACHE_TYPE, REQUEST_CACHE_NAME, and REQUEST_CACHE_TIMEOUT_SECONDS
 
         Args:
             namespace: the cache namespace to use (defaults to app.config["REQUEST_CACHE_NAME"])
             timeout: the duration for caching items, in seconds (defaults to app.config["REQUEST_CACHE_TIMEOUT_SECONDS"])
         """
-        config = hxl_proxy.app.config;
 
+        config = hxl_proxy.app.config
 
         if namespace is None:
             self.namespace = config.get('REQUEST_CACHE_NAME', "hxl-proxy-in")
