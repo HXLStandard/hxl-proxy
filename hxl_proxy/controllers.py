@@ -1420,7 +1420,6 @@ def data_preview_sheets(format="json"):
     _output = []
     try:
         for sheet in range(0, SHEET_MAX_NO):
-            print("*** trying sheet", sheet)
             if util.skip_cache_p():
                 input = hxl.io.make_input(url, sheet_index=sheet)
             else:
