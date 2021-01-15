@@ -1,6 +1,8 @@
-Release 1.21.4
-	- update to libhxl=4.21.3 for security and Excel improvements and bug fixes
+Release 1.22
+	- consolidate recent bugfix releases
+	- update to libhxl=4.22 for security and Excel improvements and bug fixes
 	- fix redis caching for input and refactor/simplify input caching code
+	- add additional security unit tests
 
 2020-12-08 Release 1.21.3
 	- update to libhxl=4.21.2 to fix rare Unicode encoding error for CSV lookahead buffers

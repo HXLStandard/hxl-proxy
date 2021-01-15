@@ -254,11 +254,21 @@ class TestDataPage(AbstractControllerTest):
             'url': 'http://example.org/private/data.csv'
         }, 302)
         
-    def test_empty_url(self):
+    def test_empty_url_redirect(self):
         response = self.get('/data', status=303)
         assert response.location.endswith('/data/source')
 
-    def test_local_file(self):
+    def test_ip_address_blocked(self):
+        response = self.get('/data?url=https://127.0.0.1/foo&force=on', status=500)
+
+    def test_localhost_blocked(self):
+        response = self.get('/data?url=https://localhost/foo&force=on', status=500)
+
+    def test_localdomain_blocked(self):
+        """Opening a host by IP address is not allowed"""
+        response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=500)
+
+    def test_local_file_blocked(self):
         """Make sure we're not leaking local data."""
         response = self.get('/data?url=/etc/passwd&force=on', status=500)
 
