@@ -9,7 +9,7 @@ Documentation: https://github.com/HXLStandard/hxl-proxy/wiki
 
 import csv, logging, re, requests, requests_cache, sys, werkzeug
 
-from . import app
+from . import app, caching
 
 logger = logging.getLogger(__name__)
 
@@ -45,10 +45,9 @@ def get_country_levels(country):
     country = country.upper()
     url = COUNTRY_URL_PATTERN.format(country=country)
 
-    with requests_cache.enabled(
-            app.config.get('ITOS_CACHE_NAME', 'itos-in'), 
-            backend=app.config.get('ITOS_CACHE_BACKEND', 'memory'),
-            expire_after=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
+    with caching.input(
+            namespace=app.config.get('ITOS_CACHE_NAME', 'itos-in'), 
+            timeout=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
     ):
         with requests.get(url) as result:
             data = result.json()
@@ -83,10 +82,9 @@ def extract_pcodes(country, level, fp):
 
     # Read the data from iTOS
     url = PCODES_URL_PATTERN.format(country=country, level=country_levels[level])
-    with requests_cache.enabled(
-            app.config.get('ITOS_CACHE_NAME', 'itos-in'),
-            backend=app.config.get('ITOS_CACHE_BACKEND', 'memory'),
-            expire_after=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
+    with caching.input(
+            namespace=app.config.get('ITOS_CACHE_NAME', 'itos-in'),
+            timeout=app.config.get('ITOS_CACHE_TIMEOUT', 604800)
     ):
         with requests.get(url) as result:
             data = result.json()
