@@ -1,3 +1,9 @@
+2021-02-08 Release 1.23
+	- incorporate release 4.23 of libhxl-python, with stability
+	  improvements for sorting and character-encoding errors
+	- improved support for redis caching
+	- disabled HID controller tests (not currently in use)
+
 2021-01-15 Release 1.22
 	- consolidate recent bugfix releases
 	- update to libhxl=4.22 for security and Excel improvements and bug fixes

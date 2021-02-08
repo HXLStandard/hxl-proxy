@@ -577,24 +577,24 @@ class TestDataPreviewGetSheets(AbstractControllerTest):
 # Humanitarian.ID controllers (not currently in use)
 ########################################################################
 
-class TestHIDLogin(AbstractControllerTest):
+class X_TestHIDLogin(AbstractControllerTest):
 
     path = '/login'
 
-    def test_redirect(self):
+    def x_test_redirect(self):
         response = self.get(self.path, status=303)
         assert b'/oauth/authorize' in response.data
 
 
-class TestHIDLogout(AbstractControllerTest):
+class X_TestHIDLogout(AbstractControllerTest):
 
     path = '/logout'
 
-    def test_redirect(self):
+    def x_test_redirect(self):
         response = self.get(self.path, status=303)
         self.assertEqual('http://localhost/', response.location)
 
-    def test_session(self):
+    def x_test_session(self):
         """Test that logout clears the session."""
         import flask
         # Extra cruft for setting a session cookie
