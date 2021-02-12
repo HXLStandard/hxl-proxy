@@ -7,11 +7,16 @@ services:
       - "./:/srv/www"
     ports:
       - "0.0.0.0:5000:5000"
-    entrypoint: sleep 3600
+    entrypoint: ['./run.sh']
+    working_dir: /srv/www 
     environment:
-      # HXL_PROXY_CONFIG: /srv/www/config.py
-      HXL_PROXY_CONFIG: /srv/www/docker_files/config.debug.redis.py
-  
+      DB_TYPE: 'sqlite'
+      CACHE_TYPE: 'redis'
+      CACHE_REDIS_URL: 'redis://redis:6379/0'
+      FLASK_HOST: '0.0.0.0'
+      HXL_PROXY_CONFIG: /srv/www/config.py.TEMPLATE
+      REQUEST_CACHE_BACKEND: 'redis'
+
   redis:
     image: unocha/alpine-redis:5
 
