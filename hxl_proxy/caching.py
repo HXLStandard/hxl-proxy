@@ -46,11 +46,6 @@ class input:
 
         self.backend_args = config.get('REQUEST_CACHE_EXTRAS', {})
 
-        # if we're using redis, look for a REDIS_URL environment variable and set up the connection
-        # if it's not defined, use localhost and the default port 6379
-        if self.backend == "redis" and os.environ.get("REDIS_URL"):
-            self.backend_args["connection"] = redis.from_url(os.environ.get("REDIS_URL"))
-        
     def __enter__ (self):
         requests_cache.install_cache(self.namespace, backend=self.backend, expire_after=self.timeout, **self.backend_args)
 
