@@ -6,6 +6,9 @@
 # HXL_PROXY_CONFIG to the full path to your config file, so that
 # the hxl-proxy app can find it.
 ########################################################################
+import os
+import redis
+from urllib.parse import urlparse
 
 #
 # If True, will show detailed debugging information on errors
@@ -31,82 +34,77 @@ ADMIN_PASSWORD_MD5='<md5 hash>'
 # see https://flask-caching.readthedocs.io/en/latest/#built-in-cache-backends
 #
 
-# filesystem output cache
-
 CACHE_CONFIG = {
-    'CACHE_TYPE': 'filesystem',
+    # possible types: filesystem, redis
+    'CACHE_TYPE': os.getenv('CACHE_TYPE', 'redis'),
+
+    # redis output cache
+    'CACHE_KEY_PREFIX': os.getenv('CACHE_KEY_PREFIX', 'hxl-proxy-out:'),
+    'CACHE_DEFAULT_TIMEOUT': os.getenv('CACHE_DEFAULT_TIMEOUT', 3600),
+    'CACHE_REDIS_PASSWORD': os.getenv('CACHE_REDIS_PASSWORD', ''),
+    'CACHE_REDIS_URL': os.getenv('CACHE_REDIS_URL', "redis://localhost:6379/1"),
+
+    # filesystem output cache options
     'CACHE_DIR': '/tmp/',
-    'CACHE_THRESHOLD': 1000,
-    'CACHE_DEFAULT_TIMEOUT': 3600,
+    'CACHE_THRESHOLD': 1000
 }
 
-# redis output cache
-
-#CACHE_CONFIG = {
-#    'CACHE_TYPE': 'redis',
-#    'CACHE_KEY_PREFIX': 'hxl-proxy-out:',
-#    'CACHE_DEFAULT_TIMEOUT': 3600,
-#    'CACHE_REDIS_HOST': '127.0.0.1',
-#    'CACHE_REDIS_PORT': '6379',
-#    'CACHE_REDIS_PASSWORD': '',
-#    'CACHE_REDIS_DB': '',
-#    'CACHE_REDIS_URL': ''
-#}
+if CACHE_CONFIG['CACHE_TYPE'] == 'redis':
+    cache_redis_url = urlparse(CACHE_CONFIG['CACHE_REDIS_URL'])
+    if len(cache_redis_url.path) > 1:
+        cache_redis_db = cache_redis_url.path[1:]
+    CACHE_CONFIG.update({
+        'CACHE_REDIS_HOST': cache_redis_url.hostname,
+        'CACHE_REDIS_PORT': cache_redis_url.port,
+        'CACHE_REDIS_DB': cache_redis_db
+    })
 
 
-#
-# Request cache configuration (input)
-#
+# input cache: memory or redis
+REQUEST_CACHE_BACKEND = os.getenv('REQUEST_CACHE_BACKEND', 'memory')
+REQUEST_CACHE_TIMEOUT_SECONDS = os.getenv('REQUEST_CACHE_TIMEOUT_SECONDS', 3600)
+if REQUEST_CACHE_BACKEND == 'redis':
+    REQUEST_CACHE_EXTRAS = {
+        "connection": redis.from_url(CACHE_CONFIG['CACHE_REDIS_URL'])
+    }
+    REQUEST_CACHE_NAME = os.getenv('REQUEST_CACHE_NAME','hxl-proxy-in') # no trailing colon needed
 
-REQUEST_CACHE_NAME = 'hxl-proxy-in' # no trailing colon needed
-REQUEST_CACHE_TIMEOUT_SECONDS = 3600
-
-# in-memory cache
-
-REQUEST_CACHE_BACKEND = 'memory'
-REQUEST_CACHE_EXTRAS = {}
-
-# redis cache - could also use os.environ to look up REDIS_URL environment variable
-
-# import redis
-# REQUEST_CACHE_BACKEND = 'redis'
-# REQUEST_CACHE_EXTRAS = {
-#     "connection": redis.from_url("redis://localhost:6379/0")
-# }
-
-# Cache name and timeout for requests to iTOS (otherwise uses REQUEST_CACHE_*)
+# Cache name and timeout for requests to iTOS
+# (otherwise uses REQUEST_CACHE_*): memory or redis
 ITOS_CACHE_NAME = 'itos-in' # no trailing colon needed
+ITOS_CACHE_BACKEND = 'memory'
 ITOS_CACHE_TIMEOUT = 604800
 
 #
 # Database connection info
 #
 
-# Uncomment for SQLite3
-DB_TYPE='sqlite3'
+# 'sqlite' or 'mysql'
+DB_TYPE=os.getenv('DB_TYPE', 'sqlite')
+
+# SQLite3 settings
 DB_FILE='/tmp/hxl-proxy.db'
 
-# Uncomment for MySQL
-# DB_TYPE='mysql'
-# DB_HOST='localhost'
-# DB_PORT=3306
-# DB_DATABASE='hxl_proxy'
-# DB_USERNAME='username'
-# DB_PASSWORD='password'
+# MySQL settings
+DB_HOST = os.getenv('MYSQL_HOST', 'localhost')
+DB_DATABASE = os.getenv('MYSQL_DB', 'hxl_proxy')
+DB_PORT = os.getenv('DB_PORT', 3306)
+DB_USERNAME = os.getenv('MYSQL_USER', '')
+DB_PASSWORD = os.getenv('MYSQL_PASS', '')
 
 #
 # Values for Google Drive access
 #
-GOOGLE_CLIENT_ID = '<client id>'
-GOOGLE_OAUTH_ID = '<oauth id>'
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '<client id>')
+GOOGLE_OAUTH_ID = os.getenv('GOOGLE_OAUTH_ID', '<oauth id>')
 
 #
 # Values for Humanitarian.ID remote login
 #
-HID_CLIENT_ID = '<client id>'
-HID_CLIENT_SECRET = '<client secret>'
-HID_REDIRECT_URI = '<redirect URI>'
-HID_BASE_URL = 'https://auth.humanitarian.id' # change to http://auth.dev.humanitarian.id for dev testing
+HID_CLIENT_ID = os.getenv('HID_CLIENT_ID', '<client id>')
+HID_CLIENT_SECRET = os.getenv('HID_CLIENT_SECRET', '<client secret>')
+HID_REDIRECT_URI = os.getenv('HID_REDIRECT_URI', '<redirect URI>')
+HID_BASE_URL = os.getenv('HID_BASE_URL', 'https://auth.humanitarian.id') # change to http://auth.dev.humanitarian.id for dev testing
 
 #
 # Where to find shapes, etc. for p-codes. Usually leave as-is.

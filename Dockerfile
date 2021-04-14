@@ -1,4 +1,4 @@
-FROM unocha/alpine-base-s6-python3:3.11.6
+FROM unocha/alpine-base-s6-python3:3.8
 
 WORKDIR /srv/www
 
@@ -14,7 +14,8 @@ RUN apk add \
         /srv/config \
         /srv/output \
         /var/log/proxy && \
-    mv config.py.TEMPLATE docker_files/config.py docker_files/gunicorn.py hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
+    mv config.py.TEMPLATE /srv/config/config.py && \
+    mv docker_files/gunicorn.py hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py . && \
     pip3 --no-cache-dir install --upgrade pip \
