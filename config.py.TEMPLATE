@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 # If True, will show detailed debugging information on errors
 # Should be False for a production system
 #
-DEBUG=True
+DEBUG=os.getenv('DEBUG', True)
 
 #
 # Change this to a key known only to your server
