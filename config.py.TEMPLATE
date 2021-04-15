@@ -36,7 +36,7 @@ ADMIN_PASSWORD_MD5='<md5 hash>'
 
 CACHE_CONFIG = {
     # possible types: filesystem, redis
-    'CACHE_TYPE': os.getenv('CACHE_TYPE', 'redis'),
+    'CACHE_TYPE': os.getenv('CACHE_TYPE', 'filesystem'),
 
     # redis output cache
     'CACHE_KEY_PREFIX': os.getenv('CACHE_KEY_PREFIX', 'hxl-proxy-out:'),
