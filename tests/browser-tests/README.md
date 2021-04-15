@@ -6,6 +6,10 @@ This directory contains lists of URLs for quick (at-a-glance) in-browser tests f
 # Usage
 
     $ cat FILE | xargs -d '\n' firefox
+ 
+ for macos users
+ 
+    $ for url in $(cat tests/browser-tests/URL_FILE); do open $url; done
 
 # Available URL files
 
