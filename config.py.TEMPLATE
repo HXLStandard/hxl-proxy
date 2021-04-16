@@ -14,20 +14,20 @@ from urllib.parse import urlparse
 # If True, will show detailed debugging information on errors
 # Should be False for a production system
 #
-DEBUG=True
+DEBUG=os.getenv('DEBUG', True)
 
 #
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #
-SECRET_KEY='<secret key>'
+SECRET_KEY=os.getenv('SECRET_KEY', '<secret key>')
 
 #
 # Admin password MD5 hash
 # To generate, use this command (replacing "PASSWORD" with your password):
 # $ python -c 'import hashlib; print(hashlib.md5("PASSWORD".encode("utf-8")).hexdigest())'
 #
-ADMIN_PASSWORD_MD5='<md5 hash>'
+ADMIN_PASSWORD_MD5=os.getenv('ADMIN_PASSWORD_MD5', '<md5 hash>')
 
 #
 # Output cache configuration
@@ -36,7 +36,7 @@ ADMIN_PASSWORD_MD5='<md5 hash>'
 
 CACHE_CONFIG = {
     # possible types: filesystem, redis
-    'CACHE_TYPE': os.getenv('CACHE_TYPE', 'redis'),
+    'CACHE_TYPE': os.getenv('CACHE_TYPE', 'filesystem'),
 
     # redis output cache
     'CACHE_KEY_PREFIX': os.getenv('CACHE_KEY_PREFIX', 'hxl-proxy-out:'),
