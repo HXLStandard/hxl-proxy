@@ -497,6 +497,14 @@ class TestDataPreview(AbstractControllerTest):
         self.assertEqual(self.EXPECTED_JSON, response.json)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_multisheet_load_first_sheet(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/multisheet-dataset.xlsx',
+            'sheet': 0,
+        })
+        assert (len(response.json),0)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_limit_rows(self):
         response = self.get(self.path, {
             'url': 'http://example.org/basic-dataset.xlsx',

@@ -1337,9 +1337,9 @@ def data_preview (format="json"):
         return flask.redirect('/api/data-preview.html', 302)
 
     # fix up params
-    if not sheet:
-        sheet = -1
-        
+    # if not sheet:
+    #     sheet = -1
+    #
     if not rows:
         rows = -1
 
