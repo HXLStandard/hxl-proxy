@@ -83,6 +83,7 @@ browser-tests-beta:
 # browser tests for dev.proxy-hxlstandard-org.ahconu.org
 browser-tests-staging:
 	cat tests/browser-tests/staging-urls.txt | xargs -d '\n' firefox
+	cat tests/browser-tests/staging-urls.txt | xargs  open /Applications/Firefox.app
 
 # browser tests for proxy.hxlstandard.org
 browser-tests-prod:
