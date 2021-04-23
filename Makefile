@@ -73,17 +73,20 @@ test-docker:
 	pkexec docker build --no-cache -t "unocha/hxl-proxy:local" `pwd`
 
 # browser tests for dev.proxy.hxlstandard.org
-browser-tests-dev:
-	cat tests/browser-tests/dev-urls.txt | xargs -d '\n' firefox
+browser-tests-local:
+	cat tests/browser-tests/local-urls.txt | xargs -d '\n' firefox
 
 # browser tests for beta.proxy.hxlstandard.org
 browser-tests-beta:
 	cat tests/browser-tests/beta-urls.txt | xargs -d '\n' firefox
 
 # browser tests for dev.proxy-hxlstandard-org.ahconu.org
+browser-tests-dev:
+	cat tests/browser-tests/dev-urls.txt | xargs -d '\n' firefox
+
+# browser tests for stage.proxy-hxlstandard-org.ahconu.org
 browser-tests-staging:
 	cat tests/browser-tests/staging-urls.txt | xargs -d '\n' firefox
-	cat tests/browser-tests/staging-urls.txt | xargs  open /Applications/Firefox.app
 
 # browser tests for proxy.hxlstandard.org
 browser-tests-prod:
