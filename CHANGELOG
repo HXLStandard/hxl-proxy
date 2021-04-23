@@ -1,5 +1,6 @@
 2021-04-23 Release 1.24
 	- fix data-preview api call with sheet param 0
+	- cache improvements
 	
 2021-02-08 Release 1.23
 	- incorporate release 4.23 of libhxl-python, with stability

@@ -1,0 +1,9 @@
+version: '2.2'
+
+services:
+  proxy:
+    build: ./
+    ports:
+      - "0.0.0.0:5000:5000"
+    entrypoint: "tail -f /dev/null"
+    working_dir: /srv/www
