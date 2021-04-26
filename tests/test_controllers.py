@@ -505,6 +505,14 @@ class TestDataPreview(AbstractControllerTest):
         assert (len(response.json),0)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_excel_multisheet_load_not_existing_sheet(self):
+        response = self.get(self.path, {
+            'url': 'http://example.org/multisheet-dataset.xlsx',
+            'sheet': 10,
+        })
+        assert (len(response.json),0)
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_limit_rows(self):
         response = self.get(self.path, {
             'url': 'http://example.org/basic-dataset.xlsx',
