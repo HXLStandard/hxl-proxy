@@ -259,18 +259,18 @@ class TestDataPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     def test_ip_address_blocked(self):
-        response = self.get('/data?url=https://127.0.0.1/foo&force=on', status=500)
+        response = self.get('/data?url=https://127.0.0.1/foo&force=on', status=403)
 
     def test_localhost_blocked(self):
-        response = self.get('/data?url=https://localhost/foo&force=on', status=500)
+        response = self.get('/data?url=https://localhost/foo&force=on', status=403)
 
     def test_localdomain_blocked(self):
         """Opening a host by IP address is not allowed"""
-        response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=500)
+        response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=403)
 
     def test_local_file_blocked(self):
         """Make sure we're not leaking local data."""
-        response = self.get('/data?url=/etc/passwd&force=on', status=500)
+        response = self.get('/data?url=/etc/passwd&force=on', status=403)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
