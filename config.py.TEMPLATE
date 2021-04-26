@@ -80,8 +80,8 @@ ITOS_CACHE_TIMEOUT = 604800
 # Database connection info
 #
 
-# 'sqlite' or 'mysql'
-DB_TYPE=os.getenv('DB_TYPE', 'sqlite')
+# 'sqlite3' or 'mysql'
+DB_TYPE=os.getenv('DB_TYPE', 'sqlite3')
 
 # SQLite3 settings
 DB_FILE='/tmp/hxl-proxy.db'
