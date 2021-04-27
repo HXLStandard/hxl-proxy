@@ -1,5 +1,7 @@
-2021-04-27 Release 1.24.1
+2021-04-29 Release 1.24.2
 	- bugfix release: change debug handling in config for data preview (to detect non-existant sheet in an Excel workbook)
+	- add PyPi publish target to Makefile
+	- fix unit tests to work in non-debug mode
 
 2021-04-23 Release 1.24
 	- fix data-preview api call with sheet param 0
