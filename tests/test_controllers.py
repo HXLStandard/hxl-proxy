@@ -11,6 +11,7 @@ License: Public Domain
 # Mock URL access so that tests work offline
 from . import URL_MOCK_TARGET, URL_MOCK_OBJECT
 from unittest.mock import patch
+from hxl_proxy.controllers import handle_default_exception
 
 import hxl_proxy, io, json, urllib
 from . import base, resolve_path
@@ -37,6 +38,8 @@ class AbstractControllerTest(base.AbstractDBTest):
 
         self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
+        if not hxl_proxy.app.config.get('DEBUG'):
+            hxl_proxy.app.register_error_handler(Exception, handle_default_exception)
 
     def tearDown(self):
         super().tearDown()
@@ -259,18 +262,18 @@ class TestDataPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     def test_ip_address_blocked(self):
-        response = self.get('/data?url=https://127.0.0.1/foo&force=on', status=500)
+        response = self.get('/data?url=https://127.0.0.1/foo&force=on', status=403)
 
     def test_localhost_blocked(self):
-        response = self.get('/data?url=https://localhost/foo&force=on', status=500)
+        response = self.get('/data?url=https://localhost/foo&force=on', status=403)
 
     def test_localdomain_blocked(self):
         """Opening a host by IP address is not allowed"""
-        response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=500)
+        response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=403)
 
     def test_local_file_blocked(self):
         """Make sure we're not leaking local data."""
-        response = self.get('/data?url=/etc/passwd&force=on', status=500)
+        response = self.get('/data?url=/etc/passwd&force=on', status=403)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_url(self):
@@ -498,21 +501,18 @@ class TestDataPreview(AbstractControllerTest):
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_excel_multisheet_load_first_sheet(self):
-        # FIXME needs DEBUG==False
         response = self.get(self.path, {
             'url': 'http://example.org/multisheet-dataset.xlsx',
             'sheet': 0,
         })
-        #self.assertTrue(len(response.json) > 0)
+        self.assertEqual(len(response.json),0)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_excel_multisheet_load_not_existing_sheet(self):
-        # FIXME needs DEBUG==False, and status should be 403
         response = self.get(self.path, {
             'url': 'http://example.org/multisheet-dataset.xlsx',
             'sheet': 10,
-        }, status=500)
-        #self.assertTrue(len(response.json) > 0)
+        }, status=403)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_limit_rows(self):
