@@ -96,6 +96,10 @@ browser-tests-prod:
 run-dev: $(VENV)
 	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py python run-server.py
 
+# publish a new release on PyPi
+publish:
+	. $(VENV) && pip install twine && rm -rf dist/* && python setup.py sdist && twine upload dist/*
+
 # (re)generate emacs TAGS file
 etags:
 	find hxl_proxy tests -name '*.py' -o -name '*.csv' -o -name '*.html' -o -name '*.js'| grep -v static/jquery | grep -v static/bootstrap | grep -v static/compat | xargs etags
