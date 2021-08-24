@@ -1,3 +1,6 @@
+Release 1.25
+	- added warning banner to admin pages, per OICT requirements
+
 2021-04-29 Release 1.24.2
 	- bugfix release: change debug handling in config for data preview (to detect non-existant sheet in an Excel workbook)
 	- add PyPi publish target to Makefile

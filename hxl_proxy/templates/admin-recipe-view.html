@@ -17,6 +17,7 @@
       <h1>[admin] Recipe {{ recipe.recipe_id }}</h1>
     </header>
     <main>
+      {% include "includes/admin-alert.html" %}
       <a href="edit.html" class="btn btn-primary">Edit</a>
       <a href="delete.html" class="btn btn-danger">Delete</a>
       <table class="table table-striped">
