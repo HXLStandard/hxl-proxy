@@ -2,13 +2,13 @@ version: '2.2'
 
 services:
   proxy:
-    image: unocha/alpine-base-s6-python3:3.8
+    image: public.ecr.aws/unocha/alpine-base-s6-python3:3.8
     volumes:
       - "./:/srv/www"
     ports:
       - "0.0.0.0:5000:5000"
     entrypoint: ['./run.sh']
-    working_dir: /srv/www 
+    working_dir: /srv/www
     environment:
       DB_TYPE: 'sqlite'
       CACHE_TYPE: 'redis'
@@ -18,7 +18,7 @@ services:
       REQUEST_CACHE_BACKEND: 'redis'
 
   redis:
-    image: unocha/alpine-redis:5
+    image: public.ecr.aws/unocha/redis:5
 
   com:
     image: unocha/redis-commander:0.6.4
