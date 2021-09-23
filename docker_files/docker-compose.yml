@@ -13,7 +13,7 @@ services:
       PS1: '\h \w ~> '
       TERM: xterm
     hostname: proxy
-    image: unocha/hxl-proxy:dev
+    image: public.ecr.aws/unocha/hxl-proxy:dev
     ports:
     - 0.0.0.0:5000:5000
     volumes:
