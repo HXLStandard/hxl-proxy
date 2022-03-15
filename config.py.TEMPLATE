@@ -46,8 +46,8 @@ CACHE_CONFIG = {
     'CACHE_REDIS_URL': os.getenv('CACHE_REDIS_URL', "redis://localhost:6379/1"),
 
     # filesystem output cache options
-    'CACHE_DIR': '/tmp/',
-    'CACHE_THRESHOLD': 1000
+    'CACHE_DIR': os.getenv('CACHE_DIR', '/tmp/'),
+    'CACHE_THRESHOLD': os.getenv('CACHE_THRESHOLD', 1000)
 }
 
 if CACHE_CONFIG['CACHE_TYPE'] == 'redis':

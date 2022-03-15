@@ -18,6 +18,7 @@
       <h1>[admin] Edit recipe {{ recipe.recipe_id }}</h1>
     </header>
     <main>
+      {% include "includes/admin-alert.html" %}
       <form name="recipe" action="/admin/actions/update-recipe" method="POST" class="form">
         <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
         <div class="form-group">
