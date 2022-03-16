@@ -47,7 +47,7 @@ CACHE_CONFIG = {
 
     # filesystem output cache options
     'CACHE_DIR': os.getenv('CACHE_DIR', '/tmp/'),
-    'CACHE_THRESHOLD': os.getenv('CACHE_THRESHOLD', 1000)
+    'CACHE_THRESHOLD': int(os.getenv('CACHE_THRESHOLD', 1000))
 }
 
 if CACHE_CONFIG['CACHE_TYPE'] == 'redis':
