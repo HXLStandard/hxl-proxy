@@ -1,6 +1,9 @@
 Release 1.25
 	- 
 
+2022-03-16 Release 1.24.4
+	- fix cache threshold type
+
 2022-03-16 Release 1.24.3
 	- added warning banner to admin pages, per OICT requirements (code committed for 1.25)
 	- increase threshold for cache
