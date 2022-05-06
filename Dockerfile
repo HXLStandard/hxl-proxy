@@ -1,12 +1,14 @@
-FROM public.ecr.aws/unocha/python3-base-s6:3.8
+FROM public.ecr.aws/unocha/python3-base-s6:3.9
 
 WORKDIR /srv/www
 
 COPY . .
 
 RUN apk add \
-        sqlite && \
-    apk add libffi-dev && \
+        sqlite \
+        libffi-dev \
+        unit \
+        unit-python3 && \
     mkdir -p \
         /etc/services.d/hxl \
         /srv/db \
@@ -15,20 +17,15 @@ RUN apk add \
         /srv/output \
         /var/log/proxy && \
     mv config.py.TEMPLATE /srv/config/config.py && \
-    mv docker_files/gunicorn.py hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
+    mv hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
-    mv docker_files/app.py . && \
-    pip3 --no-cache-dir install --upgrade pip \
-        wheel gunicorn && \
+    mv docker_files/app.py docker_files/app_nr.py . && \
+    pip3 --no-cache-dir install --upgrade \
+        pip \
+        wheel && \
     pip3 install --upgrade -r requirements.txt && \
     pip3 install newrelic && \
-    apk add --virtual .gevent-deps \
-        build-base \
-        python3-dev && \
-    pip3 install gevent && \
-    apk del \
-        .gevent-deps \
-        libffi-dev && \
+    apk del libffi-dev && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
 
