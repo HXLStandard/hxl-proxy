@@ -1,5 +1,12 @@
 Release 1.25
-	- added warning banner to admin pages, per OICT requirements
+	- 
+
+2022-03-16 Release 1.24.4
+	- fix cache threshold type
+
+2022-03-16 Release 1.24.3
+	- added warning banner to admin pages, per OICT requirements (code committed for 1.25)
+	- increase threshold for cache
 
 2021-04-29 Release 1.24.2
 	- bugfix release: change debug handling in config for data preview (to detect non-existant sheet in an Excel workbook)
