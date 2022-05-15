@@ -41,7 +41,7 @@ def setup_filters(recipe, data_content=None):
     # Intercept missing hashtags here
     try:
         source.columns
-    except hxl.io.HXLTagsNotFoundException:
+    except hxl.input.HXLTagsNotFoundException:
         raise exceptions.RedirectException(util.data_url_for('data_tagger', recipe), 303, 'No HXL hashtags found')
 
     # Create the filter pipeline from the source
@@ -93,17 +93,19 @@ def make_tagged_input(args):
     url = args.get('url')
     sheet_index = int(args.get('sheet')) if args.get('sheet') else None
     selector = args.get('selector', None)
+    expand_merged = args.get('expand-merged', False)
     http_headers = {
         'User-Agent': 'hxl-proxy/download'
     }
     if args.get('authorization_token'):
         http_headers['Authorization'] = args['authorization_token']
-    input = hxl.io.make_input(
+    input = hxl.input.make_input(
         url,
         sheet_index=sheet_index,
         verify_ssl=util.check_verify_ssl(args),
         http_headers=http_headers,
-        selector=selector, 
+        selector=selector,
+        expand_merged=expand_merged,
     )
 
     # Intercept tagging as a special data input

@@ -9,7 +9,7 @@ License: Public Domain
 """
 
 import hxl_proxy
-from hxl.io import HXLIOException
+from hxl.input import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
@@ -106,7 +106,7 @@ def handle_source_authorization_exception(e):
     return flask.redirect(util.data_url_for('data_save', recipe=recipe, extras=extras), 302)
 
 # register the source authorisation handler
-app.register_error_handler(hxl.io.HXLAuthorizationException, handle_source_authorization_exception)
+app.register_error_handler(hxl.input.HXLAuthorizationException, handle_source_authorization_exception)
 
 
 def handle_password_required_exception(e):
@@ -259,7 +259,8 @@ def data_tagger(recipe_id=None):
         sheet_index = 0
 
     selector = recipe.args.get('selector', None)
-
+    expand_merged = recipe.args.get('expand-merged', None)
+    
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
     preview = []
     i = 0
@@ -268,12 +269,13 @@ def data_tagger(recipe_id=None):
     }
     if 'authorization_token' in recipe.args: # private dataset
         http_headers['Authorization'] = recipe.args['authorization_token']
-    for row in hxl.io.make_input(
+    for row in hxl.input.make_input(
             recipe.url,
             sheet_index=sheet_index,
             selector=selector,
             verify_ssl=util.check_verify_ssl(recipe.args),
-            http_headers=http_headers
+            http_headers=http_headers,
+            expand_merged=expand_merged,
     ):
         # Stop if we get to 25 rows
         if i >= 25:
@@ -329,7 +331,7 @@ def data_edit(recipe_id=None):
     except exceptions.RedirectException as e1:
         # always pass through a redirect exception
         raise e1
-    except hxl.io.HXLAuthorizationException as e2:
+    except hxl.input.HXLAuthorizationException as e2:
         # always pass through an authorization exception
         raise e2
     except Exception as e3:
@@ -870,7 +872,7 @@ def do_json_recipe():
     flask.g.output_format = 'format'
 
     # Create a HXL filter chain by parsing the JSON recipe
-    source = hxl.io.from_spec(json_recipe)
+    source = hxl.input.from_spec(json_recipe)
 
     # Create a JSON or CSV response object, as requested
     if format == 'json':
@@ -1104,7 +1106,6 @@ def from_spec(format="json"):
         flask.g.output_format = format
 
     # other args
-    verify_ssl = util.check_verify_ssl(flask.request.args)
     http_headers = {
         'User-Agent': 'hxl-proxy/download'
     }
@@ -1121,9 +1122,9 @@ def from_spec(format="json"):
             'api-from-spec.html',
             spec_json=spec_json,
             spec_url=spec_url,
-            verify_ssl=verify_ssl,
+            verify_ssl=util.check_verify_ssl(flask.request.args),
             filename=filename,
-            force=force
+            force=force,
         )
     elif spec_url and spec_json:
         raise ValueError("Must specify only one of &spec-url or &spec-json")
@@ -1137,7 +1138,7 @@ def from_spec(format="json"):
         raise ValueError("Either &spec-url or &spec-json required")
 
     # process the JSON spec
-    source = hxl.io.from_spec(spec)
+    source = hxl.input.from_spec(spec)
 
     # produce appropriate output
     if format == "json":
@@ -1227,7 +1228,7 @@ def hxl_test(format='html'):
             # can't open resource to check it
             result['message'] = 'Cannot load dataset'
             record_exception(e1)
-        except hxl.io.HXLTagsNotFoundException as e2:
+        except hxl.input.HXLTagsNotFoundException as e2:
             # not hashtagged
             result['message'] = 'Dataset does not have HXL hashtags'
             record_exception(e2)
@@ -1326,6 +1327,16 @@ def data_preview (format="json"):
         rows = int(rows)
 
     force = flask.request.args.get('force')
+    expand_merged = flask.request.args.get('expand-merged', False)
+    verify_ssl = flask.request.args.get('verify_ssl', False)
+
+    selector = flask.request.args.get('selector', None)
+
+    try:
+        sheet_index = int(recipe.args.get('sheet', 0))
+    except:
+        logger.info("Assuming sheet 0, since none specified")
+        sheet_index = 0
 
     filename = flask.request.args.get('filename')
 
@@ -1345,10 +1356,22 @@ def data_preview (format="json"):
 
     # make input
     if util.skip_cache_p():
-        input = hxl.io.make_input(url, sheet_index=sheet)
+        input = hxl.input.make_input(
+            url,
+            sheet_index=sheet,
+            verify_ssl=verify_ssl,
+            selector=selector,
+            expand_merged=expand_merged,
+        )
     else:
         with caching.input():
-            input = hxl.io.make_input(url, sheet_index=sheet)
+            input = hxl.input.make_input(
+                url,
+                sheet_index=sheet,
+                verify_ssl=verify_ssl,
+                selector=selector,
+                expand_merged=expand_merged,
+            )
 
     # Generate result
     if format == 'json':
@@ -1421,11 +1444,11 @@ def data_preview_sheets(format="json"):
     try:
         for sheet in range(0, SHEET_MAX_NO):
             if util.skip_cache_p():
-                input = hxl.io.make_input(url, sheet_index=sheet)
+                input = hxl.input.make_input(url, sheet_index=sheet)
             else:
                 with caching.input():
-                    input = hxl.io.make_input(url, sheet_index=sheet)
-            if isinstance(input, hxl.io.CSVInput):
+                    input = hxl.input.make_input(url, sheet_index=sheet)
+            if isinstance(input, hxl.input.CSVInput):
                 _output.append("Default")
                 break
             else:

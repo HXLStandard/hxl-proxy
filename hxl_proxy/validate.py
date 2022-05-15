@@ -30,7 +30,7 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
 
     # set up the main data
     if content:
-        source = hxl.data(hxl.io.make_input(
+        source = hxl.data(hxl.input.make_input(
             content, sheet_index=sheet_index, selector=selector
         ))
     else:
@@ -46,7 +46,7 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
 
     # set up the schema (if present)
     if schema_content:
-        schema_source = hxl.data(hxl.io.make_input(
+        schema_source = hxl.data(hxl.input.make_input(
             schema_content,
             sheet_index=schema_sheet_index,
             selector=selector

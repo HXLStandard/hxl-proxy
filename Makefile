@@ -107,3 +107,6 @@ etags:
 # restart the web app by touching the WSGI file (depends on the platform)
 restart:
 	touch hxl-proxy.wsgi
+
+clean:
+	rm -rf venv
