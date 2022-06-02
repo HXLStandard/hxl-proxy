@@ -56,6 +56,56 @@ def skip_cache_p ():
 
 
 ########################################################################
+# Input options
+########################################################################
+
+def make_input_options (args):
+    """ Create an InputOptions object from the arguments provided 
+    Ensure that allow_local is always false. Allow both "-" and "_" between words.
+
+    """
+
+    # set the user agent, to help with analytics
+    http_headers = args.get("http-headers", args.get("http_headers", {}))
+    http_headers['User-Agent'] = 'hxl-proxy'
+
+    # add an authorisation token, if needed
+    if args.get('authorization_token'):
+        http_headers['Authorization'] = args['authorization_token']
+
+    # set up the sheet index
+    sheet_index = args.get("sheet")
+    if sheet_index is not None:
+        try:
+            sheet_index = int(sheet_index)
+        except:
+            logger.error("Invalid sheet index \"%s\"; defaulting to 0", sheet_index)
+            sheet_index = 0
+
+    return hxl.input.InputOptions(
+        allow_local = False,
+        sheet_index = sheet_index,
+        timeout = args.get("timeout", None),
+        verify_ssl = check_verify_ssl(args),
+        http_headers = http_headers,
+        selector = args.get("selector", None),
+        encoding = args.get("encoding", None),
+        expand_merged = args.get("expand-merged", args.get("expand_merged", None)),
+    )
+
+
+def check_verify_ssl(args):
+    """Check parameters to see if we need to verify SSL connections."""
+    if args.get('skip-verify-ssl', args.get("skip_verify_ssl", None)) == 'on':
+        return False
+    elif args.get('verify_ssl') == 'off' or args.get('verify') == 'off': # deprecated parameters
+        return False
+    else:
+        return True
+
+
+
+########################################################################
 # Not yet classified
 ########################################################################
 
@@ -91,16 +141,6 @@ def clean_tagger_mappings(headers, recipe):
 
     return mappings
             
-
-def check_verify_ssl(args):
-    """Check parameters to see if we need to verify SSL connections."""
-    if args.get('skip_verify_ssl') == 'on':
-        return False
-    elif args.get('verify_ssl') == 'off' or args.get('verify') == 'off': # deprecated parameters
-        return False
-    else:
-        return True
-
 
 def make_file_hash(stream):
     """Calculate a hash in chunks from a stream.

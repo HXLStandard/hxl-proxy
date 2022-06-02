@@ -30,9 +30,9 @@ def setup_filters(recipe, data_content=None):
 
     # Basic input source
     if data_content:
-        source = hxl.data(io.BytesIO(data_content.encode('utf-8')))
+        source = hxl.data(io.BytesIO(data_content.encode('utf-8')), util.make_input_options(recipe.args))
     else:
-        source = hxl.data(make_tagged_input(recipe.args))
+        source = hxl.data(make_tagged_input(recipe.args), util.make_input_options(recipe.args))
 
     # Do we have a JSON recipe? Load it first.
     if recipe.args.get('recipe'):
@@ -90,23 +90,7 @@ def setup_filters(recipe, data_content=None):
 
 def make_tagged_input(args):
     """Create the raw input, optionally using the Tagger filter."""
-    url = args.get('url')
-    sheet_index = int(args.get('sheet')) if args.get('sheet') else None
-    selector = args.get('selector', None)
-    expand_merged = args.get('expand-merged', False)
-    http_headers = {
-        'User-Agent': 'hxl-proxy/download'
-    }
-    if args.get('authorization_token'):
-        http_headers['Authorization'] = args['authorization_token']
-    input = hxl.input.make_input(
-        url,
-        sheet_index=sheet_index,
-        verify_ssl=util.check_verify_ssl(args),
-        http_headers=http_headers,
-        selector=selector,
-        expand_merged=expand_merged,
-    )
+    input = hxl.input.make_input(args.get("url"), util.make_input_options(args))
 
     # Intercept tagging as a special data input
     specs = []
@@ -291,11 +275,7 @@ def add_merge_filter(source, args, index):
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = hxl.data(
-        url,
-        verify_ssl=util.check_verify_ssl(args),
-        http_headers={'User-Agent': 'hxl-proxy/download'}
-    )
+    merge_source = hxl.data(url, util.make_input_options(args))
     return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
@@ -320,11 +300,7 @@ def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
     row_query = args.get('replace-map-where%02d' % index)
-    return source.replace_data_map(hxl.data(
-        url,
-        verify_ssl=util.check_verify_ssl(args),
-        http_headers={'User-Agent': 'hxl-proxy/download'}
-    ), queries=row_query)
+    return source.replace_data_map(hxl.data(url, util.make_input_options(args)), queries=row_query)
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""

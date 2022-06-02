@@ -252,31 +252,10 @@ def data_tagger(recipe_id=None):
     if header_row is not None:
         header_row = int(header_row)
         
-    try:
-        sheet_index = int(recipe.args.get('sheet', 0))
-    except:
-        logger.info("Assuming sheet 0, since none specified")
-        sheet_index = 0
-
-    selector = recipe.args.get('selector', None)
-    expand_merged = recipe.args.get('expand-merged', None)
-    
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
     preview = []
     i = 0
-    http_headers = {
-        'User-Agent': 'hxl-proxy/tagger'
-    }
-    if 'authorization_token' in recipe.args: # private dataset
-        http_headers['Authorization'] = recipe.args['authorization_token']
-    for row in hxl.input.make_input(
-            recipe.url,
-            sheet_index=sheet_index,
-            selector=selector,
-            verify_ssl=util.check_verify_ssl(recipe.args),
-            http_headers=http_headers,
-            expand_merged=expand_merged,
-    ):
+    for row in hxl.input.make_input(recipe.url, util.make_input_options(recipe.args)):
         # Stop if we get to 25 rows
         if i >= 25:
             break
@@ -415,11 +394,7 @@ def data_validate(recipe_id=None, format='html'):
     # Set up the HXL validation schema
     schema_source = None
     if recipe.schema_url:
-        schema_source = hxl.data(
-            recipe.schema_url,
-            verify_ssl=util.check_verify_ssl(recipe.args),
-            http_headers={'User-Agent': 'hxl-proxy/validation'}
-        )
+        schema_source = hxl.data(recipe.schema_url, util.make_input_options(recipe.args))
         logger.info("Using HXL validation schema at %s", recipe.schema_url)
     else:
         logger.info("No HXL validation schema specified; using default schema")
@@ -756,7 +731,7 @@ def do_data_save():
 # has tests
 @app.route("/actions/validate", methods=['POST'])
 def do_data_validate():
-    """ Flask controler: validate an uploaded file against an uploaded HXL schema
+    """ Flask controller: validate an uploaded file against an uploaded HXL schema
     This controller was created for HDX Data Check, which is the only known user.
     The controller returns a JSON validation report from libhxl-python.
 
@@ -814,7 +789,7 @@ def do_data_validate():
     report = validate.run_validation(
         url, content, content_hash, sheet_index, selector,
         schema_url, schema_content, schema_content_hash, schema_sheet_index,
-        include_dataset
+        include_dataset, flask.request.form
     )
 
     # return a JSON version of the validation report as an HTTP response
@@ -1216,11 +1191,7 @@ def hxl_test(format='html'):
     if url:
         try:
             # we grab the columns to force lazy parsing
-            hxl.data(
-                url,
-                verify_ssl=util.check_verify_ssl(flask.request.args),
-                http_headers={'User-Agent': 'hxl-proxy/test'}
-            ).columns
+            hxl.data(url, util.make_input_options(flask.request.args)).columns
             # if we get to here, it's OK
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
@@ -1318,60 +1289,24 @@ def data_preview (format="json"):
     # params
     url = flask.request.args.get('url')
 
-    sheet = flask.request.args.get('sheet')
-    if sheet is not None:
-        sheet = int(sheet)
-
-    rows = flask.request.args.get('rows')
-    if rows is not None:
-        rows = int(rows)
-
-    force = flask.request.args.get('force')
-    expand_merged = flask.request.args.get('expand-merged', False)
-    verify_ssl = flask.request.args.get('verify_ssl', False)
-
-    selector = flask.request.args.get('selector', None)
-
-    try:
-        sheet_index = int(recipe.args.get('sheet', 0))
-    except:
-        logger.info("Assuming sheet 0, since none specified")
-        sheet_index = 0
+    rows = flask.request.args.get('rows', 0)
+    rows = int(rows)
 
     filename = flask.request.args.get('filename')
 
     if format == "html":
-        return flask.render_template('api-data-preview.html', url=url, sheet=sheet, rows=rows, filename=filename, force=force)
+        return flask.render_template('api-data-preview.html', url=url, args=flask.request.args)
 
     # if there's no URL, then show an interactive form
     if not url:
         return flask.redirect('/api/data-preview.html', 302)
 
-    # fix up params
-    # if not sheet:
-    #     sheet = -1
-    #
-    if not rows:
-        rows = -1
-
     # make input
     if util.skip_cache_p():
-        input = hxl.input.make_input(
-            url,
-            sheet_index=sheet,
-            verify_ssl=verify_ssl,
-            selector=selector,
-            expand_merged=expand_merged,
-        )
+        input = hxl.input.make_input(url, util.make_input_options(flask.request.args))
     else:
         with caching.input():
-            input = hxl.input.make_input(
-                url,
-                sheet_index=sheet,
-                verify_ssl=verify_ssl,
-                selector=selector,
-                expand_merged=expand_merged,
-            )
+            input = hxl.input.make_input(url, util.make_input_options(flask.request.args))
 
     # Generate result
     if format == 'json':
@@ -1441,13 +1376,17 @@ def data_preview_sheets(format="json"):
 
     # make input
     _output = []
+
+    args = dict(flask.request.args)
+    
     try:
         for sheet in range(0, SHEET_MAX_NO):
+            args['sheet'] = sheet
             if util.skip_cache_p():
-                input = hxl.input.make_input(url, sheet_index=sheet)
+                input = hxl.input.make_input(url, util.make_input_options(args))
             else:
                 with caching.input():
-                    input = hxl.input.make_input(url, sheet_index=sheet)
+                    input = hxl.input.make_input(url, util.make_input_options(args))
             if isinstance(input, hxl.input.CSVInput):
                 _output.append("Default")
                 break
@@ -1517,7 +1456,7 @@ def make_hash():
     headers_only = flask.request.args.get('headers_only')
 
     # Open the HXL dataset
-    source = hxl.data(url)
+    source = hxl.data(url, util.make_input_options(flask.request.args))
 
     # Generate the report
     report = {

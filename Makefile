@@ -76,6 +76,10 @@ test-docker:
 browser-tests-local:
 	cat tests/browser-tests/local-urls.txt | xargs -d '\n' firefox
 
+# browser tests for dev.proxy.hxlstandard.org
+browser-tests-local-server:
+	cat tests/browser-tests/local-server-urls.txt | xargs -d '\n' firefox
+
 # browser tests for beta.proxy.hxlstandard.org
 browser-tests-beta:
 	cat tests/browser-tests/beta-urls.txt | xargs -d '\n' firefox
