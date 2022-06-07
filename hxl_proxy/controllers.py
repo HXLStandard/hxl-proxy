@@ -1475,6 +1475,33 @@ def make_hash():
     )
 
 
+# has tests
+@app.route('/api/source-info')
+def make_info():
+    """ Flask controller: get info for an Excel dataset
+    GET parameters:
+    url - the URL of the dataset to check
+    """
+    flask.g.output_format = 'json' # for error reporting
+
+    url = flask.request.args.get('url')
+    if not url:
+        raise ValueError("Parameter 'url' is required")
+
+    # Open the dataset (not necessarily hxlated)
+    try:
+        info = hxl.make_input(url, util.make_input_options(flask.request.args)).info()
+        return flask.Response(
+            json.dumps(info, indent=4),
+            mimetype="application/json"
+        )
+    except NotImplementedError:
+        return flask.Response(
+            { "error": "dataset format not supported" },
+            mimetype="application/json",
+            status=400
+        )
+
 
 ########################################################################
 # Controllers for removed features (display error messages)

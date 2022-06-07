@@ -1,6 +1,7 @@
 Release 1.25
-	- change references to hxl.io to hxl.input for libhxl-python 1.25+
+	- add /api/source-info to get information about a data source (Excel-only for now)
 	- add support for filling merged areas in Excel to UI and data-preview API
+	- change references to hxl.io to hxl.input for libhxl-python 1.25+
 	- refactored to support new InputOptions class in libhxl-python
 	- all unit tests passing
 
