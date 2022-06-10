@@ -29,10 +29,17 @@ def setup_filters(recipe, data_content=None):
         return None
 
     # Basic input source
+
+    input_options = util.make_input_options(recipe.args)
+    
     if data_content:
-        source = hxl.data(io.BytesIO(data_content.encode('utf-8')), util.make_input_options(recipe.args))
+        source = hxl.data(io.BytesIO(data_content.encode('utf-8')), input_options)
     else:
-        source = hxl.data(make_tagged_input(recipe.args), util.make_input_options(recipe.args))
+        try:
+            source = hxl.data(recipe.args["url"], input_options)
+            source.columns
+        except hxl.input.HXLTagsNotFoundException:
+            source = hxl.data(make_tagged_input(recipe.args, input_options), input_options)
 
     # Do we have a JSON recipe? Load it first.
     if recipe.args.get('recipe'):
@@ -88,9 +95,9 @@ def setup_filters(recipe, data_content=None):
 
     return source
 
-def make_tagged_input(args):
+def make_tagged_input(args, input_options):
     """Create the raw input, optionally using the Tagger filter."""
-    input = hxl.input.make_input(args.get("url"), util.make_input_options(args))
+    input = hxl.input.make_input(args.get("url"), input_options)
 
     # Intercept tagging as a special data input
     specs = []

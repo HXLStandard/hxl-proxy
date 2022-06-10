@@ -90,7 +90,8 @@ def make_input_options (args):
         http_headers = http_headers,
         selector = args.get("selector", None),
         encoding = args.get("encoding", None),
-        expand_merged = args.get("expand-merged", args.get("expand_merged", None)),
+        expand_merged = args.get("expand-merged", args.get("expand_merged", False)),
+        scan_ckan_resources = args.get("scan-ckan-resources", args.get("scan_ckan_resources", False)),
     )
 
 

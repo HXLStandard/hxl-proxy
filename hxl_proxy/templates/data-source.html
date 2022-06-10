@@ -75,6 +75,14 @@
                     Duplicate values in merged areas (Excel only)
                   </label>
                 </div>
+
+                <div class="col-sm-6 checkbox">
+                  <label>
+                    <input type="checkbox" name="scan_ckan_resources" {% if (recipe.args.scan_ckan_resources == 'on') %}checked="checked"{% endif %}/>
+                    Scan CKAN datasets for HXL resources
+                  </label>
+                </div>
+
               </div>
 
               <div class="row">
