@@ -5,6 +5,7 @@ WORKDIR /srv/www
 COPY . .
 
 RUN apk add \
+        git \
         sqlite \
         libffi-dev \
         unit \
@@ -25,7 +26,9 @@ RUN apk add \
         wheel && \
     pip3 install --upgrade -r requirements.txt && \
     pip3 install newrelic && \
-    apk del libffi-dev && \
+    apk del \
+        git \
+        libffi-dev && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
 
