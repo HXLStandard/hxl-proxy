@@ -11,7 +11,7 @@ import sys
 import operator
 
 from hxl.model import TagPattern
-from hxl.io import ArrayInput, HXLReader
+from hxl.input import ArrayInput, HXLReader
 from hxl_proxy.filters import *
 from hxl_proxy.recipes import Recipe
 

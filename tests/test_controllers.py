@@ -395,6 +395,43 @@ class TestDataAdvanced(AbstractControllerTest):
 # API tests
 ########################################################################
 
+class TestInfo(AbstractControllerTest):
+
+    PATH = "/api/source-info"
+
+    URL = "http://example.org/input-info.xlsx"
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_format(self):
+        info = self.get_info()
+        self.assertEqual("XLSX", info["format"])
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_sheets(self):
+        info = self.get_info()
+        self.assertEqual(2, len(info["sheets"]))
+
+        # Sheet 1
+        self.assertEqual("input-quality-no-hxl", info["sheets"][0]["name"])
+        self.assertTrue(info["sheets"][0]["has_merged_cells"])
+        self.assertFalse(info["sheets"][0]["is_hxlated"])
+        self.assertEqual("56c6270ee039646436af590e874e6f67", info["sheets"][0]["header_hash"])
+        self.assertTrue(info["sheets"][0]["hashtag_hash"] is None)
+
+        # Sheet 2
+        self.assertEqual("input-quality-hxl", info["sheets"][1]["name"])
+        self.assertFalse(info["sheets"][1]["has_merged_cells"])
+        self.assertTrue(info["sheets"][1]["is_hxlated"])
+        self.assertEqual("56c6270ee039646436af590e874e6f67", info["sheets"][1]["header_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", info["sheets"][1]["hashtag_hash"])
+
+    def get_info(self):
+        response = self.get(self.PATH, {
+            "url": self.URL,
+        })
+        return json.loads(response.get_data(True))
+        
+
 class TestPcodes(AbstractControllerTest):
 
     def test_good_pcodes(self):
