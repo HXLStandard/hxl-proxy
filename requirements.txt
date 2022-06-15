@@ -1,4 +1,4 @@
--e 'git+https://github.com/hxlstandard/libhxl-python@test'
+-e 'git+https://github.com/hxlstandard/libhxl-python@test#egg=libhxl-python'
 requests>=2.11
 ckanapi>=3.5
 flask>=1.0
