@@ -1,4 +1,4 @@
-git+https://github.com/HXLStandard/hxl-proxy.git@test
+-e https://github.com/HXLStandard/hxl-proxy@test
 requests>=2.11
 ckanapi>=3.5
 flask>=1.0
