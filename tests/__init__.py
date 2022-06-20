@@ -32,7 +32,7 @@ def mock_open_url(url, allow_local=False, timeout=None, verify_ssl=True, http_he
     else:
         # Assume it's a file
         path = url
-    return (open(path, 'rb'), None, None, None)
+    return (open(path, 'rb'), None, None, None, None, None,)
 
 def resolve_path(filename):
     """Resolve a relative path against this module's directory."""
