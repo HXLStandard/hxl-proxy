@@ -105,7 +105,7 @@
 
             </div>
 
-            {% with excludes=['url', 'skip_verify_ssl', 'sheet'] %}
+            {% with excludes=['url', 'skip_verify_ssl', 'sheet', 'expand_merged', 'scan_ckan_resources'] %}
             {% if recipe.recipe_id %}
             <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
             {% endif %}

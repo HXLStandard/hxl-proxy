@@ -47,7 +47,6 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     schema_args['expand_merged'] = args.get('schema-expand-merged', args.get('schema_expand_merged', None))
 
     if schema_content:
-
         schema_source = hxl.data(hxl.input.make_input(schema_content, hxl_proxy.util.make_input_options(schema_args)))
     elif schema_url:
         schema_source = hxl.data(schema_url, hxl_proxy.util.make_input_options(schema_args))
