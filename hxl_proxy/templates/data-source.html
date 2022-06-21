@@ -57,51 +57,51 @@
               </p>
             </div>
 
-            <div class="form-group form-inline">
+            <div class="form-group col-sm-6">
 
               <div class="row">
-                <div class="col-sm-6">
-                  <label for="sheet">
-                    Tab #
-                  </label>
-                  <div class="form-group">
-                    <input name="sheet" value="{{ recipe.args.sheet }}" type="number" size="2" min="0" max="100" class="form-control"/>
-                  </div>
+                <label for="sheet" class="col-sm-6 col-md-4 col-lg-3">
+                  Tab # (Excel)
+                </label>
+                <div class="form-group col-sm-6 col-md-8 col-lg-9">
+                  <input name="sheet" value="{{ recipe.args.sheet }}" type="number" min="0" max="100" class="form-control" placeholder="0 or higher"/>
                 </div>
+              </div>
 
-                <div class="col-sm-6 checkbox">
+
+              <div class="row">
+                <label for="selector" class="col-sm-6 col-md-4 col-lg-3">
+                  Selector (JSON)
+                </label>
+                <div class="form-group col-sm-6 col-md-8 col-lg-9">
+                  <input name="selector" value="{{ recipe.args.selector }}" class="form-control" placeholder="JSONpath"/>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-group col-sm-6">
+              
+                <div class="col-sm-12 checkbox">
                   <label>
                     <input type="checkbox" name="expand_merged" {% if (recipe.args.expand_merged == 'on') %}checked="checked"{% endif %}/>
-                    Duplicate values in merged areas (Excel only)
+                    Duplicate values in merged areas (Excel)
                   </label>
                 </div>
 
-                <div class="col-sm-6 checkbox">
+                <div class="col-sm-12 checkbox">
                   <label>
                     <input type="checkbox" name="scan_ckan_resources" {% if (recipe.args.scan_ckan_resources == 'on') %}checked="checked"{% endif %}/>
                     Scan CKAN datasets for HXL resources
                   </label>
                 </div>
 
-              </div>
-
-              <div class="row">
-                <div class="col-sm-6">
-                  <label for="selector">
-                    Selector
-                  </label>
-                  <div class="form-group">
-                    <input name="selector" value="{{ recipe.args.selector }}" class="form-control" placeholder="JSONpath"/>
-                  </div>
-                </div>
-
-                <div class="col-sm-6 checkbox">
+                <div class="col-sm-12 checkbox">
                   <label>
                     <input type="checkbox" name="skip_verify_ssl" {% if (recipe.args.skip_verify_ssl == 'on') %}checked="checked"{% endif %}/>
                     Don't verify SSL certificates
                   </label>
                 </div>
-              </div>
 
             </div>
 
