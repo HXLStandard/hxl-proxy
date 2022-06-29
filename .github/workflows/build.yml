@@ -3,9 +3,9 @@ name: Create image
 on:
   push:
     branches:
-      - dev
       - main
       - prod
+      - test
   release:
     types: [published]
 

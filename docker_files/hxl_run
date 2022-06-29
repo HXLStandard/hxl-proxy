@@ -12,10 +12,12 @@ unset NEW_RELIC_CONFIG_FILE
 
 if [ "$NEW_RELIC_ENABLED" = true ]; then
     echo "new relic is enabled."
-    # not needed anymore, env vars > config file :)
-    # newrelic-admin generate-config $NEW_RELIC_LICENSE_KEY $NEW_RELIC_CONFIG_FILE
-    exec newrelic-admin run-program gunicorn -w ${HXL_WORKERS} app --capture-output --chdir /srv/www -c /srv/config/gunicorn.py
+    cp /srv/www/docker_files/unit-nr.json /var/lib/unit/conf.json
 else
     echo "new relic is disabled."
-    exec gunicorn -w ${HXL_WORKERS} app --capture-output --chdir /srv/www -c /srv/config/gunicorn.py
+    cp /srv/www/docker_files/unit.json /var/lib/unit/conf.json
 fi
+
+chmod 600 /var/lib/unit/conf.json
+
+exec unitd --no-daemon --control 127.0.0.1:8080 --log /var/log/proxy/proxy.log

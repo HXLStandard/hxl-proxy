@@ -44,8 +44,7 @@ remove-venv:
 
 # (re)build the virtual environment if it's missing, or whenever setup.py changes
 $(VENV): setup.py
-	rm -rf venv && virtualenv venv
-	. $(VENV) && cd ../libhxl-python && python setup.py develop && cd ../hxl-proxy && python setup.py develop
+	rm -rf venv && python3 -m venv venv && . $(VENV) && cd ../libhxl-python && python setup.py develop && cd ../hxl-proxy && python setup.py develop
 
 # close the current issue branch and merge into dev
 close-issue:
@@ -75,6 +74,10 @@ test-docker:
 # browser tests for dev.proxy.hxlstandard.org
 browser-tests-local:
 	cat tests/browser-tests/local-urls.txt | xargs -d '\n' firefox
+
+# browser tests for dev.proxy.hxlstandard.org
+browser-tests-local-server:
+	cat tests/browser-tests/local-server-urls.txt | xargs -d '\n' firefox
 
 # browser tests for beta.proxy.hxlstandard.org
 browser-tests-beta:
@@ -107,3 +110,6 @@ etags:
 # restart the web app by touching the WSGI file (depends on the platform)
 restart:
 	touch hxl-proxy.wsgi
+
+clean:
+	rm -rf venv

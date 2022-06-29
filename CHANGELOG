@@ -1,5 +1,9 @@
-Release 1.25
-	- 
+2022-06-28 Release 1.25
+	- add /api/source-info to get information about a data source (Excel-only for now)
+	- add support for filling merged areas in Excel to UI and data-preview API
+	- change references to hxl.io to hxl.input for libhxl-python 1.25+
+	- refactored to support new InputOptions class in libhxl-python: all input options are now available for all API calls
+	- all unit tests passing
 
 2022-03-16 Release 1.24.4
 	- fix cache threshold type
