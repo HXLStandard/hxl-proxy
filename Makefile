@@ -56,11 +56,11 @@ push-dev:
 
 # merge the dev branch into test and push both to origin
 merge-test: push-dev
-	git checkout test && git merge dev && git push && git checkout dev
+	git checkout test && git merge -m 'merge dev to test' dev && git push && git checkout dev
 
 # merge the test branch into master and push both to origin
-merge-master: merge-test
-	git checkout master && git merge test && git push && git checkout dev
+merge-main: merge-test
+	git checkout main && git merge -m 'merge test to main' test && git push && git checkout dev
 
 # do a cold install in a temporary virtual environment and run unit tests
 test-install:

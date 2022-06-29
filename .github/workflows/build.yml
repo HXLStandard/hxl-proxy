@@ -6,6 +6,10 @@ on:
       - main
       - prod
       - test
+<<<<<<< HEAD
+=======
+      - dev
+>>>>>>> test
   release:
     types: [published]
 
