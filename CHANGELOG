@@ -1,3 +1,6 @@
+2022-07-14 Release 1.25.1
+	- improve logging output
+
 2022-06-29 Release 1.25
 	- add /api/source-info to get information about a data source (Excel-only for now)
 	- add support for filling merged areas in Excel to UI and data-preview API
