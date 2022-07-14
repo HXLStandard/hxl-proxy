@@ -29,7 +29,7 @@ setuptools.setup(
         'requests>=2.11',
         'libhxl==4.25.1',
         'ckanapi>=3.5',
-        'flask>=1.0',
+        'flask==2.1.2',
         'flask-caching',
         'requests_cache',
         'mysql-connector-python',
