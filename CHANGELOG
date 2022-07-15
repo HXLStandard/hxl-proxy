@@ -1,3 +1,6 @@
+2022-07-18 Release 1.25.2
+	- update to libhxl==4.25.2 to block tagger exploit
+
 2022-07-14 Release 1.25.1
 	- improve logging output
 
