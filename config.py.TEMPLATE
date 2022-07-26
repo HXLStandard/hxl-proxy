@@ -31,6 +31,11 @@ SECRET_KEY=os.getenv('SECRET_KEY', '<secret key>')
 ADMIN_PASSWORD_MD5=os.getenv('ADMIN_PASSWORD_MD5', '<md5 hash>')
 
 #
+# Input configuration (reading remote datasets)
+#
+MAX_REQUEST_TIMEOUT = 30 # maximum allowable request timeout
+
+#
 # Output cache configuration
 # see https://flask-caching.readthedocs.io/en/latest/#built-in-cache-backends
 #
