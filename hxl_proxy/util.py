@@ -65,9 +65,6 @@ def make_input_options (args):
 
     """
 
-    # get the max timeout from configuration, defaulting to 30 seconds
-    max_timeout = hxl_proxy.app.config.get("MAX_REQUEST_TIMEOUT", 30)
-
     # set the user agent, to help with analytics
     http_headers = args.get("http-headers", args.get("http_headers", {}))
     http_headers['User-Agent'] = 'hxl-proxy'
@@ -85,10 +82,17 @@ def make_input_options (args):
             logger.error("Invalid sheet index \"%s\"; defaulting to 0", sheet_index)
             sheet_index = 0
 
+    # get the max timeout from configuration, defaulting to 30 seconds
+    max_timeout = hxl_proxy.app.config.get("MAX_REQUEST_TIMEOUT", 30.0)
+    try:
+        timeout = min(float(args.get("timeout")), max_timeout)
+    except TypeError:
+        timeout = max_timeout
+
     return hxl.input.InputOptions(
         allow_local = False,
         sheet_index = sheet_index,
-        timeout = min(args.get("timeout", max_timeout), max_timeout), # don't let user extend past max timeout
+        timeout = timeout,
         verify_ssl = check_verify_ssl(args),
         http_headers = http_headers,
         selector = args.get("selector", None),
