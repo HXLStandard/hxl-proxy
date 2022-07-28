@@ -18,6 +18,12 @@ import distutils.util as util
 DEBUG=bool(util.strtobool(os.getenv('DEBUG', 'True')))
 
 #
+# Set the Python logging level for the app
+# See https://docs.python.org/3/library/logging.html#logging-levels
+#
+LOGGING_LEVEL = "ERROR"
+
+#
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #
