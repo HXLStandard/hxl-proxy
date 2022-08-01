@@ -15,26 +15,26 @@ import distutils.util as util
 # If True, will show detailed debugging information on errors
 # Should be False for a production system
 #
-DEBUG=bool(util.strtobool(os.getenv('DEBUG', 'True')))
+DEBUG = bool(util.strtobool(os.getenv('DEBUG', 'True')))
 
 #
 # Set the Python logging level for the app
 # See https://docs.python.org/3/library/logging.html#logging-levels
 #
-LOGGING_LEVEL = "ERROR"
+LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 
 #
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #
-SECRET_KEY=os.getenv('SECRET_KEY', '<secret key>')
+SECRET_KEY = os.getenv('SECRET_KEY', '<secret key>')
 
 #
 # Admin password MD5 hash
 # To generate, use this command (replacing "PASSWORD" with your password):
 # $ python -c 'import hashlib; print(hashlib.md5("PASSWORD".encode("utf-8")).hexdigest())'
 #
-ADMIN_PASSWORD_MD5=os.getenv('ADMIN_PASSWORD_MD5', '<md5 hash>')
+ADMIN_PASSWORD_MD5 = os.getenv('ADMIN_PASSWORD_MD5', '<md5 hash>')
 
 #
 # Input configuration (reading remote datasets)
