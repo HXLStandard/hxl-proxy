@@ -19,5 +19,6 @@ else
 fi
 
 chmod 600 /var/lib/unit/conf.json
+chown unit /var/log/proxy
 
 exec unitd --no-daemon --control 127.0.0.1:8080 --log /var/log/proxy/proxy.log
