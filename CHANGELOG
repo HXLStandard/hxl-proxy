@@ -1,6 +1,7 @@
 Release 1.26
 	- add MAX_REQUEST_TIMEOUT configuration option, to place a cap on the maximum allowable timeout for reading external datasets
 	- add LOGGING_LEVEL configuration option (defaults to "ERROR")
+	- log warnings for exceptions caught and returned as web pages with 400/500-series status codes
 
 2022-07-18 Release 1.25.2
 	- update to libhxl==4.25.2 to block tagger exploit

@@ -47,6 +47,12 @@ def handle_default_exception(e):
     else:
         status = 500
 
+    # log a warning for the error/exception that we're handling
+    if hasattr(e, 'message'):
+        logger.warning('%s: %s', type(e).__name__, e.message)
+    else:
+        logger.warning(type(e).__name__)
+
     # Check the global output_format variable to see if it's HTML or JSON/CSV
     # Use a JSON error format if not HTML
     if flask.g.output_format != 'html':
