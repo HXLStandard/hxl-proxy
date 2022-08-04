@@ -39,7 +39,7 @@ ADMIN_PASSWORD_MD5 = os.getenv('ADMIN_PASSWORD_MD5', '<md5 hash>')
 #
 # Input configuration (reading remote datasets)
 #
-MAX_REQUEST_TIMEOUT = 30 # maximum allowable request timeout
+MAX_REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', 30)) # maximum allowable request timeout
 
 #
 # Output cache configuration
