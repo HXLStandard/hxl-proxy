@@ -99,8 +99,12 @@ browser-tests-prod:
 run-dev: $(VENV)
 	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py python run-server.py
 
+# Make sure we're in sync with upstream (merge down rather than up, in case main or test have changed)
+sync:
+	git checkout main && git pull && git push && git checkout test && git pull && git merge main && git push && git checkout dev && git pull && git merge test && git push
+
 # publish a new release on PyPi
-publish:
+publish-pypi: $(VENV)
 	. $(VENV) && pip install twine && rm -rf dist/* && python setup.py sdist && twine upload dist/*
 
 # (re)generate emacs TAGS file
