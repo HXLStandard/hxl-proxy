@@ -4,5 +4,5 @@ ckanapi>=3.5
 flask==2.1.2
 flask-caching
 requests_cache
-mysql-connector-python
+mysql-connector-python==8.0.29
 redis
