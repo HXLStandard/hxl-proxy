@@ -1,3 +1,6 @@
+2022-08-11 Release 1.26.1
+	- downgrade to mysql-connector-python==8.0.29 to avoid bug in 8.0.30
+
 2022-08-08 Release 1.26
 	- add MAX_REQUEST_TIMEOUT configuration option, to place a cap on the maximum allowable timeout for reading external datasets
 	- add LOGGING_LEVEL configuration option (defaults to "ERROR")
