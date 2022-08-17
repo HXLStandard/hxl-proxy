@@ -1,9 +1,31 @@
 version: '2.2'
 
 services:
+  mysql:
+    image: public.ecr.aws/unocha/mysql:10.6
+    hostname: mysql
+    environment:
+      - MYSQL_DB=hxl_proxy
+      - MYSQL_USER=hxl_proxy
+      - MYSQL_PASS=hxl_proxy
+
+  redis:
+    image: public.ecr.aws/unocha/redis:5
+    hostname: redis
+
   proxy:
     build: ./
     ports:
-      - "0.0.0.0:5000:5000"
+      - "127.0.0.1:5000:5000"
     entrypoint: "tail -f /dev/null"
     working_dir: /srv/www
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: mysql
+      DB_DATABASE: hxl_proxy
+      DB_PORT: 3306
+      DB_USERNAME: hxl_proxy
+      DB_PASSWORD: hxl_proxy
+      DB_SCHEMA_FILE: schema-mysql.sql
+      CACHE_TYPE: redis
+      CACHE_REDIS_URL: redis://redis:6379/1
