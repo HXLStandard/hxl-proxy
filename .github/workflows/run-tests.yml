@@ -17,8 +17,8 @@ jobs:
       - name: Spinning up container
         run: |
           docker-compose -f docker-compose-github-actions.yml up -d
-          sleep 5
-          docker-compose -f docker-compose-github-actions.yml exec -T proxy sh -c "ln -s /srv/config/schema-sqlite3.sql /srv/www/hxl_proxy/schema-sqlite3.sql"
+          sleep 10
+          docker-compose -f docker-compose-github-actions.yml exec -T proxy sh -c "ln -s /srv/config/schema-mysql.sql /srv/www/hxl_proxy/schema-mysql.sql"
           docker-compose -f docker-compose-github-actions.yml exec -T proxy sh -c "python3 setup.py install"
       - name: Running tests
         run: docker-compose -f docker-compose-github-actions.yml exec -T proxy sh -c "python3 setup.py test"
