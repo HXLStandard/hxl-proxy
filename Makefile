@@ -39,9 +39,6 @@ test: $(VENV)
 # alias to (re)build the Python virtual environment
 build-venv: $(VENV)
 
-remove-venv:
-	rm -rf $(VENV)
-
 # (re)build the virtual environment if it's missing, or whenever setup.py changes
 $(VENV): setup.py
 	rm -rf venv && virtualenv -p python3 venv && . $(VENV) && cd ../libhxl-python && python setup.py develop && cd ../hxl-proxy && python setup.py develop
