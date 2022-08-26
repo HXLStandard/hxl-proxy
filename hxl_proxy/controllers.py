@@ -31,27 +31,53 @@ SHEET_MAX_NO = 20
 # or authorisation as well as errors.
 ########################################################################
 
+class RemoteDataException:
+    """ 
+    Wrapper exception to hide information about a remote data-access failure.
+    This prevents a bad actor from using the HXL Proxy to ping a remote
+    website (for example).
+
+    """
+
+    def __init__ (self, e):
+        self.url = None
+        if hasattr(e, 'url'):
+            self.url = e.url
+
+    @property
+    def human (self):
+        return "Sorry, we can't find the remote data you want to process."
+
+    @property
+    def message (self):
+        if self.url:
+            return "No usable data found at {}".format(self.url)
+        else:
+            return "No usable data found at remote URL"
+
 def handle_default_exception(e):
     """ Error handler: display an error page with various HTTP status codes
     This handler applies to any exception that doesn't have a more-specific
     handler below.
     @param e: the exception being handled
     """
-    if isinstance(e, IOError) or isinstance(e, OSError):
-        # probably tried to open an inappropriate URL
-        status = 403
-    elif isinstance(e, werkzeug.exceptions.HTTPException):
-        status = e.code
-    elif isinstance(e, requests.exceptions.HTTPError):
-        status = 404
-    else:
-        status = 500
 
     # log a warning for the error/exception that we're handling
     if hasattr(e, 'message'):
         logger.warning('%s: %s', type(e).__name__, e.message)
     else:
         logger.warning(type(e).__name__)
+
+    if isinstance(e, requests.exceptions.HTTPError) or isinstance(e, hxl.input.HXLHTMLException):
+        status = 404
+        e = RemoteDataException(e)
+    elif isinstance(e, IOError) or isinstance(e, OSError):
+        # probably tried to open an inappropriate URL
+        status = 403
+    elif isinstance(e, werkzeug.exceptions.HTTPException):
+        status = e.code
+    else:
+        status = 500
 
     # Check the global output_format variable to see if it's HTML or JSON/CSV
     # Use a JSON error format if not HTML
@@ -313,15 +339,17 @@ def data_edit(recipe_id=None):
     try:
         source = preview.PreviewFilter(filters.setup_filters(recipe), max_rows=max_rows)
         source.columns
-    except exceptions.RedirectException as e1:
-        # always pass through a redirect exception
+    except (
+            requests.RequestException,
+            exceptions.RedirectException,
+            hxl.input.HXLAuthorizationException,
+            hxl.input.HXLHTMLException
+    ) as e1:
+        # always pass through these exceptions
         raise e1
-    except hxl.input.HXLAuthorizationException as e2:
-        # always pass through an authorization exception
-        raise e2
-    except Exception as e3:
-        logger.exception(e3)
-        error = e3
+    except Exception as e2:
+        # logger.exception(e2)
+        error = e2
         source = None
 
     # Figure out how many filter forms to show
