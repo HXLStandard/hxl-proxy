@@ -1,3 +1,8 @@
+Release 1.27
+	- show the same error message for a non-existant remote data file, or for a URL that contains HTML markup; prevents
+	bad actors from using the HXL Proxy to ping HTML websites
+	- don't trap 404 and HTML markup exceptions in the /data/edit endpoint
+
 2022-08-11 Release 1.26.1
 	- downgrade to mysql-connector-python==8.0.29 to avoid bug in 8.0.30
 
