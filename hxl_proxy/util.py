@@ -117,6 +117,23 @@ def check_verify_ssl(args):
 # Not yet classified
 ########################################################################
 
+def check_markup(s):
+    """ Check if text contains markup or URLs
+    """
+    if re.search("(<[a-zA-Z]|>|href|https?:|\.com)", s):
+        return True
+    else:
+        return False
+
+def forbid_markup(s, field_name=None):
+    """ Raise an exception if markup or URLs appear in a string
+    Otherwise, return the string.
+    """
+    if check_markup(s):
+        raise hxl_proxy.exceptions.ForbiddenContentException(s, "markup and URLs not allowed", field_name)
+    else:
+        return s
+
 def clean_tagger_mappings(headers, recipe):
     """ Create a clean list of hashtag mappings for the tagger form
     """

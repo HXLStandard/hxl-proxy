@@ -31,30 +31,6 @@ SHEET_MAX_NO = 20
 # or authorisation as well as errors.
 ########################################################################
 
-class RemoteDataException:
-    """ 
-    Wrapper exception to hide information about a remote data-access failure.
-    This prevents a bad actor from using the HXL Proxy to ping a remote
-    website (for example).
-
-    """
-
-    def __init__ (self, e):
-        self.url = None
-        if hasattr(e, 'url'):
-            self.url = e.url
-
-    @property
-    def human (self):
-        return "Sorry, we can't find the remote data you want to process."
-
-    @property
-    def message (self):
-        if self.url:
-            return "No usable data found at {}".format(self.url)
-        else:
-            return "No usable data found at remote URL"
-
 def handle_default_exception(e):
     """ Error handler: display an error page with various HTTP status codes
     This handler applies to any exception that doesn't have a more-specific
@@ -70,7 +46,7 @@ def handle_default_exception(e):
 
     if isinstance(e, requests.exceptions.HTTPError) or isinstance(e, hxl.input.HXLHTMLException):
         status = 404
-        e = RemoteDataException(e)
+        e = exceptions.RemoteDataException(e)
     elif isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
         status = 403
@@ -705,10 +681,10 @@ def do_data_save():
     # Update recipe metadata
     # Note that an empty/unchecked value will be omitted from the form
     if 'name' in flask.request.form:
-        recipe.name = flask.request.form['name']
+        recipe.name = util.forbid_markup(flask.request.form['name'], 'name')
 
     if 'description' in flask.request.form:
-        recipe.description = flask.request.form['description']
+        recipe.description = util.forbid_markup(flask.request.form['description'], 'description')
     else:
         recipe.description = ''
         
@@ -718,7 +694,7 @@ def do_data_save():
         recipe.cloneable = False
 
     if 'stub' in flask.request.form:
-        recipe.stub = flask.request.form['stub']
+        recipe.stub = util.forbid_markup(flask.request.form['stub'], 'stub')
     else:
         recipe.stub = ''
 
