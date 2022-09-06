@@ -4,10 +4,11 @@ Started 2015-02-18 by David Megginson
 License: Public Domain
 """
 
+from ast import Try
 import hxl_proxy
 
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
-
+from hxl_proxy import caching
 
 # Logger for this module
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ def make_cache_key (path = None, args_in=None):
     """
     CACHE_KEY_EXCLUDES = ['force']
 
-    # Fill in default 
+    # Fill in default
     if path is None:
         path = flask.request.path
     if args_in is None:
@@ -59,8 +60,16 @@ def skip_cache_p ():
 # Input options
 ########################################################################
 
+def make_input (where, how, cacheable=False):
+    try:
+        input = hxl.input.make_input(where, how)
+    except Exception as e:
+        logger.error(str(e))
+    return input
+
+
 def make_input_options (args):
-    """ Create an InputOptions object from the arguments provided 
+    """ Create an InputOptions object from the arguments provided
     Ensure that allow_local is always false. Allow both "-" and "_" between words.
 
     """
@@ -165,7 +174,7 @@ def clean_tagger_mappings(headers, recipe):
             headers_seen.add(header)
 
     return mappings
-            
+
 
 def make_file_hash(stream):
     """Calculate a hash in chunks from a stream.
@@ -240,7 +249,7 @@ def no_none(s):
     @returns: a string version of the value, or "" if None
     """
     return str(s) if s is not None else ''
-    
+
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
     hxl_proxy.app.update_template_context(context)

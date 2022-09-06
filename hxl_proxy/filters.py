@@ -31,7 +31,7 @@ def setup_filters(recipe, data_content=None):
     # Basic input source
 
     input_options = util.make_input_options(recipe.args)
-    
+
     if data_content:
         source = hxl.data(io.BytesIO(data_content.encode('utf-8')), input_options)
     else:
@@ -97,7 +97,7 @@ def setup_filters(recipe, data_content=None):
 
 def make_tagged_input(args, input_options):
     """Create the raw input, optionally using the Tagger filter."""
-    input = hxl.input.make_input(args.get("url"), input_options)
+    input = util.make_input(args.get("url"), input_options)
 
     # Intercept tagging as a special data input
     specs = []
@@ -217,7 +217,7 @@ def add_count_filter(source, args, index):
                 pattern = aggregate_pattern,
                 column = hxl.model.Column.parse("#meta+" + count_type, header=count_type.title())
             ))
-    
+
     return source.count(patterns=tags, aggregators=aggregators, queries=row_query)
 
 def add_column_filter(source, args, index):
