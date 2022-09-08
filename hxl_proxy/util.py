@@ -8,13 +8,15 @@ from ast import Try
 import hxl_proxy
 
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
-from hxl_proxy import caching
+from hxl_proxy import app, caching
+
+from urllib.parse import urlparse
 
 # Logger for this module
 logger = logging.getLogger(__name__)
 
 
-
+
 ########################################################################
 # Utility functions for caching
 ########################################################################
@@ -61,12 +63,36 @@ def skip_cache_p ():
 ########################################################################
 
 def make_input (where, how, cacheable=False):
+    """ Wrapper for libhxl make_input call.
+    We want to make sure all exception are being caught and no trace is being made.
+    We also want to check the external destination against our allowed domain list
+    @returns: False if some error occured, the input object otherwise
+    """
+    if not isAllowed(where):
+        return False
     try:
         input = hxl.input.make_input(where, how)
+        return input
     except Exception as e:
         logger.error(str(e))
-    return input
+        return False
 
+def isAllowed(where):
+    """ Match the external destination url against our allowed domain list.
+    @returns: True if the url has an allowed parent domain or if the url matches an allowed hostname
+              False otherwise
+    """
+    url=urlparse(where)
+    # it is a hostname match?
+    hostnames = app.config['ALLOWED_DOMAINS_LIST']
+    if url.netloc in hostnames:
+        return True
+    # maybe an allowed domain child?
+    domains = tuple(['.{}'.format(d) for d in hostnames])
+    if url.netloc.endswith(domains):
+        return True
+    # sorry, call us
+    return False
 
 def make_input_options (args):
     """ Create an InputOptions object from the arguments provided
