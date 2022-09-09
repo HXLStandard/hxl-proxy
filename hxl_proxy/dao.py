@@ -30,7 +30,9 @@ import hxl_proxy
 class db:
     """Low-level database functions"""
 
-    TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema-sqlite3.sql')
+    schema_file = hxl_proxy.app.config.get('DB_SCHEMA_FILE', 'schema-sqlite3.sql')
+
+    TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), schema_file)
     """The filename of the SQL schema."""
 
     type = hxl_proxy.app.config.get('DB_TYPE', 'sqlite3')
