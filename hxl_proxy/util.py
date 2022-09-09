@@ -10,11 +10,13 @@ import hxl_proxy
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
 from hxl_proxy import caching
 
+from urllib.parse import urlparse
+
 # Logger for this module
 logger = logging.getLogger(__name__)
 
 
-
+
 ########################################################################
 # Utility functions for caching
 ########################################################################
@@ -60,13 +62,44 @@ def skip_cache_p ():
 # Input options
 ########################################################################
 
-def make_input (where, how, cacheable=False):
+def make_input (raw_source, input_options=None):
+    """ Wrapper for libhxl make_input call.
+    We want to make sure all exception are being caught and no trace is being made.
+    We also want to check the external destination against our allowed domain list
+    @returns: False if some error occured, the input object otherwise
+    """
+    if not is_allowed(raw_source):
+        err = '{} parent domain is not in the allowed list.'.format(raw_source)
+        logger.error(err)
+        raise IOError(err)
     try:
-        input = hxl.input.make_input(where, how)
+        input = hxl.input.make_input(raw_source, input_options)
+        return input
     except Exception as e:
         logger.error(str(e))
-    return input
+        raise e
 
+def is_allowed(raw_source):
+    """ Match the external destination url against our allowed domain list.
+    @returns: True if the url has an allowed parent domain or if the url matches an allowed hostname
+              False otherwise
+    """
+    hostnames = hxl_proxy.app.config.get('ALLOWED_DOMAINS_LIST', [])
+
+    # if allowed list is empty just wave in for eveybody. test mode eh?
+    if len(hostnames) == 0:
+        return True
+
+    url=urlparse(raw_source)
+    # it is a hostname match?
+    if url.netloc in hostnames:
+        return True
+    # maybe an allowed domain child?
+    domains = tuple(['.{}'.format(d) for d in hostnames])
+    if url.netloc.endswith(domains):
+        return True
+    # sorry, call us
+    return False
 
 def make_input_options (args):
     """ Create an InputOptions object from the arguments provided

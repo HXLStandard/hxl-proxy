@@ -30,6 +30,13 @@ LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 SECRET_KEY = os.getenv('SECRET_KEY', '<secret key>')
 
 #
+# Allow list of domain to contact
+# This should be a comma-separated list of domains and subdomains
+# Do NOT use hostnames
+#
+ALLOWED_DOMAINS_LIST = list(filter(None, [l.strip().strip('.') for l in os.getenv('ALLOWED_DOMAINS_LIST', '').split(',')]))
+
+#
 # Admin password MD5 hash
 # To generate, use this command (replacing "PASSWORD" with your password):
 # $ python -c 'import hashlib; print(hashlib.md5("PASSWORD".encode("utf-8")).hexdigest())'

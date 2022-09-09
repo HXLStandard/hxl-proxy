@@ -1500,7 +1500,7 @@ def make_info():
 
     # Open the dataset (not necessarily hxlated)
     try:
-        info = hxl.make_input(url, util.make_input_options(flask.request.args)).info()
+        info = util.make_input(url, util.make_input_options(flask.request.args)).info()
         return flask.Response(
             json.dumps(info, indent=4),
             mimetype="application/json"

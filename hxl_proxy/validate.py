@@ -30,7 +30,8 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
 
     # set up the main data
     if content:
-        source = hxl.data(hxl_proxy.util.make_input(content, hxl_proxy.util.make_input_options(args)))
+        # TODO: stop using libhxl's make_input directly
+        source = hxl.data(hxl.input.make_input(content, hxl_proxy.util.make_input_options(args)))
     else:
         source = hxl.data(url, hxl_proxy.util.make_input_options(args))
 
@@ -47,7 +48,7 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     schema_args['expand_merged'] = args.get('schema-expand-merged', args.get('schema_expand_merged', None))
 
     if schema_content:
-        schema_source = hxl.data(hxl_proxy.util.make_input(schema_content, hxl_proxy.util.make_input_options(schema_args)))
+        schema_source = hxl.data(hxl.input.make_input(schema_content, hxl_proxy.util.make_input_options(schema_args)))
     elif schema_url:
         schema_source = hxl.data(schema_url, hxl_proxy.util.make_input_options(schema_args))
     else:

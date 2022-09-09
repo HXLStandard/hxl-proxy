@@ -18,7 +18,7 @@ RUN apk add \
         /srv/output \
         /var/log/proxy && \
     mv config.py.TEMPLATE /srv/config/config.py && \
-    mv hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
+    cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py docker_files/app_nr.py . && \
     pip3 --no-cache-dir install --upgrade \
