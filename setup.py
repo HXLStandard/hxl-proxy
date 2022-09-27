@@ -26,7 +26,7 @@ setuptools.setup(
     include_package_data = True,
     zip_safe = False,
     install_requires=[
-        'requests>=2.11',
+        'requests>=2.27',
         #'libhxl==4.26',
         'libhxl @ git+https://github.com/HXLStandard/@dev#egg=libhxl',
         'ckanapi>=3.5',

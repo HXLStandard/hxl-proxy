@@ -1,6 +1,6 @@
 git+https://github.com/HXLStandard/libhxl-python@dev#egg=libhxl
 #libhxl==4.26
-requests>=2.11
+requests>=2.27
 ckanapi>=3.5
 flask==2.1.2
 flask-caching
