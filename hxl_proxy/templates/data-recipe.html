@@ -181,11 +181,13 @@
         {% endif %}
         {% else %}
         <h3>Error!</h3>
+        <p style="white-space: pre-line">
         {% if error %}
         {{ error }}
         {% else %}
         Unknown error - please fix recipe
         {% endif %}
+        </p>
         {% endif %}
       </section>
     </main>

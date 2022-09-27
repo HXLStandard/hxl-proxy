@@ -8,7 +8,7 @@ from ast import Try
 import hxl_proxy
 
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
-from hxl_proxy import caching
+from hxl_proxy import caching, exceptions
 
 from urllib.parse import urlparse
 
@@ -62,24 +62,48 @@ def skip_cache_p ():
 # Input options
 ########################################################################
 
-def make_input (raw_source, input_options=None):
-    """ Wrapper for libhxl make_input call.
-    We want to make sure all exception are being caught and no trace is being made.
-    We also want to check the external destination against our allowed domain list
-    @returns: False if some error occured, the input object otherwise
-    """
-    if not is_allowed(raw_source):
-        err = '{} parent domain is not in the allowed list.'.format(raw_source)
-        logger.error(err)
-        raise IOError(err)
-    try:
-        input = hxl.input.make_input(raw_source, input_options)
-        return input
-    except Exception as e:
-        logger.error(str(e))
-        raise e
+def hxl_data (raw_source, input_options=None):
+    """Wrapper for hxl.data() to implement a domain-based allow list.  If
+    the raw_source is a string (i.e. URL), check that the base domain
+    is in the allow list. If the allow list is empty, assume testing and
+    allow any domain.
 
-def is_allowed(raw_source):
+    """
+    # don't catch exceptions here; see controllers.py for general exception handling
+    check_allowed_domain(raw_source)
+    return hxl.data(raw_source, input_options)
+
+
+def hxl_make_input (raw_source, input_options=None):
+    """Wrapper for hxl.make_input() to implement a domain-based allow
+    list.  If the raw_source is a string (i.e. URL), check that the
+    base domain is in the allow list. If the allow list is empty,
+    assume testing and allow any domain.
+
+    @returns: False if some error occured, the input object otherwise
+
+    """
+    # don't catch exceptions here; see controllers.py for general exception handling
+    check_allowed_domain(raw_source)
+    return hxl.make_input(raw_source, input_options)
+
+
+def check_allowed_domain (raw_source):
+    """ Raise an exception if raw_source is a URL and its base domain is not in the allow list.
+    @raises IOError If the domain is not in the list.
+
+    """
+    if isinstance(raw_source, str) and not is_allowed_domain(raw_source):
+        logger.error("Domain not in allow list: %s", raw_source)
+        raise exceptions.DomainNotAllowedError(
+            "The HXL Proxy does not allow data from this domain.\n" +
+            "If your data is on HDX, you can use the dataset or resource\n" +
+            "URL with the HXL Proxy. Otherwise, please send requests to\n"
+            "allow new humanitarian-data domains to hdx@un.org.\n\n" +
+            raw_source
+        )
+    
+def is_allowed_domain (raw_source):
     """ Match the external destination url against our allowed domain list.
     @returns: True if the url has an allowed parent domain or if the url matches an allowed hostname
               False otherwise
@@ -87,7 +111,8 @@ def is_allowed(raw_source):
     hostnames = hxl_proxy.app.config.get('ALLOWED_DOMAINS_LIST', [])
 
     # if allowed list is empty just wave in for eveybody. test mode eh?
-    if len(hostnames) == 0:
+    # also, if it's not a string (i.e. URL), proceed
+    if len(hostnames) == 0 or not isinstance(raw_source, str):
         return True
 
     url=urlparse(raw_source)
@@ -100,6 +125,7 @@ def is_allowed(raw_source):
         return True
     # sorry, call us
     return False
+
 
 def make_input_options (args):
     """ Create an InputOptions object from the arguments provided

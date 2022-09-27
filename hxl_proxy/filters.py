@@ -33,13 +33,13 @@ def setup_filters(recipe, data_content=None):
     input_options = util.make_input_options(recipe.args)
 
     if data_content:
-        source = hxl.data(io.BytesIO(data_content.encode('utf-8')), input_options)
+        source = util.hxl_data(io.BytesIO(data_content.encode('utf-8')), input_options)
     else:
         try:
-            source = hxl.data(recipe.args["url"], input_options)
+            source = util.hxl_data(recipe.args["url"], input_options)
             source.columns
         except hxl.input.HXLTagsNotFoundException:
-            source = hxl.data(make_tagged_input(recipe.args, input_options), input_options)
+            source = util.hxl_data(make_tagged_input(recipe.args, input_options), input_options)
 
     # Do we have a JSON recipe? Load it first.
     if recipe.args.get('recipe'):
@@ -97,7 +97,7 @@ def setup_filters(recipe, data_content=None):
 
 def make_tagged_input(args, input_options):
     """Create the raw input, optionally using the Tagger filter."""
-    input = util.make_input(args.get("url"), input_options)
+    input = util.hxl_make_input(args.get("url"), input_options)
 
     # Intercept tagging as a special data input
     specs = []
@@ -282,7 +282,7 @@ def add_merge_filter(source, args, index):
     replace = (args.get('merge-replace%02d' % index) == 'on')
     overwrite = (args.get('merge-overwrite%02d' % index) == 'on')
     url = args.get('merge-url%02d' % index)
-    merge_source = hxl.data(url, util.make_input_options(args))
+    merge_source = util.hxl_data(url, util.make_input_options(args))
     return source.merge_data(merge_source, keys=keys, tags=tags, replace=replace, overwrite=overwrite)
 
 def add_rename_filter(source, args, index):
@@ -307,7 +307,7 @@ def add_replace_map_filter(source, args, index):
     """Add the hxlreplace filter to the end of the pipeline."""
     url = args.get('replace-map-url%02d' % index)
     row_query = args.get('replace-map-where%02d' % index)
-    return source.replace_data_map(hxl.data(url, util.make_input_options(args)), queries=row_query)
+    return source.replace_data_map(util.hxl_data(url, util.make_input_options(args)), queries=row_query)
 
 def add_row_filter(source, args, index):
     """Add the hxlselect filter to the end of the pipeline."""

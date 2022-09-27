@@ -263,7 +263,7 @@ def data_tagger(recipe_id=None):
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
     preview = []
     i = 0
-    for row in util.make_input(recipe.url, util.make_input_options(recipe.args)):
+    for row in util.hxl_make_input(recipe.url, util.make_input_options(recipe.args)):
         # Stop if we get to 25 rows
         if i >= 25:
             break
@@ -404,7 +404,7 @@ def data_validate(recipe_id=None, format='html'):
     # Set up the HXL validation schema
     schema_source = None
     if recipe.schema_url:
-        schema_source = hxl.data(recipe.schema_url, util.make_input_options(recipe.args))
+        schema_source = util.hxl_data(recipe.schema_url, util.make_input_options(recipe.args))
         logger.info("Using HXL validation schema at %s", recipe.schema_url)
     else:
         logger.info("No HXL validation schema specified; using default schema")
@@ -1201,7 +1201,7 @@ def hxl_test(format='html'):
     if url:
         try:
             # we grab the columns to force lazy parsing
-            hxl.data(url, util.make_input_options(flask.request.args)).columns
+            util.hxl_data(url, util.make_input_options(flask.request.args)).columns
             # if we get to here, it's OK
             result['status'] = True
             result['message'] = 'Dataset has HXL hashtags'
@@ -1313,10 +1313,10 @@ def data_preview (format="json"):
 
     # make input
     if util.skip_cache_p():
-        input = util.make_input(url, util.make_input_options(flask.request.args))
+        input = util.hxl_make_input(url, util.make_input_options(flask.request.args))
     else:
         with caching.input():
-            input = util.make_input(url, util.make_input_options(flask.request.args))
+            input = util.hxl_make_input(url, util.make_input_options(flask.request.args))
 
     # Generate result
     if format == 'json':
@@ -1393,10 +1393,10 @@ def data_preview_sheets(format="json"):
         for sheet in range(0, SHEET_MAX_NO):
             args['sheet'] = sheet
             if util.skip_cache_p():
-                input = util.make_input(url, util.make_input_options(args))
+                input = util.hxl_make_input(url, util.make_input_options(args))
             else:
                 with caching.input():
-                    input = util.make_input(url, util.make_input_options(args))
+                    input = util.hxl_make_input(url, util.make_input_options(args))
             if isinstance(input, hxl.input.CSVInput):
                 _output.append("Default")
                 break
@@ -1466,7 +1466,7 @@ def make_hash():
     headers_only = flask.request.args.get('headers_only')
 
     # Open the HXL dataset
-    source = hxl.data(url, util.make_input_options(flask.request.args))
+    source = util.hxl_data(url, util.make_input_options(flask.request.args))
 
     # Generate the report
     report = {
@@ -1500,7 +1500,7 @@ def make_info():
 
     # Open the dataset (not necessarily hxlated)
     try:
-        info = util.make_input(url, util.make_input_options(flask.request.args)).info()
+        info = util.hxl_make_input(url, util.make_input_options(flask.request.args)).info()
         return flask.Response(
             json.dumps(info, indent=4),
             mimetype="application/json"
