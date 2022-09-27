@@ -64,7 +64,7 @@ def handle_default_exception(e):
         return response
     else:
         # Generic HTML error page
-        return flask.render_template('error.html', e=e, category=type(e)), status        
+        return flask.render_template('error.html', e=e, category=type(e)), status
 
 # Register the general error handler UNLESS we're in debug mode
 if not app.config.get('DEBUG'):
@@ -135,7 +135,7 @@ def handle_password_required_exception(e):
 
 # register the password required handler
 app.register_error_handler(werkzeug.exceptions.Unauthorized, handle_password_required_exception)
-    
+
 
 def handle_ssl_certificate_error(e):
     """ Error handler: SSL certificate error
@@ -238,7 +238,7 @@ def data_source(recipe_id=None):
 @app.route("/data/<recipe_id>/tagger")
 def data_tagger(recipe_id=None):
     """ Flask controller: add HXL tags to an untagged dataset
-    The template will render differently depending on whether the user has selected the 
+    The template will render differently depending on whether the user has selected the
     last row of text headers yet (&header_row), so this is actually two different workflow
     steps.
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
@@ -259,11 +259,11 @@ def data_tagger(recipe_id=None):
     header_row = recipe.args.get('header-row')
     if header_row is not None:
         header_row = int(header_row)
-        
+
     # Set up a 25-row raw-data preview, using make_input from libhxl-python
     preview = []
     i = 0
-    for row in hxl.input.make_input(recipe.url, util.make_input_options(recipe.args)):
+    for row in util.make_input(recipe.url, util.make_input_options(recipe.args)):
         # Stop if we get to 25 rows
         if i >= 25:
             break
@@ -300,7 +300,7 @@ def data_edit(recipe_id=None):
         flask.flash('Please choose a data source first.')
         logger.info("No URL supplied for /data/edit; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
-    
+
     # show only a short preview
     max_rows = recipe.args.get('max-rows')
     max_rows = min(int(max_rows), 25) if max_rows is not None else 25
@@ -458,7 +458,7 @@ def data_validate(recipe_id=None, format='html'):
 def show_advanced(recipe_id=None):
     """ Flask controller: developer page for entering a JSON recipe directly
     This page isn't linked from the HXML Proxy validation, but it's a convenient
-    place to experiment with creating JSON-encoded recipes, as described at 
+    place to experiment with creating JSON-encoded recipes, as described at
     https://github.com/HXLStandard/hxl-proxy/wiki/JSON-recipes
     """
     recipe = recipes.Recipe(recipe_id)
@@ -495,7 +495,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     list of lists, or a JSON list of objects, based on the URL, Note that
     the URL patterns above allow for custom-named download files
     as well as generic downloads, hence the wide variety of patterns.
-    
+
     This controller MUST come after all the other /data controllers, or
     else Flask will get confused.
 
@@ -589,7 +589,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
         return response
 
     # end of internal function
-    
+
     # Get the result and update the cache manually if we're skipping caching.
     result = get_result()
 
@@ -612,10 +612,10 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 @app.route("/actions/login", methods=['POST'])
 def do_data_login():
     """ Flask controller: log the user in for a specific dataset.
-    Note that this is NOT a user login; it's a dataset login. That 
+    Note that this is NOT a user login; it's a dataset login. That
     means that the user will have to re-login if they start working
     on a dataset that has a different password.
-    
+
     POST parameters:
 
     from - the origin URL (return there after login)
@@ -643,7 +643,7 @@ def do_data_save():
     to edit it.
 
     Post parameters:
-    
+
     recipe_id - the short hash identifying the recipe (blank to create a new one)
     name - the recipe' title (optional)
     description - the recipe's long description (optional)
@@ -673,7 +673,7 @@ def do_data_save():
 
     # We will have a recipe_id if we're updating an existing pipeline
     recipe_id = flask.request.form.get('recipe_id')
-    flask.g.recipe_id = recipe_id # for error handling    
+    flask.g.recipe_id = recipe_id # for error handling
     recipe = recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
 
     destination_facet = flask.request.form.get('dest', 'data_view')
@@ -687,7 +687,7 @@ def do_data_save():
         recipe.description = util.forbid_markup(flask.request.form['description'], 'description')
     else:
         recipe.description = ''
-        
+
     if 'cloneable' in flask.request.form and not flask.request.form.get('authorization_token') and flask.request.form['cloneable'] == "on":
         recipe.cloneable = True
     else:
@@ -1081,7 +1081,7 @@ def do_admin_delete_recipe():
 
 @app.route("/api/from-spec.<format>")
 def from_spec(format="json"):
-    """ Use a JSON HXL spec 
+    """ Use a JSON HXL spec
     Not cached
     """
 
@@ -1164,8 +1164,8 @@ def from_spec(format="json"):
         response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
 
     return response
-        
-        
+
+
 
 # needs tests
 @app.route("/api/hxl-test.<format>")
@@ -1293,7 +1293,7 @@ def data_preview (format="json"):
     # allow overriding the format in a parameter (useful for forms)
     if "format" in flask.request.args and format != "html":
         format = flask.request.args.get("format")
-    
+
     flask.g.output_format = format # for error reporting
 
     # params
@@ -1313,10 +1313,10 @@ def data_preview (format="json"):
 
     # make input
     if util.skip_cache_p():
-        input = hxl.input.make_input(url, util.make_input_options(flask.request.args))
+        input = util.make_input(url, util.make_input_options(flask.request.args))
     else:
         with caching.input():
-            input = hxl.input.make_input(url, util.make_input_options(flask.request.args))
+            input = util.make_input(url, util.make_input_options(flask.request.args))
 
     # Generate result
     if format == 'json':
@@ -1388,15 +1388,15 @@ def data_preview_sheets(format="json"):
     _output = []
 
     args = dict(flask.request.args)
-    
+
     try:
         for sheet in range(0, SHEET_MAX_NO):
             args['sheet'] = sheet
             if util.skip_cache_p():
-                input = hxl.input.make_input(url, util.make_input_options(args))
+                input = util.make_input(url, util.make_input_options(args))
             else:
                 with caching.input():
-                    input = hxl.input.make_input(url, util.make_input_options(args))
+                    input = util.make_input(url, util.make_input_options(args))
             if isinstance(input, hxl.input.CSVInput):
                 _output.append("Default")
                 break
@@ -1500,7 +1500,7 @@ def make_info():
 
     # Open the dataset (not necessarily hxlated)
     try:
-        info = hxl.make_input(url, util.make_input_options(flask.request.args)).info()
+        info = util.make_input(url, util.make_input_options(flask.request.args)).info()
         return flask.Response(
             json.dumps(info, indent=4),
             mimetype="application/json"

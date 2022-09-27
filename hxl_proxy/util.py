@@ -4,16 +4,19 @@ Started 2015-02-18 by David Megginson
 License: Public Domain
 """
 
+from ast import Try
 import hxl_proxy
 
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
+from hxl_proxy import caching
 
+from urllib.parse import urlparse
 
 # Logger for this module
 logger = logging.getLogger(__name__)
 
 
-
+
 ########################################################################
 # Utility functions for caching
 ########################################################################
@@ -28,7 +31,7 @@ def make_cache_key (path = None, args_in=None):
     """
     CACHE_KEY_EXCLUDES = ['force']
 
-    # Fill in default 
+    # Fill in default
     if path is None:
         path = flask.request.path
     if args_in is None:
@@ -59,8 +62,47 @@ def skip_cache_p ():
 # Input options
 ########################################################################
 
+def make_input (raw_source, input_options=None):
+    """ Wrapper for libhxl make_input call.
+    We want to make sure all exception are being caught and no trace is being made.
+    We also want to check the external destination against our allowed domain list
+    @returns: False if some error occured, the input object otherwise
+    """
+    if not is_allowed(raw_source):
+        err = '{} parent domain is not in the allowed list.'.format(raw_source)
+        logger.error(err)
+        raise IOError(err)
+    try:
+        input = hxl.input.make_input(raw_source, input_options)
+        return input
+    except Exception as e:
+        logger.error(str(e))
+        raise e
+
+def is_allowed(raw_source):
+    """ Match the external destination url against our allowed domain list.
+    @returns: True if the url has an allowed parent domain or if the url matches an allowed hostname
+              False otherwise
+    """
+    hostnames = hxl_proxy.app.config.get('ALLOWED_DOMAINS_LIST', [])
+
+    # if allowed list is empty just wave in for eveybody. test mode eh?
+    if len(hostnames) == 0:
+        return True
+
+    url=urlparse(raw_source)
+    # it is a hostname match?
+    if url.netloc in hostnames:
+        return True
+    # maybe an allowed domain child?
+    domains = tuple(['.{}'.format(d) for d in hostnames])
+    if url.netloc.endswith(domains):
+        return True
+    # sorry, call us
+    return False
+
 def make_input_options (args):
-    """ Create an InputOptions object from the arguments provided 
+    """ Create an InputOptions object from the arguments provided
     Ensure that allow_local is always false. Allow both "-" and "_" between words.
 
     """
@@ -165,7 +207,7 @@ def clean_tagger_mappings(headers, recipe):
             headers_seen.add(header)
 
     return mappings
-            
+
 
 def make_file_hash(stream):
     """Calculate a hash in chunks from a stream.
@@ -240,7 +282,7 @@ def no_none(s):
     @returns: a string version of the value, or "" if None
     """
     return str(s) if s is not None else ''
-    
+
 def stream_template(template_name, **context):
     """From the flask docs - stream a long template result."""
     hxl_proxy.app.update_template_context(context)

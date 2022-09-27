@@ -19,7 +19,7 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     The *_hash arguments exist only to assist with caching.
     @returns: a validation report, suitable for returning as JSON.
     """
-    
+
     # test for opening error conditions
     if (url is not None and content is not None):
         raise werkzeug.exceptions.BadRequest("Both 'url' and 'content' specified")
@@ -30,6 +30,7 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
 
     # set up the main data
     if content:
+        # TODO: stop using libhxl's make_input directly
         source = hxl.data(hxl.input.make_input(content, hxl_proxy.util.make_input_options(args)))
     else:
         source = hxl.data(url, hxl_proxy.util.make_input_options(args))

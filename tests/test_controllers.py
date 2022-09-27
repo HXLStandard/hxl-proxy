@@ -153,7 +153,6 @@ class TestTaggerPage(AbstractControllerTest):
         response = self.get(self.path, {
             'url': 'http://example.org/private/data.csv'
         }, 302)
-        
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
@@ -178,7 +177,7 @@ class TestTaggerPage(AbstractControllerTest):
         assert b'value="organisation"' in response.data
         assert b'value="sector"' in response.data
         assert b'value="country"' in response.data
-        
+
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_tagger_output(self):
         """Test that the page accepts auto-tagged output."""
@@ -211,7 +210,6 @@ class TestEditPage(AbstractControllerTest):
         response = self.get("/data/edit", {
             'url': 'http://example.org/private/data.csv'
         }, 302)
-        
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
@@ -256,7 +254,7 @@ class TestDataPage(AbstractControllerTest):
         response = self.get("/data", {
             'url': 'http://example.org/private/data.csv'
         }, 302)
-        
+
     def test_empty_url_redirect(self):
         response = self.get('/data', status=303)
         assert response.location.endswith('/data/source')
@@ -268,7 +266,7 @@ class TestDataPage(AbstractControllerTest):
         response = self.get('/data?url=https://localhost/foo&force=on', status=403)
 
     def test_localdomain_blocked(self):
-        """Opening a host by IP address is not allowed"""
+        """Opening a localdomain host is not allowed"""
         response = self.get('/data?url=https://foo.localdomain/foo&force=on', status=403)
 
     def test_local_file_blocked(self):
@@ -305,7 +303,6 @@ class TestValidationPage(AbstractControllerTest):
         response = self.get("/data/validate", {
             'url': 'http://example.org/private/data.csv'
         }, 302)
-        
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
@@ -430,7 +427,7 @@ class TestInfo(AbstractControllerTest):
             "url": self.URL,
         })
         return json.loads(response.get_data(True))
-        
+
 
 class TestPcodes(AbstractControllerTest):
 
@@ -445,7 +442,7 @@ class TestPcodes(AbstractControllerTest):
         #self.assertEqual('application/json', response.headers.get('content-type'))
         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
-    
+
 class TestHash(AbstractControllerTest):
 
     path = '/api/hash'
@@ -465,7 +462,7 @@ class TestHash(AbstractControllerTest):
         self.assertTrue(report['headers_only'])
         self.assertTrue('headers' in report)
         self.assertTrue('hashtags' in report)
-                            
+
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_data_hash(self):
         response = self.get(self.path, {
@@ -491,7 +488,7 @@ class TestHash(AbstractControllerTest):
         })
         report_data = json.loads(response_data.get_data(True))
         self.assertNotEquals(report_headers['hash'], report_data['hash'])
-    
+
 
 class TestDataPreview(AbstractControllerTest):
 
