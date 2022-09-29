@@ -61,6 +61,7 @@ merge-main: merge-test
 
 # do a cold install in a temporary virtual environment and run unit tests
 test-install:
+	pip3 cache remove '*'
 	rm -rf venv-test && python3 -m venv venv-test && . venv-test/bin/activate && python setup.py install && python setup.py test
 	rm -rf venv-test # make sure we clean up
 

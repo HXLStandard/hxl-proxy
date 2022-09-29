@@ -27,14 +27,17 @@ setuptools.setup(
     zip_safe = False,
     install_requires=[
         'requests>=2.27',
-        #'libhxl==4.26',
-        'libhxl @ git+https://github.com/HXLStandard/@dev#egg=libhxl',
+        #'libhxl==4.27',
+        'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev',
         'ckanapi>=3.5',
         'flask==2.1.2',
         'flask-caching',
         'requests_cache',
         'mysql-connector-python==8.0.29',
         'redis',
+    ],
+    dependency_links=[
+        "git+https://github.com/HXLStandard/libhxl-python@dev#egg=libhxl",
     ],
     test_suite = "tests",
     tests_require = ['mock']
