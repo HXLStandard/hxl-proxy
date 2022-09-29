@@ -246,7 +246,7 @@ def check_verify_ssl(args):
 def check_markup(s):
     """ Check if text contains markup or URLs
     """
-    if re.search("(<[a-zA-Z]|>|href|https?:|\.com)", s):
+    if re.search("(<[a-zA-Z]|>|href|https?:|\.com|\[url=)", s):
         return True
     else:
         return False
