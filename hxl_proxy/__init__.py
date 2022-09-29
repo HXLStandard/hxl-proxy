@@ -17,7 +17,7 @@ See https://www.python.org/dev/peps/pep-0396/
 #
 # Continue with other imports
 #
-import flask, flask_caching, os, requests_cache, werkzeug.datastructures
+import flask, flask_caching, json, os, requests_cache, werkzeug.datastructures
 from . import reverse_proxied
 
 
@@ -48,21 +48,30 @@ app.jinja_env.lstrip_blocks = True
 #
 import logging, logging.config
 
-logging.config.dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(name)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': app.config.get('LOGGING_LEVEL', 'ERROR'),
-        'handlers': ['wsgi']
+# Allow all logging at root level, but filter at WSGI level
+# That way, other loggers can choose their own level
+logging.config.dictConfig(
+    {
+        'version': 1,
+        'formatters': {
+            'default': {
+                'format': '[%(asctime)s] %(levelname)s in %(name)s: %(message)s',
+            },
+        },
+        'handlers': {
+            'wsgi': {
+                'class': 'logging.StreamHandler',
+                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'formatter': 'default',
+                'level': app.config.get('LOGGING_LEVEL', 'ERROR'),
+            },
+        },
+        'root': {
+            'handlers': ['wsgi'],
+            'level': 'DEBUG', 
+        }
     }
-})
+)
 
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
