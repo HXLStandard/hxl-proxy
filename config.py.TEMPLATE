@@ -24,6 +24,12 @@ DEBUG = bool(util.strtobool(os.getenv('DEBUG', 'True')))
 LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 
 #
+# Special logging level for access to remote URLs
+# (These are logged under "hxl.REMOTE_ACCESS" rather than a module name)
+#
+REMOTE_ACCESS_LOGGING_LEVEL = os.getenv('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO')
+
+#
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #

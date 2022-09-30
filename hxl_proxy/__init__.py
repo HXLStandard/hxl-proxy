@@ -8,7 +8,7 @@ Documentation: http://hxlstandard.org
 
 """
 
-__version__="1.26.1"
+__version__="1.27"
 """Module version number
 See https://www.python.org/dev/peps/pep-0396/
 
@@ -48,8 +48,20 @@ app.jinja_env.lstrip_blocks = True
 #
 import logging, logging.config
 
+
+
 # Allow all logging at root level, but filter at WSGI level
 # That way, other loggers can choose their own level
+# of the logging level
+
+class ExcludeFilter(logging.Filter):
+
+    def __init__ (self, excludes):
+        self.excludes = excludes
+
+    def filter (self, record):
+        return not (record.name in self.excludes)
+
 logging.config.dictConfig(
     {
         'version': 1,
@@ -57,17 +69,42 @@ logging.config.dictConfig(
             'default': {
                 'format': '[%(asctime)s] %(levelname)s in %(name)s: %(message)s',
             },
+            # This is where we can implement JSON formatting later
         },
         'handlers': {
+            # default handler for everything but "hxl.REMOTE_ACCESS"
             'wsgi': {
                 'class': 'logging.StreamHandler',
                 'stream': 'ext://flask.logging.wsgi_errors_stream',
                 'formatter': 'default',
                 'level': app.config.get('LOGGING_LEVEL', 'ERROR'),
+                'filters': ['skip_remote_access'],
+            },
+            # special handler for "hxl.REMOTE_ACCESS"
+            'remote_access': {
+                'class': 'logging.StreamHandler',
+                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'formatter': 'default',
+                'level': app.config.get('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO'),
+                'filters': ['remote_access'],
+            },
+        },
+        'filters': {
+            # Filter to show everything but "hxl.REMOTE_ACCESS"
+            'skip_remote_access': {
+                '()': ExcludeFilter,
+                'excludes': ['hxl.REMOTE_ACCESS'],
+            },
+            # Filter to show only messages for "hxl.REMOTE_ACCESS"
+            'remote_access': {
+                '()': logging.Filter,
+                'name': 'hxl.REMOTE_ACCESS',
             },
         },
         'root': {
-            'handlers': ['wsgi'],
+            # Handlers enabled at the start (app will add at least one more)
+            'handlers': ['wsgi', 'remote_access',],
+            # Default root logging level (overridden by handlers)
             'level': 'DEBUG', 
         }
     }
