@@ -1,4 +1,4 @@
-Release 1.27
+2022-10-03 Release 1.27
 	- add REMOTE_ACCESS_LOGGING_LEVEL to filter "hxl.REMOTE_ACCESS" separately to show remote file access (currently,
 	  all messages will be at the INFO level)
 	- show the same error message for a non-existant remote data file, or for a URL that contains HTML markup; prevents
