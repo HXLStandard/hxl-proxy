@@ -119,7 +119,11 @@ class db:
         @return: a SQLite3 cursor object.
         """
         cursor = db.cursor()
-        cursor.executescript(sql_statements)
+        if db.type == 'mysql':
+            cursor.execute(sql_statements, multi=True)
+        else:
+            cursor.executescript(sql_statements)
+
         if commit:
             db.commit()
         return cursor
