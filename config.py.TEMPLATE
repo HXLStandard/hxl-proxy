@@ -30,6 +30,12 @@ LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 REMOTE_ACCESS_LOGGING_LEVEL = os.getenv('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO')
 
 #
+# Root logging level
+# This is the minimum logging level that will be allowed
+#
+ROOT_LOGGING_LEVEL = os.getenv('ROOT_LOGGING_LEVEL', 'INFO')
+
+#
 # Change this to a key known only to your server
 # (Used to secure cookies)
 #
