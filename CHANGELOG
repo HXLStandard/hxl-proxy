@@ -1,3 +1,8 @@
+2022-10-07 Release 1.27.1
+	- interim release to address performance issues
+	- change Docker config to use threads with nginx
+	- make root logging level configurable (and default to INFO instead of DEBUG)
+
 2022-10-03 Release 1.27
 	- add REMOTE_ACCESS_LOGGING_LEVEL to filter "hxl.REMOTE_ACCESS" separately to show remote file access (currently,
 	  all messages will be at the INFO level)

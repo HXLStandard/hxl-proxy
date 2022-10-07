@@ -105,8 +105,8 @@ logging.config.dictConfig(
             # Handlers enabled at the start (app will add at least one more)
             'handlers': ['wsgi', 'remote_access',],
             # Default root logging level (overridden by handlers)
-            'level': 'DEBUG', 
-        }
+            'level': app.config.get('ROOT_LOGGING_LEVEL', 'INFO'),
+        },
     }
 )
 
