@@ -20,7 +20,7 @@ services:
     build: ./
     # ports:
     #   - "127.0.0.1:5000:5000"
-    # entrypoint: "tail -f /dev/null"
+    entrypoint: "tail -f /dev/null"
     working_dir: /srv/www
     environment:
       HXL_PROXY_CONFIG: /srv/config/config.py
