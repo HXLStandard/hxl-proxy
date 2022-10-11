@@ -21,7 +21,7 @@
 	"workspaceFolder": "/srv/www",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": ["127.0.0.1:5001:5000"],
+	// "forwardPorts": [],
 
 	// Uncomment the next line if you want start specific services in your Docker Compose config.
 	// "runServices": [ "mysql" ],
@@ -30,28 +30,44 @@
 	// "shutdownAction": "none",
 
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
-	// "postCreateCommand": "apk add \
-	// 		git \
-	// 		sqlite \
-	// 		libffi-dev \
-	// 		unit \
-	// 		unit-python3 && \
-	// 	mkdir -p \
-	// 		/srv/db \
-	// 		/srv/cache \
-	// 		/srv/config \
-	// 		/srv/output \
-	// 		/var/log/proxy && \
-	// 	pip3 --no-cache-dir install --upgrade \
-	// 		pip \
-	// 		wheel && \
-	// 	pip3 install --upgrade -r requirements.txt && \
-	// 	apk del \
-	// 		git \
-	// 		libffi-dev && \
-	// 	rm -rf /root/.cache && \
-	// 	rm -rf /var/cache/apk/*",
+	"postCreateCommand": "pip install autopep8 black bandit flake8 mypy pycodestyle pydocstyle pylint yapf",
 
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/sh"
+					}
+				},
+				"python.defaultInterpreterPath": "/usr/bin/python3",
+				"python.languageServer": "Default",
+				"python.linting.enabled": true,
+				"python.linting.pylintEnabled": true,
+				"python.formatting.autopep8Path": "/usr/bin/autopep8",
+				"python.formatting.blackPath": "/usr/bin/black",
+				"python.linting.banditPath": "/usr/bin/bandit",
+				"python.linting.flake8Path": "/usr/bin/flake8",
+				"python.linting.mypyPath": "/usr/bin/mypy",
+				"python.linting.pycodestylePath": "/usr/bin/pycodestyle",
+				"python.linting.pydocstylePath": "/usr/bin/pydocstyle",
+				"python.linting.pylintPath": "/usr/bin/pylint",
+				"python.formatting.yapfPath": "/usr/bin/yapf"
+			},
+
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"eamodio.gitlens"
+			]
+		}
+	}
+
 }
