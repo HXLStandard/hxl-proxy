@@ -1,0 +1,33 @@
+FROM public.ecr.aws/unocha/python:3.9-base
+
+WORKDIR /srv/www
+
+COPY . .
+
+RUN apk add \
+        git \
+        gpg \
+        gpg-agent \
+        sqlite \
+        libffi-dev \
+        unit \
+        unit-python3 && \
+    mkdir -p \
+        /srv/db \
+        /srv/cache \
+        /srv/config \
+        /srv/output \
+        /var/log/proxy && \
+    mv config.py.TEMPLATE /srv/config/config.py && \
+    cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
+    cp docker_files/app.py . && \
+    pip3 --no-cache-dir install --upgrade \
+        pip \
+        wheel && \
+    pip3 install --upgrade -r requirements.txt && \
+    apk del \
+        libffi-dev && \
+    rm -rf /root/.cache && \
+    rm -rf /var/cache/apk/*
+
+EXPOSE 5000
