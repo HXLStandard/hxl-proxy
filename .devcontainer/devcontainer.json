@@ -30,7 +30,7 @@
 	// "shutdownAction": "none",
 
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
-	"postCreateCommand": "pip install autopep8 black bandit flake8 mypy pycodestyle pydocstyle pylint yapf",
+	"postCreateCommand": "apk add --no-cache mysql-client && pip install autopep8 pylint && mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_DB < hxl_proxy/schema-mysql.sql", // black bandit flake8 mypy pycodestyle pydocstyle pylint yapf",
 
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
