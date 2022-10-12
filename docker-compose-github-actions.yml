@@ -6,9 +6,9 @@ services:
     hostname: mysql
     container_name: hxl-proxy-mysql
     environment:
-      MYSQL_DB: hxl_proxy
-      MYSQL_USER: hxl_proxy
-      MYSQL_PASS: hxl_proxy
+      MYSQL_DB: hxl
+      MYSQL_USER: hxl
+      MYSQL_PASS: hxl
 
   redis:
     image: public.ecr.aws/unocha/redis:5
@@ -18,8 +18,8 @@ services:
   proxy:
     container_name: hxl-proxy
     build: ./
-    ports:
-      - "127.0.0.1:5000:5000"
+    # ports:
+    #   - "127.0.0.1:5000:5000"
     entrypoint: "tail -f /dev/null"
     working_dir: /srv/www
     environment:
@@ -27,9 +27,9 @@ services:
       DB_SCHEMA_FILE: schema-mysql.sql
       DB_TYPE: mysql
       MYSQL_HOST: mysql
-      MYSQL_DB: hxl_proxy
+      MYSQL_DB: hxl
       DB_PORT: 3306
-      MYSQL_USER: hxl_proxy
-      MYSQL_PASS: hxl_proxy
+      MYSQL_USER: hxl
+      MYSQL_PASS: hxl
       CACHE_TYPE: redis
       CACHE_REDIS_URL: redis://redis:6379/1
