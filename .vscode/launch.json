@@ -4,8 +4,13 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-
+        {
+            "name": "Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "unittest",
+            "justMyCode": true
+        },
         {
             "name": "Python: Flask",
             "type": "python",
@@ -18,8 +23,10 @@
             },
             "args": [
                 "run",
-                "--host","0.0.0.0",
-                "--port","5000",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "5000",
                 "--no-debugger",
                 "--no-reload"
             ],
