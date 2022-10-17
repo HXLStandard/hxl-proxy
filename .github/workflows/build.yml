@@ -7,6 +7,8 @@ on:
       - prod
       - test
       - dev
+      - hdx-*
+      - hxl-*
   release:
     types: [published]
 
