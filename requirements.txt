@@ -8,3 +8,4 @@ flask-caching
 requests_cache
 mysql-connector-python==8.0.29
 redis
+structlog==22.1.0
