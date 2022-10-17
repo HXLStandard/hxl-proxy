@@ -15,6 +15,24 @@ from urllib.parse import urlparse
 # Logger for this module
 logger = logging.getLogger(__name__)
 
+from structlog import contextvars
+from functools import wraps
+import uuid
+
+def structlogged(f):
+    """ decorator to add essential fields on json logs
+    """
+    @wraps(f)
+    def decorated_structlog_binder(*args, **kwargs):
+        contextvars.clear_contextvars()
+        contextvars.bind_contextvars(
+            user_agent=flask.request.headers.get('User-Agent', "UNKNOWN"),
+            peer_ip=flask.request.headers.get('X-Real-IP', flask.request.remote_addr),
+            request=flask.request.url,
+            request_id=str(uuid.uuid4()),
+        )
+        return f(*args, **kwargs)
+    return decorated_structlog_binder
 
 
 ########################################################################
@@ -60,7 +78,7 @@ def skip_cache_p ():
     The HTTP &force parameter requests cache skipping.  Note that this
     function will not detect the &force parameter inside a saved
     recipe; for now, it has to be specified as a GET param.
-    
+
     Returns:
         bool: True if we don't want to cache
 
@@ -97,7 +115,7 @@ def hxl_data (raw_source, input_options=None):
 
 
 def hxl_make_input (raw_source, input_options=None):
-    """ Wrapper for hxl.make_input() to implement a domain-based allow list.  
+    """ Wrapper for hxl.make_input() to implement a domain-based allow list.
 
     If the raw_source is a string (i.e. URL), check that the base
     domain is in the allow list. If the allow list is empty, assume
@@ -140,7 +158,7 @@ def check_allowed_domain (raw_source):
             raw_source
         )
 
-    
+
 def is_allowed_domain (raw_source):
     """ Check if raw_source is a URL and its base domain is in the allow list.
 
