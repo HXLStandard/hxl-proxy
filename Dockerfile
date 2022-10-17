@@ -1,4 +1,4 @@
-FROM public.ecr.aws/unocha/python3-base-s6:3.9
+FROM public.ecr.aws/unocha/python:3.9
 
 WORKDIR /srv/www
 

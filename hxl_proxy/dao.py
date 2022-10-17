@@ -44,7 +44,7 @@ class db:
 
     @staticmethod
     def connect():
-        """Get a database connection 
+        """Get a database connection
 
         Will reuse the same connection throughout a request
         context. Uses the C{DB_FILE} Flask config option for the
@@ -95,7 +95,7 @@ class db:
     @staticmethod
     def commit():
         db.connect().commit()
-        
+
     @staticmethod
     def execute_statement(statement, params=(), commit=False):
         """Execute a single SQL statement, and optionally commit.
@@ -120,7 +120,8 @@ class db:
         """
         cursor = db.cursor()
         if db.type == 'mysql':
-            cursor.execute(sql_statements, multi=True)
+            for _ in cursor.execute(sql_statements, multi=True):
+                pass
         else:
             cursor.executescript(sql_statements)
 
