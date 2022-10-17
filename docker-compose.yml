@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
   proxy:
-    image: public.ecr.aws/unocha/python3-base-s6:3.8
+    image: public.ecr.aws/unocha/python:3.9
     volumes:
       - "./:/srv/www"
     ports:
