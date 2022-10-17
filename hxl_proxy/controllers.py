@@ -13,11 +13,15 @@ from hxl.input import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, uuid, werkzeug, csv, urllib
 
+from functools import wraps
 
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
+
+from structlog import contextvars, get_logger, wrap_logger
+input_logger = wrap_logger(logging.getLogger('hxl.REMOTE_ACCESS'))
 
 SHEET_MAX_NO = 20
 
@@ -154,6 +158,18 @@ def handle_ssl_certificate_error(e):
 # register the SSL certificate verification handler
 app.register_error_handler(requests.exceptions.SSLError, handle_ssl_certificate_error)
 
+def structlogged(f):
+    @wraps(f)
+    def decorated_structog_binder(*args, **kwargs):
+        contextvars.clear_contextvars()
+        contextvars.bind_contextvars(
+            user_agent=flask.request.headers.get('User-Agent', "UNKNOWN"),
+            peer_ip=flask.request.remote_addr,
+            url=flask.request.url,
+            request_id=str(uuid.uuid4()),
+        )
+        return f(*args, **kwargs)
+    return decorated_structog_binder
 
 
 ########################################################################
@@ -488,6 +504,7 @@ def data_logs(recipe_id=None):
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
+@structlogged
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """ Flask controller: render a transformed dataset
     This is the controller that requests will hit most of the time.
@@ -515,6 +532,8 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     @param flavour: the JSON flavour, if supplied (will be "objects")
     """
     flask.g.recipe_id = recipe_id # for error handling
+
+    input_logger.info(f'Trying to to make shit happen', whom="world", more_than_a_string=[9, 1, 2, 3])
 
     # Use an internal function to generate the output.
     # That simplifies the control flow, so that we can easily

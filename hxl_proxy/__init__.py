@@ -46,7 +46,7 @@ app.jinja_env.lstrip_blocks = True
 #
 # Set up logging before any other imports, to get correct format in server logs
 #
-import logging, logging.config
+import logging, logging.config, logging.handlers
 
 
 
@@ -82,8 +82,8 @@ logging.config.dictConfig(
             },
             # special handler for "hxl.REMOTE_ACCESS"
             'remote_access': {
-                'class': 'logging.StreamHandler',
-                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'class': 'logging.handlers.WatchedFileHandler',
+                'filename': "/var/log/hxl.log",
                 'formatter': 'default',
                 'level': app.config.get('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO'),
                 'filters': ['remote_access'],
@@ -113,6 +113,24 @@ logging.config.dictConfig(
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
 
+import structlog
+logger = structlog.wrap_logger(logging.getLogger('hxl.REMOTE_ACCESS'))
+
+structlog_processors = [
+    structlog.contextvars.merge_contextvars,
+    structlog.processors.add_log_level,
+    structlog.processors.StackInfoRenderer(),
+    structlog.dev.set_exc_info,
+    structlog.processors.TimeStamper(fmt="iso"),
+    structlog.processors.dict_tracebacks,
+]
+
+if app.config.get('ENV_TYPE', 'PROD') != 'PROD':
+    structlog_processors.append(structlog.dev.ConsoleRenderer())
+else:
+    structlog_processors.append(structlog.processors.JSONRenderer())
+
+structlog.configure(structlog_processors)
 
 #
 # Set up output cache
