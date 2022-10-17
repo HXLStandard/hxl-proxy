@@ -70,6 +70,9 @@ logging.config.dictConfig(
                 'format': '[%(asctime)s] %(levelname)s in %(name)s: %(message)s',
             },
             # This is where we can implement JSON formatting later
+            'plain': {
+                'format': '%(message)s',
+            },
         },
         'handlers': {
             # default handler for everything but "hxl.REMOTE_ACCESS"
@@ -83,8 +86,8 @@ logging.config.dictConfig(
             # special handler for "hxl.REMOTE_ACCESS"
             'remote_access': {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': "/var/log/hxl.log",
-                'formatter': 'default',
+                'filename': "/var/log/proxy/hxl.log",
+                'formatter': 'plain',
                 'level': app.config.get('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO'),
                 'filters': ['remote_access'],
             },

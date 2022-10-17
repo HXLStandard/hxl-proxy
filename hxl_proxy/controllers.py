@@ -165,7 +165,7 @@ def structlogged(f):
         contextvars.bind_contextvars(
             user_agent=flask.request.headers.get('User-Agent', "UNKNOWN"),
             peer_ip=flask.request.remote_addr,
-            url=flask.request.url,
+            request=flask.request.url,
             request_id=str(uuid.uuid4()),
         )
         return f(*args, **kwargs)
