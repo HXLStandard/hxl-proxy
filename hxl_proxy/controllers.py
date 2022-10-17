@@ -527,8 +527,6 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """
     flask.g.recipe_id = recipe_id # for error handling
 
-    input_logger.info(f'Trying to to make shit happen', whom="world", more_than_a_string=[9, 1, 2, 3])
-
     # Use an internal function to generate the output.
     # That simplifies the control flow, so that we can easily
     # capture the output regardless of chosen format, and
