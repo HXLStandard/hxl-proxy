@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 from structlog import contextvars
 from functools import wraps
 import uuid
+from hxl.util import logup
 
 def structlogged(f):
     """ decorator to add essential fields on json logs
@@ -149,6 +150,7 @@ def check_allowed_domain (raw_source):
     """
 
     if isinstance(raw_source, str) and not is_allowed_domain(raw_source):
+        logup("Domain not in allow list", {'raw_source': raw_source}, "error")
         logger.error("Domain not in allow list: %s", raw_source)
         raise exceptions.DomainNotAllowedError(
             "The HXL Proxy does not allow data from this domain.\n" +
