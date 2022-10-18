@@ -86,7 +86,7 @@ logging.config.dictConfig(
             # special handler for "hxl.REMOTE_ACCESS"
             'remote_access': {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': "/var/log/proxy/hxl.log",
+                'filename': app.config.get('REMOTE_ACCESS_LOG_FILE', "/var/log/proxy/hxl.log"),
                 'formatter': 'plain',
                 'level': app.config.get('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO'),
                 'filters': ['remote_access'],
