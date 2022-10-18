@@ -29,6 +29,8 @@ LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 #
 REMOTE_ACCESS_LOGGING_LEVEL = os.getenv('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO')
 
+REMOTE_ACCESS_LOG_FILE = os.getenv('REMOTE_ACCESS_LOG_FILE', "/var/log/proxy/hxl.log")
+
 #
 # Root logging level
 # This is the minimum logging level that will be allowed
