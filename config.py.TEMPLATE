@@ -29,11 +29,19 @@ LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 #
 REMOTE_ACCESS_LOGGING_LEVEL = os.getenv('REMOTE_ACCESS_LOGGING_LEVEL', 'INFO')
 
+REMOTE_ACCESS_LOG_FILE = os.getenv('REMOTE_ACCESS_LOG_FILE', "/var/log/proxy/hxl.log")
+
 #
 # Root logging level
 # This is the minimum logging level that will be allowed
 #
 ROOT_LOGGING_LEVEL = os.getenv('ROOT_LOGGING_LEVEL', 'INFO')
+
+#
+# Environment type
+# If we are developing, we'd rather not see json logs.
+#
+ENV_TYPE = os.getenv('ENV_TYPE', 'PROD')
 
 #
 # Change this to a key known only to your server

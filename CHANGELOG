@@ -1,3 +1,6 @@
+Release 1.28
+	- add support for structured logs (e.g. JSON)
+
 2022-10-07 Release 1.27.1
 	- interim release to address performance issues
 	- change Docker config to use threads with nginx

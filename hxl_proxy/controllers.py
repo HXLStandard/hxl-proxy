@@ -15,9 +15,11 @@ from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters
 
 import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
 
-
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
+
+from structlog import contextvars, get_logger, wrap_logger
+input_logger = wrap_logger(logging.getLogger('hxl.REMOTE_ACCESS'))
 
 SHEET_MAX_NO = 20
 
@@ -208,6 +210,7 @@ def about():
 
 # has tests
 @app.route("/data/<recipe_id>/login")
+@util.structlogged
 def data_login(recipe_id):
     """ Flask controller: log in to work on a saved recipe
     The user will end up here only if they tried to alter a saved
@@ -225,6 +228,7 @@ def data_login(recipe_id):
 # has tests
 @app.route("/data/source")
 @app.route("/data/<recipe_id>/source")
+@util.structlogged
 def data_source(recipe_id=None):
     """ Flask controller: choose a new source URL
     @param recipe_id: the hash for a saved recipe (or None if working from the command line)
@@ -236,6 +240,7 @@ def data_source(recipe_id=None):
 # has tests
 @app.route("/data/tagger")
 @app.route("/data/<recipe_id>/tagger")
+@util.structlogged
 def data_tagger(recipe_id=None):
     """ Flask controller: add HXL tags to an untagged dataset
     The template will render differently depending on whether the user has selected the
@@ -285,6 +290,7 @@ def data_tagger(recipe_id=None):
 # has tests
 @app.route("/data/edit")
 @app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
+@util.structlogged
 def data_edit(recipe_id=None):
     """Flask controller: create or edit a filter pipeline.
     Output for this page is never cached, but input may be.
@@ -350,6 +356,7 @@ def data_edit(recipe_id=None):
 # has tests
 @app.route("/data/save")
 @app.route("/data/<recipe_id>/save")
+@util.structlogged
 def data_save(recipe_id=None):
     """ Flask controller: create or update a saved dataset (with a short URL)
     The user will get redirected here automatically if they attempt to open a private
@@ -381,6 +388,7 @@ def data_save(recipe_id=None):
 @app.route("/data/validate.<format>")
 @app.route("/data/<recipe_id>/validate")
 @app.route("/data/<recipe_id>/validate.<format>")
+@util.structlogged
 def data_validate(recipe_id=None, format='html'):
     """ Flask controller: validate a HXL dataset and show the results
     Output options include a web-based HTML dashboard or JSON.
@@ -455,6 +463,7 @@ def data_validate(recipe_id=None, format='html'):
 # has tests
 @app.route("/data/advanced")
 @app.route("/data/<recipe_id>/advanced")
+@util.structlogged
 def show_advanced(recipe_id=None):
     """ Flask controller: developer page for entering a JSON recipe directly
     This page isn't linked from the HXML Proxy validation, but it's a convenient
@@ -468,6 +477,7 @@ def show_advanced(recipe_id=None):
 # no tests
 @app.route("/data/logs")
 @app.route("/data/<recipe_id>/logs")
+@util.structlogged
 def data_logs(recipe_id=None):
     """ Flask controller: show logs for a recipe
     """
@@ -488,6 +498,7 @@ def data_logs(recipe_id=None):
 @app.route("/data/<recipe_id>/download/<stub>.<format>")
 @app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
+@util.structlogged
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):
     """ Flask controller: render a transformed dataset
     This is the controller that requests will hit most of the time.
@@ -610,6 +621,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
 # needs tests
 @app.route("/actions/login", methods=['POST'])
+@util.structlogged
 def do_data_login():
     """ Flask controller: log the user in for a specific dataset.
     Note that this is NOT a user login; it's a dataset login. That
@@ -636,6 +648,7 @@ def do_data_login():
 
 # needs tests
 @app.route("/actions/save-recipe", methods=['POST'])
+@util.structlogged
 def do_data_save():
     """ Flask controller: create or update a saved recipe
     The saved recipe has all of its parameters in the database, and is
@@ -740,6 +753,7 @@ def do_data_save():
 
 # has tests
 @app.route("/actions/validate", methods=['POST'])
+@util.structlogged
 def do_data_validate():
     """ Flask controller: validate an uploaded file against an uploaded HXL schema
     This controller was created for HDX Data Check, which is the only known user.
@@ -823,6 +837,7 @@ def do_data_validate():
 # NOTE: This is an experiment that's probably not used anywhere right now
 # We may choose to remove it
 @app.route('/actions/json-spec', methods=['POST'])
+@util.structlogged
 def do_json_recipe():
     """ POST handler to execute a JSON recipe
     This POST endpoint allows the user to upload a JSON HXL recipe
@@ -889,6 +904,7 @@ def do_json_recipe():
 ########################################################################
 
 @app.route('/login')
+@util.structlogged
 def hid_login():
     """ Flask controller: display login page for Humanitarian.ID
     This is distinct from the /data/login page, which accepts a password
@@ -909,6 +925,7 @@ def hid_login():
 
 
 @app.route('/logout')
+@util.structlogged
 def hid_logout():
     """ Flask controller: kill the user's login session with Humanitarian.ID
 
@@ -924,6 +941,7 @@ def hid_logout():
 
 # not currently in use (until we reactivate H.ID support)
 @app.route('/settings/user')
+@util.structlogged
 def user_settings():
     """ Flask controller: show the user's settings from Humanitarian.ID
     """
@@ -937,6 +955,7 @@ def user_settings():
 
 
 @app.route('/oauth/authorized2/1')
+@util.structlogged
 def do_hid_authorisation():
     """Flask controller: accept an OAuth2 token after successful login via Humanitarian.ID
 
@@ -975,6 +994,7 @@ def do_hid_authorisation():
 
 # needs tests
 @app.route("/admin/login")
+@util.structlogged
 def admin_login():
     """ Log in to use admin functions """
     return flask.render_template('admin-login.html')
@@ -982,6 +1002,7 @@ def admin_login():
 
 # needs tests
 @app.route("/admin/recipes/<recipe_id>/")
+@util.structlogged
 def admin_recipe_view(recipe_id):
     """ View a specific recipe """
     admin.admin_auth()
@@ -995,6 +1016,7 @@ def admin_recipe_view(recipe_id):
 
 # needs tests
 @app.route("/admin/recipes/<recipe_id>/edit.html")
+@util.structlogged
 def admin_recipe_edit(recipe_id):
     """ Edit a saved recipe """
     admin.admin_auth()
@@ -1005,6 +1027,7 @@ def admin_recipe_edit(recipe_id):
 
 # needs tests
 @app.route("/admin/recipes/<recipe_id>/delete.html")
+@util.structlogged
 def admin_recipe_delete(recipe_id):
     """ Delete a saved recipe """
     admin.admin_auth()
@@ -1014,6 +1037,7 @@ def admin_recipe_delete(recipe_id):
 
 # needs tests
 @app.route("/admin/recipes/")
+@util.structlogged
 def admin_recipe_list():
     """ List all saved recipes """
     admin.admin_auth()
@@ -1023,6 +1047,7 @@ def admin_recipe_list():
 
 # needs tests
 @app.route("/admin/")
+@util.structlogged
 def admin_root():
     """ Root of admin pages """
     admin.admin_auth()
@@ -1031,6 +1056,7 @@ def admin_root():
 
 # needs tests
 @app.route("/admin/actions/login", methods=['POST'])
+@util.structlogged
 def do_admin_login():
     """ POST controller for an admin login """
     password = flask.request.form.get('password')
@@ -1041,6 +1067,7 @@ def do_admin_login():
 
 # needs tests
 @app.route("/admin/actions/logout", methods=['POST'])
+@util.structlogged
 def do_admin_logout():
     """ POST controller for an admin logout """
     admin.admin_auth()
@@ -1051,6 +1078,7 @@ def do_admin_logout():
 
 # needs tests
 @app.route("/admin/actions/update-recipe", methods=['POST'])
+@util.structlogged
 def do_admin_update_recipe():
     admin.admin_auth()
     recipe_id = flask.request.form.get('recipe_id')
@@ -1061,6 +1089,7 @@ def do_admin_update_recipe():
 
 # needs tests
 @app.route("/admin/actions/delete-recipe", methods=['POST'])
+@util.structlogged
 def do_admin_delete_recipe():
     admin.admin_auth()
     recipe_id = flask.request.form.get('recipe_id')
@@ -1080,6 +1109,7 @@ def do_admin_delete_recipe():
 ########################################################################
 
 @app.route("/api/from-spec.<format>")
+@util.structlogged
 def from_spec(format="json"):
     """ Use a JSON HXL spec
     Not cached
@@ -1172,6 +1202,7 @@ def from_spec(format="json"):
 @app.route("/api/hxl-test")
 @app.route("/hxl-test.<format>") # legacy path
 @app.route("/hxl-test") # legacy path
+@util.structlogged
 def hxl_test(format='html'):
     """ Flask controller: test if a resource is HXL hashtagged
     GET parameters:
@@ -1232,6 +1263,7 @@ def hxl_test(format='html'):
 # has tests
 @app.route('/api/data-preview.<format>')
 #@cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
+@util.structlogged
 def data_preview (format="json"):
     """ Return a raw-data preview of any data source supported by the HXL Proxy
     Does not attempt HXL processing.
@@ -1340,6 +1372,7 @@ def data_preview (format="json"):
 # has no tests
 @app.route('/api/data-preview-sheets.<format>')
 # @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p) # can't cache generator output
+@util.structlogged
 def data_preview_sheets(format="json"):
     """ Return names only for the sheets in an Excel workbook.
     In case of csv it returns one sheet name 'Default'
@@ -1427,6 +1460,7 @@ def data_preview_sheets(format="json"):
 @app.route('/api/pcodes/<country>-<level>.csv')
 @app.route('/pcodes/<country>-<level>.csv') # legacy path
 @cache.cached(timeout=604800) # 1 week cache
+@util.structlogged
 def pcodes_get(country, level):
     """ Flask controller: look up a list of P-codes from iTOS
     @param country: the ISO3 country code
@@ -1449,6 +1483,7 @@ def pcodes_get(country, level):
 # has tests
 @app.route('/api/hash')
 @app.route('/hash') # legacy path
+@util.structlogged
 def make_hash():
     """ Flask controller: hash a HXL dataset
     GET parameters:
@@ -1487,6 +1522,7 @@ def make_hash():
 
 # has tests
 @app.route('/api/source-info')
+@util.structlogged
 def make_info():
     """ Flask controller: get info for an Excel dataset
     GET parameters:
@@ -1520,6 +1556,7 @@ def make_info():
 
 # needs tests
 @app.route("/")
+@util.structlogged
 def home():
     """ Flask controller: nothing currently at root
     Redirect to the /data/source page
@@ -1531,6 +1568,7 @@ def home():
 # has tests
 @app.route('/data/<recipe_id>/chart')
 @app.route('/data/chart')
+@util.structlogged
 def data_chart(recipe_id=None):
     """ Flask controller: discontinued charting endpoint """
     return "The HXL Proxy no longer supports basic charts. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
@@ -1539,6 +1577,7 @@ def data_chart(recipe_id=None):
 # has tests
 @app.route('/data/<recipe_id>/map')
 @app.route('/data/map')
+@util.structlogged
 def data_map(recipe_id=None):
     """ Flask controller: discontinued mapping endpoint """
     return "The HXL Proxy no longer supports basic maps. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
