@@ -30,7 +30,9 @@ import hxl_proxy
 class db:
     """Low-level database functions"""
 
-    TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), 'schema-sqlite3.sql')
+    schema_file = hxl_proxy.app.config.get('DB_SCHEMA_FILE', 'schema-sqlite3.sql')
+
+    TEST_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), schema_file)
     """The filename of the SQL schema."""
 
     type = hxl_proxy.app.config.get('DB_TYPE', 'sqlite3')
@@ -42,7 +44,7 @@ class db:
 
     @staticmethod
     def connect():
-        """Get a database connection 
+        """Get a database connection
 
         Will reuse the same connection throughout a request
         context. Uses the C{DB_FILE} Flask config option for the
@@ -93,7 +95,7 @@ class db:
     @staticmethod
     def commit():
         db.connect().commit()
-        
+
     @staticmethod
     def execute_statement(statement, params=(), commit=False):
         """Execute a single SQL statement, and optionally commit.
@@ -117,7 +119,12 @@ class db:
         @return: a SQLite3 cursor object.
         """
         cursor = db.cursor()
-        cursor.executescript(sql_statements)
+        if db.type == 'mysql':
+            for _ in cursor.execute(sql_statements, multi=True):
+                pass
+        else:
+            cursor.executescript(sql_statements)
+
         if commit:
             db.commit()
         return cursor

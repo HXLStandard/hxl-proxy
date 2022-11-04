@@ -8,26 +8,52 @@ from ast import Try
 import hxl_proxy
 
 import flask, hashlib, hxl, json, logging, pickle, random, re, requests, time, urllib
-from hxl_proxy import caching
+from hxl_proxy import caching, exceptions
 
 from urllib.parse import urlparse
 
 # Logger for this module
 logger = logging.getLogger(__name__)
 
+from structlog import contextvars
+from functools import wraps
+import uuid
+from hxl.util import logup
 
+def structlogged(f):
+    """ decorator to add essential fields on json logs
+    """
+    @wraps(f)
+    def decorated_structlog_binder(*args, **kwargs):
+        contextvars.clear_contextvars()
+        contextvars.bind_contextvars(
+            user_agent=flask.request.headers.get('User-Agent', "UNKNOWN"),
+            peer_ip=flask.request.headers.get('X-Real-IP', flask.request.remote_addr),
+            request=flask.request.url,
+            request_id=str(uuid.uuid4()),
+        )
+        return f(*args, **kwargs)
+    return decorated_structlog_binder
 
+
 ########################################################################
 # Utility functions for caching
 ########################################################################
 
 def make_cache_key (path = None, args_in=None):
-    """Make a key for a caching request, based on the full path.
+    """ Make a key for a caching request, based on the full path.
+
     The cache key depends on the path and the GET parameters,
     excluding &force (so that we can cache the request by using
     the force parameter).
-    @param path: the HTTP path, or None to use the current request
-    @param args_in: the GET params, or None to use the current request
+
+    Args:
+        path(str): the HTTP path, or None to use the current request
+        args_in(dict): the GET params, or None to use the current request
+
+    Returns:
+        str: the cache key string
+
     """
     CACHE_KEY_EXCLUDES = ['force']
 
@@ -49,45 +75,107 @@ def make_cache_key (path = None, args_in=None):
 
 def skip_cache_p ():
     """ Determine whether we are skipping the cache.
-    The HTTP &force parameter requests cache skipping.
-    Note that this function will not detect the &force
-    parameter inside a saved recipe; for now, it has to
-    be specified as a GET param.
-    @returns: True if we don't want to cache
+
+    The HTTP &force parameter requests cache skipping.  Note that this
+    function will not detect the &force parameter inside a saved
+    recipe; for now, it has to be specified as a GET param.
+
+    Returns:
+        bool: True if we don't want to cache
+
     """
     return True if flask.request.args.get('force') else False
 
+
 
 ########################################################################
-# Input options
+# Input wrappers and options
 ########################################################################
 
-def make_input (raw_source, input_options=None):
-    """ Wrapper for libhxl make_input call.
-    We want to make sure all exception are being caught and no trace is being made.
-    We also want to check the external destination against our allowed domain list
-    @returns: False if some error occured, the input object otherwise
-    """
-    if not is_allowed(raw_source):
-        err = '{} parent domain is not in the allowed list.'.format(raw_source)
-        logger.error(err)
-        raise IOError(err)
-    try:
-        input = hxl.input.make_input(raw_source, input_options)
-        return input
-    except Exception as e:
-        logger.error(str(e))
-        raise e
+def hxl_data (raw_source, input_options=None):
+    """ Wrapper for hxl.data() to implement a domain-based allow list.
 
-def is_allowed(raw_source):
-    """ Match the external destination url against our allowed domain list.
-    @returns: True if the url has an allowed parent domain or if the url matches an allowed hostname
-              False otherwise
+    If the raw_source is a string (i.e. URL), check that the base
+    domain is in the allow list. If the allow list is empty, assume
+    testing and allow any domain.
+
+    Args:
+        raw_source: a HXL data provider, file object, array, or string (representing a URL)
+        input_options (hxl.input.InputOptions): input options for reading a dataset
+
+    Returns:
+        hxl.model.Dataset: a HXL dataset object
+
+    Raises:
+        hxl_proxy.exceptions.DomainNotAllowedError: if the domain for a URL is not in the allow list
+
+    """
+    # don't catch exceptions here; see controllers.py for general exception handling
+    check_allowed_domain(raw_source)
+    return hxl.data(raw_source, input_options)
+
+
+def hxl_make_input (raw_source, input_options=None):
+    """ Wrapper for hxl.make_input() to implement a domain-based allow list.
+
+    If the raw_source is a string (i.e. URL), check that the base
+    domain is in the allow list. If the allow list is empty, assume
+    testing and allow any domain.
+
+    Args:
+        raw_source: a HXL data provider, file object, array, or string (representing a URL)
+        input_options(hxl.input.InputOptions): input options for reading a dataset
+
+    Returns:
+        hxl.input.AbstractInput: a row-by-row input object (pre-HXL-processing)
+
+    Raises:
+        hxl_proxy.exceptions.DomainNotAllowedError: if the domain for a URL is not in the allow list
+
+    """
+    # don't catch exceptions here; see controllers.py for general exception handling
+    check_allowed_domain(raw_source)
+    return hxl.make_input(raw_source, input_options)
+
+
+def check_allowed_domain (raw_source):
+    """ Raise an exception if raw_source is a URL and its base domain is not in the allow list.
+
+    Args:
+        raw_source: a HXL data source, possibly a string representing a URL
+
+    Raises:
+        hxl_proxy.exceptions.DomainNotAllowedException: if the base domain for a URL is not in the allow list.
+
+    """
+
+    if isinstance(raw_source, str) and not is_allowed_domain(raw_source):
+        logup("Domain not in allow list", {'raw_source': raw_source}, "error")
+        logger.error("Domain not in allow list: %s", raw_source)
+        raise exceptions.DomainNotAllowedError(
+            "The HXL Proxy does not allow data from this domain.\n" +
+            "If your data is on HDX, you can use the dataset or resource\n" +
+            "URL with the HXL Proxy. Otherwise, please send requests to\n"
+            "allow new humanitarian-data domains to hdx@un.org.\n\n" +
+            raw_source
+        )
+
+
+def is_allowed_domain (raw_source):
+    """ Check if raw_source is a URL and its base domain is in the allow list.
+
+    Args:
+        raw_source: a HXL data source, possibly a string representing a URL
+
+    Returns:
+        bool: True if the url is in the allow list, or the list is empty
+
     """
     hostnames = hxl_proxy.app.config.get('ALLOWED_DOMAINS_LIST', [])
 
     # if allowed list is empty just wave in for eveybody. test mode eh?
-    if len(hostnames) == 0:
+    # also, if it's not a string (i.e. URL), proceed
+    if len(hostnames) == 0 or not isinstance(raw_source, str):
         return True
 
     url=urlparse(raw_source)
@@ -101,9 +189,17 @@ def is_allowed(raw_source):
     # sorry, call us
     return False
 
+
 def make_input_options (args):
-    """ Create an InputOptions object from the arguments provided
+    """ Create an InputOptions object from the parameters provided
+
     Ensure that allow_local is always false. Allow both "-" and "_" between words.
+
+    Args:
+        args(dict): an dictionary of command-line params
+
+    Returns:
+        hxl.input.InputOptions: the input options extracted from the params
 
     """
 
@@ -145,7 +241,15 @@ def make_input_options (args):
 
 
 def check_verify_ssl(args):
-    """Check parameters to see if we need to verify SSL connections."""
+    """ Check parameters to see if we need to verify SSL connections.
+
+    Args:
+        args(dict): command-line parameters
+
+    Returns:
+        bool: True if we need to verify SSL; false if unverified is OK
+
+    """
     if args.get('skip-verify-ssl', args.get("skip_verify_ssl", None)) == 'on':
         return False
     elif args.get('verify_ssl') == 'off' or args.get('verify') == 'off': # deprecated parameters
@@ -162,7 +266,7 @@ def check_verify_ssl(args):
 def check_markup(s):
     """ Check if text contains markup or URLs
     """
-    if re.search("(<[a-zA-Z]|>|href|https?:|\.com)", s):
+    if re.search("(<[a-zA-Z]|>|href|https?:|\.com|\[url=)", s):
         return True
     else:
         return False

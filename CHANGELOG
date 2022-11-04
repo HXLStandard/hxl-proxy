@@ -1,6 +1,16 @@
-Release 1.27
+Release 1.28
+	- add support for structured logs (e.g. JSON)
+
+2022-10-07 Release 1.27.1
+	- interim release to address performance issues
+	- change Docker config to use threads with nginx
+	- make root logging level configurable via ROOT_LOGGING_LEVEL config property (and default to INFO instead of DEBUG)
+
+2022-10-03 Release 1.27
+	- add REMOTE_ACCESS_LOGGING_LEVEL to filter "hxl.REMOTE_ACCESS" separately to show remote file access (currently,
+	  all messages will be at the INFO level)
 	- show the same error message for a non-existant remote data file, or for a URL that contains HTML markup; prevents
-	bad actors from using the HXL Proxy to ping HTML websites
+	  bad actors from using the HXL Proxy to ping HTML websites
 	- don't trap 404 and HTML markup exceptions in the /data/edit endpoint
 	- forbid HTML markup or URLs in saved-recipe titles, descriptions, and stubs to cut down on spam attempts
 

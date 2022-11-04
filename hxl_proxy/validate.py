@@ -3,7 +3,9 @@ Started May 2018 by David Megginson
 License: Public Domain
 """
 
-import hxl_proxy, hxl_proxy.util
+import hxl_proxy
+
+from hxl_proxy import util
 
 import hxl, logging, werkzeug
 
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 """ Python logger for this module """
 
 
-@hxl_proxy.cache.memoize(unless=hxl_proxy.util.skip_cache_p)
+@hxl_proxy.cache.memoize(unless=util.skip_cache_p)
 def run_validation(url, content, content_hash, sheet_index, selector, schema_url, schema_content, schema_content_hash, schema_sheet_index, include_dataset, args={}):
     """ Do the actual validation run, using the arguments provided.
     Separated from the controller so that we can cache the result easiler.
@@ -31,9 +33,9 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     # set up the main data
     if content:
         # TODO: stop using libhxl's make_input directly
-        source = hxl.data(hxl.input.make_input(content, hxl_proxy.util.make_input_options(args)))
+        source = util.hxl_data(hxl.input.make_input(content, util.make_input_options(args)))
     else:
-        source = hxl.data(url, hxl_proxy.util.make_input_options(args))
+        source = util.hxl_data(url, util.make_input_options(args))
 
     # cache if we're including the dataset in the results (we have to run over it twice)
     if include_dataset:
@@ -48,9 +50,9 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     schema_args['expand_merged'] = args.get('schema-expand-merged', args.get('schema_expand_merged', None))
 
     if schema_content:
-        schema_source = hxl.data(hxl.input.make_input(schema_content, hxl_proxy.util.make_input_options(schema_args)))
+        schema_source = util.hxl_data(hxl.input.make_input(schema_content, util.make_input_options(schema_args)))
     elif schema_url:
-        schema_source = hxl.data(schema_url, hxl_proxy.util.make_input_options(schema_args))
+        schema_source = util.hxl_data(schema_url, util.make_input_options(schema_args))
     else:
         schema_source = None
 
@@ -70,10 +72,10 @@ def run_validation(url, content, content_hash, sheet_index, selector, schema_url
     # include the original dataset if requested
     if include_dataset:
         content = []
-        content.append([hxl_proxy.util.no_none(column.header) for column in source.columns])
-        content.append([hxl_proxy.util.no_none(column.display_tag) for column in source.columns])
+        content.append([util.no_none(column.header) for column in source.columns])
+        content.append([util.no_none(column.display_tag) for column in source.columns])
         for row in source:
-            content.append([hxl_proxy.util.no_none(value) for value in row.values])
+            content.append([util.no_none(value) for value in row.values])
         report['dataset'] = content
 
     return report
