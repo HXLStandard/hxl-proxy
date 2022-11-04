@@ -1,9 +1,21 @@
 version: '2.2'
 
 services:
+  mysql:
+    extends:
+      file: docker-compose.common.yml
+      service: mysql
+
+  redis:
+    extends:
+      file: docker-compose.common.yml
+      service: redis
+
   proxy:
+    extends:
+      file: docker-compose.common.yml
+      service: proxy
     build: ./
     ports:
-      - "0.0.0.0:5000:5000"
+      - "127.0.0.1:5000:5000"
     entrypoint: "tail -f /dev/null"
-    working_dir: /srv/www
