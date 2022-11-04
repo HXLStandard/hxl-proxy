@@ -4,4 +4,5 @@
 import sys
 import os
 from hxl_proxy import app
-app.run(debug=True, host=os.getenv('FLASK_HOST', 'localhost'))
+if __name__ == "__main__":
+    app.run(debug=True, host=os.getenv('FLASK_HOST', 'localhost'))
