@@ -31,6 +31,14 @@ class ForbiddenContentException(Exception):
         else:
             return "Forbidden value: {}".format(self.reason)
 
+        
+class DomainNotAllowedError (IOError):
+    """ Error for when a domain is not in the allowed list.
+    """
+
+    def __init__ (self, message):
+        super().__init__(message)
+
 
 class RemoteDataException:
     """ 

@@ -235,7 +235,8 @@ class TestEditPage(AbstractControllerTest):
 
 
 class TestDataSavePage(AbstractControllerTest):
-
+    """ Test the form for saving a recipe """
+    
     path = '/data/save'
 
     def test_page(self):
@@ -244,6 +245,57 @@ class TestDataSavePage(AbstractControllerTest):
         })
         assert b'Save recipe' in response.data
         assert b'<form' in response.data
+
+        
+class TestDataSaveAction(AbstractControllerTest):
+    """ Test saving a recipe """
+
+    path = '/actions/save-recipe'
+
+    def test_save(self):
+        response = self.post(
+            self.path,
+            data = {
+                'name': 'Test recipe',
+                'description': 'Test description',
+                'url': 'https://example.org/data.csv',
+                'password': 'foo',
+                'password-repeat': 'foo',
+            },
+            status=303
+        )
+        self.assertTrue(response.location is not None)
+        self.assertTrue(response.location.startswith('/data/'))
+
+    def test_spam_title(self):
+        """ URLs not allowed in saved-recipe titles """
+        response = self.post(
+            self.path,
+            data = {
+                'name': 'Test recipe https://spam.example.org',
+                'description': 'Test description',
+                'url': 'https://example.org/data.csv',
+                'password': 'foo',
+                'password-repeat': 'foo',
+            },
+            status=500
+        )
+        self.assertTrue("not allowed" in str(response.data))
+
+    def test_spam_description(self):
+        """ URLs not allowed in saved-recipe descriptions """
+        response = self.post(
+            self.path,
+            data = {
+                'name': 'Test recipe',
+                'description': 'Test description https://spam.example.org/',
+                'url': 'https://example.org/data.csv',
+                'password': 'foo',
+                'password-repeat': 'foo',
+            },
+            status=500
+        )
+        self.assertTrue("not allowed" in str(response.data))
 
 
 class TestDataPage(AbstractControllerTest):

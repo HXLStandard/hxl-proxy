@@ -57,17 +57,17 @@ class TestUtil(unittest.TestCase):
 
     def test_is_allowed_1(self):
         """Make sure we allow external calls if no allowed list has been defined."""
-        self.assertTrue(hxl_proxy.util.is_allowed('http://example.org'))
+        self.assertTrue(hxl_proxy.util.is_allowed_domain('http://example.org'))
 
     def test_is_allowed_2(self):
         """Make sure we allow external calls if their parent domain is in the allowed list."""
         hxl_proxy.app.config['ALLOWED_DOMAINS_LIST'] = ['example.org']
-        self.assertTrue(hxl_proxy.util.is_allowed('http://example.org'))
+        self.assertTrue(hxl_proxy.util.is_allowed_domain('http://example.org'))
 
     def test_is_allowed_3(self):
         """Make sure we allow external calls if their parent domain is in the allowed list and the allowed list has been defined."""
         hxl_proxy.app.config['ALLOWED_DOMAINS_LIST'] = ['example.org']
-        self.assertFalse(hxl_proxy.util.is_allowed('http://foo.org'))
+        self.assertFalse(hxl_proxy.util.is_allowed_domain('http://foo.org'))
 
     # TODO severity_class
 

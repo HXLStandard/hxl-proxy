@@ -4,26 +4,31 @@
  * Warning: will delete any existing data.
  * Use this schema only for a fresh installation.
  */
- 
-drop table if exists Users;
-create table Users (
-       user_id varchar(128) primary key,
-       email varchar(128) not null,
-       name varchar(128) not null,
-       name_given varchar(64),
-       name_family varchar(64),
-       last_login datetime not null
-) default charset=utf8;
 
-drop table if exists Recipes;
-create table Recipes (
-       recipe_id char(6) primary key,
-       name varchar(128) not null,
-       passhash char(32) not null,
-       description text,
-       cloneable boolean default true,
-       stub varchar(64),
-       args text not null,
-       date_created datetime not null,
-       date_modified datetime not null
-) default charset=utf8;
+/**
+ * Consider uncommenting locally the line below.
+ * CREATE DATABASE IF NOT EXISTS hxl;
+*/
+
+DROP TABLE IF EXISTS Users;
+CREATE TABLE Users (
+       user_id VARCHAR(128) PRIMARY KEY,
+       email VARCHAR(128) NOT NULL,
+       name VARCHAR(128) NOT NULL,
+       name_given VARCHAR(64),
+       name_family VARCHAR(64),
+       last_login DATETIME NOT NULL
+) DEFAULT charset=utf8;
+
+DROP TABLE IF EXISTS Recipes;
+CREATE TABLE Recipes (
+       recipe_id CHAR(6) PRIMARY KEY,
+       name VARCHAR(128) NOT NULL,
+       passhash char(32) NOT NULL,
+       description TEXT,
+       cloneable BOOLEAN DEFAULT true,
+       stub VARCHAR(64),
+       args TEXT NOT NULL,
+       date_created DATETIME NOT NULL,
+       date_modified DATETIME NOT NULL
+) DEFAULT charset=utf8;

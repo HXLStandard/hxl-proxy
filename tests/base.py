@@ -25,5 +25,5 @@ class AbstractDBTest(unittest.TestCase):
 
     def tearDown(self):
         super().tearDown()
-    
+
 

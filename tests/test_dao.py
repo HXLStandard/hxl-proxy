@@ -13,7 +13,7 @@ from . import base
 
 class AbstractDAOTest(base.AbstractDBTest):
     """Abstract base class for DAO tests."""
-    
+
     def setUp(self):
         super().setUp()
 
