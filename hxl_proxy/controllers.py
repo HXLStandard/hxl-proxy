@@ -15,6 +15,8 @@ from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters
 
 import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
 
+from hxl.util import logup
+
 logger = logging.getLogger(__name__)
 """ Python logger for this module """
 
@@ -40,11 +42,15 @@ def handle_default_exception(e):
     @param e: the exception being handled
     """
 
+    KeyError = {'error_type': type(e).__name__}
     # log a warning for the error/exception that we're handling
     if hasattr(e, 'message'):
+        KeyError['message'] = e.message
         logger.warning('%s: %s', type(e).__name__, e.message)
     else:
         logger.warning(type(e).__name__)
+    logup('Error', KeyError, "warning")
+
 
     if isinstance(e, requests.exceptions.HTTPError) or isinstance(e, hxl.input.HXLHTMLException):
         status = 404
@@ -255,6 +261,7 @@ def data_tagger(recipe_id=None):
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
+        logup('No URL supplied for /data/tagger; redirecting to /data/source', level='info')
         logger.info("No URL supplied for /data/tagger; redirecting to /data/source")
         flask.flash('Please choose a data source first.')
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
@@ -304,6 +311,7 @@ def data_edit(recipe_id=None):
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logup('No URL supplied for /data/edit; redirecting to /data/source', level="info")
         logger.info("No URL supplied for /data/edit; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
@@ -373,6 +381,7 @@ def data_save(recipe_id=None):
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logup('No URL supplied for /data/save; redirecting to /data/source', level="info")
         logger.info("No URL supplied for /data/save; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
@@ -406,6 +415,7 @@ def data_validate(recipe_id=None, format='html'):
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
         flask.flash('Please choose a data source first.')
+        logup('No URL supplied for /data/validate; redirecting to /data/source', level="info")
         logger.info("No URL supplied for /data/validate; redirecting to /data/source")
         return flask.redirect(util.data_url_for('data_source', recipe), 303)
 
@@ -413,8 +423,10 @@ def data_validate(recipe_id=None, format='html'):
     schema_source = None
     if recipe.schema_url:
         schema_source = util.hxl_data(recipe.schema_url, util.make_input_options(recipe.args))
+        logup('Using HXL validation schema', {"schema": recipe.schema_url}, level="info")
         logger.info("Using HXL validation schema at %s", recipe.schema_url)
     else:
+        logup('No HXL validation schema specified; using default schema', level="info")
         logger.info("No HXL validation schema specified; using default schema")
 
     # Run the validation and get a JSON report from libhxl-python
@@ -442,6 +454,7 @@ def data_validate(recipe_id=None, format='html'):
 
         # if there's a detail_hash, show just that detail in the report
         if detail_hash:
+            logup('Showing validation-report detail', level="info")
             logger.info("Showing validation-report detail")
             template_name = 'validate-issue.html'
             for issue in error_report['issues']:
@@ -786,6 +799,7 @@ def do_data_validate():
         try:
             sheet_index = int(sheet_index)
         except:
+            logup('Bad sheet index', {"sheet": flask.request.form.get('sheet')}, 'warning')
             logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
             sheet_index = None
     selector = flask.request.form.get('selector', None)
@@ -802,6 +816,7 @@ def do_data_validate():
         try:
             schema_sheet_index = int(schema_sheet_index)
         except:
+            logup('Bad schema_sheet index', {"sheet": flask.request.form.get('schema_sheet')}, 'warning')
             logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
             schema_sheet_index = None
 
@@ -1440,6 +1455,7 @@ def data_preview_sheets(format="json"):
                     _output.append(str(sheet))
 
     except HXLIOException as ex:
+        logup("Found the last sheet of the Excel file", level='debug')
         logger.debug("Found the last sheet of the Excel file")
 
     # Generate result

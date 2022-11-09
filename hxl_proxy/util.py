@@ -217,6 +217,7 @@ def make_input_options (args):
         try:
             sheet_index = int(sheet_index)
         except:
+            logup('Invalid sheet index; defaulting to 0', {sheet_index: sheet_index}, leve='error')
             logger.error("Invalid sheet index \"%s\"; defaulting to 0", sheet_index)
             sheet_index = 0
 
