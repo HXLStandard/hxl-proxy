@@ -42,14 +42,14 @@ def handle_default_exception(e):
     @param e: the exception being handled
     """
 
-    KeyError = {'error_type': type(e).__name__}
+    key_error = {'error_type': type(e).__name__}
     # log a warning for the error/exception that we're handling
     if hasattr(e, 'message'):
-        KeyError['message'] = e.message
+        key_error['message'] = e.message
         logger.warning('%s: %s', type(e).__name__, e.message)
     else:
         logger.warning(type(e).__name__)
-    logup('Error', KeyError, "warning")
+    logup('Error', key_error, "warning")
 
 
     if isinstance(e, requests.exceptions.HTTPError) or isinstance(e, hxl.input.HXLHTMLException):
