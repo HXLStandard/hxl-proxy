@@ -26,9 +26,9 @@ setuptools.setup(
     include_package_data = True,
     zip_safe = False,
     install_requires=[
-        'requests>=2.27',
         #'libhxl==4.27',
         'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev',
+        'requests>=2.27',
         'ckanapi>=3.5',
         'flask==2.1.2',
         'flask-caching',
