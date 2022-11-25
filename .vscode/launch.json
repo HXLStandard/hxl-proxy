@@ -5,14 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Unit Tests",
-            "type": "python",
-            "request": "launch",
-            "module": "unittest",
-            "justMyCode": true
-        },
-        {
-            "name": "Python: Flask",
+            "name": "Debug HXL Proxy",
             "type": "python",
             "request": "launch",
             "module": "flask",
@@ -31,6 +24,13 @@
                 "--no-reload"
             ],
             "jinja": true,
+            "justMyCode": true
+        },
+        {
+            "name": "Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "unittest",
             "justMyCode": true
         }
     ]

@@ -18,7 +18,7 @@ RUN apk add \
         /srv/config \
         /srv/output \
         /var/log/proxy && \
-    mv config.py.TEMPLATE /srv/config/config.py && \
+    cp config.py.TEMPLATE /srv/config/config.py && \
     cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     cp docker_files/app.py . && \
     pip3 --no-cache-dir install --upgrade \
