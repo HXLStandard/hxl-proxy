@@ -1,5 +1,6 @@
-Release 1.28
+2022-11-28 Release 1.28
 	- add support for structured logs (e.g. JSON)
+	- add support for Visual Studio
 
 2022-10-07 Release 1.27.1
 	- interim release to address performance issues
