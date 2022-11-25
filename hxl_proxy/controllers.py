@@ -799,7 +799,7 @@ def do_data_validate():
         try:
             sheet_index = int(sheet_index)
         except:
-            logup('Bad sheet index', {"sheet": flask.request.form.get('sheet')}, 'warning')
+            logup('Bad sheet index', {"sheet": flask.request.form.get('sheet')}, level='warning')
             logger.warning("Bad sheet index: %s", flask.request.form.get('sheet'))
             sheet_index = None
     selector = flask.request.form.get('selector', None)
@@ -816,7 +816,7 @@ def do_data_validate():
         try:
             schema_sheet_index = int(schema_sheet_index)
         except:
-            logup('Bad schema_sheet index', {"sheet": flask.request.form.get('schema_sheet')}, 'warning')
+            logup('Bad schema_sheet index', {"sheet": flask.request.form.get('schema_sheet')}, level='warning')
             logger.warning("Bad schema_sheet index: %s", flask.request.form.get('schema_sheet'))
             schema_sheet_index = None
 
