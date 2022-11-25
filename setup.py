@@ -35,6 +35,7 @@ setuptools.setup(
         'requests_cache',
         'mysql-connector-python==8.0.29',
         'redis',
+        'urllib3<1.27,>=1.21.1',
         'structlog==22.1.0',
     ],
     dependency_links=[
