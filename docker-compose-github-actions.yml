@@ -2,34 +2,20 @@ version: '2.2'
 
 services:
   mysql:
-    image: public.ecr.aws/unocha/mysql:10.6
-    hostname: mysql
-    container_name: hxl-proxy-mysql
-    environment:
-      MYSQL_DB: hxl
-      MYSQL_USER: hxl
-      MYSQL_PASS: hxl
+    extends:
+      file: docker-compose.common.yml
+      service: mysql
 
   redis:
-    image: public.ecr.aws/unocha/redis:5
-    hostname: redis
-    container_name: hxl-proxy-redis
+    extends:
+      file: docker-compose.common.yml
+      service: redis
 
   proxy:
-    container_name: hxl-proxy
+    extends:
+      file: docker-compose.common.yml
+      service: proxy
     build: ./
-    # ports:
-    #   - "127.0.0.1:5000:5000"
+    ports:
+      - "127.0.0.1:5000:5000"
     entrypoint: "tail -f /dev/null"
-    working_dir: /srv/www
-    environment:
-      HXL_PROXY_CONFIG: /srv/config/config.py
-      DB_SCHEMA_FILE: schema-mysql.sql
-      DB_TYPE: mysql
-      MYSQL_HOST: mysql
-      MYSQL_DB: hxl
-      DB_PORT: 3306
-      MYSQL_USER: hxl
-      MYSQL_PASS: hxl
-      CACHE_TYPE: redis
-      CACHE_REDIS_URL: redis://redis:6379/1

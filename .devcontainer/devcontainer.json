@@ -1,23 +1,10 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/docker-existing-docker-compose
-// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
 	"name": "Existing Docker Compose (Extend)",
-
-	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
-	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
-		"../docker-compose-github-actions.yml",
-		// "../docker-compose.yml",
+		"../docker-compose.common.yml",
 		"docker-compose.yml"
 	],
-
-	// The 'service' property is the name of the service for the container that VS Code should
-	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
 	"service": "proxy",
-
-	// The optional 'workspaceFolder' property is the path VS Code should open by default when
-	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/srv/www",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -29,11 +16,10 @@
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
 
+	// "onCreateCommand": "cp config.py.TEMPLATE /srv/config/config.py && cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && cp docker_files/app.py .",
+
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
 	"postCreateCommand": "apk add --no-cache mysql-client && pip install autopep8 pylint && mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_DB < hxl_proxy/schema-mysql.sql", // black bandit flake8 mypy pycodestyle pydocstyle pylint yapf",
-
-	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -66,7 +52,8 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"eamodio.gitlens",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"felipecaputo.git-project-manager"
 			]
 		}
 	}
