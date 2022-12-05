@@ -20,12 +20,14 @@ RUN apk add \
     mv config.py.TEMPLATE /srv/config/config.py && \
     cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
-    mv docker_files/app.py docker_files/app_nr.py . && \
+    mv docker_files/app.py docker_files/app_nr.py docker_files/app_elastic.py . && \
     pip3 --no-cache-dir install --upgrade \
         pip \
         wheel && \
     pip3 install --upgrade -r requirements.txt && \
-    pip3 install newrelic && \
+    pip3 install \
+        elastic-apm[flask] \
+        newrelic && \
     apk del \
         git \
         libffi-dev && \
