@@ -1,4 +1,4 @@
-libhxl==4.27.2
+libhxl==4.27.3
 #git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl
 requests>=2.27
 ckanapi>=3.5
