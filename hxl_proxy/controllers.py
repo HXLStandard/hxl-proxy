@@ -13,7 +13,7 @@ from hxl.input import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, werkzeug, csv, urllib
+import datetime, flask, hxl, io, json, logging, requests, requests_cache, signal, werkzeug, csv, urllib
 
 from hxl.util import logup
 
@@ -29,11 +29,20 @@ SHEET_MAX_NO = 20
 ########################################################################
 # Error handlers
 #
-# These functions handle exceptions that make it to the top level.
+# These functions handle exceptions that make it to the top level, as
+# well as a timeout.
 #
 # The HXL Proxy uses exceptions for special purposes like redirections
 # or authorisation as well as errors.
 ########################################################################
+
+def handle_timeout(signum, frame):
+    """ Raise an error when we time out """
+    logging.warning("Request timed out")
+    raise TimeoutError()
+
+signal.signal(signal.SIGALRM, handle_timeout)
+
 
 def handle_default_exception(e):
     """ Error handler: display an error page with various HTTP status codes
@@ -183,6 +192,10 @@ def before_request():
 
     # select the default output format (controllers may change it)
     flask.g.output_format='html'
+
+    # set the timeout for the request
+    signal.alarm(app.config.get('TIMEOUT', 30))
+    
 
 
 
