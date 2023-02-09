@@ -24,6 +24,11 @@ DEBUG = bool(util.strtobool(os.getenv('DEBUG', 'True')))
 LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', 'ERROR')
 
 #
+# Set the request timeout (not currently synced with server)
+#
+TIMEOUT = os.getenv('TIMEOUT', 30)
+
+#
 # Special logging level for access to remote URLs
 # (These are logged under "hxl.REMOTE_ACCESS" rather than a module name)
 #

@@ -31,6 +31,7 @@ class AbstractControllerTest(base.AbstractDBTest):
         """Configure a test app instance."""
         super().setUp()
         hxl_proxy.app.config['DEBUG'] = False
+        hxl_proxy.app.config['TIMEOUT'] = 30
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
         hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
@@ -86,6 +87,25 @@ class AbstractControllerTest(base.AbstractDBTest):
         })
         recipe.name = 'Sample dataset'
         return recipe
+
+
+########################################################################
+# General
+########################################################################
+
+class TestTimeout(AbstractControllerTest):
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_timeout(self):
+        """ Confirm that a time returns a 408 error """
+
+        # Use a sting to ensure conversion is working
+        hxl_proxy.app.config['TIMEOUT'] = '1'
+
+        # Try rendering a very large file
+        response = self.get('/data', {
+            'url': 'http://example.org/adm4_population.xlsx'
+        }, 408)
 
 
 
