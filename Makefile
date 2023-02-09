@@ -36,6 +36,10 @@ VENV=venv/bin/activate
 test: $(VENV)
 	. $(VENV) && pytest
 
+# run failed unit tests
+test-failed: $(VENV)
+	. $(VENV) && pytest --lf
+
 # alias to (re)build the Python virtual environment
 build-venv: $(VENV)
 

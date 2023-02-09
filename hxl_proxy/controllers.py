@@ -27,6 +27,20 @@ SHEET_MAX_NO = 20
 
 
 ########################################################################
+# Asynchronous signal handlers
+########################################################################
+
+def handle_alarm_signal(signum, frame):
+    """ Raise a TimeoutError when there's an alarm """
+    logging.warning("Request timed out")
+    logup('Request timed out', level='info')
+    raise TimeoutError()
+
+signal.signal(signal.SIGALRM, handle_alarm_signal)
+
+
+
+########################################################################
 # Error handlers
 #
 # These functions handle exceptions that make it to the top level, as
@@ -35,14 +49,6 @@ SHEET_MAX_NO = 20
 # The HXL Proxy uses exceptions for special purposes like redirections
 # or authorisation as well as errors.
 ########################################################################
-
-def handle_timeout(signum, frame):
-    """ Raise an error when we time out """
-    logging.warning("Request timed out")
-    raise TimeoutError()
-
-signal.signal(signal.SIGALRM, handle_timeout)
-
 
 def handle_default_exception(e):
     """ Error handler: display an error page with various HTTP status codes
@@ -64,6 +70,8 @@ def handle_default_exception(e):
     if isinstance(e, requests.exceptions.HTTPError) or isinstance(e, hxl.input.HXLHTMLException):
         status = 404
         e = exceptions.RemoteDataException(e)
+    elif isinstance(e, TimeoutError): # more specific than the following
+        status = 408 # HTTP timeout
     elif isinstance(e, IOError) or isinstance(e, OSError):
         # probably tried to open an inappropriate URL
         status = 403
@@ -194,7 +202,11 @@ def before_request():
     flask.g.output_format='html'
 
     # set the timeout for the request
-    signal.alarm(app.config.get('TIMEOUT', 30))
+    try:
+        timeout = int(app.config.get('TIMEOUT', 30))
+    except ValueError:
+        timeout = 30
+    signal.alarm(timeout)
     
 
 
