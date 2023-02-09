@@ -34,7 +34,7 @@ VENV=venv/bin/activate
 
 # run unit tests
 test: $(VENV)
-	. $(VENV) && python setup.py test
+	. $(VENV) && pytest
 
 # alias to (re)build the Python virtual environment
 build-venv: $(VENV)
