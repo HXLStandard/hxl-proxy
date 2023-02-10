@@ -240,25 +240,7 @@ def about():
 ########################################################################
 
 # has tests
-@app.route("/data/<recipe_id>/login")
-@util.structlogged
-def data_login(recipe_id):
-    """ Flask controller: log in to work on a saved recipe
-    The user will end up here only if they tried to alter a saved
-    recipe. They will have to enter the recipe's password to
-    continue.
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
-    """
-    flask.g.recipe_id = recipe_id # for error handling
-    recipe = recipes.Recipe(recipe_id)
-    destination = flask.request.args.get('from')
-    if not destination:
-        destination = util.data_url_for('data_edit', recipe)
-    return flask.render_template('data-login.html', recipe=recipe, destination=destination)
-
-# has tests
 @app.route("/data/source")
-@app.route("/data/<recipe_id>/source")
 @util.structlogged
 def data_source(recipe_id=None):
     """ Flask controller: choose a new source URL
@@ -270,7 +252,6 @@ def data_source(recipe_id=None):
 
 # has tests
 @app.route("/data/tagger")
-@app.route("/data/<recipe_id>/tagger")
 @util.structlogged
 def data_tagger(recipe_id=None):
     """ Flask controller: add HXL tags to an untagged dataset
@@ -321,7 +302,6 @@ def data_tagger(recipe_id=None):
 
 # has tests
 @app.route("/data/edit")
-@app.route("/data/<recipe_id>/edit", methods=['GET', 'POST'])
 @util.structlogged
 def data_edit(recipe_id=None):
     """Flask controller: create or edit a filter pipeline.
@@ -388,7 +368,6 @@ def data_edit(recipe_id=None):
 
 # has tests
 @app.route("/data/save")
-@app.route("/data/<recipe_id>/save")
 @util.structlogged
 def data_save(recipe_id=None):
     """ Flask controller: create or update a saved dataset (with a short URL)
@@ -500,7 +479,6 @@ def data_validate(recipe_id=None, format='html'):
 
 # has tests
 @app.route("/data/advanced")
-@app.route("/data/<recipe_id>/advanced")
 @util.structlogged
 def show_advanced(recipe_id=None):
     """ Flask controller: developer page for entering a JSON recipe directly
@@ -1028,118 +1006,6 @@ def do_hid_authorisation():
 
 
 ########################################################################
-# /admin controllers
-########################################################################
-
-
-# needs tests
-@app.route("/admin/login")
-@util.structlogged
-def admin_login():
-    """ Log in to use admin functions """
-    return flask.render_template('admin-login.html')
-
-
-# needs tests
-@app.route("/admin/recipes/<recipe_id>/")
-@util.structlogged
-def admin_recipe_view(recipe_id):
-    """ View a specific recipe """
-    admin.admin_auth()
-    recipe = recipes.Recipe(recipe_id, auth=False)
-    if 'authorization_token' in recipe.args:
-        clone_url = None
-    else:
-        clone_url = util.data_url_for('data_view', recipe, cloned=True)
-    return flask.render_template('admin-recipe-view.html', recipe=recipe, clone_url=clone_url)
-
-
-# needs tests
-@app.route("/admin/recipes/<recipe_id>/edit.html")
-@util.structlogged
-def admin_recipe_edit(recipe_id):
-    """ Edit a saved recipe """
-    admin.admin_auth()
-    recipe = recipes.Recipe(recipe_id, auth=False)
-    args = json.dumps(recipe.args, indent=4)
-    return flask.render_template('admin-recipe-edit.html', recipe=recipe, args=args)
-
-
-# needs tests
-@app.route("/admin/recipes/<recipe_id>/delete.html")
-@util.structlogged
-def admin_recipe_delete(recipe_id):
-    """ Delete a saved recipe """
-    admin.admin_auth()
-    recipe = recipes.Recipe(recipe_id, auth=False)
-    return flask.render_template('admin-recipe-delete.html', recipe=recipe)
-
-
-# needs tests
-@app.route("/admin/recipes/")
-@util.structlogged
-def admin_recipe_list():
-    """ List all saved recipes """
-    admin.admin_auth()
-    recipes = admin.admin_get_recipes()
-    return flask.render_template('admin-recipe-list.html', recipes=recipes)
-
-
-# needs tests
-@app.route("/admin/")
-@util.structlogged
-def admin_root():
-    """ Root of admin pages """
-    admin.admin_auth()
-    return flask.render_template('admin-root.html')
-
-
-# needs tests
-@app.route("/admin/actions/login", methods=['POST'])
-@util.structlogged
-def do_admin_login():
-    """ POST controller for an admin login """
-    password = flask.request.form.get('password')
-    admin.do_admin_login(password)
-    flask.flash("Logged in as admin")
-    return flask.redirect('/admin/', 303)
-
-
-# needs tests
-@app.route("/admin/actions/logout", methods=['POST'])
-@util.structlogged
-def do_admin_logout():
-    """ POST controller for an admin logout """
-    admin.admin_auth()
-    admin.do_admin_logout()
-    flask.flash("Logged out of admin functions")
-    return flask.redirect('/data/source', 303)
-
-
-# needs tests
-@app.route("/admin/actions/update-recipe", methods=['POST'])
-@util.structlogged
-def do_admin_update_recipe():
-    admin.admin_auth()
-    recipe_id = flask.request.form.get('recipe_id')
-    admin.do_admin_update_recipe(dict(flask.request.form))
-    flask.flash("Updated recipe {}".format(recipe_id))
-    return flask.redirect('/admin/recipes/{}/'.format(recipe_id), 303)
-
-
-# needs tests
-@app.route("/admin/actions/delete-recipe", methods=['POST'])
-@util.structlogged
-def do_admin_delete_recipe():
-    admin.admin_auth()
-    recipe_id = flask.request.form.get('recipe_id')
-    admin.do_admin_delete_recipe(recipe_id)
-    flask.flash("Deleted recipe {}".format(recipe_id))
-    return flask.redirect('/admin/recipes/'.format(recipe_id), 303)
-
-
-
-########################################################################
 # Controllers for extra API calls
 #
 # Migrating to /api (gradually)
@@ -1604,24 +1470,6 @@ def home():
     """
     # home isn't moved permanently
     return flask.redirect(flask.url_for("data_source", **flask.request.args) , 302)
-
-
-# has tests
-@app.route('/data/<recipe_id>/chart')
-@app.route('/data/chart')
-@util.structlogged
-def data_chart(recipe_id=None):
-    """ Flask controller: discontinued charting endpoint """
-    return "The HXL Proxy no longer supports basic charts. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
-
-
-# has tests
-@app.route('/data/<recipe_id>/map')
-@app.route('/data/map')
-@util.structlogged
-def data_map(recipe_id=None):
-    """ Flask controller: discontinued mapping endpoint """
-    return "The HXL Proxy no longer supports basic maps. Please visit <a href='https://tools.humdata.org/'>tools.humdata.org</a>", 410
 
 
 # end
