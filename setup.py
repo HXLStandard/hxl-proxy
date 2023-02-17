@@ -36,7 +36,7 @@ setuptools.setup(
         'mysql-connector-python==8.0.29',
         'redis',
         'urllib3<1.27,>=1.21.1',
-        'structlog==22.1.0',
+        'structlog',
     ],
     dependency_links=[
         "git+https://github.com/HXLStandard/libhxl-python@dev#egg=libhxl",
