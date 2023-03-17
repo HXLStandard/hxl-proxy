@@ -1,0 +1,1 @@
+{"listeners":{"*:5000":{"application":"hxlproxy"}},"applications":{"hxlproxy":{"type":"python","processes":{"max":20,"spare":3,"idle_timeout":20},"module":"app_elastic","path":"/srv/www","threads": 5}},"settings":{"http":{"max_body_size":1584000000}}}

@@ -31,6 +31,7 @@ class AbstractControllerTest(base.AbstractDBTest):
         """Configure a test app instance."""
         super().setUp()
         hxl_proxy.app.config['DEBUG'] = False
+        hxl_proxy.app.config['TIMEOUT'] = 30
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
         hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
@@ -87,6 +88,25 @@ class AbstractControllerTest(base.AbstractDBTest):
         recipe.name = 'Sample dataset'
         return recipe
 
+
+########################################################################
+# General
+########################################################################
+
+class TestTimeout(AbstractControllerTest):
+
+    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
+    def test_timeout(self):
+        """ Confirm that a time returns a 408 error """
+
+        # Use a sting to ensure conversion is working
+        hxl_proxy.app.config['TIMEOUT'] = '1'
+
+        # Try rendering a very large file
+        response = self.get('/data', {
+            'url': 'http://example.org/adm4_population.xlsx'
+        }, 408)
+
 
 
 ########################################################################
@@ -106,16 +126,6 @@ class TestAbout(AbstractControllerTest):
 ########################################################################
 # /data controllers
 ########################################################################
-
-class TestDataLogin(AbstractControllerTest):
-
-    path = '/data/AAAAA/login'
-
-    def test_page(self):
-        response = self.get(self.path)
-        assert b'Password required' in response.data
-        assert b'type="password"' in response.data
-
 
 class TestDataSource(AbstractControllerTest):
 
@@ -198,7 +208,7 @@ class TestTaggerPage(AbstractControllerTest):
 
 
 class TestEditPage(AbstractControllerTest):
-    """Test /data/edit and /data/{recipe_id}/edit"""
+    """ Test /data/edit """
 
     def test_redirect_no_url(self):
         """With no URL, the app should redirect to /data/source automatically."""
@@ -228,74 +238,6 @@ class TestEditPage(AbstractControllerTest):
         })
         assert b'Data transformation recipe' in response.data
         self.assertBasicDataset(response)
-
-    def test_need_login(self):
-        response = self.get('/data/{}/edit'.format(self.recipe_id), status=303)
-        assert '/data/{}/login'.format(self.recipe_id) in response.headers['Location']
-
-
-class TestDataSavePage(AbstractControllerTest):
-    """ Test the form for saving a recipe """
-    
-    path = '/data/save'
-
-    def test_page(self):
-        response = self.get(self.path, {
-            'url': DATASET_URL,
-        })
-        assert b'Save recipe' in response.data
-        assert b'<form' in response.data
-
-        
-class TestDataSaveAction(AbstractControllerTest):
-    """ Test saving a recipe """
-
-    path = '/actions/save-recipe'
-
-    def test_save(self):
-        response = self.post(
-            self.path,
-            data = {
-                'name': 'Test recipe',
-                'description': 'Test description',
-                'url': 'https://example.org/data.csv',
-                'password': 'foo',
-                'password-repeat': 'foo',
-            },
-            status=303
-        )
-        self.assertTrue(response.location is not None)
-        self.assertTrue(response.location.startswith('/data/'))
-
-    def test_spam_title(self):
-        """ URLs not allowed in saved-recipe titles """
-        response = self.post(
-            self.path,
-            data = {
-                'name': 'Test recipe https://spam.example.org',
-                'description': 'Test description',
-                'url': 'https://example.org/data.csv',
-                'password': 'foo',
-                'password-repeat': 'foo',
-            },
-            status=500
-        )
-        self.assertTrue("not allowed" in str(response.data))
-
-    def test_spam_description(self):
-        """ URLs not allowed in saved-recipe descriptions """
-        response = self.post(
-            self.path,
-            data = {
-                'name': 'Test recipe',
-                'description': 'Test description https://spam.example.org/',
-                'url': 'https://example.org/data.csv',
-                'password': 'foo',
-                'password-repeat': 'foo',
-            },
-            status=500
-        )
-        self.assertTrue("not allowed" in str(response.data))
 
 
 class TestDataPage(AbstractControllerTest):
@@ -676,60 +618,5 @@ class TestDataPreviewGetSheets(AbstractControllerTest):
             'url': 'http://example.org/basic-dataset.xlsx',
         })
         self.assertEqual(self.EXPECTED_CSV, response.data)
-
-########################################################################
-# Humanitarian.ID controllers (not currently in use)
-########################################################################
-
-class X_TestHIDLogin(AbstractControllerTest):
-
-    path = '/login'
-
-    def x_test_redirect(self):
-        response = self.get(self.path, status=303)
-        assert b'/oauth/authorize' in response.data
-
-
-class X_TestHIDLogout(AbstractControllerTest):
-
-    path = '/logout'
-
-    def x_test_redirect(self):
-        response = self.get(self.path, status=303)
-        self.assertEqual('http://localhost/', response.location)
-
-    def x_test_session(self):
-        """Test that logout clears the session."""
-        import flask
-        # Extra cruft for setting a session cookie
-        with self.client as client:
-            with client.session_transaction() as session:
-                session['user'] = 'abc'
-            response = self.get('/data/source')
-            assert 'user' in flask.session
-            response = self.get(self.path, status=303)
-            assert 'user' not in flask.session
-
-
-
-########################################################################
-# Obsolete pages
-########################################################################
-
-class TestRemovedPages(AbstractControllerTest):
-
-    def test_chart_removed(self):
-        """/data/chart no longer exists. Should return 410."""
-        response = self.get('/data/chart', {
-            "url": "http://example.org/data.csv"
-        }, 410)
-        response = self.get('/data/abcdef/chart', {}, 410)
-
-    def test_map_removed(self):
-        """/data/map no longer exists. Should return 410."""
-        response = self.get('/data/map', {
-            "url": "http://example.org/data.csv"
-        }, 410)
-        response = self.get('/data/abcdef/map', {}, 410)
 
 # end
