@@ -5,6 +5,7 @@ Release 1.28
 	- add support for structured logs (e.g. JSON)
 	- add support for Visual Studio
 	- remove all frozen version requirements, so that we'll pull the latest packages on deployment
+	- get rid of warnings during user testing
 
 2022-12-12 Release 1.27.3
 	- interim release to upgrade libhxl to 4.27.3 (decreased logging levels)

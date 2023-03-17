@@ -1,6 +1,6 @@
 {% set token_pattern = '[A-Za-z][_0-9A-Za-z]*' %}
 
-{% set tag_pattern = '\s*#?' + token_pattern + '(\s*[+]' + token_pattern + ')*\s*' %}
+{% set tag_pattern = '\\s*#?' + token_pattern + '(\\s*[+]' + token_pattern + ')*\\s*' %}
 {% set tag_help = 'Hashtag spec, "#" optional (e.g. "country+code")' %}
 {% set tag_placeholder = '#hashtag +attr' %}
 
@@ -8,7 +8,7 @@
 {% set tags_help = 'Hashtag specs, comma-separated, "#" optional (e.g. "country+code,sector")' %}
 {% set tags_placeholder = '#hashtag1,#hashtag2+attr' %}
 
-{% set filter_pattern = '\s*#?(?:' + (token_pattern) + '|\*)(\s*[+-]' + token_pattern + ')*\s*!?\s*' %}
+{% set filter_pattern = '\\s*#?(?:' + (token_pattern) + '|\\*)(\\s*[+-]' + token_pattern + ')*\\s*!?\\s*' %}
 {% set filter_help = 'Tag pattern, "#" optional (e.g. "country+code-dest")' %}
 {% set filter_placeholder = '#hashtag +attr1 -attr2' %}
 
@@ -16,7 +16,7 @@
 {% set filters_help = 'Tag patterns, comma-separated, "#" optional, (e.g. "country,adm1+code,org-funder")' %}
 {% set filters_placeholder = '#hashtag1,#hashtag2+attr1-attr2' %}
 
-{% set query_pattern = filter_pattern + '\s*([=~<>]|<=|>=|!=|!~|is).*' %}
+{% set query_pattern = filter_pattern + '\\s*([=~<>]|<=|>=|!=|!~|is).*' %}
 {% set query_help = 'Row query, "#" optional (e.g. "country+code=SYR")' %}
 {% set query_placeholder = '#hashtag+attr=value' %}
 

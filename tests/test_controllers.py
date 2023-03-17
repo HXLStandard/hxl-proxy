@@ -36,6 +36,7 @@ class AbstractControllerTest(base.AbstractDBTest):
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'
         hxl_proxy.app.config['HID_CLIENT_ID'] = '12345'
         hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
+        hxl_proxy.app.config['CACHE_TYPE'] = 'simple'
 
         self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()

@@ -15,7 +15,23 @@ See https://www.python.org/dev/peps/pep-0396/
 """
 
 #
-# Continue with other imports
+# Ignore nuisance warnings from flask_caching (for now)
+#
+
+import warnings
+warnings.filterwarnings(
+    'ignore',
+    category=UserWarning,
+    module='flask_caching',
+)
+warnings.filterwarnings(
+    'ignore',
+    category=DeprecationWarning,
+    module='flask_caching',
+)
+
+#
+# Continue imports
 #
 import flask, flask_caching, json, os, requests_cache, werkzeug.datastructures
 from . import reverse_proxied
