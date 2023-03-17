@@ -1,5 +1,6 @@
 2022-11-28 Release 1.28
 	- request code stops running after a configurable timeout (default: 30 seconds)
+	- remove controller support for adding or editing saved recipes
 	- add support for structured logs (e.g. JSON)
 	- add support for Visual Studio
 
