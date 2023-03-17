@@ -248,7 +248,7 @@ def make_input_options (args):
 def check_markup(s):
     """ Check if text contains markup or URLs
     """
-    if re.search("(<[a-zA-Z]|>|href|https?:|\.com|\[url=)", s):
+    if re.search(r'(<[a-zA-Z]|>|href|https?:|\.com|\[url=)', s):
         return True
     else:
         return False
