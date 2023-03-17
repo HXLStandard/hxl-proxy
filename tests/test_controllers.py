@@ -39,8 +39,6 @@ class AbstractControllerTest(base.AbstractDBTest):
 
         self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
-        if not hxl_proxy.app.config.get('DEBUG'):
-            hxl_proxy.app.register_error_handler(Exception, handle_default_exception)
 
     def tearDown(self):
         super().tearDown()
