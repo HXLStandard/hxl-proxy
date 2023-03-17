@@ -232,31 +232,12 @@ def make_input_options (args):
         allow_local = False,
         sheet_index = sheet_index,
         timeout = timeout,
-        verify_ssl = check_verify_ssl(args),
         http_headers = http_headers,
         selector = args.get("selector", None),
         encoding = args.get("encoding", None),
         expand_merged = args.get("expand-merged", args.get("expand_merged", False)),
         scan_ckan_resources = args.get("scan-ckan-resources", args.get("scan_ckan_resources", False)),
     )
-
-
-def check_verify_ssl(args):
-    """ Check parameters to see if we need to verify SSL connections.
-
-    Args:
-        args(dict): command-line parameters
-
-    Returns:
-        bool: True if we need to verify SSL; false if unverified is OK
-
-    """
-    if args.get('skip-verify-ssl', args.get("skip_verify_ssl", None)) == 'on':
-        return False
-    elif args.get('verify_ssl') == 'off' or args.get('verify') == 'off': # deprecated parameters
-        return False
-    else:
-        return True
 
 
 
