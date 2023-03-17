@@ -481,7 +481,7 @@ class TestHash(AbstractControllerTest):
             'url': self.URL
         })
         report_data = json.loads(response_data.get_data(True))
-        self.assertNotEquals(report_headers['hash'], report_data['hash'])
+        self.assertNotEqual(report_headers['hash'], report_data['hash'])
 
 
 class TestDataPreview(AbstractControllerTest):

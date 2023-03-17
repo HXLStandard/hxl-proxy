@@ -96,16 +96,9 @@
                   </label>
                 </div>
 
-                <div class="col-sm-12 checkbox">
-                  <label>
-                    <input type="checkbox" name="skip_verify_ssl" {% if (recipe.args.skip_verify_ssl == 'on') %}checked="checked"{% endif %}/>
-                    Don't verify SSL certificates
-                  </label>
-                </div>
-
             </div>
 
-            {% with excludes=['url', 'skip_verify_ssl', 'sheet', 'expand_merged', 'scan_ckan_resources'] %}
+            {% with excludes=['url', 'sheet', 'expand_merged', 'scan_ckan_resources'] %}
             {% if recipe.recipe_id %}
             <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}"/>
             {% endif %}

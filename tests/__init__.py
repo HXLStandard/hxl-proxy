@@ -9,7 +9,7 @@ import unittest.mock
 # Mock URL access for local testing
 #
 
-def mock_open_url(url, allow_local=False, timeout=None, verify_ssl=True, http_headers=None):
+def mock_open_url(url, allow_local=False, timeout=None, http_headers=None):
     """
     Open local files instead of URLs.
     If it's a local file path, leave it alone; otherwise,
