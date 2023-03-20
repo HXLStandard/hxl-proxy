@@ -1,10 +1,10 @@
-Release 1.28
+2023-03-20 Release 1.28
 	- remove controller support for adding or editing saved recipes
 	- request code stops running after a configurable timeout (default: 30 seconds)
 	- remove skip-verify-ssl option (SSL certificates for remote data must always be valid)
 	- add support for structured logs (e.g. JSON)
 	- add support for Visual Studio
-	- remove all frozen version requirements, so that we'll pull the latest packages on deployment
+	- remove all frozen version requirements (except urllib3 for requests), so that we'll pull the latest packages on deployment
 	- get rid of warnings during user testing
 
 2022-12-12 Release 1.27.3

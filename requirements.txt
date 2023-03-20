@@ -1,11 +1,11 @@
-#libhxl==4.27.3
-git+https://github.com/HXLStandard/libhxl-python.git@4.27.3#egg=libhxl
-requests>=2.27
+urllib3>=1.21.1<1.27 # version required by requests
+#git+https://github.com/HXLStandard/libhxl-python.git@4.27.3#egg=libhxl # for development
+libhxl==4.28 # for release
 ckanapi>=3.5
-flask>=2.1.2
 flask-caching
-requests_cache
+flask>=2.1.2
 mysql-connector-python>=8.0.29
 redis
-urllib3<1.27,>=1.21.1
+requests>=2.27
+requests_cache
 structlog
