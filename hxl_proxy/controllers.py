@@ -36,7 +36,7 @@ def handle_alarm_signal(signum, frame):
     logup('Request timed out', level='info')
     raise TimeoutError()
 
-signal.signal(signal.SIGALRM, handle_alarm_signal)
+# signal.signal(signal.SIGALRM, handle_alarm_signal) # temporarily deactivated
 
 
 
@@ -187,7 +187,7 @@ def before_request():
         timeout = int(app.config.get('TIMEOUT', 30))
     except ValueError:
         timeout = 30
-    signal.alarm(timeout)
+    # signal.alarm(timeout) # temporarily deactivated
     
 
 
