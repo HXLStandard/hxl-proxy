@@ -1,3 +1,6 @@
+2023-03-29 Release 1.28.1
+	- temporarily deactivate Python-layer timeout (causing random request failures)
+
 2023-03-20 Release 1.28
 	- remove controller support for adding or editing saved recipes
 	- request code stops running after a configurable timeout (default: 30 seconds)
