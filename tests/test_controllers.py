@@ -407,14 +407,14 @@ class TestInfo(AbstractControllerTest):
         self.assertTrue(info["sheets"][0]["has_merged_cells"])
         self.assertFalse(info["sheets"][0]["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", info["sheets"][0]["header_hash"])
-        self.assertTrue(info["sheets"][0]["hashtag_hash"] is None)
+        self.assertTrue(info["sheets"][0]["hxl_header_hash"] is None)
 
         # Sheet 2
         self.assertEqual("input-quality-hxl", info["sheets"][1]["name"])
         self.assertFalse(info["sheets"][1]["has_merged_cells"])
         self.assertTrue(info["sheets"][1]["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", info["sheets"][1]["header_hash"])
-        self.assertEqual("3252897e927737b2f6f423dccd07ac93", info["sheets"][1]["hashtag_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", info["sheets"][1]["hxl_header_hash"])
 
     def get_info(self):
         response = self.get(self.PATH, {
