@@ -2,7 +2,7 @@ hxl-proxy
 =========
 
 Python-/flask-based web proxy for transforming a HXL dataset
-dynamically. Requires Python3..
+dynamically. Requires Python3.
 
 User documentation is available at https://github.com/HXLStandard/hxl-proxy/wiki
 
