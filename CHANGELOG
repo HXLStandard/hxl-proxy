@@ -1,3 +1,7 @@
+Release 1.29
+	- /api/source-info now supports all formats (not just XLSX and XLS)
+	- renamed 'hashtag_hash' property from /api/source-info to 'hxl-hashtag-hash'
+
 2023-03-29 Release 1.28.1
 	- temporarily deactivate Python-layer timeout (causing random request failures)
 
