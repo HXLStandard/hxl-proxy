@@ -411,7 +411,7 @@ class TestInfo(AbstractControllerTest):
         self.assertTrue(sheet["has_merged_cells"])
         self.assertFalse(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertTrue(sheet["hxl_hashtag_hash"] is None)
+        self.assertTrue(sheet["hxl_header_hash"] is None)
 
         # Sheet 2 (HXLated)
         sheet = info["sheets"][1]
@@ -422,7 +422,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertTrue(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_hashtag_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_header_hash"])
 
     def test_xls(self):
         info = self.__get_info(self.XLS_URL)
@@ -438,7 +438,7 @@ class TestInfo(AbstractControllerTest):
         #self.assertTrue(sheet["has_merged_cells"]) # cannot yet detect for XLS
         self.assertFalse(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertTrue(sheet["hxl_hashtag_hash"] is None)
+        self.assertTrue(sheet["hxl_header_hash"] is None)
 
         # Sheet 2
         sheet = info["sheets"][1]
@@ -449,7 +449,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertTrue(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_hashtag_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_header_hash"])
 
     def test_csv_hxl(self):
         info = self.__get_info(self.CSV_HXL_URL)
@@ -464,7 +464,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertTrue(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_hashtag_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_header_hash"])
 
     def test_csv_nohxl(self):
         info = self.__get_info(self.CSV_NOHXL_URL)
@@ -479,7 +479,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertFalse(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertIsNone(sheet["hxl_hashtag_hash"])
+        self.assertIsNone(sheet["hxl_header_hash"])
 
     def test_json_hxl(self):
         info = self.__get_info(self.JSON_HXL_URL)
@@ -494,7 +494,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertTrue(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_hashtag_hash"])
+        self.assertEqual("3252897e927737b2f6f423dccd07ac93", sheet["hxl_header_hash"])
                          
     def test_json_nohxl(self):
         info = self.__get_info(self.JSON_NOHXL_URL)
@@ -509,7 +509,7 @@ class TestInfo(AbstractControllerTest):
         self.assertFalse(sheet["has_merged_cells"])
         self.assertFalse(sheet["is_hxlated"])
         self.assertEqual("56c6270ee039646436af590e874e6f67", sheet["header_hash"])
-        self.assertIsNone(sheet["hxl_hashtag_hash"])
+        self.assertIsNone(sheet["hxl_header_hash"])
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def __get_info(self, url):
