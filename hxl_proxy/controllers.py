@@ -36,7 +36,7 @@ def handle_alarm_signal(signum, frame):
     logup('Request timed out', level='info')
     raise TimeoutError()
 
-signal.signal(signal.SIGALRM, handle_alarm_signal)
+# signal.signal(signal.SIGALRM, handle_alarm_signal) # temporarily deactivated
 
 
 
@@ -187,7 +187,7 @@ def before_request():
         timeout = int(app.config.get('TIMEOUT', 30))
     except ValueError:
         timeout = 30
-    signal.alarm(timeout)
+    # signal.alarm(timeout) # temporarily deactivated
     
 
 
@@ -1422,18 +1422,11 @@ def make_info():
         raise ValueError("Parameter 'url' is required")
 
     # Open the dataset (not necessarily hxlated)
-    try:
-        info = util.hxl_make_input(url, util.make_input_options(flask.request.args)).info()
-        return flask.Response(
-            json.dumps(info, indent=4),
-            mimetype="application/json"
-        )
-    except NotImplementedError:
-        return flask.Response(
-            { "error": "dataset format not supported" },
-            mimetype="application/json",
-            status=400
-        )
+    info = hxl.input.info(util.hxl_make_input(url, util.make_input_options(flask.request.args)))
+    return flask.Response(
+        json.dumps(info, indent=4),
+        mimetype="application/json"
+    )
 
 
 ########################################################################

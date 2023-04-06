@@ -16,7 +16,7 @@ setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
     package_data={'hxl_proxy': ['*.sql']},
-    version = "1.28",
+    version = "1.29",
     description = 'Flask-based web proxy for HXL',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -27,8 +27,8 @@ setuptools.setup(
     zip_safe = False,
     install_requires=[
         'urllib3>=1.21.1,<1.27', # version required by requests
-        #'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@4.27.3', # for development
-        'libhxl==4.28', # for release
+        #'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev', # for development
+        'libhxl==4.29', # for release
         'ckanapi>=3.5',
         'flask-caching',
         'flask>=2.1.2',
