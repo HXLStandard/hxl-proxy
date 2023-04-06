@@ -1,5 +1,5 @@
 urllib3>=1.21.1<1.27 # version required by requests
-#git+https://github.com/HXLStandard/libhxl-python.git@4.29-b1#egg=libhxl # for development
+#git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
 libhxl==4.29 # for release
 ckanapi>=3.5
 flask-caching
