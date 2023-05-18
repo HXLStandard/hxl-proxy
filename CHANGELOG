@@ -1,3 +1,7 @@
+2023-05-18 Release 2.0
+	- from libhxl:
+	  - /api/source-info now returns columns for headers and HXL hashtags
+	  
 2023-04-06 Release 1.29
 	- from libhxl:
 	  - /api/source-info now supports all formats (not just XLSX and XLS)
