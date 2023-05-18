@@ -16,7 +16,7 @@ setuptools.setup(
     name = 'hxl-proxy',
     packages = ['hxl_proxy'],
     package_data={'hxl_proxy': ['*.sql']},
-    version = "1.29",
+    version = "2.0",
     description = 'Flask-based web proxy for HXL',
     long_description=long_description,
     long_description_content_type="text/markdown",
