@@ -1,6 +1,13 @@
+2023-05-18 Release 2.0
+	- from libhxl:
+	  - /api/source-info now returns columns for headers and HXL hashtags
+	  
 2023-04-06 Release 1.29
-	- /api/source-info now supports all formats (not just XLSX and XLS)
-	- renamed 'hashtag_hash' property from /api/source-info to 'hxl-hashtag-hash'
+	- from libhxl:
+	  - /api/source-info now supports all formats (not just XLSX and XLS)
+	  - /api/source-info now returns headers and HXL hashtags
+	  - libhxl fixes for API-munging bug
+	  - renamed 'hashtag_hash' property from /api/source-info to 'hxl_header_hash'
 
 2023-03-29 Release 1.28.1
 	- temporarily deactivate Python-layer timeout (causing random request failures)
