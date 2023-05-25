@@ -23,7 +23,7 @@ setuptools.setup(
     project_urls={
         'Documentation': 'https://github.com/HXLStandard/hxl-proxy/wiki',
         'GitHub': 'https://github.com/HXLStandard/hxl-proxy/',
-        'Changelog': 'https://github.com/HXLStandard/hxl-proxy/blob/main/CHANGELOG',
+        'Changelog': 'https://github.com/HXLStandard/hxl-proxy/blob/prod/CHANGELOG',
     },
     author='David Megginson',
     author_email='contact@megginson.com',
