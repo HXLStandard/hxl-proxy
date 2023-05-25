@@ -30,7 +30,6 @@ class AbstractControllerTest(base.AbstractDBTest):
     def setUp(self):
         """Configure a test app instance."""
         super().setUp()
-        hxl_proxy.app.config['DEBUG'] = False
         hxl_proxy.app.config['TIMEOUT'] = 30
         hxl_proxy.app.config['SECRET_KEY'] = 'abcde'
         hxl_proxy.app.config['HID_BASE_URL'] = 'https://hid.example.org'

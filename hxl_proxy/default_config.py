@@ -1,4 +1,3 @@
-DEBUG=True
 DB_FILE='/tmp/hxl-proxy.db'
 
 HID_CLIENT_ID = '<client id>'
