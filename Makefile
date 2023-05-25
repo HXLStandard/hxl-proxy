@@ -56,7 +56,10 @@ test-docker:
 
 # run local dev (needs config in local/config.py)
 run-local: $(VENV)
-	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py python run-server.py
+	. $(VENV) && DEBUG=false HXL_PROXY_CONFIG=../local/config.py python run-server.py
+
+debug-local: $(VENV)
+	. $(VENV) && DEBUG=true HXL_PROXY_CONFIG=../local/config.py python run-server.py
 
 # browser tests for dev.proxy.hxlstandard.org
 browser-tests-local:

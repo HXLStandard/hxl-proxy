@@ -92,7 +92,8 @@ def handle_default_exception(e):
         return flask.render_template('error.html', e=e, category=type(e)), status
 
 # Register the general error handler UNLESS we're in debug mode
-app.register_error_handler(Exception, handle_default_exception)
+if not app.config['DEBUG']:
+    app.register_error_handler(Exception, handle_default_exception)
 
 
 def handle_redirect_exception(e):
