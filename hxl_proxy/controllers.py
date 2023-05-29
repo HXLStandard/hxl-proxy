@@ -206,7 +206,7 @@ def about():
     """
     # include version information for these packages
     releases = {}
-    for package in ['hxl-proxy', 'libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'structlog', 'urllib3',]:
+    for package in ['hxl-proxy', 'libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'requests_cache', 'structlog', 'urllib3',]:
         releases[package] = importlib.metadata.version(package)
 
     # draw the web page
