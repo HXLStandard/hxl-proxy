@@ -1,4 +1,4 @@
-urllib3==2.0.2
+urllib3
 git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
 #libhxl==5.0 # for release
 ckanapi>=3.5
