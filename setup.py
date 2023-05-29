@@ -20,21 +20,26 @@ setuptools.setup(
     description = 'Flask-based web proxy for HXL',
     long_description=long_description,
     long_description_content_type="text/markdown",
+    project_urls={
+        'Documentation': 'https://github.com/HXLStandard/hxl-proxy/wiki',
+        'GitHub': 'https://github.com/HXLStandard/hxl-proxy/',
+        'Changelog': 'https://github.com/HXLStandard/hxl-proxy/blob/prod/CHANGELOG',
+    },
     author='David Megginson',
     author_email='contact@megginson.com',
     url='https://github.com/HXLStandard/hxl-proxy',
     include_package_data = True,
     zip_safe = False,
     install_requires=[
-        'urllib3>=1.21.1,<1.27', # version required by requests
-        #'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev', # for development
-        'libhxl==5.0', # for release
+        'urllib3', # version required by requests
+        'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev', # for development
+        #'libhxl==5.0', # for release
         'ckanapi>=3.5',
         'flask-caching',
         'flask>=2.1.2',
         'mysql-connector-python>=8.0.29',
         'redis',
-        'requests>=2.27',
+        'requests',
         'requests_cache',
         'structlog',
     ],
