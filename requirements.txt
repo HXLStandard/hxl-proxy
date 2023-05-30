@@ -1,5 +1,5 @@
-urllib3==1.25.5       # avoid caching bug
-requests_cache==0.9.8 # avoid caching bug
+urllib3<1.27,>1.21.1  # avoid caching bug
+requests_cache
 ckanapi>=3.5
 flask>=2.1.2
 mysql-connector-python>=8.0.29
@@ -9,3 +9,4 @@ flask-caching
 redis
 requests
 structlog
+typing_extensions
