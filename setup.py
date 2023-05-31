@@ -31,7 +31,7 @@ setuptools.setup(
     include_package_data = True,
     zip_safe = False,
     install_requires=[
-        'urllib3==1.25.5',       # avoid caching bug
+        'urllib3==1.26.5',       # avoid caching bug
         'requests_cache==0.9.8', # avoid caching bug
         'ckanapi>=3.5',
         'flask>=2.1.2',
