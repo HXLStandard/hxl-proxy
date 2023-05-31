@@ -1,11 +1,11 @@
-urllib3==1.25.5       # avoid caching bug
-requests_cache==0.9.8 # avoid caching bug
+urllib3==2.0.2
+requests_cache==1.0.1
 ckanapi>=3.5
-flask>=2.1.2
+flask==2.3.2
 mysql-connector-python>=8.0.29
 git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
 #libhxl==5.01 # for release
-flask-caching
+flask-caching==2.0.2
 redis
-requests
+requests==2.31.0
 structlog
