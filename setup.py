@@ -31,16 +31,16 @@ setuptools.setup(
     include_package_data = True,
     zip_safe = False,
     install_requires=[
-        'urllib3==1.25.5',       # avoid caching bug
-        'requests_cache==0.9.8', # avoid caching bug
+        'urllib3==2.0.2',       # avoid caching bug
+        'requests_cache==1.0.1', # avoid caching bug
         'ckanapi>=3.5',
-        'flask>=2.1.2',
+        'flask==2.3.2',
         'mysql-connector-python>=8.0.29',
         'libhxl @ git+https://github.com/HXLStandard/libhxl-python.git@dev', # for development
         #'libhxl==5.01', # for release
-        'flask-caching',
+        'flask-caching==2.0.2',
         'redis',
-        'requests',
+        'requests==2.31.0',
         'structlog',
     ],
     dependency_links=[
