@@ -205,8 +205,10 @@ def about():
     we can tell easily what's deployed.
     """
     # include version information for these packages
-    releases = {}
-    for package in ['hxl-proxy', 'libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'requests_cache', 'structlog', 'urllib3',]:
+    releases = {
+        'hxl_proxy': hxl_proxy.__version__,
+    }
+    for package in ['libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'requests_cache', 'structlog', 'urllib3',]:
         try:
             releases[package] = importlib.metadata.version(package)
         except Exception as e:
