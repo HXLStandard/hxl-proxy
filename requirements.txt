@@ -3,8 +3,8 @@ requests_cache
 ckanapi>=3.5
 flask>=2.2.5<2.3      # 2.3 messes up pip dependencies
 mysql-connector-python>=8.0.29
-git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
-#libhxl==5.01         # for release
+# git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
+libhxl==5.0.1         # for release
 flask-caching
 redis
 requests
