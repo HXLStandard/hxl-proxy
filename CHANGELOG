@@ -1,3 +1,9 @@
+2023-06-01 Release 2.0.1:
+	- tweak dependency versions to avoid requests-cache conflicts
+	- move setup info from setup.py to setup.cfg
+	- add more dependency versions to about.html
+	- ensure that the HXL Proxy can read from itself
+
 2023-05-18 Release 2.0
 	- from libhxl:
 	  - /api/source-info now returns columns for headers and HXL hashtags

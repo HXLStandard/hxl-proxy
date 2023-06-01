@@ -13,7 +13,7 @@ from hxl.input import HXLIOException
 
 from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
-import datetime, flask, hxl, io, json, logging, requests, requests_cache, signal, werkzeug, csv, urllib
+import datetime, flask, hxl, importlib, io, json, logging, requests, requests_cache, signal, werkzeug, csv, urllib
 
 from hxl.util import logup
 
@@ -92,7 +92,8 @@ def handle_default_exception(e):
         return flask.render_template('error.html', e=e, category=type(e)), status
 
 # Register the general error handler UNLESS we're in debug mode
-app.register_error_handler(Exception, handle_default_exception)
+if not app.debug:
+    app.register_error_handler(Exception, handle_default_exception)
 
 
 def handle_redirect_exception(e):
@@ -205,11 +206,13 @@ def about():
     """
     # include version information for these packages
     releases = {
-        'hxl-proxy': hxl_proxy.__version__,
-        'libhxl': hxl.__version__,
-        'flask': flask.__version__,
-        'requests': requests.__version__
+        'hxl_proxy': hxl_proxy.__version__,
     }
+    for package in ['libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'requests_cache', 'structlog', 'urllib3',]:
+        try:
+            releases[package] = importlib.metadata.version(package)
+        except Exception as e:
+            releases[package] = str(e)
 
     # draw the web page
     return flask.render_template('about.html', releases=releases)

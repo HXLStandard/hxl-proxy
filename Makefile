@@ -19,35 +19,41 @@
 # activation script for the Python virtual environment
 VENV=venv/bin/activate
 
+PYTEST_OPTS=-W ignore::DeprecationWarning
+PIP3_OPTS=-q
+PYTHON_OPTS=-W ignore:::pkg_resources # get rid of the deprecation warnings
+SETUP_OPTS=-q
+
+all: $(VENV)
+
+# (re)build the virtual environment if it's missing, or whenever setup.cfg changes
+$(VENV): setup.cfg requirements.txt
+	rm -rf venv
+	python3 -m venv venv
+	. $(VENV) && python3 ${PYTHON_OPTS} setup.py ${SETUP_OPTS} develop
+
 # run unit tests
 test: $(VENV)
-	. $(VENV) && pytest
+	. $(VENV) && pytest ${PYTEST_OPTS}
 
 # run failed unit tests
 test-failed: $(VENV)
-	. $(VENV) && pytest --lf
+	. $(VENV) && pytest ${PYTEST_OPTS} --lf
 
 # alias to (re)build the Python virtual environment
 build-venv: $(VENV)
 
-# (re)build the virtual environment if it's missing, or whenever setup.py changes
-$(VENV): setup.py requirements.txt
-	rm -rf venv
-	python3 -m venv venv
-	. $(VENV) && cd ../libhxl-python \
-	  && pip3 install -r requirements.txt \
-	  && python setup.py develop \
-	  && cd ../hxl-proxy \
-	  && python3 setup.py develop
-
 # do a cold install in a temporary virtual environment and run unit tests
 test-install:
-	pip3 cache remove '*'
+	pip3 ${PIP3_OPTS} cache remove '*'
+	echo "Testing setup.py ..."
 	rm -rf venv-test
 	python3 -m venv venv-test
-	. venv-test/bin/activate \
-	  && python setup.py install \
-	  && pytest
+	. venv-test/bin/activate && python3 ${PYTHON_OPTS} setup.py ${SETUP_OPTS} install && pytest ${PYTEST_OPTS}
+	echo "Testing requirements.txt ..."
+	rm -rf venv-test
+	python3 -m venv venv-test
+	. venv-test/bin/activate && pip3 ${PIP3_OPTS} install -r requirements.txt && pytest ${PYTEST_OPTS}
 	rm -rf venv-test # make sure we clean up
 
 # Add target for docker build
@@ -56,7 +62,10 @@ test-docker:
 
 # run local dev (needs config in local/config.py)
 run-local: $(VENV)
-	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py python run-server.py
+	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py flask --app hxl_proxy run
+
+debug-local: $(VENV)
+	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py flask --debug --app hxl_proxy run
 
 # browser tests for dev.proxy.hxlstandard.org
 browser-tests-local:
@@ -78,8 +87,8 @@ browser-tests-prod:
 publish-pypi: $(VENV)
 	rm -rf dist/*
 	. $(VENV) \
-	  && pip install twine \
-	  && python setup.py sdist \
+	  && pip3 ${PIP3_OPTS} -q install twine \
+	  && python3 ${PYTHON_OPTS} setup.py ${SETUP_OPTS} sdist \
 	  && twine upload dist/*
 
 # (re)generate emacs TAGS file

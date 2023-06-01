@@ -1,6 +1,7 @@
 *.pyc
 /.eggs
 /venv
+/venv-test
 build
 dist
 hxl-proxy.wsgi

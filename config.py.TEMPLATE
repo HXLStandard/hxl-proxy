@@ -11,11 +11,7 @@ import redis
 from urllib.parse import urlparse
 import distutils.util as util
 
-#
-# If True, will show detailed debugging information on errors
-# Should be False for a production system
-#
-DEBUG = bool(util.strtobool(os.getenv('DEBUG', 'True')))
+# use app.debug to detect debug mode
 
 #
 # Set the Python logging level for the app

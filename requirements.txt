@@ -1,11 +1,12 @@
-urllib3>=1.21.1<1.27 # version required by requests
-#git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
-libhxl==5.0 # for release
-ckanapi>=3.5
-flask-caching
-flask>=2.1.2
-mysql-connector-python>=8.0.29
-redis
-requests>=2.27
+urllib3<1.27,>1.21.1  # avoid caching bug
 requests_cache
+ckanapi>=3.5
+flask>=2.2.5<2.3      # 2.3 messes up pip dependencies
+mysql-connector-python>=8.0.29
+# git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
+libhxl==5.0.1         # for release
+flask-caching
+redis
+requests
 structlog
+typing_extensions
