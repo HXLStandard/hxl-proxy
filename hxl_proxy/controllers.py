@@ -207,7 +207,10 @@ def about():
     # include version information for these packages
     releases = {}
     for package in ['hxl-proxy', 'libhxl', 'flask', 'flask-caching', 'redis', 'requests', 'requests_cache', 'structlog', 'urllib3',]:
-        releases[package] = importlib.metadata.version(package)
+        try:
+            releases[package] = importlib.metadata.version(package)
+        except Exception as e:
+            releases[package] = str(e)
 
     # draw the web page
     return flask.render_template('about.html', releases=releases)
