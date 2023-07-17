@@ -1,3 +1,6 @@
+2023-07-13 Release 2.0.2:
+	- update to libhxl==5.0.2 to support the .hxl extension for CSV files
+
 2023-06-01 Release 2.0.1:
 	- tweak dependency versions to avoid requests-cache conflicts
 	- move setup info from setup.py to setup.cfg
