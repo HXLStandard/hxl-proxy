@@ -383,8 +383,6 @@ def data_save(recipe_id=None):
 # has tests
 @app.route("/data/validate")
 @app.route("/data/validate.<format>")
-@app.route("/data/<recipe_id>/validate")
-@app.route("/data/<recipe_id>/validate.<format>")
 @util.structlogged
 def data_validate(recipe_id=None, format='html'):
     """ Flask controller: validate a HXL dataset and show the results
@@ -476,7 +474,6 @@ def show_advanced(recipe_id=None):
 
 # no tests
 @app.route("/data/logs")
-@app.route("/data/<recipe_id>/logs")
 @util.structlogged
 def data_logs(recipe_id=None):
     """ Flask controller: show logs for a recipe
@@ -492,11 +489,6 @@ def data_logs(recipe_id=None):
 @app.route("/data.<format>")
 @app.route("/data/download/<stub>.<flavour>.<format>")
 @app.route("/data/download/<stub>.<format>")
-@app.route("/data/<recipe_id>.<flavour>.<format>")
-@app.route("/data/<recipe_id>.<format>")
-@app.route("/data/<recipe_id>/download/<stub>.<flavour>.<format>")
-@app.route("/data/<recipe_id>/download/<stub>.<format>")
-@app.route("/data/<recipe_id>") # must come last, or it will steal earlier patterns
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 @util.structlogged
 def data_view(recipe_id=None, format="html", stub=None, flavour=None):

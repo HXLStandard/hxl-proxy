@@ -37,7 +37,6 @@ class AbstractControllerTest(base.AbstractDBTest):
         hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
         hxl_proxy.app.config['CACHE_TYPE'] = 'simple'
 
-        self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
 
     def tearDown(self):
@@ -240,7 +239,7 @@ class TestEditPage(AbstractControllerTest):
 
 
 class TestDataPage(AbstractControllerTest):
-    """Test /data and /data/{recipe_id}"""
+    """ Test /data """
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_auth(self):
@@ -275,17 +274,9 @@ class TestDataPage(AbstractControllerTest):
         assert b'View data' in response.data
         self.assertBasicDataset(response)
 
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_recipe_id(self):
-        response = self.get('/data/{}?force=on'.format(self.recipe_id))
-        assert b'Recipe #1' in response.data
-        self.assertBasicDataset(response)
-
-    # TODO test that filters work
-
 
 class TestValidationPage(AbstractControllerTest):
-    """Test /data/validate and /data/{recipe_id}/validate"""
+    """ Test /data/validate """
 
     def test_empty_url(self):
         response = self.get('/data/validate', status=303)
