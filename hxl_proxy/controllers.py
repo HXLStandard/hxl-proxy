@@ -11,7 +11,7 @@ License: Public Domain
 import hxl_proxy
 from hxl.input import HXLIOException
 
-from hxl_proxy import admin, app, auth, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
+from hxl_proxy import admin, app, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
 
 import datetime, flask, hxl, importlib, io, json, logging, requests, requests_cache, signal, werkzeug, csv, urllib
 
@@ -47,7 +47,6 @@ def handle_alarm_signal(signum, frame):
 # well as a timeout.
 #
 # The HXL Proxy uses exceptions for special purposes like redirections
-# or authorisation as well as errors.
 ########################################################################
 
 def handle_default_exception(e):
@@ -109,57 +108,6 @@ def handle_redirect_exception(e):
 
 # Register the redirect exception handler
 app.register_error_handler(exceptions.RedirectException, handle_redirect_exception)
-
-
-def handle_source_authorization_exception(e):
-    """ Error handler: the data source requires authorisation
-    This will be triggered when opening a private HDX dataset before
-    the user has supplied their authorisation token.
-    @param e: the exception being handled
-    """
-    if e.message:
-        flask.flash(e.message)
-
-    # we're using flask.g.recipe_id to handle the case where a saved recipe
-    # points to a formerly-public dataset that has suddenly become private
-    # normally, it will be None (because there's no saved recipe yet)
-    recipe = recipes.Recipe(recipe_id=flask.g.recipe_id)
-
-    # add an extra parameter for the /data/save form to indicate that we
-    # want the user to provide an authorisation token
-    extras = {
-        'need_token': 'on'
-    }
-
-    # note whether the resource looked like it came from HDX
-    if e.is_ckan:
-        extras['is_ckan'] = 'on'
-
-    # redirect to the /data/save page to ask the user for a token
-    return flask.redirect(util.data_url_for('data_save', recipe=recipe, extras=extras), 302)
-
-# register the source authorisation handler
-app.register_error_handler(hxl.input.HXLAuthorizationException, handle_source_authorization_exception)
-
-
-def handle_password_required_exception(e):
-    """ Error handler: the HXL Proxy saved recipe requires a password login
-    Note that this handler triggers on a recipe basis, not a user basis; each
-    each saved recipe can potentially have a different password.
-    @param e: the exception being handled
-    """
-    flask.flash("Login required")
-    if flask.g.recipe_id:
-        destination = flask.request.path
-        args = dict(flask.request.args)
-        if args:
-            destination += "?" + urllib.parse.urlencode(args)
-        return flask.redirect(util.data_url_for('data_login', recipe_id=flask.g.recipe_id, extras={"from": destination}), 303)
-    else:
-        raise Exception("Internal error: login but no saved recipe")
-
-# register the password required handler
-app.register_error_handler(werkzeug.exceptions.Unauthorized, handle_password_required_exception)
 
 
 
@@ -226,28 +174,24 @@ def about():
 # has tests
 @app.route("/data/source")
 @util.structlogged
-def data_source(recipe_id=None):
-    """ Flask controller: choose a new source URL
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
-    """
-    flask.g.recipe_id = recipe_id # for error handling
-    recipe = recipes.Recipe(recipe_id, auth=True)
+def data_source():
+    """ Flask controller: choose a new source URL """
+    recipe = recipes.Recipe()
     return flask.render_template('data-source.html', recipe=recipe)
 
 # has tests
 @app.route("/data/tagger")
 @util.structlogged
-def data_tagger(recipe_id=None):
+def data_tagger():
     """ Flask controller: add HXL tags to an untagged dataset
     The template will render differently depending on whether the user has selected the
     last row of text headers yet (&header_row), so this is actually two different workflow
     steps.
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+
     """
-    flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe()
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -287,15 +231,14 @@ def data_tagger(recipe_id=None):
 # has tests
 @app.route("/data/edit")
 @util.structlogged
-def data_edit(recipe_id=None):
+def data_edit():
     """Flask controller: create or edit a filter pipeline.
     Output for this page is never cached, but input may be.
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
+
     """
-    flask.g.recipe_id = recipe_id # for error handling
 
     # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
+    recipe = recipes.Recipe()
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -321,7 +264,6 @@ def data_edit(recipe_id=None):
     except (
             requests.RequestException,
             exceptions.RedirectException,
-            hxl.input.HXLAuthorizationException,
             hxl.input.HXLHTMLException
     ) as e1:
         # always pass through these exceptions
@@ -351,52 +293,22 @@ def data_edit(recipe_id=None):
 
 
 # has tests
-@app.route("/data/save")
-@util.structlogged
-def data_save(recipe_id=None):
-    """ Flask controller: create or update a saved dataset (with a short URL)
-    The user will get redirected here automatically if they attempt to open a private
-    dataset on HDX (or anywhere else that requires an "Authorization:" HTTP header.
-    The controller creates a form that submits the recipe information to be saved
-    in the database and identified with a short hash.
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
-    """
-    flask.g.recipe_id = recipe_id # for error handling
-
-    # Build the recipe from the GET params and/or the database
-    recipe = recipes.Recipe(recipe_id, auth=True)
-
-    # Workflow: if there's no source URL, redirect the user to /data/source
-    if not recipe.url:
-        flask.flash('Please choose a data source first.')
-        logup('No URL supplied for /data/save; redirecting to /data/source', level="info")
-        logger.info("No URL supplied for /data/save; redirecting to /data/source")
-        return flask.redirect(util.data_url_for('data_source', recipe), 303)
-
-    # Grab controller-specific properties for the template
-    need_token = flask.request.args.get('need_token') # we need an authentication token
-    is_ckan = flask.request.args.get('is_ckan') # the source looks like CKAN
-
-    # Draw the web page
-    return flask.render_template('data-save.html', recipe=recipe, need_token=need_token, is_ckan=is_ckan)
-
-# has tests
 @app.route("/data/validate")
 @app.route("/data/validate.<format>")
 @util.structlogged
-def data_validate(recipe_id=None, format='html'):
+def data_validate(format='html'):
     """ Flask controller: validate a HXL dataset and show the results
     Output options include a web-based HTML dashboard or JSON.
     Output for this page is never cached, but input may be.
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     @param format: the selected output format (json or html)
+
     """
+
     # Set global variables
-    flask.g.recipe_id = recipe_id # for error handling
     flask.g.output_format = format # requested output format
 
     # Get the recipe
-    recipe = recipes.Recipe(recipe_id)
+    recipe = recipes.Recipe()
 
     # Workflow: if there's no source URL, redirect the user to /data/source
     if not recipe.url:
@@ -462,24 +374,24 @@ def data_validate(recipe_id=None, format='html'):
 # has tests
 @app.route("/data/advanced")
 @util.structlogged
-def show_advanced(recipe_id=None):
+def show_advanced():
     """ Flask controller: developer page for entering a JSON recipe directly
     This page isn't linked from the HXML Proxy validation, but it's a convenient
     place to experiment with creating JSON-encoded recipes, as described at
     https://github.com/HXLStandard/hxl-proxy/wiki/JSON-recipes
     """
-    recipe = recipes.Recipe(recipe_id)
+    recipe = recipes.Recipe()
     return flask.render_template("data-advanced.html", recipe=recipe)
 
 
 # no tests
 @app.route("/data/logs")
 @util.structlogged
-def data_logs(recipe_id=None):
+def data_logs():
     """ Flask controller: show logs for a recipe
     """
     level = flask.request.args.get('level', 'WARNING').upper()
-    recipe = recipes.Recipe(recipe_id)
+    recipe = recipes.Recipe()
     return flask.render_template("data-logs.html", recipe=recipe, level=level, in_logger=True)
 
 
@@ -491,7 +403,7 @@ def data_logs(recipe_id=None):
 @app.route("/data/download/<stub>.<format>")
 @cache.cached(key_prefix=util.make_cache_key, unless=util.skip_cache_p)
 @util.structlogged
-def data_view(recipe_id=None, format="html", stub=None, flavour=None):
+def data_view(format="html", stub=None, flavour=None):
     """ Flask controller: render a transformed dataset
     This is the controller that requests will hit most of the time.
     It renders a transformed dataset as an HTML web page, a JSON
@@ -512,12 +424,12 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
 
     Grab a cup of tea, and work your way through the code slowly. :)
 
-    @param recipe_id: the hash for a saved recipe (or None if working from the command line)
     @param format: the selected output format (json or html)
     @param stub: the root filename for download, if supplied
     @param flavour: the JSON flavour, if supplied (will be "objects")
+
     """
-    flask.g.recipe_id = recipe_id # for error handling
+
 
     # Use an internal function to generate the output.
     # That simplifies the control flow, so that we can easily
@@ -531,7 +443,7 @@ def data_view(recipe_id=None, format="html", stub=None, flavour=None):
         flask.g.output_format = format
 
         # Set up the data source from the recipe
-        recipe = recipes.Recipe(recipe_id, auth=False)
+        recipe = recipes.Recipe()
 
         # Workflow: if there's no source URL, redirect the user to /data/source
         if not recipe.url:
@@ -638,110 +550,6 @@ def do_data_login():
     # Try opening the original page again, with password hash token in the cookie.
     return flask.redirect(destination, 303)
 
-# needs tests
-@app.route("/actions/save-recipe", methods=['POST'])
-@util.structlogged
-def do_data_save():
-    """ Flask controller: create or update a saved recipe
-    The saved recipe has all of its parameters in the database, and is
-    identified by a short hash. The user needs to supply a password
-    to edit it.
-
-    Post parameters:
-
-    recipe_id - the short hash identifying the recipe (blank to create a new one)
-    name - the recipe' title (optional)
-    description - the recipe's long description (optional)
-    cloneable - a flag indicating whether a user may clone the saved recipe (optional; defaults to "on")
-    stub - a root filename for downloading (optional)
-    password - a clear-text password (optional for a new saved recipe)
-    password_repeat - repeated clear-text password (optional for a new saved recipe)
-
-    (Will also include all of the other HXL Proxy recipe arguments as hidden parameters)
-    """
-
-    # FIXME - move somewhere else
-    RECIPE_ARG_EXCLUDES = [
-        'cloneable',
-        'description',
-        'dest',
-        'details'
-        'name',
-        'passhash',
-        'password',
-        'password-repeat',
-        'recipe_id',
-        'severity',
-        'stub',
-    ]
-    """Properties that should never appear in a recipe's args dictionary"""
-
-    # We will have a recipe_id if we're updating an existing pipeline
-    recipe_id = flask.request.form.get('recipe_id')
-    flask.g.recipe_id = recipe_id # for error handling
-    recipe = recipes.Recipe(recipe_id, auth=True, request_args=flask.request.form)
-
-    destination_facet = flask.request.form.get('dest', 'data_view')
-
-    # Update recipe metadata
-    # Note that an empty/unchecked value will be omitted from the form
-    if 'name' in flask.request.form:
-        recipe.name = util.forbid_markup(flask.request.form['name'], 'name')
-
-    if 'description' in flask.request.form:
-        recipe.description = util.forbid_markup(flask.request.form['description'], 'description')
-    else:
-        recipe.description = ''
-
-    if 'cloneable' in flask.request.form and not flask.request.form.get('authorization_token') and flask.request.form['cloneable'] == "on":
-        recipe.cloneable = True
-    else:
-        recipe.cloneable = False
-
-    if 'stub' in flask.request.form:
-        recipe.stub = util.forbid_markup(flask.request.form['stub'], 'stub')
-    else:
-        recipe.stub = ''
-
-    # Merge changed values
-    recipe.args = {}
-    for name in flask.request.form:
-        if name not in RECIPE_ARG_EXCLUDES:
-            recipe.args[name] = flask.request.form.get(name)
-
-    # Check for a password change
-    password = flask.request.form.get('password')
-    password_repeat = flask.request.form.get('password-repeat')
-
-    # Updating an existing recipe.
-    if recipe_id:
-        if password:
-            if password == password_repeat:
-                recipe.passhash = util.make_md5(password)
-                flask.session['passhash'] = recipe.passhash
-            else:
-                raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        dao.recipes.update(recipe.toDict())
-
-    # Creating a new recipe.
-    else:
-        if password == password_repeat:
-            recipe.passhash = util.make_md5(password)
-            flask.session['passhash'] = recipe.passhash
-        else:
-            raise werkzeug.exceptions.BadRequest("Passwords don't match")
-        recipe_id = dao.make_recipe_id()
-        recipe.recipe_id = recipe_id
-        dao.recipes.create(recipe.toDict()) # FIXME move save functionality to Recipe class
-        # FIXME other auth information is in __init__.py
-        flask.session['passhash'] = recipe.passhash
-
-    # Clear the entire HXL Proxy cache to avoid stale data (!!!)
-    # TODO: be more targeted here
-    cache.clear()
-
-    # Redirect to the /data view page
-    return flask.redirect(util.data_url_for(destination_facet, recipe), 303)
 
 # has tests
 @app.route("/actions/validate", methods=['POST'])
@@ -892,94 +700,6 @@ def do_json_recipe():
 
 
 
-########################################################################
-# Humanitarian.ID controllers
-# (not in active use as of 2019-04)
-########################################################################
-
-@app.route('/login')
-@util.structlogged
-def hid_login():
-    """ Flask controller: display login page for Humanitarian.ID
-    This is distinct from the /data/login page, which accepts a password
-    for a DATASET rather than a USER.
-
-    In the future, we can associate saved datasets with users, so they can
-    manage them without individual dataset passwords.
-
-    GET parameters:
-
-    from - the URL of the page from which we were redirected
-    """
-    # set the from path in a session cookie for later use
-    flask.session['login_redirect'] = flask.request.args.get('from', '/')
-
-    # redirect to Humanitarian.ID for the actual login form
-    return flask.redirect(auth.get_hid_login_url(), 303)
-
-
-@app.route('/logout')
-@util.structlogged
-def hid_logout():
-    """ Flask controller: kill the user's login session with Humanitarian.ID
-
-    GET parameters:
-
-    from - the URL of the page from which we were redirected
-    """
-    path = flask.request.args.get('from', '/') # original path where user choose to log out
-    flask.session.clear() # clear the login cookie
-    flask.flash("Disconnected from your Humanitarian.ID account (browsing anonymously).")
-    return flask.redirect(path, 303)
-
-
-# not currently in use (until we reactivate H.ID support)
-@app.route('/settings/user')
-@util.structlogged
-def user_settings():
-    """ Flask controller: show the user's settings from Humanitarian.ID
-    """
-    if flask.g.member:
-        return flask.render_template('settings-user.html', member=flask.g.member)
-    else:
-        # redirect back to the settings page after login
-        # ('from' is reserved, so we need a bit of a workaround)
-        args = { 'from': util.data_url_for('user_settings') }
-        return flask.redirect(url_for('login', **args), 303)
-
-
-@app.route('/oauth/authorized2/1')
-@util.structlogged
-def do_hid_authorisation():
-    """Flask controller: accept an OAuth2 token after successful login via Humanitarian.ID
-
-    GET parameters:
-
-    code - the OAuth2 token
-    state - the state that we originally passed to Humanitarian.ID (for verification)
-    """
-    # grab the token
-    code = flask.request.args.get('code')
-
-    # grab the state and check if it's the same as the one we saved in a session cookie
-    state = flask.request.args.get('state')
-    if state != flask.session.get('state'):
-        raise Exception("Security violation: inconsistent state returned from humanitarian.id login request")
-    else:
-        # if OK, clear the session cookie
-        flask.session['state'] = None
-
-    # Look up extra info from Humanitarian.ID
-    user_info = auth.get_hid_user(code) # look up user info from Humanitarian.ID
-    flask.session['member_info'] = user_info
-    flask.flash("Connected to your Humanitarian.ID account as {}".format(user_info.get('name')))
-
-    # Try to bring the user back where s/he started.
-    redirect_path = flask.session.get('login_redirect', '/')
-    del flask.session['login_redirect']
-    return flask.redirect(redirect_path, 303)
-
-
 
 ########################################################################
 # Controllers for extra API calls

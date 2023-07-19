@@ -157,12 +157,6 @@ class TestTaggerPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get(self.path, {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
         """Row not yet chosen."""
         response = self.get(self.path, {
@@ -214,12 +208,6 @@ class TestEditPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data/edit", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
         response = self.get('/data/edit', {
@@ -240,12 +228,6 @@ class TestEditPage(AbstractControllerTest):
 
 class TestDataPage(AbstractControllerTest):
     """ Test /data """
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
 
     def test_empty_url_redirect(self):
         response = self.get('/data', status=303)
@@ -281,12 +263,6 @@ class TestValidationPage(AbstractControllerTest):
     def test_empty_url(self):
         response = self.get('/data/validate', status=303)
         assert response.location.endswith('/data/source')
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data/validate", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):
