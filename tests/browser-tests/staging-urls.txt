@@ -8,5 +8,5 @@ https://stage.proxy-hxlstandard-org.ahconu.org/data/validate?schema_url=https%3A
 https://stage.proxy-hxlstandard-org.ahconu.org/pcodes/mli-adm1.csv
 https://stage.proxy-hxlstandard-org.ahconu.org/api/data-preview.json?url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2Fcadre-harmonise
 https://stage.proxy-hxlstandard-org.ahconu.org/data/logs?dest=data_edit&filter01=clean&clean-date-tags01=date&tagger-match-all=on&tagger-01-header=header+1&tagger-01-tag=%23date&header-row=1&url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1_PstA2iB0W1VdA9zhj2hqyQPFkf_7eZJBhOO3MjxNaE%2Fedit%3Fusp%3Dsharing
-https://stage.proxy-hxlstandard-org.ahconu.org/api/source-info?url=https%3A%2F%2Fgithub.com%2FHXLStandard%2Fhxl-proxy%2Fraw%2Ftest%2Ftests%2Ffiles%2Finput-info.xlsx
+https://stage.proxy-hxlstandard-org.ahconu.org/api/source-info?url=https%3A%2F%2Fgithub.com%2FHXLStandard%2Fhxl-proxy%2Fraw%2Fdev%2Ftests%2Ffiles%2Finput-info.xlsx
 https://stage.proxy-hxlstandard-org.ahconu.org/data?dest=data_view&url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2Fdrc_presence_operationnelle&scan_ckan_resources=on
