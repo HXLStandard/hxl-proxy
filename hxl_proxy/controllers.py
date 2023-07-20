@@ -11,7 +11,7 @@ License: Public Domain
 import hxl_proxy
 from hxl.input import HXLIOException
 
-from hxl_proxy import admin, app, cache, caching, dao, exceptions, filters, pcodes, preview, recipes, util, validate
+from hxl_proxy import app, cache, caching, exceptions, filters, pcodes, preview, recipes, util, validate
 
 import datetime, flask, hxl, importlib, io, json, logging, requests, requests_cache, signal, werkzeug, csv, urllib
 

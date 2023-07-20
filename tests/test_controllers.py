@@ -24,7 +24,7 @@ DATASET_URL = 'http://example.org/basic-dataset.csv'
 # Base class for controller tests
 ########################################################################
 
-class AbstractControllerTest(base.AbstractDBTest):
+class AbstractControllerTest(base.AbstractTest):
     """Base class for controller tests."""
 
     def setUp(self):

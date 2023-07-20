@@ -116,59 +116,9 @@ ITOS_CACHE_BACKEND = 'memory'
 ITOS_CACHE_TIMEOUT = 604800
 
 #
-# Database connection info
-#
-
-# 'sqlite3' or 'mysql'
-DB_TYPE=os.getenv('DB_TYPE', 'sqlite3')
-
-# Schema file, for tests.
-DB_SCHEMA_FILE = os.getenv('DB_SCHEMA_FILE', 'schema-sqlite3.sql')
-
-# SQLite3 settings
-DB_FILE='/tmp/hxl-proxy.db'
-
-# MySQL settings
-DB_HOST = os.getenv('MYSQL_HOST', 'localhost')
-DB_DATABASE = os.getenv('MYSQL_DB', 'hxl_proxy')
-DB_PORT = os.getenv('DB_PORT', 3306)
-DB_USERNAME = os.getenv('MYSQL_USER', '')
-DB_PASSWORD = os.getenv('MYSQL_PASS', '')
-
-#
 # Values for Google Drive access
 #
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '<client id>')
 GOOGLE_OAUTH_ID = os.getenv('GOOGLE_OAUTH_ID', '<oauth id>')
-
-#
-# Values for Humanitarian.ID remote login
-#
-HID_CLIENT_ID = os.getenv('HID_CLIENT_ID', '<client id>')
-HID_CLIENT_SECRET = os.getenv('HID_CLIENT_SECRET', '<client secret>')
-HID_REDIRECT_URI = os.getenv('HID_REDIRECT_URI', '<redirect URI>')
-HID_BASE_URL = os.getenv('HID_BASE_URL', 'https://auth.humanitarian.id') # change to http://auth.dev.humanitarian.id for dev testing
-
-#
-# Where to find shapes, etc. for p-codes. Usually leave as-is.
-#
-PCODE_BASE_URL = 'https://hxlstandard.github.io/p-codes'
-
-#
-# Countries available for mapping (update as needed).
-#
-PCODE_COUNTRY_MAP = {
-    'Burundi': 'BDI',
-    'Cameroon': 'CMR',
-    'Chad': 'TCD',
-    'Ecuador': 'ECU',
-    'Guinea': 'GIN',
-    'Haiti': 'HTI',
-    'Mali': 'MLI',
-    'Nepal': 'NPL',
-    'Niger': 'NER',
-    'Nigeria': 'NGA',
-    'Somalia': 'SOM',
-}
 
 # end

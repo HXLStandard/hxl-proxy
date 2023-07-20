@@ -64,6 +64,9 @@ test-docker:
 run-local: $(VENV)
 	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py flask --app hxl_proxy run
 
+run-detached: $(VENV)
+	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py screen -d -m flask --app hxl_proxy run
+
 debug-local: $(VENV)
 	. $(VENV) && HXL_PROXY_CONFIG=../local/config.py flask --debug --app hxl_proxy run
 
