@@ -1,15 +1,6 @@
 version: '2.2'
 
 services:
-  mysql:
-    image: public.ecr.aws/unocha/mysql:10.6
-    hostname: mysql
-    container_name: hxl-proxy-mysql
-    environment:
-      MYSQL_DB: hxl
-      MYSQL_USER: hxl
-      MYSQL_PASS: hxl
-
   redis:
     image: public.ecr.aws/unocha/redis:5
     hostname: redis

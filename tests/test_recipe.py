@@ -11,7 +11,7 @@ from hxl_proxy.recipes import Recipe
 from . import base
 
 
-class TestConstructor(base.AbstractDBTest):
+class TestConstructor(base.AbstractTest):
 
     def setUp(self):
         super().setUp()
@@ -28,6 +28,3 @@ class TestConstructor(base.AbstractDBTest):
         self.assertEqual(args["url"], recipe.url)
         self.assertTrue(recipe.recipe_id is None)
 
-    def test_saved(self):
-        recipe_id = 'AAAAA'
-        recipe = Recipe(recipe_id=recipe_id, request_args={})
