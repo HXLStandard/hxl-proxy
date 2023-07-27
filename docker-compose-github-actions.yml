@@ -1,11 +1,6 @@
 version: '2.2'
 
 services:
-  mysql:
-    extends:
-      file: docker-compose.common.yml
-      service: mysql
-
   redis:
     extends:
       file: docker-compose.common.yml
