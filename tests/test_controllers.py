@@ -24,7 +24,7 @@ DATASET_URL = 'http://example.org/basic-dataset.csv'
 # Base class for controller tests
 ########################################################################
 
-class AbstractControllerTest(base.AbstractDBTest):
+class AbstractControllerTest(base.AbstractTest):
     """Base class for controller tests."""
 
     def setUp(self):
@@ -37,7 +37,6 @@ class AbstractControllerTest(base.AbstractDBTest):
         hxl_proxy.app.config['HID_REDIRECT_URI'] = 'https://proxy.example.org'
         hxl_proxy.app.config['CACHE_TYPE'] = 'simple'
 
-        self.recipe_id = 'AAAAA'
         self.client = hxl_proxy.app.test_client()
 
     def tearDown(self):
@@ -158,12 +157,6 @@ class TestTaggerPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get(self.path, {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_choose_row(self):
         """Row not yet chosen."""
         response = self.get(self.path, {
@@ -215,12 +208,6 @@ class TestEditPage(AbstractControllerTest):
         assert response.location.endswith('/data/source')
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data/edit", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_redirect_no_tags(self):
         """If the dataset doesn't contain HXL tags, it should redirect to tagger."""
         response = self.get('/data/edit', {
@@ -240,13 +227,7 @@ class TestEditPage(AbstractControllerTest):
 
 
 class TestDataPage(AbstractControllerTest):
-    """Test /data and /data/{recipe_id}"""
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
+    """ Test /data """
 
     def test_empty_url_redirect(self):
         response = self.get('/data', status=303)
@@ -275,27 +256,13 @@ class TestDataPage(AbstractControllerTest):
         assert b'View data' in response.data
         self.assertBasicDataset(response)
 
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_recipe_id(self):
-        response = self.get('/data/{}?force=on'.format(self.recipe_id))
-        assert b'Recipe #1' in response.data
-        self.assertBasicDataset(response)
-
-    # TODO test that filters work
-
 
 class TestValidationPage(AbstractControllerTest):
-    """Test /data/validate and /data/{recipe_id}/validate"""
+    """ Test /data/validate """
 
     def test_empty_url(self):
         response = self.get('/data/validate', status=303)
         assert response.location.endswith('/data/source')
-
-    @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
-    def test_auth(self):
-        response = self.get("/data/validate", {
-            'url': 'http://example.org/private/data.csv'
-        }, 302)
 
     @patch(URL_MOCK_TARGET, new=URL_MOCK_OBJECT)
     def test_default_schema(self):

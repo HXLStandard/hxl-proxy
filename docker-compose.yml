@@ -10,7 +10,6 @@ services:
     entrypoint: ['./run.sh']
     working_dir: /srv/www
     environment:
-      DB_TYPE: 'sqlite'
       CACHE_TYPE: 'redis'
       CACHE_REDIS_URL: 'redis://redis:6379/0'
       FLASK_HOST: '0.0.0.0'

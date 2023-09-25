@@ -8,7 +8,6 @@ services:
   proxy:
     entrypoint: []
     environment:
-      DB_TYPE: sqlite
       HXL_PROXY_CONFIG: /srv/config/config.py
       PS1: '\h \w ~> '
       TERM: xterm

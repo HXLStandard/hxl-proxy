@@ -6,19 +6,16 @@ COPY . .
 
 RUN apk add \
         git \
-        sqlite \
         libffi-dev \
         unit \
         unit-python3 && \
     mkdir -p \
         /etc/services.d/hxl \
-        /srv/db \
         /srv/cache \
         /srv/config \
         /srv/output \
         /var/log/proxy && \
     mv config.py.TEMPLATE /srv/config/config.py && \
-    cp hxl_proxy/schema-mysql.sql hxl_proxy/schema-sqlite3.sql /srv/config/ && \
     mv docker_files/hxl_run /etc/services.d/hxl/run && \
     mv docker_files/app.py docker_files/app_nr.py docker_files/app_elastic.py . && \
     pip3 --no-cache-dir install --upgrade \

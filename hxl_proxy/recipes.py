@@ -3,7 +3,7 @@ Started April 2019 by David Megginson
 License: Public Domain
 """
 
-import flask, hxl_proxy, hxl_proxy.dao, hxl_proxy.filters, logging, werkzeug
+import flask, hxl_proxy, hxl_proxy.filters, logging, werkzeug
 
 
 class Recipe:
@@ -42,34 +42,8 @@ class Recipe:
         if request_args is None:
             request_args = flask.request.args
 
-        # do we have a saved recipe? if so, then populate from the saved data
-        if recipe_id is not None:
-
-            # read the recipe from the database
-            saved_recipe = hxl_proxy.dao.recipes.read(self.recipe_id)
-
-            if not saved_recipe:
-                raise werkzeug.exceptions.NotFound("No saved recipe for {}".format(recipe_id))
-
-            # populate the class from the saved recipe dict
-            self.fromDict(saved_recipe)
-
-            # check if this page requires authorisation
-            if auth and not self.check_auth():
-                raise werkzeug.exceptions.Unauthorized("Wrong or missing password.")
-
-            # allow overrides *only* if we're not using a private dataset
-            # (not sending an HTTP Authorization: header)
-            if "authorization_token" not in self.args:
-                for key in self.RECIPE_OVERRIDES:
-                    if key in request_args:
-                        self.overridden = True
-                        self.args[key] = request_args[key]
-
-        # we don't have a saved recipe: use the HTTP GET parameters
-        else:
-            self.args = request_args
-            self.stub = request_args.get("stub")
+        self.args = request_args
+        self.stub = request_args.get("stub")
 
 
     @property
