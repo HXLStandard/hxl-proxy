@@ -1,5 +1,6 @@
-Release 2.1:
+2023-09-26 Release 2.1:
 	- remove all SQL support
+	- require libhxl==5.1 to reduce logging output
 
 2023-07-13 Release 2.0.2:
 	- update to libhxl==5.0.2 to support the .hxl extension for CSV files
