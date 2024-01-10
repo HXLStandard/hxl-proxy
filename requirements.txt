@@ -3,7 +3,7 @@ requests_cache
 ckanapi>=3.5
 flask>=2.2.5<2.3      # 2.3 messes up pip dependencies
 #git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
-libhxl==5.2         # for release
+libhxl==5.1         # for release
 flask-caching
 redis
 requests
