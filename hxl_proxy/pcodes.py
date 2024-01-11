@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 #
 # Constants
 #
-COUNTRY_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/layers?f=pjson'
+COUNTRY_URL_PATTERN = 'http://codgis.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/layers?f=pjson'
 """Pattern for constructing an iTOS URL for country metadata"""
 
-PCODES_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
+PCODES_URL_PATTERN = 'http://codgis.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
 """Pattern for constructing an iTOS URL for P-codes"""
 
 PCODE_HEADER_PATTERNS = {
