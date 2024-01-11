@@ -25,10 +25,10 @@ PCODES_URL_PATTERN = 'https://codgis.itos.uga.edu/arcgis/rest/services/COD_Exter
 PCODE_HEADER_PATTERNS = {
     r'^admin0RefName$': '#country+name+ref',
     r'^admin0Name_([a-z]{2})$': '#country+i_\\1+name',
-    r'^admin0Pcode$': '#country+code+iso2',
+    r'^ADM0_PCODE$': '#country+code+iso2',
     r'^admin([1-9])RefName$': '#adm\\1+name+ref',
     r'^admin([1-9])Name_([a-z]{2})$': '#adm\\1+i_\\2+name',
-    r'^admin([1-9])Pcode$': '#adm\\1+code',
+    r'^ADM([1-9])_PCODE$': '#adm\\1+code',
 }
 """Regular expressions mapping iTOS headers to HXL hashtags"""
 
