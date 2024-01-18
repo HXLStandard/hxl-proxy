@@ -1,5 +1,5 @@
 2024-01-18 Release 2.2:
-    - fix pcodes urls
+    	- fix pcodes urls
 	- require libhxl==5.2:
 	  - update URLs for test files on GitHub
 	  - fixed bug in aggregators that excluded tag patterns ending in "!"
