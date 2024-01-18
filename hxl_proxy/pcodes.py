@@ -16,19 +16,19 @@ logger = logging.getLogger(__name__)
 #
 # Constants
 #
-COUNTRY_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/layers?f=pjson'
+COUNTRY_URL_PATTERN = 'https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/layers?f=pjson'
 """Pattern for constructing an iTOS URL for country metadata"""
 
-PCODES_URL_PATTERN = 'http://gistmaps.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
+PCODES_URL_PATTERN = 'https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/{country}_pcode/MapServer/{level}/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson'
 """Pattern for constructing an iTOS URL for P-codes"""
 
 PCODE_HEADER_PATTERNS = {
     r'^admin0RefName$': '#country+name+ref',
     r'^admin0Name_([a-z]{2})$': '#country+i_\\1+name',
-    r'^admin0Pcode$': '#country+code+iso2',
+    r'^ADM0_PCODE$': '#country+code+iso2',
     r'^admin([1-9])RefName$': '#adm\\1+name+ref',
     r'^admin([1-9])Name_([a-z]{2})$': '#adm\\1+i_\\2+name',
-    r'^admin([1-9])Pcode$': '#adm\\1+code',
+    r'^ADM([1-9])_PCODE$': '#adm\\1+code',
 }
 """Regular expressions mapping iTOS headers to HXL hashtags"""
 
