@@ -120,5 +120,5 @@ ITOS_CACHE_TIMEOUT = 604800
 #
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '<client id>')
 GOOGLE_OAUTH_ID = os.getenv('GOOGLE_OAUTH_ID', '<oauth id>')
-
+GOOGLE_TAG_MANAGER_ID = os.getenv('GOOGLE_TAG_MANAGER_ID', '<google tag manager id>')
 # end
