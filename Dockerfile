@@ -1,14 +1,20 @@
 FROM public.ecr.aws/unocha/python:3.9-stable
 
+ARG UNITD_VERSION=1.32.1-1
+
 WORKDIR /srv/www
 
 COPY . .
 
-RUN apk add \
+# when we use the same python as the latest alpine distro, sure
+#unit \
+#unit-python3 && \
+
+RUN apk add --no-cache --upgrade --virtual .build-deps \
+    build-base \
     git \
     libffi-dev \
-    unit \
-    unit-python3 && \
+    pcre-dev && \
     mkdir -p \
     /etc/services.d/hxl \
     /srv/cache \
@@ -23,11 +29,18 @@ RUN apk add \
     wheel && \
     pip3 install --upgrade -r requirements.txt && \
     pip3 install \
-    elastic-apm[flask] \
-    newrelic && \
-    apk del \
-    git \
-    libffi-dev && \
+    elastic-apm[flask] && \
+    cd /tmp && \
+    git clone https://github.com/nginx/unit && \
+    cd /tmp/unit && \
+    git checkout ${UNITD_VERSION} && \
+    ./configure && make && make install && \
+    ./configure python && make python && make python-install && \
+    apk del .build-deps && \
+    apk add pcre && \
+    addgroup unit -g 101 && \
+    adduser -D -H unit -G unit && \
+    mkdir -p /var/lib/unit/ && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
 
