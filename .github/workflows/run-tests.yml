@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: They are the same.
+        run: sudo ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/bin/docker-compose
       - name: Building HXL Proxy image
         run: docker-compose -f docker-compose-github-actions.yml build proxy
       - name: Spinning up container
