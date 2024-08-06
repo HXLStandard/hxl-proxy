@@ -39,7 +39,7 @@ RUN apk add --no-cache --upgrade --virtual .build-deps \
     apk del .build-deps && \
     apk add pcre && \
     addgroup unit -g 101 && \
-    adduser -D -H unit -G unit && \
+    adduser -D -H unit -u 100 -G unit && \
     mkdir -p /var/lib/unit/ && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
