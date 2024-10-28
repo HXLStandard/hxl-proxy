@@ -8,7 +8,7 @@ Documentation: http://hxlstandard.org
 
 """
 
-__version__="2.2.3"
+__version__="2.2.4"
 """Module version number
 See https://www.python.org/dev/peps/pep-0396/
 
