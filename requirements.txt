@@ -1,7 +1,7 @@
 urllib3<1.27,>1.21.1  # avoid caching bug
 requests_cache
 ckanapi>=3.5
-flask==3.0.3
+flask==3.1.0
 #git+https://github.com/HXLStandard/libhxl-python.git@dev#egg=libhxl # for development
 libhxl==5.2.2         # for release
 flask-caching
