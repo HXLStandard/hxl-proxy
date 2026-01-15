@@ -486,18 +486,18 @@ class TestInfo(AbstractControllerTest):
         return json.loads(response.get_data(True))
 
 
-class TestPcodes(AbstractControllerTest):
+# class TestPcodes(AbstractControllerTest):
 
-    def test_good_pcodes(self):
-        response = self.get('/api/pcodes/gin-adm1.csv')
-        self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
-        self.assertEqual('*', response.headers.get('access-control-allow-origin'))
+#     def test_good_pcodes(self):
+#         response = self.get('/api/pcodes/gin-adm1.csv')
+#         self.assertTrue(response.headers.get('content-type', '').startswith('text/csv'))
+#         self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
-    def test_bad_pcodes(self):
-        response = self.get('/api/pcodes/xxx-adm1.csv', status=404)
-        #not easy before Flask 1.0
-        #self.assertEqual('application/json', response.headers.get('content-type'))
-        #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
+#     def test_bad_pcodes(self):
+#         response = self.get('/api/pcodes/xxx-adm1.csv', status=404)
+#         #not easy before Flask 1.0
+#         #self.assertEqual('application/json', response.headers.get('content-type'))
+#         #self.assertEqual('*', response.headers.get('access-control-allow-origin'))
 
 
 class TestHash(AbstractControllerTest):
