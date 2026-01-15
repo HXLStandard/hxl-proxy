@@ -38,8 +38,8 @@ RUN apk add --no-cache --upgrade --virtual .build-deps \
     ./configure python && make python && make python-install && \
     apk del .build-deps && \
     apk add pcre && \
-    addgroup unit -g 101 && \
-    adduser -D -H unit -u 100 -G unit && \
+    addgroup unit -g 4001 && \
+    adduser -D -H unit -u 4001 -G unit && \
     mkdir -p /var/lib/unit/ && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/*
