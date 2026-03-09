@@ -1,4 +1,4 @@
-urllib3<1.27,>1.21.1  # avoid caching bug
+urllib3>1.21.1,<2.7  # avoid caching bug
 requests_cache
 ckanapi>=3.5
 flask==3.0.3
